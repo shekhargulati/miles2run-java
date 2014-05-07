@@ -1,0 +1,93 @@
+body {
+    padding-top: 50px;
+}
+
+.graph-label {
+    font-size: 20px;
+}
+
+#main {
+    padding: 40px 15px;
+    text-align: center;
+}
+
+.appnav {
+    text-align: left;
+}
+
+.apptext {
+    text-align: left;
+}
+
+.center {
+    margin-left: auto;
+    margin-right: auto;
+    width: 70%;
+}
+
+.noactivity {
+    text-align: center;
+}
+
+.top-buffer {
+    margin-top: 10px;
+}
+
+.bottom-buffer {
+    margin-top: 10px;
+}
+
+cal-heatmap {
+    text-align: left;
+    align-content: center;
+}
+
+div[class*='activity-'] {
+    border: ridge;
+    text-align: center;
+}
+
+.form-signin {
+    max-width: 330px;
+    padding: 15px;
+    margin: 0 auto;
+}
+
+.form-signin .form-signin-heading,
+.form-signin .checkbox {
+    margin-bottom: 10px;
+}
+
+.form-signin .checkbox {
+    font-weight: normal;
+}
+
+.form-signin .form-control {
+    position: relative;
+    height: auto;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    padding: 10px;
+    font-size: 16px;
+}
+
+.form-signin .form-control:focus {
+    z-index: 2;
+}
+
+.form-signin input[type="email"] {
+    margin-bottom: -1px;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+.form-signin input[type="password"] {
+    margin-bottom: 10px;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
+
+[ng\:cloak], [ng-cloak], .ng-cloak {
+    display: none;
+}

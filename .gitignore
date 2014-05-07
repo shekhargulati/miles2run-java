@@ -1,0 +1,6 @@
+*.iml
+.idea
+target
+bin
+todo.txt
+issues.txt
