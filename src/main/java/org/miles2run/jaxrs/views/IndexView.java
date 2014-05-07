@@ -1,8 +1,10 @@
 package org.miles2run.jaxrs.views;
 
+import org.jug.filters.EnableSession;
 import org.jug.view.View;
 import org.jug.view.ViewException;
 import org.miles2run.jaxrs.vo.Counter;
+import org.thymeleaf.TemplateEngine;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -23,15 +25,19 @@ public class IndexView {
     @Inject
     private Logger logger;
 
+    @Inject
+    private TemplateEngine templateEngine;
+
     @GET
-    public View index() {
+    @EnableSession
+    public View index(@Context HttpServletRequest request) {
         try {
             Map<String, Object> model = new HashMap<>();
             model.put("counter", new Counter(10L, 5L, 100L));
-            return new View("/index", model);
+            return new View("/index", model).setTemplateEngine(templateEngine);
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Unable to load index page.", e);
-            throw new ViewException(e.getMessage(), e);
+            throw new ViewException(e.getMessage(), e, templateEngine);
         }
     }
 }

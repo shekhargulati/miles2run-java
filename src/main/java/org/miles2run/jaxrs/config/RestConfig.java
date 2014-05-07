@@ -1,9 +1,6 @@
 package org.miles2run.jaxrs.config;
 
-import org.jug.filters.AfterLogin;
-import org.jug.filters.AfterLoginFilter;
-import org.jug.filters.AuthenticationFilter;
-import org.jug.filters.LoggedIn;
+import org.jug.filters.*;
 import org.jug.view.NotFoundExceptionMapper;
 import org.jug.view.ViewExceptionMapper;
 import org.jug.view.ViewResourceNotFoundExceptionMapper;
@@ -20,14 +17,11 @@ public class RestConfig extends Application {
     public Set<Class<?>> getClasses() {
         Set<Class<?>> classes = new HashSet<>();
         classes.add(NotFoundExceptionMapper.class);
-        classes.add(IndexView.class);
         classes.add(ViewWriter.class);
         classes.add(ViewExceptionMapper.class);
         classes.add(ViewResourceNotFoundExceptionMapper.class);
-        classes.add(AuthenticationFilter.class);
-        classes.add(LoggedIn.class);
-        classes.add(AfterLogin.class);
-        classes.add(AfterLoginFilter.class);
+        classes.add(EnableSessionFilter.class);
+        classes.add(IndexView.class);
         return classes;
     }
 }
