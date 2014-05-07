@@ -2,6 +2,7 @@ package org.miles2run.business.domain;
 
 import org.hibernate.validator.constraints.Email;
 import org.miles2run.business.bean_validation.ImageUrl;
+import org.miles2run.jaxrs.vo.ProfileForm;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -15,6 +16,10 @@ import java.util.List;
  * Created by shekhargulati on 04/03/14.
  */
 @Entity
+@NamedQueries({
+        @NamedQuery(name = "Profile.findByUsername", query = "select new Profile(p) from Profile p where p.username =:username"),
+        @NamedQuery(name = "Profile.findByEmail", query = "select new Profile(p) from Profile p where p.email =:email")
+})
 public class Profile implements Serializable {
 
     @Id
@@ -76,6 +81,28 @@ public class Profile implements Serializable {
     private String biggerProfilePic;
 
     public Profile() {
+    }
+
+    public Profile(Profile p) {
+        this.username = p.username;
+        this.bio = p.bio;
+        this.city = p.city;
+        this.country = p.country;
+        this.fullname = p.fullname;
+        this.profilePic = p.profilePic;
+    }
+
+    public Profile(ProfileForm profileForm) {
+        this.email = profileForm.getEmail();
+        this.username = profileForm.getUsername();
+        this.bio = profileForm.getBio();
+        this.city = profileForm.getCity();
+        this.country = profileForm.getCountry();
+        this.fullname = profileForm.getFullname();
+        this.gender = profileForm.getGender();
+        this.goalUnit = profileForm.getGoalUnit();
+        this.goal = profileForm.getGoal() * this.goalUnit.getConversion();
+        this.profilePic = profileForm.getProfilePic();
     }
 
     public Long getId() {

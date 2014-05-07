@@ -5,9 +5,7 @@ import org.jug.view.NotFoundExceptionMapper;
 import org.jug.view.ViewExceptionMapper;
 import org.jug.view.ViewResourceNotFoundExceptionMapper;
 import org.jug.view.ViewWriter;
-import org.miles2run.jaxrs.views.IndexView;
-import org.miles2run.jaxrs.views.TwitterCallbackView;
-import org.miles2run.jaxrs.views.TwitterSigninView;
+import org.miles2run.jaxrs.views.*;
 
 import javax.ws.rs.core.Application;
 import java.util.HashSet;
@@ -23,9 +21,13 @@ public class RestConfig extends Application {
         classes.add(ViewExceptionMapper.class);
         classes.add(ViewResourceNotFoundExceptionMapper.class);
         classes.add(EnableSessionFilter.class);
+        classes.add(AuthenticationFilter.class);
+        classes.add(AfterLoginFilter.class);
         classes.add(IndexView.class);
         classes.add(TwitterSigninView.class);
         classes.add(TwitterCallbackView.class);
+        classes.add(ProfileView.class);
+        classes.add(HomeView.class);
         return classes;
     }
 }
