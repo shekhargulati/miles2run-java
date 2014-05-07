@@ -7,10 +7,8 @@ import org.miles2run.jaxrs.vo.Counter;
 import org.thymeleaf.TemplateEngine;
 
 import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.core.Context;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -30,7 +28,7 @@ public class IndexView {
 
     @GET
     @EnableSession
-    public View index(@Context HttpServletRequest request) {
+    public View index() {
         try {
             Map<String, Object> model = new HashMap<>();
             model.put("counter", new Counter(10L, 5L, 100L));
