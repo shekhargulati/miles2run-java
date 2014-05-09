@@ -5,11 +5,11 @@ angular.module('milestogo')
         return {
             getBaseUrl: function () {
                 if ($location.port() === 9000) {
-                    return "http://localhost:8080/miles2run/api/v2/";
+                    return "http://localhost:8080/miles2run/api/v1/";
                 } else if ($location.port() === 8080) {
-                    return "/miles2run/api/v2/";
+                    return "/miles2run/api/v1/";
                 } else {
-                    return "/api/v2/";
+                    return "/api/v1/";
                 }
             },
 

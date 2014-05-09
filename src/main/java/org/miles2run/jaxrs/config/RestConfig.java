@@ -5,6 +5,9 @@ import org.jug.view.NotFoundExceptionMapper;
 import org.jug.view.ViewExceptionMapper;
 import org.jug.view.ViewResourceNotFoundExceptionMapper;
 import org.jug.view.ViewWriter;
+import org.miles2run.jaxrs.api.v1.ActivityResource;
+import org.miles2run.jaxrs.api.v1.CounterResource;
+import org.miles2run.jaxrs.api.v1.ProgressResource;
 import org.miles2run.jaxrs.filters.InjectProfileFilter;
 import org.miles2run.jaxrs.views.*;
 
@@ -34,6 +37,9 @@ public class RestConfig extends Application {
         classes.add(SigninView.class);
         classes.add(InjectProfileFilter.class);
         classes.add(LogoutView.class);
+        classes.add(ActivityResource.class);
+        classes.add(ProgressResource.class);
+        classes.add(CounterResource.class);
         return classes;
     }
 }

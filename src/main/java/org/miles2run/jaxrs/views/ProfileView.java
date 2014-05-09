@@ -11,6 +11,7 @@ import org.jug.view.ViewException;
 import org.miles2run.business.domain.Profile;
 import org.miles2run.business.domain.SocialConnection;
 import org.miles2run.business.domain.SocialProvider;
+import org.miles2run.business.services.CounterService;
 import org.miles2run.business.services.ProfileService;
 import org.miles2run.business.services.SocialConnectionService;
 import org.miles2run.jaxrs.utils.CityAndCountry;
@@ -57,6 +58,8 @@ public class ProfileView {
     private FacebookFactory facebookFactory;
     @Inject
     private SocialConnectionService socialConnectionService;
+    @Inject
+    private CounterService counterService;
 
     @GET
     @Produces("text/html")
@@ -118,6 +121,8 @@ public class ProfileView {
                 return View.of("/createProfile", templateEngine).withModel("profile", profileForm).withModel("errors", errors);
             }
             socialConnectionService.update(profile, profileForm.getConnectionId());
+            counterService.updateDeveloperCounter();
+            counterService.updateCountryCounter(profile.getCountry());
             return View.of("/home", true).withModel("principal", profile.getUsername());
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Unable to load create profile.", e);
