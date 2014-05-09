@@ -1,0 +1,43 @@
+<div class="alert alert-danger" ng-if="error">
+    {{error.message}}
+</div>
+<div class="noactivity well" ng-if="!data && !error">
+    <h2>You don't have any activities on your dashboard yet.</h2>
+    <a class="btn btn-success" ng-href="#activity/post">Log New Activity</a>
+</div>
+<div class="userprogress" ng-if="data && !error">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="activity-goal">
+                <h2>Goal</h2>
+                <h4>{{data.goal}} {{data.goalUnit | lowercase}}</h4>
+            </div>
+
+        </div>
+        <div class="col-md-4">
+            <div class="activity-total-covered">
+                <h2>Covered</h2>
+                <h4>{{data.totalDistanceCovered}} {{data.goalUnit | lowercase}}</h4>
+            </div>
+
+        </div>
+        <div class="col-md-4">
+            <div class="activity-total-activities">
+                <h2>Activities</h2>
+                <h4>{{data.activityCount}}</h4>
+            </div>
+        </div>
+    </div>
+    <hr>
+    <div class="row">
+        <h2>Your Progress</h2>
+
+        <div class="progress progress-striped">
+            <div class="progress-bar" role="progressbar" aria-valuenow="{{data.totalDistanceCovered}}" aria-valuemin="0"
+                 aria-valuemax="{{data.goal}}" style="{{style}}">
+                {{data.percentage}}%
+            </div>
+        </div>
+    </div>
+
+</div>

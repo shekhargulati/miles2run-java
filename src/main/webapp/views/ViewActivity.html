@@ -1,0 +1,41 @@
+<div class="row top-buffer" id="activity-header" style="border: groove">
+    <div class="col-md-6">
+        <h3>{{activity.activityDate | date:'EEEE'}} Run</h3>
+        <small class="text-muted"><i class="glyphicon glyphicon-calendar"></i> {{activity.activityDate | date:'MMM dd, yyyy'}}</small>
+    </div>
+
+    <div class="col-md-offset-4 col-md-2 pull-right">
+        <div class="btn-group pull-right">
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                <i class="glyphicon glyphicon-chevron-down"></i>
+            </button>
+            <ul class="dropdown-menu" role="menu">
+                <li><a ng-href="#/activity/edit/{{activity.id}}" title="edit activity"><i class="glyphicon glyphicon-edit"></i> Edit</a></li>
+                <li><a ng-href="#/activity/share/{{activity.id}}" title="share activity"><i class="glyphicon glyphicon-share"></i> Share</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="row well top-buffer" id="activity-body">
+        <div class="col-md-4" style="border: groove" title="distance covered in {{activity.goalUnit | lowercase}}">
+            <strong class="pull-left">{{activity.goalUnit}}</strong>
+            <h3><i class="glyphicon glyphicon-road"></i> {{activity.distanceCovered}}</h3>
+        </div>
+
+        <div class="col-md-4" style="border: groove" title="duration in hours:mins:secs">
+            <strong class="pull-left">DURATION</strong>
+            <h3><i class="glyphicon glyphicon-time"></i> {{activity.duration | duration}}</h3>
+
+        </div>
+
+        <div class="col-md-4" style="border: groove" title="average pace in mins/{{activity.goalUnit|lowercase}}">
+            <strong class="pull-left">AVERAGE PACE</strong>
+            <h3><i class="glyphicon glyphicon-flash"></i> {{activity.distanceCovered | pace : activity.duration | number:2}}</h3>
+        </div>
+
+</div>
+
+<div class="row well top-buffer" id="activity-content">
+    <p class="lead">{{activity.status}}</p>
+</div>

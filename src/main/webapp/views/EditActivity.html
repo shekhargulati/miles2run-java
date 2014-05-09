@@ -1,0 +1,61 @@
+<form id="activityForm" class="form-horizontal" role="form" ng-submit="update()">
+    <fieldset>
+        <legend>Edit your Run</legend>
+        <div class="form-group">
+            <label class="col-md-2 control-label" for="activityDate">Run Date</label>
+
+            <div class="col-md-6 input-group">
+                <input type="text" id="activityDate" name="activityDate" class="form-control"
+                       datepicker-popup="dd-MMMM-yyyy" ng-model="activityDetails.activityDate" is-open="opened"
+                       max="minDate" datepicker-options="dateOptions" ng-required="true" close-text="Close"
+                       placeholder="Date you ran"
+                       title="Run Date">
+                <span class="input-group-btn">
+                    <button class="btn btn-info" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i>
+                    </button>
+                </span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-md-2 control-label" for="distanceCovered">Distance Ran</label>
+
+            <div class="col-md-6 input-group">
+                <input id="distanceCovered" name="distanceCovered" type="number" placeholder="Distance ran"
+                       class="form-control" ng-model="activityDetails.distanceCovered" min="0" step="1"
+                       title="Distance ran" required>
+                <span class="input-group-addon">{{activityDetails.goalUnit | lowercase}}</span>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-md-2 control-label">Duration</label>
+
+            <div class="col-md-6 input-group">
+                <input id="durationHours" name="durationHours" ng-model="duration.hours" title="Hours" type="number" step="1" min="0" max="23"> hour(s) :
+                <input id="durationMinutes" name="durationMinutes" ng-model="duration.minutes" title="Minutes" type="number" step="1" min="0" max="59"> minute(s) :
+                <input id="durationSeconds" name="durationSeconds" ng-model="duration.seconds" title="Seconds" type="number" step="1" min="0" max="59"> second(s)
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-md-2 control-label" for="status">How did it go?</label>
+
+            <div class="col-md-6 input-group">
+                <textarea class="form-control" name="status" id="status" rows="5"
+                          placeholder="How did it go?(max 140 characters)" class="form-control input-md"
+                          maxlength="140" title="You can enter at max 140 characters"
+                          ng-model="activityDetails.status"></textarea>
+
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-4 pull-left">
+                <button class="btn btn-primary btn-block" type="submit">
+                    <i class="glyphicon glyphicon-record"></i> Update your Run
+                </button>
+            </div>
+        </div>
+
+    </fieldset>
+</form>

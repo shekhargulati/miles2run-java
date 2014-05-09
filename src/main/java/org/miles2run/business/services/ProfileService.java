@@ -3,6 +3,7 @@ package org.miles2run.business.services;
 import org.miles2run.business.domain.GoalUnit;
 import org.miles2run.business.domain.Profile;
 import org.miles2run.business.domain.SocialProvider;
+import org.miles2run.business.vo.ProfileSocialConnectionDetails;
 
 import javax.ejb.Stateless;
 import javax.enterprise.context.ApplicationScoped;
@@ -62,4 +63,23 @@ public class ProfileService {
         }
     }
 
+    public ProfileSocialConnectionDetails findProfileWithSocialConnections(String username) {
+        Query query = entityManager.createNamedQuery("Profile.findProfileWithSocialNetworks").setParameter("username", username);
+        List result = query.getResultList();
+        if (result == null || result.isEmpty()) {
+            return null;
+        }
+        ProfileSocialConnectionDetails profileSocialConnectionDetails = new ProfileSocialConnectionDetails();
+        for (Object object : result) {
+            if (object instanceof Object[]) {
+                Object[] row = (Object[]) object;
+                profileSocialConnectionDetails.setId((Long) row[0]);
+                profileSocialConnectionDetails.setUsername((String) row[1]);
+                profileSocialConnectionDetails.setGoal((Long) row[2]);
+                profileSocialConnectionDetails.setGoalUnit((GoalUnit) row[3]);
+                profileSocialConnectionDetails.getProviders().add(((SocialProvider) row[4]).getProvider());
+            }
+        }
+        return profileSocialConnectionDetails;
+    }
 }

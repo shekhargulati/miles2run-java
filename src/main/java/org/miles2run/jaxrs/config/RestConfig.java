@@ -5,6 +5,7 @@ import org.jug.view.NotFoundExceptionMapper;
 import org.jug.view.ViewExceptionMapper;
 import org.jug.view.ViewResourceNotFoundExceptionMapper;
 import org.jug.view.ViewWriter;
+import org.miles2run.jaxrs.filters.InjectProfileFilter;
 import org.miles2run.jaxrs.views.*;
 
 import javax.ws.rs.core.Application;
@@ -31,6 +32,7 @@ public class RestConfig extends Application {
         classes.add(FacebookSigninView.class);
         classes.add(FacebookCallbackView.class);
         classes.add(SigninView.class);
+        classes.add(InjectProfileFilter.class);
         return classes;
     }
 }
