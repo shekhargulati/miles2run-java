@@ -20,6 +20,7 @@ import java.util.List;
         @NamedQuery(name = "Profile.findByUsername", query = "select new Profile(p) from Profile p where p.username =:username"),
         @NamedQuery(name = "Profile.findByEmail", query = "select new Profile(p) from Profile p where p.email =:email"),
         @NamedQuery(name = "Profile.findProfileWithSocialNetworks", query = "select p.id,p.username,p.goal,p.goalUnit,s.provider from Profile p JOIN p.socialConnections s where p.username =:username"),
+        @NamedQuery(name = "Profile.findFullProfileByUsername", query = "select new Profile(p) from Profile p where p.username =:username")
 })
 @Table(indexes = {
         @Index(unique = true, columnList = "username"),

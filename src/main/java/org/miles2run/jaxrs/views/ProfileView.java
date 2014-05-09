@@ -6,14 +6,20 @@ import facebook4j.FacebookFactory;
 import facebook4j.IdNameEntity;
 import org.jboss.resteasy.annotations.Form;
 import org.jug.filters.AfterLogin;
+import org.jug.filters.LoggedIn;
 import org.jug.view.View;
 import org.jug.view.ViewException;
+import org.jug.view.ViewResourceNotFoundException;
 import org.miles2run.business.domain.Profile;
 import org.miles2run.business.domain.SocialConnection;
 import org.miles2run.business.domain.SocialProvider;
+import org.miles2run.business.services.ActivityService;
 import org.miles2run.business.services.CounterService;
 import org.miles2run.business.services.ProfileService;
 import org.miles2run.business.services.SocialConnectionService;
+import org.miles2run.business.vo.ActivityDetails;
+import org.miles2run.business.vo.Progress;
+import org.miles2run.jaxrs.filters.InjectProfile;
 import org.miles2run.jaxrs.utils.CityAndCountry;
 import org.miles2run.jaxrs.utils.GeocoderUtils;
 import org.miles2run.jaxrs.utils.UrlUtils;
@@ -33,6 +39,8 @@ import javax.transaction.Transactional;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.SecurityContext;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.*;
@@ -60,6 +68,11 @@ public class ProfileView {
     private SocialConnectionService socialConnectionService;
     @Inject
     private CounterService counterService;
+    @Inject
+    private ActivityService activityService;
+    @Context
+    private SecurityContext securityContext;
+
 
     @GET
     @Produces("text/html")
@@ -126,6 +139,92 @@ public class ProfileView {
             return View.of("/home", true).withModel("principal", profile.getUsername());
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Unable to load create profile.", e);
+            throw new ViewException(e.getMessage(), e, templateEngine);
+        }
+    }
+
+    @GET
+    @Produces("text/html")
+    @Path("/edit")
+    @LoggedIn
+    @InjectProfile
+    public View editForm() {
+        return View.of("/editProfile", templateEngine);
+    }
+
+    @POST
+    @Produces("text/html")
+    @Path("/edit")
+    @LoggedIn
+    public View editProfile(@Form ProfileForm profileForm) {
+        try {
+            List<String> errors = new ArrayList<>();
+            Profile profile = new Profile(profileForm);
+            try {
+                profileService.update(profile);
+            } catch (Exception e) {
+                logger.info(e.getClass().getCanonicalName());
+                RollbackException rollbackException = (RollbackException) e;
+                Throwable rollbackCause = rollbackException.getCause();
+                if (rollbackCause instanceof PersistenceException) {
+                    PersistenceException persistenceException = (PersistenceException) rollbackCause;
+                    if (persistenceException.getCause() instanceof ConstraintViolationException) {
+                        ConstraintViolationException constraintViolationException = (ConstraintViolationException) persistenceException.getCause();
+                        Set<ConstraintViolation<?>> constraintViolations = constraintViolationException.getConstraintViolations();
+                        for (ConstraintViolation<?> constraintViolation : constraintViolations) {
+                            errors.add(String.format("Field '%s' with value '%s' is invalid. %s", constraintViolation.getPropertyPath(), constraintViolation.getInvalidValue(), constraintViolation.getMessage()));
+                        }
+                        return View.of("/editProfile", templateEngine).withModel("profile", profileForm).withModel("errors", errors);
+                    }
+                }
+                errors.add(e.getMessage());
+                return View.of("/editProfile", templateEngine).withModel("profile", profileForm).withModel("errors", errors);
+
+            }
+//            profileMongoDao.update(profile);
+            return View.of("/home", true);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Unable to load create profile.", e);
+            throw new ViewException(e.getMessage(), e, templateEngine);
+
+        }
+    }
+
+    @GET
+    @Path("/{username}")
+    @Produces("text/html")
+    @InjectProfile
+    public View viewUserProfile(@PathParam("username") String username) {
+        try {
+            Profile profile = profileService.findProfileByUsername(username);
+            if (profile == null) {
+                throw new ViewResourceNotFoundException(String.format("No user exists with username %s", username), templateEngine);
+            }
+            Map<String, Object> model = new HashMap<>();
+            model.put("userProfile", profile);
+            String currentLoggedInUser = securityContext.getUserPrincipal() != null ? securityContext.getUserPrincipal().getName() : null;
+            if (currentLoggedInUser != null) {
+                boolean isMyProfile = currentLoggedInUser.equals(username);
+                model.put("isMyProfile", isMyProfile);
+                if (!isMyProfile) {
+//                    boolean isFollowing = isFollowing(currentLoggedInUser, username);
+//                    model.put("isFollowing", isFollowing);
+                }
+            }
+
+            Progress progress = activityService.findTotalDistanceCovered(username);
+            if (progress != null) {
+                model.put("progress", progress);
+            }
+            List<ActivityDetails> timeline = activityService.findAll(username);
+            model.put("timeline", timeline);
+            model.put("activities", timeline.size());
+            return View.of("/profile", templateEngine).withModel(model);
+        } catch (Exception e) {
+            if (e instanceof ViewResourceNotFoundException) {
+                throw e;
+            }
+            logger.log(Level.SEVERE, String.format("Unable to load %s page.", username), e);
             throw new ViewException(e.getMessage(), e, templateEngine);
         }
     }
