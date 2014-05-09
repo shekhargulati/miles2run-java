@@ -2,7 +2,7 @@ package org.miles2run.business.domain;
 
 import org.hibernate.validator.constraints.Email;
 import org.miles2run.business.bean_validation.ImageUrl;
-import org.miles2run.jaxrs.vo.ProfileForm;
+import org.miles2run.jaxrs.forms.ProfileForm;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -19,6 +19,10 @@ import java.util.List;
 @NamedQueries({
         @NamedQuery(name = "Profile.findByUsername", query = "select new Profile(p) from Profile p where p.username =:username"),
         @NamedQuery(name = "Profile.findByEmail", query = "select new Profile(p) from Profile p where p.email =:email")
+})
+@Table(indexes = {
+        @Index(unique = true, columnList = "username"),
+        @Index(unique = true,columnList = "email")
 })
 public class Profile implements Serializable {
 
@@ -90,6 +94,9 @@ public class Profile implements Serializable {
         this.country = p.country;
         this.fullname = p.fullname;
         this.profilePic = p.profilePic;
+        this.gender = p.gender;
+        this.goal = p.goal;
+        this.goalUnit = p.goalUnit;
     }
 
     public Profile(ProfileForm profileForm) {

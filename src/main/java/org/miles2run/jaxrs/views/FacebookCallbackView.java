@@ -1,13 +1,14 @@
 package org.miles2run.jaxrs.views;
 
+import facebook4j.Facebook;
+import facebook4j.FacebookFactory;
+import facebook4j.auth.AccessToken;
 import org.jug.view.View;
 import org.miles2run.business.domain.SocialConnection;
 import org.miles2run.business.domain.SocialProvider;
+import org.miles2run.business.services.ProfileService;
 import org.miles2run.business.services.SocialConnectionService;
-import twitter4j.Twitter;
-import twitter4j.TwitterFactory;
-import twitter4j.auth.AccessToken;
-import twitter4j.auth.RequestToken;
+import org.miles2run.jaxrs.utils.UrlUtils;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -20,29 +21,33 @@ import javax.ws.rs.core.Context;
 import java.util.logging.Logger;
 
 /**
- * Created by shekhargulati on 05/05/14.
+ * Created by shekhargulati on 09/05/14.
  */
 @Path("/")
-public class TwitterCallbackView {
+public class FacebookCallbackView {
 
-    @Inject
-    private TwitterFactory twitterFactory;
+
     @Inject
     private Logger logger;
     @Inject
     private SocialConnectionService socialConnectionService;
+    @Inject
+    private ProfileService profileService;
+    @Inject
+    private FacebookFactory facebookFactory;
     @Context
     private HttpServletRequest request;
 
-    @Path("/twitter/callback")
+
+    @Path("/facebook/callback")
     @GET
     @Produces("text/html")
-    public View callback(@QueryParam("oauth_token") String oauthToken, @QueryParam("oauth_verifier") String oauthVerifier) throws Exception {
-        RequestToken requestToken = new RequestToken(oauthToken, oauthVerifier);
-        Twitter twitter = twitterFactory.getInstance();
-        AccessToken oAuthAccessToken = twitter.getOAuthAccessToken(requestToken, oauthVerifier);
-        logger.info(String.format("OAuthAccess Token created : %s ", oAuthAccessToken));
-        String connectionId = String.valueOf(twitter.getId());
+    public View callback(@QueryParam("code") String oauthCode) throws Exception {
+        logger.info(String.format("Facebook Oauth code : %s", oauthCode));
+        Facebook facebook = facebookFactory.getInstance();
+        facebook.setOAuthCallbackURL(UrlUtils.absoluteUrlFor(request, FacebookCallbackView.class, "callback"));
+        AccessToken oAuthAccessToken = facebook.getOAuthAccessToken(oauthCode);
+        String connectionId = facebook.getId();
         SocialConnection existingSocialConnection = socialConnectionService.findByConnectionId(connectionId);
         logger.info("SocialConnection " + existingSocialConnection);
         if (existingSocialConnection != null) {
@@ -51,16 +56,15 @@ public class TwitterCallbackView {
                 return new View("/profiles/new?connectionId=" + connectionId, true);
             } else {
                 String username = existingSocialConnection.getProfile().getUsername();
-                logger.info(String.format("User %s already had authenticated with twitter. So redirecting to home.", username));
+                logger.info(String.format("User %s already had authenticated with facebook. So redirecting to home.", username));
                 HttpSession session = request.getSession();
                 logger.info("Using Session with id " + session.getId());
                 session.setAttribute("principal", username);
                 return new View("/home", true);
             }
         }
-        SocialConnection socialConnection = new SocialConnection(oAuthAccessToken.getToken(), oAuthAccessToken.getTokenSecret(), SocialProvider.TWITTER, oAuthAccessToken.getScreenName(), connectionId);
+        SocialConnection socialConnection = new SocialConnection(oAuthAccessToken.getToken(), null, SocialProvider.FACEBOOK, facebook.users().getMe().getUsername(), connectionId);
         socialConnectionService.save(socialConnection);
-        logger.info(String.format("Saved new SocialConnection with id %s", connectionId));
         return new View("/profiles/new?connectionId=" + connectionId, true);
     }
 }

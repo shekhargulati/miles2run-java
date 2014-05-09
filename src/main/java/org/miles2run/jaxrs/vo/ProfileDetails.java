@@ -3,7 +3,7 @@ package org.miles2run.jaxrs.vo;
 /**
  * Created by shekhargulati on 06/03/14.
  */
-public class ProfileVo {
+public class ProfileDetails {
 
     private final String username;
     private final String fullname;
@@ -15,7 +15,7 @@ public class ProfileVo {
     private String email;
     private String gender;
 
-    public ProfileVo(String username, String fullname, String bio, String connectionId, String profilePic, String city, String country) {
+    public ProfileDetails(String username, String fullname, String bio, String connectionId, String profilePic, String city, String country) {
         this.username = username;
         this.fullname = fullname;
         this.bio = bio;
@@ -71,7 +71,7 @@ public class ProfileVo {
 
     @Override
     public String toString() {
-        return "ProfileVo{" +
+        return "ProfileDetails{" +
                 "username='" + username + '\'' +
                 ", fullname='" + fullname + '\'' +
                 ", bio='" + bio + '\'' +

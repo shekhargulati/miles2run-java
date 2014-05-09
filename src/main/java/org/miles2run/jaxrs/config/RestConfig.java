@@ -28,6 +28,9 @@ public class RestConfig extends Application {
         classes.add(TwitterCallbackView.class);
         classes.add(ProfileView.class);
         classes.add(HomeView.class);
+        classes.add(FacebookSigninView.class);
+        classes.add(FacebookCallbackView.class);
+        classes.add(SigninView.class);
         return classes;
     }
 }

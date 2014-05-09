@@ -22,7 +22,7 @@ public class HomeView {
 
     @GET
     @LoggedIn
-    @Produces("text/plain")
+    @Produces("text/html")
     public String home() {
         logger.info("Welcome to home()..");
         return "Welcome to Home!";

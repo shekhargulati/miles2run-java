@@ -1,4 +1,4 @@
-package org.miles2run.jaxrs.vo;
+package org.miles2run.jaxrs.forms;
 
 import org.miles2run.business.domain.Gender;
 import org.miles2run.business.domain.GoalUnit;

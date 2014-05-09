@@ -1,6 +1,7 @@
 package org.miles2run.jaxrs.views;
 
 import org.jug.view.View;
+import org.miles2run.jaxrs.utils.UrlUtils;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
@@ -33,11 +34,7 @@ public class TwitterSigninView {
     public View signin(@Context HttpServletRequest request) {
         Twitter twitter = twitterFactory.getInstance();
         try {
-            String requestUrl = request.getRequestURL().toString();
-            String baseURL = requestUrl.substring(0, requestUrl.length() - request.getRequestURI().length()) + request.getContextPath();
-            URI callbackResourceUri = UriBuilder.fromMethod(TwitterCallbackView.class, "callback").build();
-            logger.info(String.format("Callback url %s ", callbackResourceUri.toString()));
-            RequestToken requestToken = twitter.getOAuthRequestToken(new StringBuilder(baseURL).append(callbackResourceUri.toString()).toString());
+            RequestToken requestToken = twitter.getOAuthRequestToken(UrlUtils.absoluteUrlFor(request, TwitterCallbackView.class, "callback"));
             return new View(requestToken.getAuthenticationURL(), true, true);
         } catch (TwitterException e) {
             throw new RuntimeException("Unable to get Twitter Authentication Url. Exception is: " + e);

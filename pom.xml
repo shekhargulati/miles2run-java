@@ -55,6 +55,11 @@
             <artifactId>geocoder-java</artifactId>
             <version>0.15</version>
         </dependency>
+        <dependency>
+            <groupId>org.facebook4j</groupId>
+            <artifactId>facebook4j-core</artifactId>
+            <version>[2.0,)</version>
+        </dependency>
     </dependencies>
 
     <build>
