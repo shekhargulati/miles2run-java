@@ -34,7 +34,7 @@ public class FacebookSigninView {
             Facebook facebook = facebookFactory.getInstance();
             String redirectUrl = UrlUtils.absoluteUrlFor(request, FacebookCallbackView.class, "callback");
             logger.info(String.format("Facebook redirectUrl %s", redirectUrl));
-            return new View(facebook.getOAuthAuthorizationURL(redirectUrl), true, true);
+            return View.of(facebook.getOAuthAuthorizationURL(redirectUrl), true).withAbsoluteUrl();
         } catch (Exception e) {
             throw new RuntimeException("Unable to get Facebook AuthorizationURL. Exception is: " + e);
         }

@@ -66,7 +66,7 @@ public class ProfileView {
             logger.info("ConnectionId : " + connectionId);
             SocialConnection socialConnection = socialConnectionService.findByConnectionId(connectionId);
             if (socialConnection == null) {
-                return new View("/signin", true);
+                return View.of("/signin", true);
             }
             if (socialConnection.getProvider() == SocialProvider.TWITTER) {
                 return twitterProfile(connectionId, socialConnection);
@@ -77,7 +77,7 @@ public class ProfileView {
             logger.log(Level.SEVERE, "Unable to load profile form page.", e);
             throw new ViewException(e.getMessage(), e, templateEngine);
         }
-        return new View("/signin", true);
+        return View.of("/signin", true);
     }
 
     @POST
@@ -94,7 +94,7 @@ public class ProfileView {
                 errors.add(String.format("User already exist with username %s", profileForm.getUsername()));
             }
             if (!errors.isEmpty()) {
-                return new View("/createProfile", profileForm, "profile", errors).setTemplateEngine(templateEngine);
+                return View.of("/createProfile", templateEngine).withModel("profile", profileForm).withModel("errors", errors);
             }
             Profile profile = new Profile(profileForm);
             try {
@@ -111,16 +111,14 @@ public class ProfileView {
                         for (ConstraintViolation<?> constraintViolation : constraintViolations) {
                             errors.add(String.format("Field '%s' with value '%s' is invalid. %s", constraintViolation.getPropertyPath(), constraintViolation.getInvalidValue(), constraintViolation.getMessage()));
                         }
-                        return new View("/createProfile", profileForm, "profile", errors).setTemplateEngine(templateEngine);
+                        return View.of("/createProfile", templateEngine).withModel("profile", profileForm).withModel("errors", errors);
                     }
                 }
                 errors.add(e.getMessage());
-                return new View("/createProfile", profileForm, "profile", errors).setTemplateEngine(templateEngine);
+                return View.of("/createProfile", templateEngine).withModel("profile", profileForm).withModel("errors", errors);
             }
             socialConnectionService.update(profile, profileForm.getConnectionId());
-            Map<String, Object> model = new HashMap<>();
-            model.put("principal", profile.getUsername());
-            return new View("/home", true, model);
+            return View.of("/home", true).withModel("principal", profile.getUsername());
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Unable to load create profile.", e);
             throw new ViewException(e.getMessage(), e, templateEngine);
@@ -136,7 +134,7 @@ public class ProfileView {
             twitterProfilePic = UrlUtils.removeProtocol(twitterProfilePic);
             CityAndCountry cityAndCountry = GeocoderUtils.parseLocation(user.getLocation());
             ProfileDetails profile = new ProfileDetails(user.getScreenName(), user.getName(), user.getDescription(), connectionId, twitterProfilePic, cityAndCountry.getCity(), cityAndCountry.getCountry());
-            return new View("/createProfile", profile, "profile").setTemplateEngine(templateEngine);
+            return View.of("/createProfile", templateEngine).withModel("profile", profile);
         } catch (TwitterException e) {
             throw new RuntimeException(e);
         }
@@ -172,8 +170,7 @@ public class ProfileView {
             ProfileDetails profile = new ProfileDetails(user.getUsername(), user.getName(), user.getBio(), connectionId, facebookProfilePic, cityAndCountry.getCity(), cityAndCountry.getCountry());
             profile.setEmail(email);
             profile.setGender(gender);
-            logger.info("Profile: " + profile);
-            return new View("/createProfile", profile, "profile").setTemplateEngine(templateEngine);
+            return View.of("/createProfile", templateEngine).withModel("profile", profile);
         } catch (FacebookException e) {
             throw new RuntimeException(e);
         }

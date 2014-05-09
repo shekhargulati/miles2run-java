@@ -53,18 +53,18 @@ public class FacebookCallbackView {
         if (existingSocialConnection != null) {
             if (existingSocialConnection.getProfile() == null) {
                 logger.info("Profile was null. So redirecting to new profile creation.");
-                return new View("/profiles/new?connectionId=" + connectionId, true);
+                return View.of("/profiles/new?connectionId=" + connectionId, true);
             } else {
                 String username = existingSocialConnection.getProfile().getUsername();
                 logger.info(String.format("User %s already had authenticated with facebook. So redirecting to home.", username));
                 HttpSession session = request.getSession();
                 logger.info("Using Session with id " + session.getId());
                 session.setAttribute("principal", username);
-                return new View("/home", true);
+                return View.of("/home", true);
             }
         }
         SocialConnection socialConnection = new SocialConnection(oAuthAccessToken.getToken(), null, SocialProvider.FACEBOOK, facebook.users().getMe().getUsername(), connectionId);
         socialConnectionService.save(socialConnection);
-        return new View("/profiles/new?connectionId=" + connectionId, true);
+        return View.of("/profiles/new?connectionId=" + connectionId, true);
     }
 }

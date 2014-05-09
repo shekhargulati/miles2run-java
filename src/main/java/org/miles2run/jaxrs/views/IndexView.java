@@ -29,13 +29,6 @@ public class IndexView {
     @GET
     @EnableSession
     public View index() {
-        try {
-            Map<String, Object> model = new HashMap<>();
-            model.put("counter", new Counter(10L, 5L, 100L));
-            return new View("/index", model).setTemplateEngine(templateEngine);
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, "Unable to load index page.", e);
-            throw new ViewException(e.getMessage(), e, templateEngine);
-        }
+        return View.of("/index", templateEngine).withModel("counter", new Counter(10L, 5L, 100L));
     }
 }

@@ -35,7 +35,7 @@ public class TwitterSigninView {
         Twitter twitter = twitterFactory.getInstance();
         try {
             RequestToken requestToken = twitter.getOAuthRequestToken(UrlUtils.absoluteUrlFor(request, TwitterCallbackView.class, "callback"));
-            return new View(requestToken.getAuthenticationURL(), true, true);
+            return View.of(requestToken.getAuthenticationURL(), true).withAbsoluteUrl();
         } catch (TwitterException e) {
             throw new RuntimeException("Unable to get Twitter Authentication Url. Exception is: " + e);
         }

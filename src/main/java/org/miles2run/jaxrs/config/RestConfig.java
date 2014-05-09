@@ -33,6 +33,7 @@ public class RestConfig extends Application {
         classes.add(FacebookCallbackView.class);
         classes.add(SigninView.class);
         classes.add(InjectProfileFilter.class);
+        classes.add(LogoutView.class);
         return classes;
     }
 }

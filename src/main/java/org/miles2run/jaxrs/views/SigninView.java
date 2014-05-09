@@ -28,7 +28,7 @@ public class SigninView {
     @EnableSession
     public View signin() throws ViewException {
         logger.info("In signin().. ");
-        return new View("/signin").setTemplateEngine(templateEngine);
+        return View.of("/signin", templateEngine);
     }
 
 
