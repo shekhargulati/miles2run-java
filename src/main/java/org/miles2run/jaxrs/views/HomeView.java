@@ -1,14 +1,13 @@
 package org.miles2run.jaxrs.views;
 
 import org.jug.filters.LoggedIn;
-import org.miles2run.business.services.ProfileService;
 
 import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.SecurityContext;
 import java.util.logging.Logger;
 
 /**
@@ -19,12 +18,14 @@ public class HomeView {
 
     @Inject
     private Logger logger;
+    @Context
+    private SecurityContext securityContext;
 
     @GET
     @LoggedIn
     @Produces("text/html")
     public String home() {
-        logger.info("Welcome to home()..");
-        return "Welcome to Home!";
+        logger.info("Welcome to home().." + securityContext.getUserPrincipal().getName());
+        return "Welcome to Home " + securityContext.getUserPrincipal().getName();
     }
 }

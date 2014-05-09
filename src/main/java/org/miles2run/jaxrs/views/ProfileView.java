@@ -119,7 +119,7 @@ public class ProfileView {
             }
             socialConnectionService.update(profile, profileForm.getConnectionId());
             Map<String, Object> model = new HashMap<>();
-            model.put("principal", profileService.findProfileByUsername(profile.getUsername()));
+            model.put("principal", profile.getUsername());
             return new View("/home", true, model);
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Unable to load create profile.", e);
