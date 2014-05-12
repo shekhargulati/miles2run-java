@@ -6,7 +6,7 @@ angular.module('milestogo')
         $scope.currentUser = activeProfile;
 
         $scope.getProfiles = function (val) {
-            return $http.get('api/v2/profiles', {
+            return $http.get('api/v1/profiles', {
                 params: {
                     name: val,
                     sensor: false
@@ -21,14 +21,14 @@ angular.module('milestogo')
             $window.location.href = "profiles/" + $scope.profile.username;
         };
 
-        $http.get('api/v2/profiles/' + $scope.currentUser.username + "/suggestions").then(function (response) {
+        $http.get('api/v1/profiles/' + $scope.currentUser.username + "/suggestions").then(function (response) {
             $scope.friends = response.data;
         });
 
 
         $scope.followUser = function (friend, idx) {
             console.log(friend);
-            $http.post('api/v2/profiles/' + $scope.currentUser.username + "/friendships/create", {"userToFollow": friend.username}).success(function (data, status, headers, config) {
+            $http.post('api/v1/profiles/' + $scope.currentUser.username + "/friendships/create", {"userToFollow": friend.username}).success(function (data, status, headers, config) {
                 console.log("User followed... " + status);
                 $scope.friends.splice(idx, 1);
                 toastr.success("Successfully followed user");

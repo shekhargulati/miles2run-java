@@ -9,6 +9,7 @@ import org.miles2run.business.domain.Notification;
 import org.miles2run.jaxrs.api.v1.*;
 import org.miles2run.jaxrs.filters.InjectProfileFilter;
 import org.miles2run.jaxrs.views.*;
+import twitter4j.api.SuggestedUsersResources;
 
 import javax.ws.rs.core.Application;
 import java.util.HashSet;
@@ -42,6 +43,8 @@ public class RestConfig extends Application {
         classes.add(NotificationResource.class);
         classes.add(FriendshipResource.class);
         classes.add(InjectPrincipalFilter.class);
+        classes.add(ProfileResource.class);
+        classes.add(ProfileSuggestionResource.class);
         return classes;
     }
 }
