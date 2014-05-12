@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <meta name="author" content="Shekhar Gulati"/>
+
+    <title>Edit your profile</title>
+
+    <link href="/css/bootstrap.css" th:href="@{/css/bootstrap.css}" rel="stylesheet"/>
+    <link href="/css/main.css" th:href="@{/css/main.css}" rel="stylesheet"/>
+    <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet"/>
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+
+<body>
+
+<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#" th:href="@{/}">Miles2Run</a>
+        </div>
+        <div class="collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li><a th:href="@{/home}">Home</a></li>
+                <li><a th:href="@{/about}">About</a></li>
+            </ul>
+
+            <ul class="nav navbar-collapse pull-right" th:if="${profile != null}">
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" th:inline="text">
+                        <img width="25" height="25" th:src="${profile.profilePic}"/> [[${profile.fullname}]] <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#" th:href="@{'/profiles/' + ${profile.username}}"
+                               th:text="${profile.fullname}"></a></li>
+                        <li><a href="#" th:href="@{/logout}">Logout</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+
+        <!--/.nav-collapse -->
+    </div>
+</div>
+
+<div id="main" class="container">
+
+    <div id="error" th:unless="${#lists.isEmpty(errors)}">
+        <ul class="list-unstyled">
+            <li th:each="error : ${errors}">
+                <div class="alert alert-danger alert-dismissable">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                    <p th:text="${error}"></p>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+    <form id="profileForm" class="form-horizontal" role="form" action="" th:action="@{/profiles/edit}" method="POST" novalidate="false">
+        <fieldset>
+
+            <!-- Form Name -->
+            <legend>Edit your profile</legend>
+
+            <!-- File Button -->
+            <div class="form-group">
+                <label class="col-md-4 control-label" for="picUpload" id="picUpload">Profile Picture</label>
+
+                <div class="col-md-1">
+                    <img class="pull-left img-responsive img-rounded" th:src="${profile.profilePic}" alt="${profile.fullname}"/>
+                </div>
+            </div>
+
+            <!-- Text input-->
+            <div id="fullnameFormGroup" class="form-group">
+                <label class="col-md-4 control-label" for="fullname">Full Name</label>
+
+                <div class="col-md-6">
+                    <input id="fullname" name="fullname" type="text" placeholder="Your full name(max 50 characters)"
+                           class="form-control input-md" th:value="${profile.fullname}" title="Please enter 'fullname' less than 50 characters" required=""/>
+
+                </div>
+            </div>
+
+            <!-- Text input-->
+            <div class="form-group">
+                <label class="col-md-4 control-label" for="city">City</label>
+
+                <div class="col-md-6">
+                    <input id="city" name="city" type="text" placeholder="City you live" class="form-control input-md" th:value="${profile.city}" required=""/>
+
+                </div>
+            </div>
+
+            <!-- Text input-->
+            <div id="countryFormGroup" class="form-group">
+                <label class="col-md-4 control-label" for="country">Country</label>
+
+                <div class="col-md-6">
+                <select id="country" name="country" title="Please enter 'country'" class="form-control input-md" required="">
+                        <option value="">Please select 'country'</option>
+                        <option value="AF" th:selected="${profile.country == 'AF'}">Afghanistan</option>
+                        <option value="AL" th:selected="${profile.country == 'AL'}">Albania</option>
+                        <option value="DZ" th:selected="${profile.country == 'DZ'}">Algeria</option>
+                        <option value="AS" th:selected="${profile.country == 'AS'}">American Samoa</option>
+                        <option value="AD" th:selected="${profile.country == 'AD'}">Andorra</option>
+                        <option value="AG" th:selected="${profile.country == 'AG'}">Angola</option>
+                        <option value="AI" th:selected="${profile.country == 'AI'}">Anguilla</option>
+                        <option value="AG" th:selected="${profile.country == 'AG'}">Antigua &amp; Barbuda</option>
+                        <option value="AR" th:selected="${profile.country == 'AR'}">Argentina</option>
+                        <option value="AA" th:selected="${profile.country == 'AA'}">Armenia</option>
+                        <option value="AW" th:selected="${profile.country == 'AW'}">Aruba</option>
+                        <option value="AU" th:selected="${profile.country == 'AU'}">Australia</option>
+                        <option value="AT" th:selected="${profile.country == 'AT'}">Austria</option>
+                        <option value="AZ" th:selected="${profile.country == 'AZ'}">Azerbaijan</option>
+                        <option value="BS" th:selected="${profile.country == 'BS'}">Bahamas</option>
+                        <option value="BH" th:selected="${profile.country == 'BH'}">Bahrain</option>
+                        <option value="BD" th:selected="${profile.country == 'BD'}">Bangladesh</option>
+                        <option value="BB" th:selected="${profile.country == 'BB'}">Barbados</option>
+                        <option value="BY" th:selected="${profile.country == 'BY'}">Belarus</option>
+                        <option value="BE" th:selected="${profile.country == 'BE'}">Belgium</option>
+                        <option value="BZ" th:selected="${profile.country == 'BZ'}">Belize</option>
+                        <option value="BJ" th:selected="${profile.country == 'BJ'}">Benin</option>
+                        <option value="BM" th:selected="${profile.country == 'BM'}">Bermuda</option>
+                        <option value="BT" th:selected="${profile.country == 'BT'}">Bhutan</option>
+                        <option value="BO" th:selected="${profile.country == 'BO'}">Bolivia</option>
+                        <option value="BL" th:selected="${profile.country == 'BL'}">Bonaire</option>
+                        <option value="BA" th:selected="${profile.country == 'BA'}">Bosnia &amp; Herzegovina</option>
+                        <option value="BW" th:selected="${profile.country == 'BW'}">Botswana</option>
+                        <option value="BR" th:selected="${profile.country == 'BR'}">Brazil</option>
+                        <option value="BC" th:selected="${profile.country == 'BC'}">British Indian Ocean Ter</option>
+                        <option value="BN" th:selected="${profile.country == 'BN'}">Brunei</option>
+                        <option value="BG" th:selected="${profile.country == 'BG'}">Bulgaria</option>
+                        <option value="BF" th:selected="${profile.country == 'BF'}">Burkina Faso</option>
+                        <option value="BI" th:selected="${profile.country == 'BI'}">Burundi</option>
+                        <option value="KH" th:selected="${profile.country == 'KH'}">Cambodia</option>
+                        <option value="CM" th:selected="${profile.country == 'CM'}">Cameroon</option>
+                        <option value="CA" th:selected="${profile.country == 'CA'}">Canada</option>
+                        <option value="IC" th:selected="${profile.country == 'IC'}">Canary Islands</option>
+                        <option value="CV" th:selected="${profile.country == 'CV'}">Cape Verde</option>
+                        <option value="KY" th:selected="${profile.country == 'KY'}">Cayman Islands</option>
+                        <option value="CF" th:selected="${profile.country == 'CF'}">Central African Republic</option>
+                        <option value="TD" th:selected="${profile.country == 'TD'}">Chad</option>
+                        <option value="CD" th:selected="${profile.country == 'CD'}">Channel Islands</option>
+                        <option value="CL" th:selected="${profile.country == 'CL'}">Chile</option>
+                        <option value="CN" th:selected="${profile.country == 'CN'}">China</option>
+                        <option value="CI" th:selected="${profile.country == 'CI'}">Christmas Island</option>
+                        <option value="CS" th:selected="${profile.country == 'CS'}">Cocos Island</option>
+                        <option value="CO" th:selected="${profile.country == 'CO'}">Colombia</option>
+                        <option value="CC" th:selected="${profile.country == 'CC'}">Comoros</option>
+                        <option value="CG" th:selected="${profile.country == 'CG'}">Congo</option>
+                        <option value="CK" th:selected="${profile.country == 'CK'}">Cook Islands</option>
+                        <option value="CR" th:selected="${profile.country == 'CR'}">Costa Rica</option>
+                        <option value="CT" th:selected="${profile.country == 'CT'}">Cote D'Ivoire</option>
+                        <option value="HR" th:selected="${profile.country == 'HR'}">Croatia</option>
+                        <option value="CU" th:selected="${profile.country == 'CU'}">Cuba</option>
+                        <option value="CB" th:selected="${profile.country == 'CB'}">Curacao</option>
+                        <option value="CY" th:selected="${profile.country == 'CY'}">Cyprus</option>
+                        <option value="CZ" th:selected="${profile.country == 'CZ'}">Czech Republic</option>
+                        <option value="DK" th:selected="${profile.country == 'DK'}">Denmark</option>
+                        <option value="DJ" th:selected="${profile.country == 'DJ'}">Djibouti</option>
+                        <option value="DM" th:selected="${profile.country == 'DM'}">Dominica</option>
+                        <option value="DO" th:selected="${profile.country == 'DO'}">Dominican Republic</option>
+                        <option value="TM" th:selected="${profile.country == 'TM'}">East Timor</option>
+                        <option value="EC" th:selected="${profile.country == 'EC'}">Ecuador</option>
+                        <option value="EG" th:selected="${profile.country == 'EG'}">Egypt</option>
+                        <option value="SV" th:selected="${profile.country == 'SV'}">El Salvador</option>
+                        <option value="GQ" th:selected="${profile.country == 'GQ'}">Equatorial Guinea</option>
+                        <option value="ER" th:selected="${profile.country == 'ER'}">Eritrea</option>
+                        <option value="EE" th:selected="${profile.country == 'EE'}">Estonia</option>
+                        <option value="ET" th:selected="${profile.country == 'ET'}">Ethiopia</option>
+                        <option value="FA" th:selected="${profile.country == 'FA'}">Falkland Islands</option>
+                        <option value="FO" th:selected="${profile.country == 'FO'}">Faroe Islands</option>
+                        <option value="FJ" th:selected="${profile.country == 'FJ'}">Fiji</option>
+                        <option value="FI" th:selected="${profile.country == 'FI'}">Finland</option>
+                        <option value="FR" th:selected="${profile.country == 'FR'}">France</option>
+                        <option value="GF" th:selected="${profile.country == 'GF'}">French Guiana</option>
+                        <option value="PF" th:selected="${profile.country == 'PF'}">French Polynesia</option>
+                        <option value="FS" th:selected="${profile.country == 'FS'}">French Southern Ter</option>
+                        <option value="GA" th:selected="${profile.country == 'GA'}">Gabon</option>
+                        <option value="GM" th:selected="${profile.country == 'GM'}">Gambia</option>
+                        <option value="GE" th:selected="${profile.country == 'GE'}">Georgia</option>
+                        <option value="DE" th:selected="${profile.country == 'DE'}">Germany</option>
+                        <option value="GH" th:selected="${profile.country == 'GH'}">Ghana</option>
+                        <option value="GI" th:selected="${profile.country == 'GI'}">Gibraltar</option>
+                        <option value="GB" th:selected="${profile.country == 'GB'}">Great Britain</option>
+                        <option value="GR" th:selected="${profile.country == 'GR'}">Greece</option>
+                        <option value="GL" th:selected="${profile.country == 'GL'}">Greenland</option>
+                        <option value="GD" th:selected="${profile.country == 'GD'}">Grenada</option>
+                        <option value="GP" th:selected="${profile.country == 'GP'}">Guadeloupe</option>
+                        <option value="GU" th:selected="${profile.country == 'GU'}">Guam</option>
+                        <option value="GT" th:selected="${profile.country == 'GT'}">Guatemala</option>
+                        <option value="GN" th:selected="${profile.country == 'GN'}">Guinea</option>
+                        <option value="GY" th:selected="${profile.country == 'GY'}">Guyana</option>
+                        <option value="HT" th:selected="${profile.country == 'HT'}">Haiti</option>
+                        <option value="HW" th:selected="${profile.country == 'HW'}">Hawaii</option>
+                        <option value="HN" th:selected="${profile.country == 'HN'}">Honduras</option>
+                        <option value="HK" th:selected="${profile.country == 'HK'}">Hong Kong</option>
+                        <option value="HU" th:selected="${profile.country == 'HU'}">Hungary</option>
+                        <option value="IS" th:selected="${profile.country == 'IS'}">Iceland</option>
+                        <option value="IN" th:selected="${profile.country == 'IN'}">India</option>
+                        <option value="ID" th:selected="${profile.country == 'ID'}">Indonesia</option>
+                        <option value="IA" th:selected="${profile.country == 'IA'}">Iran</option>
+                        <option value="IQ" th:selected="${profile.country == 'IQ'}">Iraq</option>
+                        <option value="IR" th:selected="${profile.country == 'IR'}">Ireland</option>
+                        <option value="IM" th:selected="${profile.country == 'IM'}">Isle of Man</option>
+                        <option value="IL" th:selected="${profile.country == 'IL'}">Israel</option>
+                        <option value="IT" th:selected="${profile.country == 'IT'}">Italy</option>
+                        <option value="JM" th:selected="${profile.country == 'JM'}">Jamaica</option>
+                        <option value="JP" th:selected="${profile.country == 'JP'}">Japan</option>
+                        <option value="JO" th:selected="${profile.country == 'JO'}">Jordan</option>
+                        <option value="KZ" th:selected="${profile.country == 'KZ'}">Kazakhstan</option>
+                        <option value="KE" th:selected="${profile.country == 'KE'}">Kenya</option>
+                        <option value="KI" th:selected="${profile.country == 'KI'}">Kiribati</option>
+                        <option value="NK" th:selected="${profile.country == 'NK'}">Korea North</option>
+                        <option value="KS" th:selected="${profile.country == 'KS'}">Korea South</option>
+                        <option value="KW" th:selected="${profile.country == 'KW'}">Kuwait</option>
+                        <option value="KG" th:selected="${profile.country == 'KG'}">Kyrgyzstan</option>
+                        <option value="LA" th:selected="${profile.country == 'LA'}">Laos</option>
+                        <option value="LV" th:selected="${profile.country == 'LV'}">Latvia</option>
+                        <option value="LB" th:selected="${profile.country == 'LB'}">Lebanon</option>
+                        <option value="LS" th:selected="${profile.country == 'LS'}">Lesotho</option>
+                        <option value="LR" th:selected="${profile.country == 'LR'}">Liberia</option>
+                        <option value="LY" th:selected="${profile.country == 'LY'}">Libya</option>
+                        <option value="LI" th:selected="${profile.country == 'LI'}">Liechtenstein</option>
+                        <option value="LT" th:selected="${profile.country == 'LT'}">Lithuania</option>
+                        <option value="LU" th:selected="${profile.country == 'LU'}">Luxembourg</option>
+                        <option value="MO" th:selected="${profile.country == 'MO'}">Macau</option>
+                        <option value="MK" th:selected="${profile.country == 'MK'}">Macedonia</option>
+                        <option value="MG" th:selected="${profile.country == 'MG'}">Madagascar</option>
+                        <option value="MY" th:selected="${profile.country == 'MY'}">Malaysia</option>
+                        <option value="MW" th:selected="${profile.country == 'MW'}">Malawi</option>
+                        <option value="MV" th:selected="${profile.country == 'MV'}">Maldives</option>
+                        <option value="ML" th:selected="${profile.country == 'ML'}">Mali</option>
+                        <option value="MT" th:selected="${profile.country == 'MT'}">Malta</option>
+                        <option value="MH" th:selected="${profile.country == 'MH'}">Marshall Islands</option>
+                        <option value="MQ" th:selected="${profile.country == 'MQ'}">Martinique</option>
+                        <option value="MR" th:selected="${profile.country == 'MR'}">Mauritania</option>
+                        <option value="MU" th:selected="${profile.country == 'MU'}">Mauritius</option>
+                        <option value="ME" th:selected="${profile.country == 'ME'}">Mayotte</option>
+                        <option value="MX" th:selected="${profile.country == 'MX'}">Mexico</option>
+                        <option value="MI" th:selected="${profile.country == 'MI'}">Midway Islands</option>
+                        <option value="MD" th:selected="${profile.country == 'MD'}">Moldova</option>
+                        <option value="MC" th:selected="${profile.country == 'MC'}">Monaco</option>
+                        <option value="MN" th:selected="${profile.country == 'MN'}">Mongolia</option>
+                        <option value="MS" th:selected="${profile.country == 'MS'}">Montserrat</option>
+                        <option value="MA" th:selected="${profile.country == 'MA'}">Morocco</option>
+                        <option value="MZ" th:selected="${profile.country == 'MZ'}">Mozambique</option>
+                        <option value="MM" th:selected="${profile.country == 'MM'}">Myanmar</option>
+                        <option value="NA" th:selected="${profile.country == 'NA'}">Nambia</option>
+                        <option value="NU" th:selected="${profile.country == 'NU'}">Nauru</option>
+                        <option value="NP" th:selected="${profile.country == 'NP'}">Nepal</option>
+                        <option value="AN" th:selected="${profile.country == 'AN'}">Netherland Antilles</option>
+                        <option value="NL" th:selected="${profile.country == 'NL'}">Netherlands (Holland, Europe)</option>
+                        <option value="NV" th:selected="${profile.country == 'NV'}">Nevis</option>
+                        <option value="NC" th:selected="${profile.country == 'NC'}">New Caledonia</option>
+                        <option value="NZ" th:selected="${profile.country == 'NZ'}">New Zealand</option>
+                        <option value="NI" th:selected="${profile.country == 'NI'}">Nicaragua</option>
+                        <option value="NE" th:selected="${profile.country == 'NE'}">Niger</option>
+                        <option value="NG" th:selected="${profile.country == 'NG'}">Nigeria</option>
+                        <option value="NW" th:selected="${profile.country == 'NW'}">Niue</option>
+                        <option value="NF" th:selected="${profile.country == 'NF'}">Norfolk Island</option>
+                        <option value="NO" th:selected="${profile.country == 'NO'}">Norway</option>
+                        <option value="OM" th:selected="${profile.country == 'OM'}">Oman</option>
+                        <option value="PK" th:selected="${profile.country == 'PK'}">Pakistan</option>
+                        <option value="PW" th:selected="${profile.country == 'PW'}">Palau Island</option>
+                        <option value="PS" th:selected="${profile.country == 'PS'}">Palestine</option>
+                        <option value="PA" th:selected="${profile.country == 'PA'}">Panama</option>
+                        <option value="PG" th:selected="${profile.country == 'PG'}">Papua New Guinea</option>
+                        <option value="PY" th:selected="${profile.country == 'PY'}">Paraguay</option>
+                        <option value="PE" th:selected="${profile.country == 'PE'}">Peru</option>
+                        <option value="PH" th:selected="${profile.country == 'PH'}">Philippines</option>
+                        <option value="PO" th:selected="${profile.country == 'PO'}">Pitcairn Island</option>
+                        <option value="PL" th:selected="${profile.country == 'PL'}">Poland</option>
+                        <option value="PT" th:selected="${profile.country == 'PT'}">Portugal</option>
+                        <option value="PR" th:selected="${profile.country == 'PR'}">Puerto Rico</option>
+                        <option value="QA" th:selected="${profile.country == 'QA'}">Qatar</option>
+                        <option value="ME" th:selected="${profile.country == 'ME'}">Republic of Montenegro</option>
+                        <option value="RS" th:selected="${profile.country == 'RS'}">Republic of Serbia</option>
+                        <option value="RE" th:selected="${profile.country == 'RE'}">Reunion</option>
+                        <option value="RO" th:selected="${profile.country == 'RO'}">Romania</option>
+                        <option value="RU" th:selected="${profile.country == 'RU'}">Russia</option>
+                        <option value="RW" th:selected="${profile.country == 'RW'}">Rwanda</option>
+                        <option value="NT" th:selected="${profile.country == 'NT'}">St Barthelemy</option>
+                        <option value="EU" th:selected="${profile.country == 'EU'}">St Eustatius</option>
+                        <option value="HE" th:selected="${profile.country == 'HE'}">St Helena</option>
+                        <option value="KN" th:selected="${profile.country == 'KN'}">St Kitts-Nevis</option>
+                        <option value="LC" th:selected="${profile.country == 'LC'}">St Lucia</option>
+                        <option value="MB" th:selected="${profile.country == 'MB'}">St Maarten</option>
+                        <option value="PM" th:selected="${profile.country == 'PM'}">St Pierre &amp; Miquelon</option>
+                        <option value="VC" th:selected="${profile.country == 'VC'}">St Vincent &amp; Grenadines</option>
+                        <option value="SP" th:selected="${profile.country == 'SP'}">Saipan</option>
+                        <option value="SO" th:selected="${profile.country == 'SO'}">Samoa</option>
+                        <option value="AS" th:selected="${profile.country == 'AS'}">Samoa American</option>
+                        <option value="SM" th:selected="${profile.country == 'SM'}">San Marino</option>
+                        <option value="ST" th:selected="${profile.country == 'ST'}">Sao Tome &amp; Principe</option>
+                        <option value="SA" th:selected="${profile.country == 'SA'}">Saudi Arabia</option>
+                        <option value="SN" th:selected="${profile.country == 'SN'}">Senegal</option>
+                        <option value="RS" th:selected="${profile.country == 'RS'}">Serbia</option>
+                        <option value="SC" th:selected="${profile.country == 'SC'}">Seychelles</option>
+                        <option value="SL" th:selected="${profile.country == 'SL'}">Sierra Leone</option>
+                        <option value="SG" th:selected="${profile.country == 'SG'}">Singapore</option>
+                        <option value="SK" th:selected="${profile.country == 'SK'}">Slovakia</option>
+                        <option value="SI" th:selected="${profile.country == 'SI'}">Slovenia</option>
+                        <option value="SB" th:selected="${profile.country == 'SB'}">Solomon Islands</option>
+                        <option value="OI" th:selected="${profile.country == 'OI'}">Somalia</option>
+                        <option value="ZA" th:selected="${profile.country == 'ZA'}">South Africa</option>
+                        <option value="ES" th:selected="${profile.country == 'ES'}">Spain</option>
+                        <option value="LK" th:selected="${profile.country == 'LK'}">Sri Lanka</option>
+                        <option value="SD" th:selected="${profile.country == 'SD'}">Sudan</option>
+                        <option value="SR" th:selected="${profile.country == 'SR'}">Suriname</option>
+                        <option value="SZ" th:selected="${profile.country == 'SZ'}">Swaziland</option>
+                        <option value="SE" th:selected="${profile.country == 'SE'}">Sweden</option>
+                        <option value="CH" th:selected="${profile.country == 'CH'}">Switzerland</option>
+                        <option value="SY" th:selected="${profile.country == 'SY'}">Syria</option>
+                        <option value="TA" th:selected="${profile.country == 'TA'}">Tahiti</option>
+                        <option value="TW" th:selected="${profile.country == 'TW'}">Taiwan</option>
+                        <option value="TJ" th:selected="${profile.country == 'TJ'}">Tajikistan</option>
+                        <option value="TZ" th:selected="${profile.country == 'TZ'}">Tanzania</option>
+                        <option value="TH" th:selected="${profile.country == 'TH'}">Thailand</option>
+                        <option value="TG" th:selected="${profile.country == 'TG'}">Togo</option>
+                        <option value="TK" th:selected="${profile.country == 'TK'}">Tokelau</option>
+                        <option value="TO" th:selected="${profile.country == 'TO'}">Tonga</option>
+                        <option value="TT" th:selected="${profile.country == 'TT'}">Trinidad &amp; Tobago</option>
+                        <option value="TN" th:selected="${profile.country == 'TN'}">Tunisia</option>
+                        <option value="TR" th:selected="${profile.country == 'TR'}">Turkey</option>
+                        <option value="TU" th:selected="${profile.country == 'TU'}">Turkmenistan</option>
+                        <option value="TC" th:selected="${profile.country == 'TC'}">Turks &amp; Caicos Is</option>
+                        <option value="TV" th:selected="${profile.country == 'TV'}">Tuvalu</option>
+                        <option value="UG" th:selected="${profile.country == 'UG'}">Uganda</option>
+                        <option value="UA" th:selected="${profile.country == 'UA'}">Ukraine</option>
+                        <option value="AE" th:selected="${profile.country == 'AE'}">United Arab Emirates</option>
+                        <option value="GB" th:selected="${profile.country == 'GB'}">United Kingdom</option>
+                        <option value="US" th:selected="${profile.country == 'US'}">United States of America</option>
+                        <option value="UY" th:selected="${profile.country == 'UY'}">Uruguay</option>
+                        <option value="UZ" th:selected="${profile.country == 'UZ'}">Uzbekistan</option>
+                        <option value="VU" th:selected="${profile.country == 'VU'}">Vanuatu</option>
+                        <option value="VS" th:selected="${profile.country == 'VS'}">Vatican City State</option>
+                        <option value="VE" th:selected="${profile.country == 'VE'}">Venezuela</option>
+                        <option value="VN" th:selected="${profile.country == 'VN'}">Vietnam</option>
+                        <option value="VB" th:selected="${profile.country == 'VB'}">Virgin Islands (Brit)</option>
+                        <option value="VA" th:selected="${profile.country == 'VA'}">Virgin Islands (USA)</option>
+                        <option value="WK" th:selected="${profile.country == 'WK'}">Wake Island</option>
+                        <option value="WF" th:selected="${profile.country == 'WF'}">Wallis &amp; Futana Is</option>
+                        <option value="YE" th:selected="${profile.country == 'YE'}">Yemen</option>
+                        <option value="ZR" th:selected="${profile.country == 'ZR'}">Zaire</option>
+                        <option value="ZM" th:selected="${profile.country == 'ZM'}">Zambia</option>
+                        <option value="ZW" th:selected="${profile.country == 'ZW'}">Zimbabwe</option>
+                </select>
+                </div>
+            </div>
+
+            <!-- Multiple Radios (inline) -->
+            <div class="form-group">
+                <label class="col-md-4 control-label" for="gender" id="gender">Gender</label>
+
+                <div class="col-md-4">
+                    <label class="radio-inline pull-left" for="male">
+                        <input type="radio"  name="gender" id="male" th:checked="${profile.gender.toString() == 'male'}" value="MALE"/>
+                        Male
+                    </label>
+                    <label class="radio-inline pull-left" for="female">
+                        <input type="radio" name="gender" id="female" th:checked="${profile.gender.toString() == 'female'}" value="FEMALE"/>
+                        Female
+                    </label>
+                </div>
+            </div>
+
+            <!-- Textarea -->
+            <div id="bioFormGroup" class="form-group">
+                <label class="col-md-4 control-label" for="bio">Bio</label>
+
+                <div class="col-md-4">
+                    <textarea class="form-control" id="bio" name="bio" th:text="${profile.bio}" maxlength="200" title="Please enter 'bio' in under 200 characters" required="" placeholder="Tell us about yourself(max 200 characters)"></textarea>
+                </div>
+            </div>
+
+            <!-- Text input-->
+            <div id="goalFormGroup" class="form-group">
+                <label class="col-md-4 control-label" for="goal">Goal</label>
+
+                <div class="col-md-4">
+                    <input id="goal" name="goal" type="number" placeholder="Distance you want to run" title="Please enter 'goal'"
+                           class="form-control input-md" th:value="${profile.goal}" required="" min="1" step="1"/>
+                </div>
+                <div class="col-md-4">
+                    <label class="radio-inline pull-left" for="kms">
+                        <input type="radio"  name="goalUnit" id="kms" value="KMS" th:checked="${profile.goalUnit.toString() == 'kms'}"/>km
+                    </label>
+                    <label class="radio-inline pull-left" for="miles">
+                        <input type="radio" name="goalUnit" id="miles" value="MILES" th:checked="${profile.goalUnit.toString() == 'miles'}"/>miles
+                    </label>
+                </div>
+            </div>
+
+            <input type="hidden" name="username" id="username" th:value="${profile.username}"/>
+            <input type="hidden" name="profilePic" id="profilePic" th:value="${profile.profilePic}"/>
+            <!-- Button -->
+            <div class="form-group">
+                <div class="col-md-offset-4 col-md-4">
+                    <button id="profileSaveButton" name="profileSaveButton" class="btn btn-success btn-lg">Done</button>
+                </div>
+            </div>
+
+        </fieldset>
+    </form>
+
+
+</div>
+
+
+<script src="/js/jquery.js" th:src="@{/js/jquery.js}"></script>
+<script src="/js/jquery.validate.js" th:src="@{/js/jquery.validate.js}"></script>
+<script src="/js/bootstrap.js" th:src="@{/js/bootstrap.js}"></script>
+
+
+<script>
+    $(document).ready(function () {
+        $('#profileForm').validate();
+    });
+</script>
+
+</body>
+</html>

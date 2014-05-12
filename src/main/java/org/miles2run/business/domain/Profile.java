@@ -24,7 +24,7 @@ import java.util.List;
 })
 @Table(indexes = {
         @Index(unique = true, columnList = "username"),
-        @Index(unique = true,columnList = "email")
+        @Index(unique = true, columnList = "email")
 })
 public class Profile implements Serializable {
 
@@ -97,7 +97,7 @@ public class Profile implements Serializable {
         this.fullname = p.fullname;
         this.profilePic = p.profilePic;
         this.gender = p.gender;
-        this.goal = p.goal;
+        this.goal = p.goal / p.goalUnit.getConversion();
         this.goalUnit = p.goalUnit;
     }
 
