@@ -1,5 +1,6 @@
 package org.miles2run.jaxrs.api.v1;
 
+import org.jug.filters.LoggedIn;
 import org.miles2run.business.domain.Notification;
 import org.miles2run.business.services.NotificationService;
 
@@ -21,6 +22,7 @@ public class NotificationResource {
 
     @GET
     @Produces("application/json")
+    @LoggedIn
     public Set<Notification> userNotifications(@PathParam("username") String username) {
         return notificationService.notifications(username);
     }
