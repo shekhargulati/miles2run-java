@@ -161,8 +161,12 @@
 <script th:inline="javascript">
     /*<![CDATA[*/
 
-    var loggedInUsername = [[${loggedInUser.username}]];
-    var profileUsername = [[${profile.username}]];
+//    var loggedInUsername = [[${profile}]];
+    var loggedInProfile = [[${profile}]];
+    if(loggedInProfile != null){
+        var loggedInUsername = loggedInProfile.username;
+    }
+    var profileUsername = [[${userProfile.username}]];
 
     /*]]>*/
 </script>
