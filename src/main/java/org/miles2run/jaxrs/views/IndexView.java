@@ -3,6 +3,8 @@ package org.miles2run.jaxrs.views;
 import org.jug.filters.EnableSession;
 import org.jug.view.View;
 import org.jug.view.ViewException;
+import org.miles2run.business.services.CounterService;
+import org.miles2run.jaxrs.filters.InjectProfile;
 import org.miles2run.jaxrs.vo.Counter;
 import org.thymeleaf.TemplateEngine;
 
@@ -26,9 +28,17 @@ public class IndexView {
     @Inject
     private TemplateEngine templateEngine;
 
+    @Inject
+    private CounterService counterService;
+
     @GET
     @EnableSession
+    @InjectProfile
     public View index() {
-        return View.of("/index", templateEngine).withModel("counter", new Counter(10L, 5L, 100L));
+        Long runCounter = counterService.getRunCounter() / 1000;
+        Long countryCounter = counterService.getCountryCounter();
+        Long developerCounter = counterService.getDeveloperCounter();
+        Counter counter = new Counter(developerCounter, countryCounter, runCounter);
+        return View.of("/index", templateEngine).withModel("counter", counter);
     }
 }
