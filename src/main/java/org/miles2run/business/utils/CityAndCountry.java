@@ -1,4 +1,4 @@
-package org.miles2run.jaxrs.utils;
+package org.miles2run.business.utils;
 
 /**
  * Created by shekhargulati on 12/03/14.

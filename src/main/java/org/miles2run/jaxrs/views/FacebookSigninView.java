@@ -3,7 +3,7 @@ package org.miles2run.jaxrs.views;
 import facebook4j.Facebook;
 import facebook4j.FacebookFactory;
 import org.jug.view.View;
-import org.miles2run.jaxrs.utils.UrlUtils;
+import org.miles2run.business.utils.UrlUtils;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -11,8 +11,6 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.UriBuilder;
-import java.net.URI;
 import java.util.logging.Logger;
 
 /**

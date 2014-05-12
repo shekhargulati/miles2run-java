@@ -1,6 +1,4 @@
-package org.miles2run.jaxrs.utils;
-
-import org.miles2run.jaxrs.views.FacebookCallbackView;
+package org.miles2run.business.utils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.UriBuilder;

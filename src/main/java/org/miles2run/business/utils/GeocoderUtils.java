@@ -1,4 +1,4 @@
-package org.miles2run.jaxrs.utils;
+package org.miles2run.business.utils;
 
 import com.google.code.geocoder.Geocoder;
 import com.google.code.geocoder.GeocoderRequestBuilder;

@@ -53,15 +53,15 @@
     <div class="row">
         <div class="col-xs-3">
             <div class="row apptext list-group" style="border: groove">
-                <a th:href="@{'/profiles/' + ${username}}" class="list-group-item">
+                <a th:href="@{'/profiles/' + ${userProfile.username}}" class="list-group-item">
                     <span class="badge">&gt;</span>
                     TIMELINE
                 </a>
-                <a th:href="@{'/profiles/' + ${username}} + '/following'" class="list-group-item">
+                <a th:href="@{'/profiles/' + ${userProfile.username}} + '/following'" class="list-group-item">
                     <span class="badge">&gt;</span>
                     FOLLOWING
                 </a>
-                <a th:href="@{'/profiles/' + ${username}} + '/followers'" class="list-group-item">
+                <a th:href="@{'/profiles/' + ${userProfile.username}} + '/followers'" class="list-group-item">
                     <span class="badge">&gt;</span>
                     FOLLOWERS
                 </a>
@@ -94,15 +94,15 @@
             <div class="row apptext">
                 <div class="col-md-2">
                     <h6>ACTIVITIES</h6>
-                    <a th:href="@{'/profiles/' + ${username}}" th:text="${activities}"></a>
+                    <a th:href="@{'/profiles/' + ${userProfile.username}}" th:text="${activities}"></a>
                 </div>
                 <div class="col-md-2">
                     <h6>FOLLOWING</h6>
-                    <a th:href="@{'/profiles/' + ${username}} + '/following'" th:text="${following}"></a>
+                    <a th:href="@{'/profiles/' + ${userProfile.username}} + '/following'" th:text="${following}"></a>
                 </div>
                 <div class="col-md-2">
                     <h6>FOLLOWERS</h6>
-                    <a th:href="@{'/profiles/' + ${username}} + '/followers'" th:text="${followers}"></a>
+                    <a th:href="@{'/profiles/' + ${userProfile.username}} + '/followers'" th:text="${followers}"></a>
                 </div>
                 <div class="col-md-2 pull-right" th:if="${profile != null}">
                     <h6></h6>
@@ -161,7 +161,6 @@
 <script th:inline="javascript">
     /*<![CDATA[*/
 
-//    var loggedInUsername = [[${profile}]];
     var loggedInProfile = [[${profile}]];
     if(loggedInProfile != null){
         var loggedInUsername = loggedInProfile.username;
@@ -170,49 +169,6 @@
 
     /*]]>*/
 </script>
-
-<script type="application/javascript">
-    $(document).ready(function () {
-        $('a[href="#follow"]').click(function (event) {
-            event.preventDefault();
-            $.ajax({
-                url: '/milestogo/api/v1/profiles/'+loggedInUsername+'/friendships/create',
-                type:'POST',
-                data : JSON.stringify({userToFollow:profileUsername}),
-                contentType: "application/json; charset=utf-8",
-                dataType: "json",
-                success: function(data){
-                    console.log(data);
-                    window.location.href = window.location.href;
-                },
-                error: function(errMsg) {
-                    console.log(errMsg);
-                    window.location.href = window.location.href;
-                }
-            });
-
-        })
-
-        $('a[href="#unfollow"]').click(function (event) {
-            event.preventDefault();
-            $.ajax({
-                url: '/api/v1/profiles/'+loggedInUsername+'/friendships/destroy',
-                type:'POST',
-                data : JSON.stringify({userToUnfollow:profileUsername}),
-                contentType: "application/json; charset=utf-8",
-                dataType: "json",
-                success: function(data){
-                    console.log(data);
-                    window.location.href = window.location.href;
-                },
-                error: function(errMsg) {
-                    console.log(errMsg);
-                    window.location.href = window.location.href;
-                }
-            });
-        })
-    });
-</script>
-
+<script src="/js/profile.js" th:src="@{/js/profile.js}"></script>
 </body>
 </html>

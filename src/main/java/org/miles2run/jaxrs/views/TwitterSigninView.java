@@ -1,7 +1,7 @@
 package org.miles2run.jaxrs.views;
 
 import org.jug.view.View;
-import org.miles2run.jaxrs.utils.UrlUtils;
+import org.miles2run.business.utils.UrlUtils;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
@@ -13,8 +13,6 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.UriBuilder;
-import java.net.URI;
 import java.util.logging.Logger;
 
 /**

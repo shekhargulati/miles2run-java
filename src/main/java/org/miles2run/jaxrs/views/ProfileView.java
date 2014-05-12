@@ -6,6 +6,7 @@ import facebook4j.FacebookFactory;
 import facebook4j.IdNameEntity;
 import org.jboss.resteasy.annotations.Form;
 import org.jug.filters.AfterLogin;
+import org.jug.filters.InjectPrincipal;
 import org.jug.filters.LoggedIn;
 import org.jug.view.View;
 import org.jug.view.ViewException;
@@ -13,16 +14,14 @@ import org.jug.view.ViewResourceNotFoundException;
 import org.miles2run.business.domain.Profile;
 import org.miles2run.business.domain.SocialConnection;
 import org.miles2run.business.domain.SocialProvider;
-import org.miles2run.business.services.ActivityService;
-import org.miles2run.business.services.CounterService;
-import org.miles2run.business.services.ProfileService;
-import org.miles2run.business.services.SocialConnectionService;
+import org.miles2run.business.domain.UserProfile;
+import org.miles2run.business.services.*;
+import org.miles2run.business.utils.CityAndCountry;
+import org.miles2run.business.utils.UrlUtils;
 import org.miles2run.business.vo.ActivityDetails;
 import org.miles2run.business.vo.Progress;
 import org.miles2run.jaxrs.filters.InjectProfile;
-import org.miles2run.jaxrs.utils.CityAndCountry;
-import org.miles2run.jaxrs.utils.GeocoderUtils;
-import org.miles2run.jaxrs.utils.UrlUtils;
+import org.miles2run.business.utils.GeocoderUtils;
 import org.miles2run.jaxrs.vo.ProfileDetails;
 import org.miles2run.jaxrs.forms.ProfileForm;
 import org.thymeleaf.TemplateEngine;
@@ -72,6 +71,8 @@ public class ProfileView {
     private ActivityService activityService;
     @Context
     private SecurityContext securityContext;
+    @Inject
+    private ProfileMongoService profileMongoService;
 
 
     @GET
@@ -134,6 +135,7 @@ public class ProfileView {
                 return View.of("/createProfile", templateEngine).withModel("profile", profileForm).withModel("errors", errors);
             }
             socialConnectionService.update(profile, profileForm.getConnectionId());
+            profileMongoService.save(profile);
             counterService.updateDeveloperCounter();
             counterService.updateCountryCounter(profile.getCountry());
             return View.of("/home", true).withModel("principal", profile.getUsername());
@@ -181,7 +183,7 @@ public class ProfileView {
                 return View.of("/editProfile", templateEngine).withModel("profile", profileForm).withModel("errors", errors);
 
             }
-//            profileMongoDao.update(profile);
+            profileMongoService.update(profile);
             return View.of("/home", true);
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Unable to load create profile.", e);
@@ -194,6 +196,7 @@ public class ProfileView {
     @Path("/{username}")
     @Produces("text/html")
     @InjectProfile
+    @InjectPrincipal
     public View viewUserProfile(@PathParam("username") String username) {
         try {
             Profile profile = profileService.findProfileByUsername(username);
@@ -203,12 +206,13 @@ public class ProfileView {
             Map<String, Object> model = new HashMap<>();
             model.put("userProfile", profile);
             String currentLoggedInUser = securityContext.getUserPrincipal() != null ? securityContext.getUserPrincipal().getName() : null;
+            logger.info("currentLoggedInUser : " + currentLoggedInUser);
             if (currentLoggedInUser != null) {
                 boolean isMyProfile = currentLoggedInUser.equals(username);
                 model.put("isMyProfile", isMyProfile);
                 if (!isMyProfile) {
-//                    boolean isFollowing = isFollowing(currentLoggedInUser, username);
-//                    model.put("isFollowing", isFollowing);
+                    boolean isFollowing = isFollowing(currentLoggedInUser, username);
+                    model.put("isFollowing", isFollowing);
                 }
             }
 
@@ -219,6 +223,9 @@ public class ProfileView {
             List<ActivityDetails> timeline = activityService.findAll(username);
             model.put("timeline", timeline);
             model.put("activities", timeline.size());
+            UserProfile userProfile = profileMongoService.findProfile(username);
+            model.put("followers", userProfile.getFollowers().size());
+            model.put("following", userProfile.getFollowing().size());
             return View.of("/profile", templateEngine).withModel(model);
         } catch (Exception e) {
             if (e instanceof ViewResourceNotFoundException) {
@@ -227,6 +234,10 @@ public class ProfileView {
             logger.log(Level.SEVERE, String.format("Unable to load %s page.", username), e);
             throw new ViewException(e.getMessage(), e, templateEngine);
         }
+    }
+
+    private boolean isFollowing(String currentLoggedInUser, String username) {
+        return profileMongoService.isUserFollowing(currentLoggedInUser, username);
     }
 
     private View twitterProfile(String connectionId, SocialConnection socialConnection) {
