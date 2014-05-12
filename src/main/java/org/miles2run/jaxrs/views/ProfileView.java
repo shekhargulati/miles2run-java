@@ -236,6 +236,71 @@ public class ProfileView {
         }
     }
 
+    @GET
+    @Path("/{username}/following")
+    @Produces("text/html")
+    @InjectPrincipal
+    @InjectProfile
+    public View following(@PathParam("username") String username) {
+        try {
+            Profile profile = profileService.findProfileByUsername(username);
+            if (profile == null) {
+                throw new ViewResourceNotFoundException(String.format("No user exists with username %s", username), templateEngine);
+            }
+            Map<String, Object> model = new HashMap<>();
+            model.put("userProfile", profile);
+            UserProfile userProfile = profileMongoService.findProfile(username);
+            List<String> following = userProfile.getFollowing();
+            if (!following.isEmpty()) {
+                List<org.miles2run.business.vo.ProfileDetails> profiles = profileService.findAllProfiles(following);
+                model.put("followingProfiles", profiles);
+            }
+            model.put("followers", userProfile.getFollowers().size());
+            model.put("following", userProfile.getFollowing().size());
+            model.put("activities", activityService.count(username));
+            return View.of("/following", templateEngine).withModel(model);
+        } catch (Exception e) {
+            if (e instanceof ViewResourceNotFoundException) {
+                throw e;
+            }
+            logger.log(Level.SEVERE, String.format("Unable to load %s page.", username), e);
+            throw new ViewException(e.getMessage(), e, templateEngine);
+        }
+
+    }
+
+    @GET
+    @Path("/{username}/followers")
+    @Produces("text/html")
+    @InjectPrincipal
+    @InjectProfile
+    public View followers(@PathParam("username") String username) {
+        try {
+            Profile profile = profileService.findProfileByUsername(username);
+            if (profile == null) {
+                throw new ViewResourceNotFoundException(String.format("No user exists with username %s", username), templateEngine);
+            }
+            Map<String, Object> model = new HashMap<>();
+            model.put("userProfile", profile);
+            UserProfile userProfile = profileMongoService.findProfile(username);
+            List<String> followers = userProfile.getFollowers();
+            if (!followers.isEmpty()) {
+                List<org.miles2run.business.vo.ProfileDetails> profiles = profileService.findAllProfiles(followers);
+                model.put("followerProfiles", profiles);
+            }
+            model.put("followers", userProfile.getFollowers().size());
+            model.put("following", userProfile.getFollowing().size());
+            model.put("activities", activityService.count(username));
+            return View.of("/followers", templateEngine).withModel(model);
+        } catch (Exception e) {
+            if (e instanceof ViewResourceNotFoundException) {
+                throw e;
+            }
+            logger.log(Level.SEVERE, String.format("Unable to load %s page.", username), e);
+            throw new ViewException(e.getMessage(), e, templateEngine);
+        }
+    }
+
     private boolean isFollowing(String currentLoggedInUser, String username) {
         return profileMongoService.isUserFollowing(currentLoggedInUser, username);
     }

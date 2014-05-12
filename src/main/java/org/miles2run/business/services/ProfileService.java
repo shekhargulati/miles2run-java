@@ -3,6 +3,7 @@ package org.miles2run.business.services;
 import org.miles2run.business.domain.GoalUnit;
 import org.miles2run.business.domain.Profile;
 import org.miles2run.business.domain.SocialProvider;
+import org.miles2run.business.vo.ProfileDetails;
 import org.miles2run.business.vo.ProfileSocialConnectionDetails;
 
 import javax.ejb.Stateless;
@@ -105,5 +106,9 @@ public class ProfileService {
         updateQuery.setParameter("gender", profile.getGender());
         updateQuery.setParameter("username", profile.getUsername());
         updateQuery.executeUpdate();
+    }
+
+    public List<ProfileDetails> findAllProfiles(List<String> usernames) {
+        return entityManager.createQuery("SELECT new org.miles2run.business.vo.ProfileDetails(p.username,p.fullname,p.profilePic, p.city, p.country,p.bio) from Profile p WHERE p.username IN :usernames", ProfileDetails.class).setParameter("usernames", usernames).getResultList();
     }
 }

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title th:text="${userProfile.fullname +' ('+ userProfile.username +')'} + ' on Miles2Run'"></title>
+    <link href="/css/bootstrap.css" th:href="@{/css/bootstrap.css}" rel="stylesheet"/>
+    <link href="/css/main.css" th:href="@{/css/main.css}" rel="stylesheet"/>
+    <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="/css/timeline.css" th:href="@{/css/timeline.css}"/>
+</head>
+
+<body>
+
+<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#" th:href="@{/}">Miles2Run</a>
+        </div>
+        <div class="collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li><a th:href="@{/home}">Home</a></li>
+                <li><a th:href="@{/about}">About</a></li>
+            </ul>
+
+            <ul class="nav navbar-collapse pull-right" th:if="${profile != null}">
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" th:inline="text">
+                        <img width="25" height="25" th:src="${profile.profilePic}"/> [[${profile.fullname}]] <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#" th:href="@{'/profiles/' + ${profile.username}}"
+                               th:text="${profile.fullname}"></a></li>
+                        <li><a href="#" th:href="@{/logout}">Logout</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+
+        <!--/.nav-collapse -->
+    </div>
+</div>
+
+<div id="main" class="container">
+
+    <div class="row">
+        <div class="col-xs-3">
+            <div class="row apptext list-group" style="border: groove">
+                <a th:href="@{'/profiles/' + ${userProfile.username}}" class="list-group-item">
+                    <span class="badge">&gt;</span>
+                    TIMELINE
+                </a>
+                <a th:href="@{'/profiles/' + ${userProfile.username}} + '/following'" class="list-group-item">
+                    <span class="badge">&gt;</span>
+                    FOLLOWING
+                </a>
+                <a th:href="@{'/profiles/' + ${userProfile.username}} + '/followers'" class="list-group-item">
+                    <span class="badge">&gt;</span>
+                    FOLLOWERS
+                </a>
+            </div>
+
+            <div class="row top-buffer" style="border: groove" th:if="${progress != null}">
+                <h4>Progress</h4>
+                <div class="progress progress-striped">
+                    <div class="progress-bar" role="progressbar"
+                         th:style="'width:' + ${progress.percentage} + '%'"
+                         th:text="${progress.percentage} + '%'">
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="col-xs-offset-1 col-xs-8">
+            <div class="row" style="border: groove;background: #808080">
+                <img class="top-buffer" th:src="${userProfile.biggerProfilePic}" width="73px" height="73px"/>
+
+                <h3 th:text="${userProfile.fullname}"></h3>
+                <h6 th:text="'@' + ${userProfile.username}"></h6>
+
+                <p th:text="${userProfile.bio}"></p>
+
+                <p th:text="${userProfile.city} + ', '+ ${userProfile.country}"></p>
+            </div>
+            <div class="row apptext">
+                <div class="col-md-2">
+                    <h6>ACTIVITIES</h6>
+                    <a th:href="@{'/profiles/' + ${userProfile.username}}" th:text="${activities}"></a>
+                </div>
+                <div class="col-md-2">
+                    <h6>FOLLOWING</h6>
+                    <a th:href="@{'/profiles/' + ${userProfile.username}} + '/following'" th:text="${following}"></a>
+                </div>
+                <div class="col-md-2">
+                    <h6>FOLLOWERS</h6>
+                    <a th:href="@{'/profiles/' + ${userProfile.username}} + '/followers'" th:text="${followers}"></a>
+                </div>
+            </div>
+            <div class="row apptext" th:if="${not #lists.isEmpty(followingProfiles)}">
+                <h2>Following</h2>
+                <ul class="list-unstyled apptext">
+                    <li th:each="followingProfile : ${followingProfiles}">
+                        <div class="row top-buffer" style="border: groove">
+                            <div class="col-xs-1">
+                                <a href="#" th:href="@{'/profiles/' + ${followingProfile.username}}" th:inline="text"><img
+                                        th:src="${followingProfile.pic}" width="50px" height="50px"/></a>
+                            </div>
+                            <div class="col-xs-11">
+                                <h4 th:text="${followingProfile.fullname}"></h4>
+                                <p class="lead" th:text="${followingProfile.bio}"></p>
+                            </div>
+                        </div>
+
+                    </li>
+                </ul>
+
+            </div>
+            <div class="well noactivity top-buffer" th:if="${#lists.isEmpty(followingProfiles)}">
+                <h2>You are not following anybody yet!!</h2>
+
+                <div th:unless="${profile != null}">
+                    <p class="lead">Login to connect with the user:</p>
+                    <a th:href="@{/signin/twitter}" class="btn btn-lg btn-info"><i class="fa fa-twitter"></i> Sign in
+                        with Twitter</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<script src="/js/jquery.js" th:src="@{/js/jquery.js}"></script>
+<script src="/js/bootstrap.js" th:src="@{/js/bootstrap.js}"></script>
+</body>
+</html>
