@@ -375,6 +375,10 @@
                         <input type="radio" name="gender" id="female" th:checked="${profile.gender.toString() == 'female'}" value="FEMALE"/>
                         Female
                     </label>
+                    <label class="radio-inline pull-left" for="other">
+                        <input type="radio" name="gender" id="other" th:checked="${profile.gender.toString() == 'other'}" value="OTHER"/>
+                        Other
+                    </label>
                 </div>
             </div>
 

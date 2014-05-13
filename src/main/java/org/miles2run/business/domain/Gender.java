@@ -4,7 +4,7 @@ package org.miles2run.business.domain;
  * Created by shekhargulati on 07/03/14.
  */
 public enum Gender {
-    MALE("MALE"), FEMALE("FEMALE"), GENDERQUEER("GENDERQUEER");
+    MALE("MALE"), FEMALE("FEMALE"), OTHER("OTHER");
 
     private final String gender;
 
