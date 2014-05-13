@@ -1,13 +1,12 @@
 package org.miles2run.jaxrs.views;
 
-import facebook4j.Facebook;
-import facebook4j.FacebookFactory;
-import facebook4j.auth.AccessToken;
+import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse;
 import org.jug.view.View;
 import org.miles2run.business.domain.SocialConnection;
 import org.miles2run.business.domain.SocialProvider;
+import org.miles2run.business.services.GoogleService;
 import org.miles2run.business.services.SocialConnectionService;
-import org.miles2run.business.utils.UrlUtils;
+import org.miles2run.business.vo.Google;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -20,31 +19,29 @@ import javax.ws.rs.core.Context;
 import java.util.logging.Logger;
 
 /**
- * Created by shekhargulati on 09/05/14.
+ * Created by shekhargulati on 13/05/14.
  */
-@Path("/")
-public class FacebookCallbackView {
-
+@Path("/google/callback")
+public class GoogleCallbackView {
 
     @Inject
     private Logger logger;
-    @Inject
-    private SocialConnectionService socialConnectionService;
-    @Inject
-    private FacebookFactory facebookFactory;
     @Context
     private HttpServletRequest request;
+    @Inject
+    private GoogleService googleService;
+    @Inject
+    private SocialConnectionService socialConnectionService;
 
 
-    @Path("/facebook/callback")
     @GET
     @Produces("text/html")
-    public View callback(@QueryParam("code") String oauthCode) throws Exception {
-        logger.info(String.format("Facebook Oauth code : %s", oauthCode));
-        Facebook facebook = facebookFactory.getInstance();
-        facebook.setOAuthCallbackURL(UrlUtils.absoluteUrlFor(request, FacebookCallbackView.class, "callback"));
-        AccessToken oAuthAccessToken = facebook.getOAuthAccessToken(oauthCode);
-        String connectionId = facebook.getId();
+    public View callback(@QueryParam("state") String state, @QueryParam("code") String authCode) throws Exception{
+        logger.info("Inside GoogleCallbackView callback()...");
+        logger.info(String.format("Code %s State %s", authCode, state));
+        GoogleTokenResponse oauthToken = googleService.getOauthToken(authCode);
+        Google user = googleService.getUser(oauthToken);
+        String connectionId = user.getId();
         SocialConnection existingSocialConnection = socialConnectionService.findByConnectionId(connectionId);
         logger.info("SocialConnection " + existingSocialConnection);
         if (existingSocialConnection != null) {
@@ -53,15 +50,16 @@ public class FacebookCallbackView {
                 return View.of("/profiles/new?connectionId=" + connectionId, true);
             } else {
                 String username = existingSocialConnection.getProfile().getUsername();
-                logger.info(String.format("User %s already had authenticated with facebook. So redirecting to home.", username));
+                logger.info(String.format("User %s already had authenticated with Google+. So redirecting to home.", username));
                 HttpSession session = request.getSession();
                 logger.info("Using Session with id " + session.getId());
                 session.setAttribute("principal", username);
                 return View.of("/home", true);
             }
         }
-        SocialConnection socialConnection = new SocialConnection(oAuthAccessToken.getToken(), null, SocialProvider.FACEBOOK, facebook.users().getMe().getUsername(), connectionId);
+        SocialConnection socialConnection = new SocialConnection(oauthToken.getAccessToken(), null, SocialProvider.GOOGLE_PLUS, user.getName(), connectionId);
         socialConnectionService.save(socialConnection);
         return View.of("/profiles/new?connectionId=" + connectionId, true);
     }
+
 }

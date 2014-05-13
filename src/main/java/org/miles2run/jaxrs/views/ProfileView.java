@@ -1,5 +1,6 @@
 package org.miles2run.jaxrs.views;
 
+import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse;
 import facebook4j.Facebook;
 import facebook4j.FacebookException;
 import facebook4j.FacebookFactory;
@@ -19,6 +20,7 @@ import org.miles2run.business.services.*;
 import org.miles2run.business.utils.CityAndCountry;
 import org.miles2run.business.utils.UrlUtils;
 import org.miles2run.business.vo.ActivityDetails;
+import org.miles2run.business.vo.Google;
 import org.miles2run.business.vo.Progress;
 import org.miles2run.jaxrs.filters.InjectProfile;
 import org.miles2run.business.utils.GeocoderUtils;
@@ -40,6 +42,7 @@ import javax.validation.ConstraintViolationException;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.SecurityContext;
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.*;
@@ -73,6 +76,8 @@ public class ProfileView {
     private SecurityContext securityContext;
     @Inject
     private ProfileMongoService profileMongoService;
+    @Inject
+    private GoogleService googleService;
 
 
     @GET
@@ -89,6 +94,8 @@ public class ProfileView {
                 return twitterProfile(connectionId, socialConnection);
             } else if (socialConnection.getProvider() == SocialProvider.FACEBOOK) {
                 return facebookProfile(connectionId, socialConnection);
+            } else if (socialConnection.getProvider() == SocialProvider.GOOGLE_PLUS) {
+                return googleProfile(connectionId, socialConnection);
             }
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Unable to load profile form page.", e);
@@ -111,7 +118,7 @@ public class ProfileView {
                 errors.add(String.format("User already exist with username %s", profileForm.getUsername()));
             }
             if (!errors.isEmpty()) {
-                return View.of("/createProfile", templateEngine).withModel("profile", profileForm).withModel("errors", errors);
+                return View.of("/createProfile", templateEngine).withModel("profile", new ProfileDetails(profileForm)).withModel("errors", errors);
             }
             Profile profile = new Profile(profileForm);
             try {
@@ -354,6 +361,16 @@ public class ProfileView {
         } catch (FacebookException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private View googleProfile(String connectionId, SocialConnection socialConnection) throws IOException {
+        String accessToken = socialConnection.getAccessToken();
+        GoogleTokenResponse token = new GoogleTokenResponse().setAccessToken(accessToken);
+        Google user = googleService.getUser(token);
+        ProfileDetails profile = new ProfileDetails(null, user.getName(), null, connectionId, UrlUtils.removeProtocol(user.getPicture()), null, null);
+        profile.setEmail(user.getEmail());
+        profile.setGender(user.getGender());
+        return View.of("/createProfile", templateEngine).withModel("profile", profile);
     }
 
 }

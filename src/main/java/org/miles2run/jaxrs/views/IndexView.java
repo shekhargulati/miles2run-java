@@ -35,6 +35,7 @@ public class IndexView {
     @EnableSession
     @InjectProfile
     public View index() {
+        logger.info("In the IndexView index() ... ");
         Long runCounter = counterService.getRunCounter() / 1000;
         Long countryCounter = counterService.getCountryCounter();
         Long developerCounter = counterService.getDeveloperCounter();

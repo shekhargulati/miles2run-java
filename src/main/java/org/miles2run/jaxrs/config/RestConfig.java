@@ -5,11 +5,9 @@ import org.jug.view.NotFoundExceptionMapper;
 import org.jug.view.ViewExceptionMapper;
 import org.jug.view.ViewResourceNotFoundExceptionMapper;
 import org.jug.view.ViewWriter;
-import org.miles2run.business.domain.Notification;
 import org.miles2run.jaxrs.api.v1.*;
 import org.miles2run.jaxrs.filters.InjectProfileFilter;
 import org.miles2run.jaxrs.views.*;
-import twitter4j.api.SuggestedUsersResources;
 
 import javax.ws.rs.core.Application;
 import java.util.HashSet;
@@ -45,6 +43,8 @@ public class RestConfig extends Application {
         classes.add(InjectPrincipalFilter.class);
         classes.add(ProfileResource.class);
         classes.add(ProfileSuggestionResource.class);
+        classes.add(GoogleSigninView.class);
+        classes.add(GoogleCallbackView.class);
         return classes;
     }
 }

@@ -5,7 +5,7 @@ package org.miles2run.business.domain;
  */
 public enum SocialProvider {
 
-    TWITTER("twitter"), FACEBOOK("facebook"), GOOGLE_PLUS("google+");
+    TWITTER("twitter"), FACEBOOK("facebook"), GOOGLE_PLUS("google-plus");
 
     private final String provider;
 

@@ -1,5 +1,7 @@
 package org.miles2run.jaxrs.vo;
 
+import org.miles2run.jaxrs.forms.ProfileForm;
+
 /**
  * Created by shekhargulati on 06/03/14.
  */
@@ -23,6 +25,18 @@ public class ProfileDetails {
         this.profilePic = profilePic;
         this.city = city;
         this.country = country;
+    }
+
+    public ProfileDetails(ProfileForm profileForm) {
+        this.username = profileForm.getUsername();
+        this.fullname = profileForm.getFullname();
+        this.bio = profileForm.getBio();
+        this.connectionId = profileForm.getConnectionId();
+        this.profilePic = profileForm.getProfilePic();
+        this.city = profileForm.getCity();
+        this.country = profileForm.getCountry();
+        this.email = profileForm.getEmail();
+        this.gender = profileForm.getGender().getGender();
     }
 
     public String getUsername() {

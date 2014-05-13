@@ -10,8 +10,10 @@ import java.net.URI;
 public abstract class UrlUtils {
 
     public static String removeProtocol(String url) {
-        if (url != null) {
+        if (url != null && url.startsWith("http:")) {
             return url.replace("http:", "");
+        }else if(url != null && url.startsWith("https:")){
+            return url.replace("https:", "");
         }
         return null;
     }
