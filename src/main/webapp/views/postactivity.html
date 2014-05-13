@@ -2,7 +2,7 @@
     <fieldset>
         <legend>Log New Run</legend>
         <div class="form-group">
-            <label class="col-md-2 control-label" for="activityDate">Run Date</label>
+            <label class="col-md-2 control-label" for="activityDate">Date</label>
 
             <div class="col-md-6 input-group">
                 <input type="text" id="activityDate" name="activityDate" class="form-control"
@@ -18,7 +18,7 @@
 
         </div>
         <div class="form-group">
-            <label class="col-md-2 control-label" for="distanceCovered">Distance Ran</label>
+            <label class="col-md-2 control-label" for="distanceCovered">Distance</label>
 
             <div class="col-md-6 input-group">
                 <input id="distanceCovered" name="distanceCovered" type="number" placeholder="Distance ran"
@@ -43,8 +43,8 @@
 
             <div class="col-md-6 input-group">
                 <textarea class="form-control" name="status" id="status" rows="5"
-                          placeholder="How did it go?(max 140 characters)" class="form-control input-md"
-                          maxlength="140" title="You can enter at max 140 characters"
+                          placeholder="How did it go?" class="form-control input-md"
+                          maxlength="140" title="Share your experience"
                           ng-model="activity.status"></textarea>
 
             </div>
