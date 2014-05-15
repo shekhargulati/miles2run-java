@@ -21,7 +21,7 @@ public class Activity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Size(max = 140)
+    @Size(max = 1000)
     private String status;
 
     @NotNull
