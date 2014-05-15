@@ -97,12 +97,12 @@
                     <a th:href="@{'/profiles/' + ${userProfile.username}}" th:text="${activities}"></a>
                 </div>
                 <div class="col-md-2">
-                    <h6>FOLLOWING</h6>
-                    <a th:href="@{'/profiles/' + ${userProfile.username}} + '/following'" th:text="${following}"></a>
+                    <h6>ACTIVE GOAL</h6>
+                    <h6 th:inline="text">[[${userProfile.goal} + ' ' + ${userProfile.goalUnit.upperCase()}]]</h6>
                 </div>
                 <div class="col-md-2">
-                    <h6>FOLLOWERS</h6>
-                    <a th:href="@{'/profiles/' + ${userProfile.username}} + '/followers'" th:text="${followers}"></a>
+                    <h6>TOTAL COVERED</h6>
+                    <h6 th:inline="text">[[${progress.totalDistanceCovered} + ' ' + ${userProfile.goalUnit.upperCase()}]]</h6>
                 </div>
                 <div class="col-md-2 pull-right" th:if="${profile != null}">
                     <h6></h6>

@@ -37,4 +37,8 @@ public enum GoalUnit {
     public String toString() {
         return this.unit != null ? this.unit.toLowerCase() : null;
     }
+
+    public String upperCase(){
+        return this.unit;
+    }
 }
