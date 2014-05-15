@@ -23,7 +23,7 @@ angular.module('milestogo')
                 share: $scope.activityDetails.share,
                 activityDate: $scope.activityDetails.activityDate
             };
-            activity.duration = toSeconds($scope.duration);
+            activity.duration = toAppSeconds($scope.duration);
             ActivityService.updateActivity($scope.currentUser.username, activityId, activity).success(function (data, status, headers, config) {
                 toastr.success("Updated activity");
                 $location.path('/');
@@ -75,15 +75,14 @@ angular.module('milestogo')
     });
 
 
-function toSeconds(duration) {
+function toAppSeconds(duration) {
     if (duration) {
-        var hours = duration.hours ? duration.hours : 0;
-        var minutes = duration.minutes ? duration.minutes : 0;
-        var seconds = duration.seconds ? duration.seconds : 0;
-        return hours * 60 * 60 + minutes * 60 + seconds;
+        var hours = duration.hours && duration.hours !== '00' ? duration.hours : 0;
+        var minutes = duration.minutes && duration.minutes !== '00' ? duration.minutes : 0;
+        var seconds = duration.seconds && duration.seconds !== '00' ? duration.seconds : 0;
+        return Number(hours) * 60 * 60 + Number(minutes) * 60 + Number(seconds);
     }
     return 0;
-
 }
 
 function toHrMinSec(duration) {
@@ -91,8 +90,8 @@ function toHrMinSec(duration) {
     var minutes = Math.floor(duration / 60) - (hours * 60);
     var seconds = duration - (minutes * 60) - (hours * 60 * 60);
     return  {
-        hours: hours,
-        minutes: minutes,
-        seconds: seconds
+        hours: hours && hours !== 0 ? hours : "00",
+        minutes: minutes && minutes != 0 ? minutes : "00",
+        seconds: seconds && seconds != 0 ? seconds : "00"
     }
 }

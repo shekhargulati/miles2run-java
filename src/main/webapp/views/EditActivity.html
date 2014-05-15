@@ -31,9 +31,9 @@
             <label class="col-md-2 control-label">Duration</label>
 
             <div class="col-md-6 input-group">
-                <input id="durationHours" name="durationHours" ng-model="duration.hours" title="Hours" type="number" step="1" min="0" max="23"> hour(s) :
-                <input id="durationMinutes" name="durationMinutes" ng-model="duration.minutes" title="Minutes" type="number" step="1" min="0" max="59"> minute(s) :
-                <input id="durationSeconds" name="durationSeconds" ng-model="duration.seconds" title="Seconds" type="number" step="1" min="0" max="59"> second(s)
+                <input id="durationHours" class="col-md-4" name="durationHours" ng-model="duration.hours" title="Hours" type="number" min="0" max="23" ignore-field>
+                <input id="durationMinutes" class="col-md-4" name="durationMinutes" ng-model="duration.minutes" title="Minutes" type="number" min="0" max="59" ignore-field>
+                <input id="durationSeconds" class="col-md-4" name="durationSeconds" ng-model="duration.seconds" title="Seconds" type="number" min="0" max="59" ignore-field>
             </div>
         </div>
 
