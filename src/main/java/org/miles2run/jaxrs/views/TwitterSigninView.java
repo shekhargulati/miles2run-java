@@ -32,7 +32,7 @@ public class TwitterSigninView {
     public View signin(@Context HttpServletRequest request) {
         Twitter twitter = twitterFactory.getInstance();
         try {
-            RequestToken requestToken = twitter.getOAuthRequestToken(UrlUtils.absoluteUrlFor(request, TwitterCallbackView.class, "callback"));
+            RequestToken requestToken = twitter.getOAuthRequestToken(UrlUtils.absoluteUrlForResourceMethod(request, TwitterCallbackView.class, "callback"));
             return View.of(requestToken.getAuthenticationURL(), true).withAbsoluteUrl();
         } catch (TwitterException e) {
             throw new RuntimeException("Unable to get Twitter Authentication Url. Exception is: " + e);

@@ -3,12 +3,15 @@ package org.miles2run.jaxrs.api.v1;
 import org.jug.filters.LoggedIn;
 import org.miles2run.business.domain.*;
 import org.miles2run.business.services.*;
+import org.miles2run.business.utils.UrlUtils;
 import org.miles2run.business.vo.ActivityDetails;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.Collections;
@@ -34,6 +37,8 @@ public class ActivityResource {
     private FacebookService facebookService;
     @Inject
     private CounterService counterService;
+    @Context
+    private HttpServletRequest request;
 
 
     @POST
@@ -122,12 +127,14 @@ public class ActivityResource {
 
     private void shareActivity(Activity activity, Profile profile, Share share) {
         if (share != null) {
+            String activityUrl = UrlUtils.absoluteUrlForResourceUri(request, "/profiles/{username}/activities/{activityId}", profile.getUsername(), activity.getId());
+            StringBuilder message = new StringBuilder(profile.getFullname()).append(" ran ").append(activity.getDistanceCovered() / activity.getGoalUnit().getConversion()).append(" " + activity.getGoalUnit().toString()).append(" via @miles2runorg.").append(" Read full status here ").append(activityUrl);
             for (SocialConnection socialConnection : profile.getSocialConnections()) {
                 if (share.isTwitter() && socialConnection.getProvider() == SocialProvider.TWITTER) {
-                    twitterService.postStatus(activity.getStatus(), socialConnection);
+                    twitterService.postStatus(message.toString(), socialConnection);
                 }
                 if (share.isFacebook() && socialConnection.getProvider() == SocialProvider.FACEBOOK) {
-                    facebookService.postStatus(activity.getStatus(), socialConnection);
+                    facebookService.postStatus(message.toString(), socialConnection);
                 }
             }
 

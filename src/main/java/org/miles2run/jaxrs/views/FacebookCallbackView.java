@@ -42,7 +42,7 @@ public class FacebookCallbackView {
     public View callback(@QueryParam("code") String oauthCode) throws Exception {
         logger.info(String.format("Facebook Oauth code : %s", oauthCode));
         Facebook facebook = facebookFactory.getInstance();
-        facebook.setOAuthCallbackURL(UrlUtils.absoluteUrlFor(request, FacebookCallbackView.class, "callback"));
+        facebook.setOAuthCallbackURL(UrlUtils.absoluteUrlForResourceMethod(request, FacebookCallbackView.class, "callback"));
         AccessToken oAuthAccessToken = facebook.getOAuthAccessToken(oauthCode);
         String connectionId = facebook.getId();
         SocialConnection existingSocialConnection = socialConnectionService.findByConnectionId(connectionId);

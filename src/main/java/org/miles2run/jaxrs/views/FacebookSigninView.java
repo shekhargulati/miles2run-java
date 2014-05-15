@@ -30,7 +30,7 @@ public class FacebookSigninView {
     public View signin(@Context HttpServletRequest request) {
         try {
             Facebook facebook = facebookFactory.getInstance();
-            String redirectUrl = UrlUtils.absoluteUrlFor(request, FacebookCallbackView.class, "callback");
+            String redirectUrl = UrlUtils.absoluteUrlForResourceMethod(request, FacebookCallbackView.class, "callback");
             logger.info(String.format("Facebook redirectUrl %s", redirectUrl));
             return View.of(facebook.getOAuthAuthorizationURL(redirectUrl), true).withAbsoluteUrl();
         } catch (Exception e) {
