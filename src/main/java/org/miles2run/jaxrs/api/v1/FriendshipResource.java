@@ -1,9 +1,11 @@
 package org.miles2run.jaxrs.api.v1;
 
+import org.jug.filters.LoggedIn;
 import org.miles2run.business.domain.Action;
 import org.miles2run.business.domain.Notification;
 import org.miles2run.business.services.NotificationService;
 import org.miles2run.business.services.ProfileMongoService;
+import org.miles2run.business.services.TimelineService;
 import org.miles2run.jaxrs.vo.FriendshipRequest;
 import org.miles2run.jaxrs.vo.UnfollowRequest;
 
@@ -25,15 +27,18 @@ public class FriendshipResource {
 
     @Inject
     private ProfileMongoService profileMongoDao;
-
     @Inject
     private NotificationService notificationService;
+    @Inject
+    private TimelineService timelineService;
 
     @Path("/create")
     @POST
     @Consumes("application/json")
+    @LoggedIn
     public Response create(@PathParam("username") String username, FriendshipRequest friendshipRequest) {
         profileMongoDao.createFriendship(username, friendshipRequest.getUserToFollow());
+        timelineService.updateTimelineWithFollowingTimeline(username, friendshipRequest.getUserToFollow());
         notificationService.addNotification(new Notification(friendshipRequest.getUserToFollow(), username, Action.FOLLOW, new Date().getTime()));
         Map<String, String> jsonObj = new HashMap<>();
         jsonObj.put("msg", "Successfully followed user " + friendshipRequest.getUserToFollow());
@@ -43,8 +48,10 @@ public class FriendshipResource {
     @Path("/destroy")
     @POST
     @Consumes("application/json")
+    @LoggedIn
     public Response destroy(@PathParam("username") String username, UnfollowRequest unfollowRequest) {
         profileMongoDao.destroyFriendship(username, unfollowRequest.getUserToUnfollow());
+        timelineService.removeFollowingTimeline(username, unfollowRequest.getUserToUnfollow());
         notificationService.addNotification(new Notification(unfollowRequest.getUserToUnfollow(), username, Action.UNFOLLOW, new Date().getTime()));
         Map<String, String> jsonObj = new HashMap<>();
         jsonObj.put("msg", "Successfully unfollowed user " + unfollowRequest.getUserToUnfollow());

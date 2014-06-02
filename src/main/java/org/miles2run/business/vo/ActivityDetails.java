@@ -4,6 +4,7 @@ import org.miles2run.business.domain.GoalUnit;
 import org.miles2run.business.domain.Share;
 
 import java.util.Date;
+import java.util.Map;
 
 /**
  * Created by shekhargulati on 11/03/14.
@@ -30,7 +31,7 @@ public class ActivityDetails {
 
     private long duration;
 
-    public ActivityDetails(Long id, String status, long distanceCovered, GoalUnit goalUnit, Date activityDate, Share share, String fullname,long duration, String username, String profilePic) {
+    public ActivityDetails(Long id, String status, long distanceCovered, GoalUnit goalUnit, Date activityDate, Share share, String fullname, long duration, String username, String profilePic) {
         this.id = id;
         this.status = status;
         this.goalUnit = goalUnit;
@@ -41,6 +42,16 @@ public class ActivityDetails {
         this.username = username;
         this.profilePic = profilePic;
         this.duration = duration;
+    }
+
+    public ActivityDetails(Map<String, String> hash) {
+        this.id = Long.valueOf(hash.get("id"));
+        this.status = hash.get("message");
+        this.username = hash.get("username");
+        this.activityDate = new Date(Long.valueOf(hash.get("posted")));
+        this.goalUnit = GoalUnit.fromStringToGoalUnit(hash.get("goalUnit"));
+        this.distanceCovered = Long.valueOf(hash.get("distanceCovered")) / this.goalUnit.getConversion();
+        this.fullname = hash.get("fullname");
     }
 
     public Long getId() {

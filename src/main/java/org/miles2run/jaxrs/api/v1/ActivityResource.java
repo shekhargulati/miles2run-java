@@ -55,25 +55,26 @@ public class ActivityResource {
         }
         long distanceCovered = activity.getDistanceCovered() * activity.getGoalUnit().getConversion();
         activity.setDistanceCovered(distanceCovered);
-        activityService.save(activity, profile);
+        Activity savedActivity = activityService.save(activity, profile);
         counterService.updateRunCounter(distanceCovered);
+        timelineService.postActivityToTimeline(savedActivity, profile);
         Share share = activity.getShare();
         String message = toActivityMessage(activity, profile);
         shareActivity(message, profile, share);
-        timelineService.postActivityToTimeline(profile.getId(), message, profile.getUsername());
         return Response.status(Response.Status.CREATED).build();
     }
 
     @GET
     @Produces("application/json")
     @LoggedIn
-    public List<ActivityDetails> list(@PathParam("username") String username, @QueryParam("start") int start, @QueryParam("max") int max) {
+    public List<ActivityDetails> homeTimeline(@PathParam("username") String username, @QueryParam("page") int page, @QueryParam("count") int count) {
         Profile profile = profileService.findProfile(username);
         if (profile == null) {
             return Collections.emptyList();
         }
-        max = max == 0 || max > 100 ? 100 : max;
-        return activityService.findAll(profile, start, max);
+        page = page == 0 ? 1 : page;
+        count = count == 0 || count > 50 ? 30 : count;
+        return timelineService.getHomeTimeline(username, page, count);
     }
 
     @GET
