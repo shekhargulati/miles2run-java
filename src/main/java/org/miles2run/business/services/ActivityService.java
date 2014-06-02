@@ -102,7 +102,7 @@ public class ActivityService {
         Profile profile = profileService.findProfile(username);
         long count = entityManager.createNamedQuery("Activity.countByProfile", Long.class).setParameter("profile", profile).getSingleResult();
         if (count == 0) {
-            return null;
+            return new Progress();
         }
         TypedQuery<Progress> query = entityManager.createQuery("SELECT new org.miles2run.business.vo.Progress(a.postedBy.goal,a.postedBy.goalUnit, SUM(a.distanceCovered),COUNT(a)) from Activity a WHERE a.postedBy =:postedBy", Progress.class).setParameter("postedBy", profile);
         return query.getSingleResult();

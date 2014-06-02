@@ -26,6 +26,10 @@ public class Progress {
 
 
     public Progress() {
+        this.goal = 0;
+        this.totalDistanceCovered = 0;
+        this.percentage = 0;
+        this.activityCount = 0;
     }
 
     public long getGoal() {
