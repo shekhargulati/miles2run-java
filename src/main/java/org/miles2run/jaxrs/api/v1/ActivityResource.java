@@ -39,7 +39,10 @@ public class ActivityResource {
     private CounterService counterService;
     @Context
     private HttpServletRequest request;
-
+    @Inject
+    private GoogleService googleService;
+    @Inject
+    private TimelineService timelineService;
 
     @POST
     @Consumes("application/json")
@@ -54,12 +57,12 @@ public class ActivityResource {
         activity.setDistanceCovered(distanceCovered);
         activityService.save(activity, profile);
         counterService.updateRunCounter(distanceCovered);
-        //TODO : Ideally it should iterate over all the providers and post status on all the checked ones
         Share share = activity.getShare();
-        shareActivity(activity, profile, share);
+        String message = toActivityMessage(activity, profile);
+        shareActivity(message, profile, share);
+        timelineService.postActivityToTimeline(profile.getId(), message, profile.getUsername());
         return Response.status(Response.Status.CREATED).build();
     }
-
 
     @GET
     @Produces("application/json")
@@ -121,20 +124,29 @@ public class ActivityResource {
             return Response.status(Response.Status.NOT_FOUND).entity("No user exists with username " + username).build();
         }
         Share share = activity.getShare();
-        shareActivity(activity, profile, share);
+        shareActivity(toActivityMessage(activity, profile), profile, share);
         return Response.ok().build();
     }
 
-    private void shareActivity(Activity activity, Profile profile, Share share) {
+    private String toActivityMessage(Activity activity, Profile profile) {
+        String activityUrl = UrlUtils.absoluteUrlForResourceUri(request, "/profiles/{username}/activities/{activityId}", profile.getUsername(), activity.getId());
+        return new StringBuilder(profile.getFullname()).append(" ran ").append(activity.getDistanceCovered() / activity.getGoalUnit().getConversion()).append(" " + activity.getGoalUnit().toString()).append(" via @miles2runorg.").append(" Read full status here ").append(activityUrl).toString();
+    }
+
+
+    private void shareActivity(String message, Profile profile, Share share) {
         if (share != null) {
-            String activityUrl = UrlUtils.absoluteUrlForResourceUri(request, "/profiles/{username}/activities/{activityId}", profile.getUsername(), activity.getId());
-            StringBuilder message = new StringBuilder(profile.getFullname()).append(" ran ").append(activity.getDistanceCovered() / activity.getGoalUnit().getConversion()).append(" " + activity.getGoalUnit().toString()).append(" via @miles2runorg.").append(" Read full status here ").append(activityUrl);
+
             for (SocialConnection socialConnection : profile.getSocialConnections()) {
                 if (share.isTwitter() && socialConnection.getProvider() == SocialProvider.TWITTER) {
-                    twitterService.postStatus(message.toString(), socialConnection);
+                    twitterService.postStatus(message, socialConnection);
                 }
                 if (share.isFacebook() && socialConnection.getProvider() == SocialProvider.FACEBOOK) {
-                    facebookService.postStatus(message.toString(), socialConnection);
+                    facebookService.postStatus(message, socialConnection);
+                }
+
+                if (share.isGooglePlus() && socialConnection.getProvider() == SocialProvider.GOOGLE_PLUS) {
+                    googleService.postStatus(message, socialConnection);
                 }
             }
 
