@@ -46,7 +46,6 @@ public class ActivityDetails {
 
     public ActivityDetails(Map<String, String> hash) {
         this.id = Long.valueOf(hash.get("id"));
-        this.status = hash.get("message");
         this.username = hash.get("username");
         this.activityDate = new Date(Long.valueOf(hash.get("posted")));
         this.goalUnit = GoalUnit.fromStringToGoalUnit(hash.get("goalUnit"));
@@ -92,5 +91,21 @@ public class ActivityDetails {
 
     public long getDuration() {
         return duration;
+    }
+
+    @Override
+    public String toString() {
+        return "ActivityDetails{" +
+                "id=" + id +
+                ", status='" + status + '\'' +
+                ", distanceCovered=" + distanceCovered +
+                ", goalUnit=" + goalUnit +
+                ", activityDate=" + activityDate +
+                ", share=" + share +
+                ", fullname='" + fullname + '\'' +
+                ", username='" + username + '\'' +
+                ", profilePic='" + profilePic + '\'' +
+                ", duration=" + duration +
+                '}';
     }
 }

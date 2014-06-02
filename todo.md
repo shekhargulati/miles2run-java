@@ -9,4 +9,4 @@
 7. When user deletes an activity then timelines should also be cleaned.
 8. Show user profile picture in the timeline
 9. The user profile page should load data from profile:timeline
-10. Activity date is always set to current day date. It should be the activity date entered using the form.
+10. <s>Activity date is always set to current day date. It should be the activity date entered using the form.</s>

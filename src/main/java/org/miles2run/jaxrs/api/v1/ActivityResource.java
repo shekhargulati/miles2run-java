@@ -14,6 +14,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
@@ -43,6 +44,8 @@ public class ActivityResource {
     private GoogleService googleService;
     @Inject
     private TimelineService timelineService;
+    @Context
+    private SecurityContext securityContext;
 
     @POST
     @Consumes("application/json")
@@ -99,18 +102,20 @@ public class ActivityResource {
         long activityPreviousDistanceCovered = existingActivity.getDistanceCovered();
         long updatedRunCounter = distanceCovered - activityPreviousDistanceCovered;
         logger.info(String.format("distanceCovered %d activityPreviousDistanceCovered %d updatedRunCounter %d", distanceCovered, activityPreviousDistanceCovered, updatedRunCounter));
-
-        counterService.updateRunCounter(updatedRunCounter);
         activity.setDistanceCovered(distanceCovered);
         ActivityDetails updatedActivity = activityService.update(existingActivity, activity);
+        timelineService.updateActivity(updatedActivity);
+        counterService.updateRunCounter(updatedRunCounter);
         return Response.status(Response.Status.OK).entity(updatedActivity).build();
     }
 
     @DELETE
-    @Path("/{id}")
+    @Path("/{activityId}")
     @LoggedIn
-    public Response deleteActivity(@PathParam("id") Long id) {
-        activityService.delete(id);
+    public Response deleteActivity(@PathParam("activityId") Long activityId) {
+        activityService.delete(activityId);
+        String username = securityContext.getUserPrincipal().getName();
+        timelineService.deleteActivityFromTimeline(username, activityId);
         return Response.noContent().build();
     }
 

@@ -169,4 +169,46 @@ public class TimelineService {
             }
         });
     }
+
+    public void updateActivity(final ActivityDetails updatedActivity) {
+        jedisExecutionService.execute(new JedisOperation<String>() {
+            @Override
+            public String perform(Jedis jedis) {
+                Pipeline pipeline = jedis.pipelined();
+                String id = String.valueOf(updatedActivity.getId());
+                logger.info(String.format("Updating activity %s", updatedActivity));
+                Map<String, String> data = new HashMap<>();
+                data.put("id", id);
+                data.put("posted", String.valueOf(updatedActivity.getActivityDate().getTime()));
+                data.put("distanceCovered", String.valueOf(updatedActivity.getDistanceCovered() * updatedActivity.getGoalUnit().getConversion()));
+                data.put("goalUnit", updatedActivity.getGoalUnit().getUnit());
+                pipeline.hmset("activity:" + id, data);
+                pipeline.sync();
+                return id;
+            }
+        });
+    }
+
+    public void deleteActivityFromTimeline(final String username, final Long activityId) {
+        jedisExecutionService.execute(new JedisOperation<Void>() {
+            @Override
+            public Void perform(Jedis jedis) {
+                String key = "activity:" + activityId;
+                if (!jedis.hget(key, "username").equals(username)) {
+                    return null;
+                }
+                Pipeline pipeline = jedis.pipelined();
+                pipeline.del(key);
+                pipeline.zrem("home:timeline:" + username, String.valueOf(activityId));
+                UserProfile userProfile = profileMongoService.findProfile(username);
+                final List<String> followers = userProfile.getFollowers();
+                logger.info(String.format("Followers for %s are %s", username, followers));
+                for (String follower : followers) {
+                    pipeline.zrem("home:timeline:" + follower, String.valueOf(activityId));
+                }
+                pipeline.sync();
+                return null;
+            }
+        });
+    }
 }
