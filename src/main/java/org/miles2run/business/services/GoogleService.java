@@ -27,7 +27,7 @@ public class GoogleService {
 
     private static final String CLIENT_ID = System.getenv("GOOGLE_CLIENT_ID");
     private static final String CLIENT_SECRET = System.getenv("GOOGLE_CLIENT_SECRET");
-    private static final String CALLBACK_URI = "http://localhost:8080/miles2run/google/callback";
+    private static final String CALLBACK_URI = "/google/callback";
     private static final List<String> SCOPE = Arrays.asList("https://www.googleapis.com/auth/userinfo.profile;https://www.googleapis.com/auth/userinfo.email".split(";"));
     private static final String USER_INFO_URL = "https://www.googleapis.com/oauth2/v1/userinfo";
     private static final JsonFactory JSON_FACTORY = new JacksonFactory();
@@ -39,9 +39,9 @@ public class GoogleService {
         flow = new GoogleAuthorizationCodeFlow.Builder(HTTP_TRANSPORT, JSON_FACTORY, CLIENT_ID, CLIENT_SECRET, SCOPE).build();
     }
 
-    public String buildLoginUrl() {
+    public String buildLoginUrl(String baseUrl) {
         final GoogleAuthorizationCodeRequestUrl url = flow.newAuthorizationUrl();
-        return url.setRedirectUri(CALLBACK_URI).setState(generateStateToken()).build();
+        return url.setRedirectUri(baseUrl + CALLBACK_URI).setState(generateStateToken()).build();
     }
 
     private String generateStateToken() {
@@ -49,8 +49,8 @@ public class GoogleService {
         return "google;" + sr1.nextInt();
     }
 
-    public GoogleTokenResponse getOauthToken(final String authCode) throws IOException {
-        final GoogleTokenResponse response = flow.newTokenRequest(authCode).setRedirectUri(CALLBACK_URI).execute();
+    public GoogleTokenResponse getOauthToken(String baseUrl, final String authCode) throws IOException {
+        final GoogleTokenResponse response = flow.newTokenRequest(authCode).setRedirectUri(baseUrl + CALLBACK_URI).execute();
         return response;
     }
 

@@ -19,16 +19,19 @@ public abstract class UrlUtils {
     }
 
     public static String absoluteUrlForResourceMethod(HttpServletRequest request, Class resourceClass, String method, Object... values) {
-        String requestUrl = request.getRequestURL().toString();
-        String baseURL = requestUrl.substring(0, requestUrl.length() - request.getRequestURI().length()) + request.getContextPath();
+        String baseURL = getBaseUrl(request);
         URI callbackResourceUri = UriBuilder.fromMethod(resourceClass, method).build(values);
         String url = new StringBuilder(baseURL).append(callbackResourceUri.toString()).toString();
         return url;
     }
 
-    public static String absoluteUrlForResourceUri(HttpServletRequest request, String uri, Object... values) {
+    public static String getBaseUrl(HttpServletRequest request) {
         String requestUrl = request.getRequestURL().toString();
-        String baseURL = requestUrl.substring(0, requestUrl.length() - request.getRequestURI().length()) + request.getContextPath();
+        return requestUrl.substring(0, requestUrl.length() - request.getRequestURI().length()) + request.getContextPath();
+    }
+
+    public static String absoluteUrlForResourceUri(HttpServletRequest request, String uri, Object... values) {
+        String baseURL = getBaseUrl(request);
         URI callbackResourceUri = UriBuilder.fromUri(uri).build(values);
         String url = new StringBuilder(baseURL).append(callbackResourceUri.toString()).toString();
         return url;

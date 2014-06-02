@@ -6,6 +6,7 @@ import org.miles2run.business.domain.SocialConnection;
 import org.miles2run.business.domain.SocialProvider;
 import org.miles2run.business.services.GoogleService;
 import org.miles2run.business.services.SocialConnectionService;
+import org.miles2run.business.utils.UrlUtils;
 import org.miles2run.business.vo.Google;
 
 import javax.inject.Inject;
@@ -36,10 +37,10 @@ public class GoogleCallbackView {
 
     @GET
     @Produces("text/html")
-    public View callback(@QueryParam("state") String state, @QueryParam("code") String authCode) throws Exception{
+    public View callback(@QueryParam("state") String state, @QueryParam("code") String authCode) throws Exception {
         logger.info("Inside GoogleCallbackView callback()...");
         logger.info(String.format("Code %s State %s", authCode, state));
-        GoogleTokenResponse oauthToken = googleService.getOauthToken(authCode);
+        GoogleTokenResponse oauthToken = googleService.getOauthToken(UrlUtils.getBaseUrl(request), authCode);
         Google user = googleService.getUser(oauthToken);
         String connectionId = user.getId();
         SocialConnection existingSocialConnection = socialConnectionService.findByConnectionId(connectionId);

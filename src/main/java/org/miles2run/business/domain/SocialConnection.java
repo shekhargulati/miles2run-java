@@ -27,7 +27,6 @@ public class SocialConnection implements Serializable{
     @Enumerated(EnumType.STRING)
     private SocialProvider provider;
 
-    @NotNull
     private String handle;
 
     @NotNull
