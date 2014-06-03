@@ -36,7 +36,9 @@ public class ProfileDetails {
         this.city = profileForm.getCity();
         this.country = profileForm.getCountry();
         this.email = profileForm.getEmail();
-        this.gender = profileForm.getGender().getGender();
+        if (profileForm.getGender() != null) {
+            this.gender = profileForm.getGender().getGender();
+        }
     }
 
     public String getUsername() {
