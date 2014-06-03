@@ -29,7 +29,11 @@ angular.module('milestogo')
                 $location.path('/');
             }).error(function (data, status, headers, config) {
                 console.log("Error handler for update activity. Status code " + status);
-                toastr.error("Unable to update activity. Please try later.");
+                if (status == 401) {
+                    toastr.error("You are not authorized to perform this operation.");
+                } else {
+                    toastr.error("Unable to update activity. Please try later.");
+                }
                 $location.path('/');
             });
         };

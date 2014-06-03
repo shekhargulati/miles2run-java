@@ -21,10 +21,13 @@
                 <h4 class="timeline-title">@<a ng-href="{{appContext()}}profiles/{{activity.username}}">{{activity.username}}</a> ran {{activity.distanceCovered}} {{activity.goalUnit | lowercase}} <small class="text-muted pull-right"><i class="glyphicon glyphicon-calendar"></i> {{activity.activityDate | date:'MMM dd, yyyy'}}</small></h4>
             </div>
             <hr>
-            <div class="timeline-footer">
+            <div class="timeline-footer" ng-if="activity.username == currentUser.username" ng-cloak>
                 <a ng-href="#/activity/share/{{activity.id}}" title="share activity"><i class="glyphicon glyphicon-share"></i></a>
                 <a ng-href="#/activity/edit/{{activity.id}}" title="edit activity"><i class="glyphicon glyphicon-edit"></i></a>
                 <a class="pull-right" ng-click="delete($index)" title="delete activity"><i class="glyphicon glyphicon-trash"></i></a>
+            </div>
+            <div class="timeline-footer" ng-if="activity.username != currentUser.username" ng-cloak>
+                <a ng-href="#/activity/share/{{activity.id}}" title="share activity"><i class="glyphicon glyphicon-share"></i></a>
             </div>
         </div>
     </li>

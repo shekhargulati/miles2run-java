@@ -1,5 +1,6 @@
 package org.miles2run.jaxrs.api.v1;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jug.filters.LoggedIn;
 import org.miles2run.business.domain.*;
 import org.miles2run.business.services.*;
@@ -85,7 +86,7 @@ public class ActivityResource {
     @Path("/{id}")
     @LoggedIn
     public ActivityDetails get(@NotNull @PathParam("id") Long id) {
-        return activityService.readById(id);
+        return activityService.findById(id);
     }
 
     @PUT
@@ -94,14 +95,18 @@ public class ActivityResource {
     @Path("/{id}")
     @LoggedIn
     public Response updateActivity(@PathParam("id") Long id, @Valid Activity activity) {
-        Activity existingActivity = activityService.read(id);
+        String loggedInUser = securityContext.getUserPrincipal().getName();
+        ActivityDetails existingActivity = activityService.findById(id);
         if (existingActivity == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        String activityBy = existingActivity.getUsername();
+        if (!StringUtils.equals(loggedInUser, activityBy)) {
+            return Response.status(Response.Status.UNAUTHORIZED).build();
         }
         long distanceCovered = activity.getDistanceCovered() * activity.getGoalUnit().getConversion();
         long activityPreviousDistanceCovered = existingActivity.getDistanceCovered();
         long updatedRunCounter = distanceCovered - activityPreviousDistanceCovered;
-        logger.info(String.format("distanceCovered %d activityPreviousDistanceCovered %d updatedRunCounter %d", distanceCovered, activityPreviousDistanceCovered, updatedRunCounter));
         activity.setDistanceCovered(distanceCovered);
         ActivityDetails updatedActivity = activityService.update(existingActivity, activity);
         timelineService.updateActivity(updatedActivity);
@@ -113,9 +118,17 @@ public class ActivityResource {
     @Path("/{activityId}")
     @LoggedIn
     public Response deleteActivity(@PathParam("activityId") Long activityId) {
+        String loggedInUser = securityContext.getUserPrincipal().getName();
+        ActivityDetails existingActivity = activityService.findById(activityId);
+        if (existingActivity == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        String activityBy = existingActivity.getUsername();
+        if (!StringUtils.equals(loggedInUser, activityBy)) {
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
         activityService.delete(activityId);
-        String username = securityContext.getUserPrincipal().getName();
-        timelineService.deleteActivityFromTimeline(username, activityId);
+        timelineService.deleteActivityFromTimeline(loggedInUser, activityId);
         return Response.noContent().build();
     }
 

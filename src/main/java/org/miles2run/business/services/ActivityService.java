@@ -6,12 +6,10 @@ import org.miles2run.business.vo.ActivityDetails;
 import org.miles2run.business.vo.Progress;
 
 import javax.ejb.Stateless;
-import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
-import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 import java.util.Collections;
 import java.util.List;
@@ -33,7 +31,7 @@ public class ActivityService {
         return activity;
     }
 
-    public ActivityDetails readById(@NotNull Long id) {
+    public ActivityDetails findById(@NotNull Long id) {
         TypedQuery<ActivityDetails> query = entityManager.createNamedQuery("Activity.findById", ActivityDetails.class).setParameter("id", id);
         try {
             return query.getSingleResult();
@@ -66,15 +64,15 @@ public class ActivityService {
         return activities;
     }
 
-    public ActivityDetails update(Activity existingActivity, Activity activity) {
-        existingActivity = this.read(existingActivity.getId());
+    public ActivityDetails update(ActivityDetails activityDetails, Activity activity) {
+        Activity existingActivity = this.read(activityDetails.getId());
         existingActivity.setStatus(activity.getStatus());
         existingActivity.setDistanceCovered(activity.getDistanceCovered());
         existingActivity.setActivityDate(activity.getActivityDate());
         existingActivity.setGoalUnit(activity.getGoalUnit());
         existingActivity.setDuration(activity.getDuration());
         entityManager.persist(existingActivity);
-        return this.readById(existingActivity.getId());
+        return this.findById(existingActivity.getId());
     }
 
     public void delete(@NotNull Long id) {

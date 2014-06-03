@@ -41,8 +41,13 @@ var DeleteActivityCtrl = function ($scope, ActivityService, activeProfile, $moda
             toastr.success("Deleted activity");
             activities.splice(idx, 1);
             $modalInstance.close({});
-        }).error(function () {
-            toastr.error("Unable to delete activity. Please try later.");
+        }).error(function (data, status, headers, config) {
+            console.log("Status code %s", status);
+            if (status == 401) {
+                toastr.error("You are not authorized to perform this operation.")
+            } else {
+                toastr.error("Unable to delete activity. Please try later.");
+            }
             $modalInstance.close({});
         });
     };
@@ -51,7 +56,7 @@ var DeleteActivityCtrl = function ($scope, ActivityService, activeProfile, $moda
         $modalInstance.dismiss('cancel');
     };
 
-    $scope.appContext = function(){
+    $scope.appContext = function () {
         return ConfigService.appContext();
     }
 };
