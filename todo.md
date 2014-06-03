@@ -23,3 +23,5 @@
 21. Dashboard view when user first logs in.
 22. Using growl instead of toastr
 23. Google+ and Facebook share only works with URL.think about proper URL
+24. Calendar view show wrong date when app is run on OpenShift
+25. Unfollow is not working because of missing profile.js
