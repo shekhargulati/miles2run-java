@@ -10,7 +10,7 @@
 8. <s>Show user profile picture in the timeline</s>
 9. <s>Activity date is always set to current day date. It should be the activity date entered using the form.</s>
 10. <s>After deleting activity, activity id was not removed from profile:timeline. SO when a user followed a new user, they got dangling activityid in their timeline</s>
-11. When user activity time is updated then timeline timestamp is not updated.
+11. <s>When activity time is updated then timeline timestamp is not updated.</s>
 12. Pagination of timeline
 13. Activity sharing is not working
 14. The user profile page should load data from profile:timeline

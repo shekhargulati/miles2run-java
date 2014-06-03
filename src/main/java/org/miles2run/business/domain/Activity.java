@@ -1,5 +1,7 @@
 package org.miles2run.business.domain;
 
+import org.miles2run.business.vo.ActivityDetails;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -73,6 +75,13 @@ public class Activity {
         this.activityDate = activityDate;
         this.distanceCovered = distanceCovered;
         this.goalUnit = goalUnit;
+    }
+
+    public Activity(ActivityDetails activityDetails) {
+        this.id = activityDetails.getId();
+        this.goalUnit = activityDetails.getGoalUnit();
+        this.distanceCovered = activityDetails.getDistanceCovered();
+        this.activityDate = activityDetails.getActivityDate();
     }
 
     public Long getId() {

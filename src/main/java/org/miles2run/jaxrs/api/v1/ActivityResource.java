@@ -109,7 +109,8 @@ public class ActivityResource {
         long updatedRunCounter = distanceCovered - activityPreviousDistanceCovered;
         activity.setDistanceCovered(distanceCovered);
         ActivityDetails updatedActivity = activityService.update(existingActivity, activity);
-        timelineService.updateActivity(updatedActivity);
+        Profile profile = profileService.findProfile(loggedInUser);
+        timelineService.updateActivity(updatedActivity, profile);
         counterService.updateRunCounter(updatedRunCounter);
         return Response.status(Response.Status.OK).entity(updatedActivity).build();
     }

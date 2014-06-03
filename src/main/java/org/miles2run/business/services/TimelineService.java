@@ -171,23 +171,11 @@ public class TimelineService {
         });
     }
 
-    public void updateActivity(final ActivityDetails updatedActivity) {
-        jedisExecutionService.execute(new JedisOperation<String>() {
-            @Override
-            public String perform(Jedis jedis) {
-                Pipeline pipeline = jedis.pipelined();
-                String id = String.valueOf(updatedActivity.getId());
-                logger.info(String.format("Updating activity %s", updatedActivity));
-                Map<String, String> data = new HashMap<>();
-                data.put("id", id);
-                data.put("posted", String.valueOf(updatedActivity.getActivityDate().getTime()));
-                data.put("distanceCovered", String.valueOf(updatedActivity.getDistanceCovered() * updatedActivity.getGoalUnit().getConversion()));
-                data.put("goalUnit", updatedActivity.getGoalUnit().getUnit());
-                pipeline.hmset("activity:" + id, data);
-                pipeline.sync();
-                return id;
-            }
-        });
+    public void updateActivity(final ActivityDetails updatedActivity, final Profile profile) {
+        deleteActivityFromTimeline(profile.getUsername(), updatedActivity.getId());
+        Activity activity = new Activity(updatedActivity);
+        activity.setDistanceCovered(activity.getDistanceCovered() * activity.getGoalUnit().getConversion());
+        postActivityToTimeline(activity, profile);
     }
 
     public void deleteActivityFromTimeline(final String username, final Long activityId) {
