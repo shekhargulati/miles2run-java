@@ -13,21 +13,16 @@
 </div>
 <ul class="timeline" ng-if="activities.length">
     <li ng-repeat="activity in activities">
-        <div ng-show="activity.share.twitter"  class="timeline-badge success" title="shared on twitter">
-            <i class="fa fa-twitter"></i>
-        </div>
-        <div ng-show="activity.share.facebook"  class="timeline-badge success" title="shared on facebook">
-            <i class="fa fa-facebook"></i>
-        </div>
-        <div ng-hide="activity.share.facebook || activity.share.twitter" class="timeline-badge info" title="share">
-            <a ng-href="#/activity/share/{{activity.id}}" title="share activity"><i class="glyphicon glyphicon-share"></i></a>
+        <div class="timeline-badge info" title="view activity">
+            <a ng-href="#/activity/{{activity.id}}" title="view activity"><i class="glyphicon glyphicon-chevron-right"></i></a>
         </div>
         <div class="timeline-panel">
             <div class="timeline-heading">
-                <h4 class="timeline-title"><a ng-href="#/activity/{{activity.id}}">{{activity.fullname}} ran {{activity.distanceCovered}} {{activity.goalUnit | lowercase}}</a>  <small class="text-muted pull-right"><i class="glyphicon glyphicon-calendar"></i> {{activity.activityDate | date:'MMM dd, yyyy'}}</small></h4>
+                <h4 class="timeline-title">@<a ng-href="{{appContext()}}profiles/{{activity.username}}">{{activity.username}}</a> ran {{activity.distanceCovered}} {{activity.goalUnit | lowercase}} <small class="text-muted pull-right"><i class="glyphicon glyphicon-calendar"></i> {{activity.activityDate | date:'MMM dd, yyyy'}}</small></h4>
             </div>
             <hr>
             <div class="timeline-footer">
+                <a ng-href="#/activity/share/{{activity.id}}" title="share activity"><i class="glyphicon glyphicon-share"></i></a>
                 <a ng-href="#/activity/edit/{{activity.id}}" title="edit activity"><i class="glyphicon glyphicon-edit"></i></a>
                 <a class="pull-right" ng-click="delete($index)" title="delete activity"><i class="glyphicon glyphicon-trash"></i></a>
             </div>

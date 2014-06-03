@@ -52,4 +52,13 @@ public class Share {
     public void setGooglePlus(boolean googlePlus) {
         this.googlePlus = googlePlus;
     }
+
+    @Override
+    public String toString() {
+        return "Share{" +
+                "twitter=" + twitter +
+                ", facebook=" + facebook +
+                ", googlePlus=" + googlePlus +
+                '}';
+    }
 }

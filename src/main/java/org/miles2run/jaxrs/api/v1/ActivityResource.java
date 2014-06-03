@@ -141,17 +141,21 @@ public class ActivityResource {
 
 
     private void shareActivity(String message, Profile profile, Share share) {
+        logger.info("in shareActivity() .. " + share);
         if (share != null) {
 
             for (SocialConnection socialConnection : profile.getSocialConnections()) {
                 if (share.isTwitter() && socialConnection.getProvider() == SocialProvider.TWITTER) {
+                    logger.info(String.format("Tweeting message : %s", message));
                     twitterService.postStatus(message, socialConnection);
                 }
                 if (share.isFacebook() && socialConnection.getProvider() == SocialProvider.FACEBOOK) {
+                    logger.info(String.format("Posting message on Facebook wall : %s", message));
                     facebookService.postStatus(message, socialConnection);
                 }
 
                 if (share.isGooglePlus() && socialConnection.getProvider() == SocialProvider.GOOGLE_PLUS) {
+                    logger.info(String.format("Posting message on G+ : %s", message));
                     googleService.postStatus(message, socialConnection);
                 }
             }

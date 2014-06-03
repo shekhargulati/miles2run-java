@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('milestogo')
-    .controller('MainCtrl', function ($scope, ActivityService, activeProfile, $modal) {
+    .controller('MainCtrl', function ($scope, ActivityService, activeProfile, $modal, ConfigService) {
         $scope.currentUser = activeProfile;
 
         ActivityService.timeline($scope.currentUser.username).success(function (data, status, headers, config) {
@@ -50,4 +50,8 @@ var DeleteActivityCtrl = function ($scope, ActivityService, activeProfile, $moda
     $scope.cancel = function () {
         $modalInstance.dismiss('cancel');
     };
+
+    $scope.appContext = function(){
+        return ConfigService.appContext();
+    }
 };
