@@ -1,5 +1,6 @@
 package org.miles2run.business.services;
 
+import org.miles2run.business.domain.Counter;
 import redis.clients.jedis.Jedis;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -11,66 +12,111 @@ import javax.inject.Inject;
 @ApplicationScoped
 public class CounterService {
 
-    static final String COUNTRY_COUNTER = "countries";
-    static final String DEVELOPER_COUNTER = "developers";
-    static final String RUN_COUNTER = "run";
+    private static final String COUNTRY_SET_KEY = "countries";
+    private static final String RUNNER_COUNTER = "runners";
+    private static final String DISTANCE_COUNTER = "distance";
+    private static final String CITY_SET_KEY = "cities";
+    private static final String SECONDS_COUNTER = "hours";
+
 
     @Inject
-    JedisExecutionService jedisExecutionService;
+    private JedisExecutionService jedisExecutionService;
 
-    public Long updateCountryCounter(final String country) {
+    public Long addCountry(final String country) {
         return jedisExecutionService.execute(new JedisOperation<Long>() {
             @Override
             public Long perform(Jedis jedis) {
-                return jedis.sadd(COUNTRY_COUNTER, country);
+                return jedis.sadd(COUNTRY_SET_KEY, country);
             }
         });
     }
 
-    public Long getCountryCounter() {
+    public Long getCountryCount() {
         return jedisExecutionService.execute(new JedisOperation<Long>() {
             @Override
             public Long perform(Jedis jedis) {
-                return jedis.scard(COUNTRY_COUNTER);
+                return jedis.scard(COUNTRY_SET_KEY);
             }
         });
     }
 
-    public Long updateDeveloperCounter() {
+    public Long addCity(final String country) {
         return jedisExecutionService.execute(new JedisOperation<Long>() {
             @Override
             public Long perform(Jedis jedis) {
-                return jedis.incr(DEVELOPER_COUNTER);
+                return jedis.sadd(CITY_SET_KEY, country);
             }
         });
     }
 
-    public Long getDeveloperCounter() {
+    public Long getCityCount() {
         return jedisExecutionService.execute(new JedisOperation<Long>() {
             @Override
             public Long perform(Jedis jedis) {
-                String counter = jedis.get(DEVELOPER_COUNTER);
+                return jedis.scard(CITY_SET_KEY);
+            }
+        });
+    }
+
+    public Long updateRunnerCount() {
+        return jedisExecutionService.execute(new JedisOperation<Long>() {
+            @Override
+            public Long perform(Jedis jedis) {
+                return jedis.incr(RUNNER_COUNTER);
+            }
+        });
+    }
+
+    public Long getRunnerCount() {
+        return jedisExecutionService.execute(new JedisOperation<Long>() {
+            @Override
+            public Long perform(Jedis jedis) {
+                String counter = jedis.get(RUNNER_COUNTER);
                 return counter == null ? Long.valueOf(0) : Long.valueOf(counter);
             }
         });
     }
 
-    public Long updateRunCounter(final long distanceCovered) {
+
+    public Long updateActivitySecondsCount(final long seconds) {
         return jedisExecutionService.execute(new JedisOperation<Long>() {
             @Override
             public Long perform(Jedis jedis) {
-                return jedis.incrBy(RUN_COUNTER, distanceCovered);
+                return jedis.incrBy(SECONDS_COUNTER, seconds);
             }
         });
     }
 
-    public Long getRunCounter() {
+    public Long getActivitySecondCount() {
         return jedisExecutionService.execute(new JedisOperation<Long>() {
             @Override
             public Long perform(Jedis jedis) {
-                String counter = jedis.get(RUN_COUNTER);
+                String counter = jedis.get(SECONDS_COUNTER);
                 return counter == null ? Long.valueOf(0) : Long.valueOf(counter);
             }
         });
+    }
+
+    public Long updateDistanceCount(final long distanceCovered) {
+        return jedisExecutionService.execute(new JedisOperation<Long>() {
+            @Override
+            public Long perform(Jedis jedis) {
+                return jedis.incrBy(DISTANCE_COUNTER, distanceCovered);
+            }
+        });
+    }
+
+    public Long getDistanceCount() {
+        return jedisExecutionService.execute(new JedisOperation<Long>() {
+            @Override
+            public Long perform(Jedis jedis) {
+                String counter = jedis.get(DISTANCE_COUNTER);
+                return counter == null ? Long.valueOf(0) : Long.valueOf(counter);
+            }
+        });
+    }
+
+    public Counter currentCounter() {
+        return new Counter(getRunnerCount(), getCountryCount(), getDistanceCount(), getCityCount(), getActivitySecondCount());
     }
 }

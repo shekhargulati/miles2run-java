@@ -15,3 +15,7 @@
 13. Activity sharing is not working
 14. The user profile page should load data from profile:timeline
 15. Jenkins setup
+16. About page does not exist
+17. Contact page does not exist
+18. Facebook page https://facebook.com/miles2run does not exist
+19. Google+ https://plus.google.com/u/0/+Miles2Run does not exist

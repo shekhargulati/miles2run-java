@@ -1,7 +1,7 @@
 package org.miles2run.jaxrs.api.v1;
 
 import org.miles2run.business.services.CounterService;
-import org.miles2run.jaxrs.vo.Counter;
+import org.miles2run.business.domain.Counter;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;
@@ -21,9 +21,6 @@ public class CounterResource {
     @GET
     @Produces("application/json")
     public Counter appCounter() {
-        Long runCounter = counterService.getRunCounter();
-        Long countryCounter = counterService.getCountryCounter();
-        Long developerCounter = counterService.getDeveloperCounter();
-        return new Counter(developerCounter, countryCounter, runCounter);
+        return counterService.currentCounter();
     }
 }

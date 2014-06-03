@@ -60,7 +60,8 @@ public class ActivityResource {
         long distanceCovered = activity.getDistanceCovered() * activity.getGoalUnit().getConversion();
         activity.setDistanceCovered(distanceCovered);
         Activity savedActivity = activityService.save(activity, profile);
-        counterService.updateRunCounter(distanceCovered);
+        counterService.updateDistanceCount(distanceCovered);
+        counterService.updateActivitySecondsCount(activity.getDuration());
         timelineService.postActivityToTimeline(savedActivity, profile);
         Share share = activity.getShare();
         String message = toActivityMessage(activity, profile);
@@ -111,7 +112,8 @@ public class ActivityResource {
         ActivityDetails updatedActivity = activityService.update(existingActivity, activity);
         Profile profile = profileService.findProfile(loggedInUser);
         timelineService.updateActivity(updatedActivity, profile);
-        counterService.updateRunCounter(updatedRunCounter);
+        counterService.updateDistanceCount(updatedRunCounter);
+        counterService.updateActivitySecondsCount(activity.getDuration());
         return Response.status(Response.Status.OK).entity(updatedActivity).build();
     }
 

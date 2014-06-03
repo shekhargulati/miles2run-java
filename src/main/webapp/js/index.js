@@ -14,19 +14,15 @@ app.filter('unit', function () {
     }
 });
 
-app.filter('countryText', function () {
+app.filter('toHour', function () {
     return function (text) {
         var n = text ? Number(text) : 0;
-        return n > 1 ? n + " Countries" : n + " Country";
+        var hours = n / 3600;
+        return hours;
+
     }
 });
 
-app.filter('developerText', function () {
-    return function (text) {
-        var n = text ? Number(text) : 0;
-        return n > 1 ? n + " Developers" : n + " Developer";
-    }
-});
 
 app.controller('CounterCtrl', CounterCtrl);
 

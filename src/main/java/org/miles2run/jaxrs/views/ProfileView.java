@@ -143,8 +143,9 @@ public class ProfileView {
             }
             socialConnectionService.update(profile, profileForm.getConnectionId());
             profileMongoService.save(profile);
-            counterService.updateDeveloperCounter();
-            counterService.updateCountryCounter(profile.getCountry());
+            counterService.updateRunnerCount();
+            counterService.addCountry(profile.getCountry());
+            counterService.addCity(profile.getCity());
             return View.of("/home", true).withModel("principal", profile.getUsername());
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Unable to load create profile.", e);
