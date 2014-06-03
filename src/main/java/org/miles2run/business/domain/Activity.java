@@ -38,6 +38,7 @@ public class Activity {
     private Date postedAt = new Date();
 
     @Temporal(TemporalType.DATE)
+    @NotNull
     private Date activityDate;
 
     @ManyToOne

@@ -20,3 +20,4 @@
 18. Facebook page https://facebook.com/miles2run does not exist
 19. Google+ https://plus.google.com/u/0/+Miles2Run does not exist
 20. When unable to connect with social login provider, then rather than showing error page, show them the index page again and ask them to signin again.
+21. Dashboard view when user first logs in.

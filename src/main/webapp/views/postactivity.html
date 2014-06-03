@@ -1,72 +1,102 @@
-<form id="activityForm" class="form-horizontal" role="form" ng-submit="postActivity()" novalidate>
-    <fieldset>
-        <legend>Log New Run</legend>
-        <div class="form-group">
-            <label class="col-md-2 control-label" for="activityDate">Date</label>
-
-            <div class="col-md-6 input-group">
-                <input type="text" id="activityDate" name="activityDate" class="form-control"
-                       datepicker-popup="dd-MMMM-yyyy" ng-model="activity.activityDate" is-open="opened" max="minDate"
-                       datepicker-options="dateOptions" ng-required="true" close-text="Close" placeholder="Date you ran"
-                       title="Run Date">
-                <span class="input-group-btn">
-                    <button class="btn btn-info" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i>
-                    </button>
-                </span>
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-header">Activity</h1>
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+<!-- /.row -->
+<div class="row">
+    <div class="col-lg-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <i class="fa fa-clock-o fa-fw"></i> Log new run
             </div>
+            <!-- /.panel-heading -->
+            <div class="panel-body">
+                <form id="activityForm" class="form-horizontal" role="form" ng-submit="postActivity()">
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="col-md-2 control-label" for="activityDate">Date</label>
 
+                            <div class="col-md-6 input-group">
+                                <input type="text" id="activityDate" name="activityDate" class="form-control"
+                                       datepicker-popup="dd-MMMM-yyyy" ng-model="activity.activityDate"
+                                       is-open="opened"
+                                       max="minDate"
+                                       datepicker-options="dateOptions" ng-required="true" close-text="Close"
+                                       placeholder="Date you ran"
+                                       title="Run Date">
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-info" ng-click="open($event)"><i
+                                                class="fa fa-calendar fa-fw"></i>
+                                        </button>
+                                    </span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-2 control-label" for="distanceCovered">Distance</label>
 
-        </div>
-        <div class="form-group">
-            <label class="col-md-2 control-label" for="distanceCovered">Distance</label>
+                            <div class="col-md-6 input-group">
+                                <input id="distanceCovered" name="distanceCovered" type="number"
+                                       placeholder="Distance ran"
+                                       class="form-control" ng-model="activity.distanceCovered" min="0" step="1"
+                                       title="Distance ran"
+                                       required>
+                                <span class="input-group-addon">{{activity.goalUnit | lowercase}}</span>
+                            </div>
+                        </div>
 
-            <div class="col-md-6 input-group">
-                <input id="distanceCovered" name="distanceCovered" type="number" placeholder="Distance ran"
-                       class="form-control" ng-model="activity.distanceCovered" min="0" step="1" title="Distance ran"
-                       required>
-                <span class="input-group-addon">{{activity.goalUnit | lowercase}}</span>
+                        <div class="form-group">
+                            <label class="col-md-2 control-label">Duration</label>
+
+                            <div class="col-md-6 input-group">
+                                <input id="durationHours" class="col-md-4" name="durationHours"
+                                       ng-model="duration.hours"
+                                       title="Hours" type="number" min="0" max="23" ignore-field>
+                                <input id="durationMinutes" class="col-md-4" name="durationMinutes"
+                                       ng-model="duration.minutes"
+                                       title="Minutes" type="number" min="0" max="59" ignore-field>
+                                <input id="durationSeconds" class="col-md-4" name="durationSeconds"
+                                       ng-model="duration.seconds"
+                                       title="Seconds" type="number" min="0" max="59" ignore-field>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-md-2 control-label" for="status">How did it go?</label>
+
+                            <div class="col-md-6 input-group">
+                                <textarea class="form-control" name="status" id="status" rows="5"
+                                          placeholder="How did it go?" class="form-control input-md"
+                                          maxlength="1000" title="Share your experience"
+                                          ng-model="activity.status"></textarea>
+
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-md-offset-2 col-md-6 input-group">
+                                <div ng-repeat="provider in currentUser.providers" class="col-md-3"
+                                     title="share on {{provider}}">
+                                    <input type="checkbox" id="share-{{provider}}" name="share-{{provider}}"
+                                           ng-model="activity.share[provider]"> <i
+                                        class="fa fa-{{provider}} fa-lg"></i>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-md-offset-2 col-md-4 pull-left">
+                                <button class="btn btn-primary btn-block" type="submit">
+                                    <i class="fa fa-square"></i> Log your Run
+                                </button>
+                            </div>
+                        </div>
+
+                    </fieldset>
+                </form>
             </div>
         </div>
-
-        <div class="form-group">
-            <label class="col-md-2 control-label">Duration</label>
-
-            <div class="col-md-6 input-group">
-                <input id="durationHours" class="col-md-4" name="durationHours" ng-model="duration.hours" title="Hours" type="number" min="0" max="23" ignore-field>
-                <input id="durationMinutes" class="col-md-4" name="durationMinutes" ng-model="duration.minutes" title="Minutes" type="number" min="0" max="59" ignore-field>
-                <input id="durationSeconds" class="col-md-4" name="durationSeconds" ng-model="duration.seconds" title="Seconds" type="number" min="0" max="59" ignore-field>
-            </div>
-        </div>
-
-        <div class="form-group">
-            <label class="col-md-2 control-label" for="status">How did it go?</label>
-
-            <div class="col-md-6 input-group">
-                <textarea class="form-control" name="status" id="status" rows="5"
-                          placeholder="How did it go?" class="form-control input-md"
-                          maxlength="1000" title="Share your experience"
-                          ng-model="activity.status"></textarea>
-
-            </div>
-        </div>
-
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-6 input-group">
-            <div ng-repeat="provider in currentUser.providers" class="col-md-3" title="share on {{provider}}">
-                    <input type="checkbox" id="share-{{provider}}" name="share-{{provider}}"
-                           ng-model="activity.share[provider]"> <i class="fa fa-{{provider}} fa-lg"></i>
-                </div>
-
-            </div>
-        </div>
-
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-4 pull-left">
-                <button class="btn btn-primary btn-block" type="submit">
-                    <i class="glyphicon glyphicon-record"></i> Log your Run
-                </button>
-            </div>
-        </div>
-
-    </fieldset>
-</form>
+    </div>
+</div>

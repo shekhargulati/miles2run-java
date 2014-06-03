@@ -10,6 +10,10 @@ var app = angular.module('milestogo', [
     .config(function ($routeProvider) {
         $routeProvider
             .when('/', {
+                templateUrl: 'views/dashboard.html',
+                controller: 'MainCtrl'
+            })
+            .when('/timeline', {
                 templateUrl: 'views/main.html',
                 controller: 'MainCtrl'
             })
