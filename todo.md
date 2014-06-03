@@ -22,3 +22,4 @@
 20. When unable to connect with social login provider, then rather than showing error page, show them the index page again and ask them to signin again.
 21. Dashboard view when user first logs in.
 22. Using growl instead of toastr
+23. Google+ and Facebook share only works with URL.think about proper URL
