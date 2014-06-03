@@ -1,136 +1,388 @@
-<!doctype html>
-<html xmlns:th="http://www.thymeleaf.org">
+<!DOCTYPE html>
+<html lang="en" ng-app="milestogo" xmlns:th="http://www.thymeleaf.org">
+
 <head>
+
     <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <title>Home</title>
-    <meta name="description" content=""/>
-    <meta name="viewport" content="width=device-width"/>
-    <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
 
-    <!-- build:css(.tmp) styles/main.css -->
-    <link rel="stylesheet" href="/css/bootstrap.css" th:href="@{/css/bootstrap.css}"/>
+    <title>Miles2Run Home</title>
 
-    <link rel="stylesheet" href="/css/font-awesome.css" th:href="@{/css/font-awesome.css}"/>
-    <link rel="stylesheet" href="/css/toastr.css" th:href="@{/css/toastr.css}"/>
-    <link rel="stylesheet" href="/css/cal-heatmap.css" th:href="@{/css/cal-heatmap.css}"/>
-    <link rel="stylesheet" href="/css/main.css" th:href="@{/css/main.css}"/>
-    <link rel="stylesheet" href="/css/timeline.css" th:href="@{/css/timeline.css}"/>
+    <!-- Core CSS - Include with every page -->
+    <link href="/css/bootstrap.css" th:href="@{/css/bootstrap.css}" rel="stylesheet"/>
+    <link href="/css/sb-admin.css" th:href="@{/css/sb-admin.css}" rel="stylesheet"/>
+    <link href='http://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic' rel='stylesheet' type='text/css'/>
 
-    <!-- endbuild -->
+    <!-- Page-Level Plugin CSS -->
+    <link href="/css/plugins/timeline/timeline.css" th:href="@{/css/plugins/timeline/timeline.css}" rel="stylesheet"/>
+
+    <!-- Miles2Run Overrides -->
+    <link href="/css/miles2run.css" th:href="@{/css/miles2run.css}" rel="stylesheet"/>
+
 </head>
-<body ng-app="milestogo">
 
-<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-    <div class="container">
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" href="/" th:href="@{/}">Miles2Run</a>
-        </div>
-        <div class="collapse navbar-collapse">
-            <ul class="nav navbar-nav">
-                <li class="active"><a th:href="@{/home}">Home</a></li>
-                <li><a th:href="@{/about}">About</a></li>
-            </ul>
-            <ul class="nav navbar-collapse pull-right">
-                <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" th:inline="text">
-                        <img width="25" height="25" th:src="${profile.profilePic}"/> [[${profile.fullname}]] <b class="caret"></b></a>
-                    <ul class="dropdown-menu">
-                        <li><a href="#" th:href="@{'/profiles/' + ${profile.username}}"
-                               th:text="${profile.fullname}"></a></li>
-                        <li><a href="#" th:href="@{/logout}">Logout</a></li>
-                    </ul>
-                </li>
-            </ul>
+<body>
 
-        </div>
-    </div>
+<div id="wrapper">
+
+<nav class="navbar navbar-default" role="navigation">
+<div class="navbar-header">
+    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".sidebar-collapse">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+    </button>
+    <a class="navbar-brand" href="home.html">Miles2Run</a>
 </div>
+<!-- /.navbar-header -->
 
-<div id="main" class="container-fluid" ng-controller="HeaderCtrl">
-    <div class="row appnav">
-        <div class="col-md-offset-1 col-md-2 well">
-            <ul class="nav nav-pills nav-stacked">
-                <li ng-class="{ active: isActive('/')}"><a href="#"><i class="fa fa-list"></i> Timeline</a></li>
-                <li ng-class="{ active: isActive('/activity/post')}"><a href="#activity/post"><i
-                        class="fa fa-pencil-square"></i> Post Activity</a></li>
-                <li ng-class="{ active: isActive('/progress')}"><a href="#progress"><i
-                        class="glyphicon glyphicon-stats"></i> Progress</a></li>
-                <li ng-class="{ active: isActive('/notifications')}"><a href="#notifications"><i
-                        class="glyphicon glyphicon-bell"></i> Notifications</a></li>
-                <li ng-class="{ active: isActive('/friends')}"><a href="#friends"><i class="fa fa-users"></i>
-                    Friends</a></li>
-                <li ng-class="{ active: isActive('/activity/calendar')}"><a href="#activity/calendar"><i class="glyphicon glyphicon-calendar"></i>
-                    Calendar</a></li>
-            </ul>
-        </div>
-        <div class="col-md-offset-1 col-md-7" ng-view="">
+<ul class="nav navbar-top-links navbar-right">
+<li class="dropdown">
+    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+        <i class="fa fa-envelope fa-fw"></i> <i class="fa fa-caret-down"></i>
+    </a>
+    <ul class="dropdown-menu dropdown-messages">
+        <li>
+            <a href="#">
+                <div>
+                    <strong>John Smith</strong>
+                                    <span class="pull-right text-muted">
+                                        <em>Yesterday</em>
+                                    </span>
+                </div>
+                <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque eleifend...</div>
+            </a>
+        </li>
+        <li class="divider"></li>
+        <li>
+            <a href="#">
+                <div>
+                    <strong>John Smith</strong>
+                                    <span class="pull-right text-muted">
+                                        <em>Yesterday</em>
+                                    </span>
+                </div>
+                <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque eleifend...</div>
+            </a>
+        </li>
+        <li class="divider"></li>
+        <li>
+            <a href="#">
+                <div>
+                    <strong>John Smith</strong>
+                                    <span class="pull-right text-muted">
+                                        <em>Yesterday</em>
+                                    </span>
+                </div>
+                <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque eleifend...</div>
+            </a>
+        </li>
+        <li class="divider"></li>
+        <li>
+            <a class="text-center" href="#">
+                <strong>Read All Messages</strong>
+                <i class="fa fa-angle-right"></i>
+            </a>
+        </li>
+    </ul>
+    <!-- /.dropdown-messages -->
+</li>
+<!-- /.dropdown -->
+<li class="dropdown">
+    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+        <i class="fa fa-tasks fa-fw"></i> <i class="fa fa-caret-down"></i>
+    </a>
+    <ul class="dropdown-menu dropdown-tasks">
+        <li>
+            <a href="#">
+                <div>
+                    <p>
+                        <strong>Task 1</strong>
+                        <span class="pull-right text-muted">40% Complete</span>
+                    </p>
 
+                    <div class="progress progress-striped active">
+                        <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="40"
+                             aria-valuemin="0" aria-valuemax="100" style="width: 40%">
+                            <span class="sr-only">40% Complete (success)</span>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </li>
+        <li class="divider"></li>
+        <li>
+            <a href="#">
+                <div>
+                    <p>
+                        <strong>Task 2</strong>
+                        <span class="pull-right text-muted">20% Complete</span>
+                    </p>
+
+                    <div class="progress progress-striped active">
+                        <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="20"
+                             aria-valuemin="0" aria-valuemax="100" style="width: 20%">
+                            <span class="sr-only">20% Complete</span>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </li>
+        <li class="divider"></li>
+        <li>
+            <a href="#">
+                <div>
+                    <p>
+                        <strong>Task 3</strong>
+                        <span class="pull-right text-muted">60% Complete</span>
+                    </p>
+
+                    <div class="progress progress-striped active">
+                        <div class="progress-bar progress-bar-warning" role="progressbar" aria-valuenow="60"
+                             aria-valuemin="0" aria-valuemax="100" style="width: 60%">
+                            <span class="sr-only">60% Complete (warning)</span>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </li>
+        <li class="divider"></li>
+        <li>
+            <a href="#">
+                <div>
+                    <p>
+                        <strong>Task 4</strong>
+                        <span class="pull-right text-muted">80% Complete</span>
+                    </p>
+
+                    <div class="progress progress-striped active">
+                        <div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="80"
+                             aria-valuemin="0" aria-valuemax="100" style="width: 80%">
+                            <span class="sr-only">80% Complete (danger)</span>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </li>
+        <li class="divider"></li>
+        <li>
+            <a class="text-center" href="#">
+                <strong>See All Tasks</strong>
+                <i class="fa fa-angle-right"></i>
+            </a>
+        </li>
+    </ul>
+    <!-- /.dropdown-tasks -->
+</li>
+<!-- /.dropdown -->
+<li class="dropdown">
+    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+        <i class="fa fa-bell fa-fw"></i> <i class="fa fa-caret-down"></i>
+    </a>
+    <ul class="dropdown-menu dropdown-alerts">
+        <li>
+            <a href="#">
+                <div>
+                    <i class="fa fa-comment fa-fw"></i> New Comment
+                    <span class="pull-right text-muted small">4 minutes ago</span>
+                </div>
+            </a>
+        </li>
+        <li class="divider"></li>
+        <li>
+            <a href="#">
+                <div>
+                    <i class="fa fa-twitter fa-fw"></i> 3 New Followers
+                    <span class="pull-right text-muted small">12 minutes ago</span>
+                </div>
+            </a>
+        </li>
+        <li class="divider"></li>
+        <li>
+            <a href="#">
+                <div>
+                    <i class="fa fa-envelope fa-fw"></i> Message Sent
+                    <span class="pull-right text-muted small">4 minutes ago</span>
+                </div>
+            </a>
+        </li>
+        <li class="divider"></li>
+        <li>
+            <a href="#">
+                <div>
+                    <i class="fa fa-tasks fa-fw"></i> New Task
+                    <span class="pull-right text-muted small">4 minutes ago</span>
+                </div>
+            </a>
+        </li>
+        <li class="divider"></li>
+        <li>
+            <a class="text-center" href="#">
+                <strong>See All Alerts</strong>
+                <i class="fa fa-angle-right"></i>
+            </a>
+        </li>
+    </ul>
+    <!-- /.dropdown-alerts -->
+</li>
+<!-- /.dropdown -->
+<li class="dropdown">
+    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+        <i class="fa fa-user fa-fw"></i> <i class="fa fa-caret-down"></i>
+    </a>
+    <ul class="dropdown-menu dropdown-user">
+        <li><a href="profile.html"><i class="fa fa-user fa-fw"></i> User Profile</a>
+        </li>
+        <li class="divider"></li>
+        <li><a href="login.html"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
+        </li>
+    </ul>
+    <!-- /.dropdown-user -->
+</li>
+<!-- /.dropdown -->
+</ul>
+<!-- /.navbar-top-links -->
+
+<div class="navbar-default navbar-static-side" role="navigation">
+    <div class="sidebar-collapse">
+        <ul class="nav" id="side-menu">
+            <li class="active">
+                <a href="index.html"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
+            </li>
+            <li>
+                <a href="timeline.html"><i class="fa fa-clock-o fa-fw"></i> Timeline</a>
+            </li>
+            <li>
+                <a href="activity.html"><i class="fa fa-pencil fa-fw"></i> Post Activity</a>
+            </li>
+            <li>
+                <a href="calendar.html"><i class="fa fa-calendar fa-fw"></i> Calendar</a>
+            </li>
+            <li>
+                <a href="friends.html"><i class="fa fa-users fa-fw"></i> Friends</a>
+            </li>
+        </ul>
+        <!-- /#side-menu -->
+
+        <div class="radial-progress-block">
+            <div class="radial-progress" data-progress="43">
+                <div class="circle">
+                    <div class="mask full">
+                        <div class="fill"></div>
+                    </div>
+                    <div class="mask half">
+                        <div class="fill"></div>
+                        <div class="fill fix"></div>
+                    </div>
+                </div>
+                <div class="inset">
+                    <div class="percentage">
+                        <div class="numbers">
+                            <span>-</span><span>0%</span><span>1%</span><span>2%</span><span>3%</span><span>4%</span><span>5%</span><span>6%</span><span>7%</span><span>8%</span><span>9%</span><span>10%</span><span>11%</span><span>12%</span><span>13%</span><span>14%</span><span>15%</span><span>16%</span><span>17%</span><span>18%</span><span>19%</span><span>20%</span><span>21%</span><span>22%</span><span>23%</span><span>24%</span><span>25%</span><span>26%</span><span>27%</span><span>28%</span><span>29%</span><span>30%</span><span>31%</span><span>32%</span><span>33%</span><span>34%</span><span>35%</span><span>36%</span><span>37%</span><span>38%</span><span>39%</span><span>40%</span><span>41%</span><span>42%</span><span>43%</span><span>44%</span><span>45%</span><span>46%</span><span>47%</span><span>48%</span><span>49%</span><span>50%</span><span>51%</span><span>52%</span><span>53%</span><span>54%</span><span>55%</span><span>56%</span><span>57%</span><span>58%</span><span>59%</span><span>60%</span><span>61%</span><span>62%</span><span>63%</span><span>64%</span><span>65%</span><span>66%</span><span>67%</span><span>68%</span><span>69%</span><span>70%</span><span>71%</span><span>72%</span><span>73%</span><span>74%</span><span>75%</span><span>76%</span><span>77%</span><span>78%</span><span>79%</span><span>80%</span><span>81%</span><span>82%</span><span>83%</span><span>84%</span><span>85%</span><span>86%</span><span>87%</span><span>88%</span><span>89%</span><span>90%</span><span>91%</span><span>92%</span><span>93%</span><span>94%</span><span>95%</span><span>96%</span><span>97%</span><span>98%</span><span>99%</span><span>100%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <h6>Progress completed</h6>
         </div>
+        <!-- /.radial-progress-chart -->
     </div>
+    <!-- /.sidebar-collapse -->
 </div>
+<!-- /.navbar-static-side -->
+</nav>
 
-<script th:inline="javascript">
-    /*<![CDATA[*/
+<div id="page-wrapper">
+    <div class="row">
+        <div class="col-lg-12">
+            <h1 class="page-header">Dashboard</h1>
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+    <!-- /.row -->
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-lg-4 col-sm-4 text-center">
+                            <h4>Goal</h4>
 
-    var activeUserProfile = [[${activeProfile}]];
+                            <div>
+                                100 miles
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-sm-4 text-center">
+                            <h4>Average Pace</h4>
 
-    /*]]>*/
-</script>
+                            <div>
+                                8:52
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-sm-4 text-center">
+                            <h4>Total Activities</h4>
 
-<script src="/js/jquery.js" th:src="@{/js/jquery.js}"></script>
-<script src="/js/angular.js" th:src="@{/js/angular.js}"></script>
+                            <div>
+                                8
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.panel-body -->
+            </div>
+            <!-- /.panel -->
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+    <!-- /.row -->
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <i class="fa fa-tasks fa-fw"></i> Goal
+                </div>
+                <!-- /.panel-heading -->
+                <div class="panel-body">
+                    <div>
+                        <p>
+                            <strong class="h3">Run 100 miles</strong>
+                            <span class="pull-right text-muted">43% Complete</span>
+                        </p>
 
-<!-- build:js scripts/plugins.js -->
-<script src="/js/affix.js" th:src="@{/js/affix.js}"></script>
-<script src="/js/alert.js" th:src="@{/js/alert.js}"></script>
-<script src="/js/button.js" th:src="@{/js/button.js}"></script>
-<script src="/js/carousel.js" th:src="@{/js/carousel.js}"></script>
-<script src="/js/transition.js" th:src="@{/js/transition.js}"></script>
-<script src="/js/collapse.js" th:src="@{/js/collapse.js}"></script>
-<script src="/js/dropdown.js" th:src="@{/js/dropdown.js}"></script>
-<script src="/js/modal.js" th:src="@{/js/modal.js}"></script>
-<script src="/js/scrollspy.js" th:src="@{/js/scrollspy.js}"></script>
-<script src="/js/tab.js" th:src="@{/js/tab.js}"></script>
-<script src="/js/tooltip.js" th:src="@{/js/tooltip.js}"></script>
-<script src="/js/popover.js" th:src="@{/js/popover.js}"></script>
-<script src="/js/moment.js" th:src="@{/js/moment.js}"></script>
-<!-- endbuild -->
+                        <div class="progress progress-striped active">
+                            <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="40"
+                                 aria-valuemin="0" aria-valuemax="100" style="width: 43%">
+                                <span class="sr-only">43% Complete (success)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.panel-body -->
+            </div>
+            <!-- /.panel -->
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+    <!-- /.row -->
+</div>
+<!-- /#page-wrapper -->
 
-<!-- build:js scripts/modules.js -->
-<script src="/js/angular-resource.js" th:src="@{/js/angular-resource.js}"></script>
-<script src="/js/angular-cookies.js" th:src="@{/js/angular-cookies.js}"></script>
-<script src="/js/angular-sanitize.js" th:src="@{/js/angular-sanitize.js}"></script>
-<script src="/js/angular-route.js" th:src="@{/js/angular-route.js}"></script>
-<script src="/js/ui-bootstrap-tpls.js" th:src="@{/js/ui-bootstrap-tpls.js}"></script>
-<!-- endbuild -->
+</div>
+<!-- /#wrapper -->
 
-<script src="/js/toastr.js" th:src="@{/js/toastr.js}"></script>
-<script src="/js/d3.js" th:src="@{/js/d3.js}"></script>
-<script src="/js/cal-heatmap.js" th:src="@{/js/cal-heatmap.js}"></script>
-<!-- build:js({.tmp,app}) scripts/scripts.js -->
-<script src="/scripts/home/app.js" th:src="@{/scripts/home/app.js}"></script>
-<script src="/scripts/home/controllers/Main.js" th:src="@{/scripts/home/controllers/Main.js}"></script>
-<script src="/scripts/home/controllers/PostActivity.js" th:src="@{/scripts/home/controllers/PostActivity.js}"></script>
-<script src="/scripts/home/services/ActivityService.js" th:src="@{/scripts/home/services/ActivityService.js}"></script>
-<script src="/scripts/home/services/ProfileService.js" th:src="@{/scripts/home/services/ProfileService.js}"></script>
-<script src="/scripts/home/controllers/Progress.js" th:src="@{/scripts/home/controllers/Progress.js}"></script>
-<script src="/scripts/home/services/ProgressService.js" th:src="@{/scripts/home/services/ProgressService.js}"></script>
-<script src="/scripts/home/directives/calHeatmap.js" th:src="@{/scripts/home/directives/calHeatmap.js}"></script>
-<script src="/scripts/home/services/ConfigService.js" th:src="@{/scripts/home/services/ConfigService.js}"></script>
-<script src="/scripts/home/controllers/Notifications.js" th:src="@{/scripts/home/controllers/Notifications.js}"></script>
-<script src="/scripts/home/controllers/Friends.js" th:src="@{/scripts/home/controllers/Friends.js}"></script>
-<script src="/scripts/home/controllers/EditActivity.js" th:src="@{/scripts/home/controllers/EditActivity.js}"></script>
-<script src="/scripts/home/controllers/ShareActivity.js" th:src="@{/scripts/home/controllers/ShareActivity.js}"></script>
-<script src="/scripts/home/controllers/ViewActivity.js" th:src="@{/scripts/home/controllers/ViewActivity.js}"></script>
-<script src="/scripts/home/controllers/ActivityCalendar.js" th:src="@{/scripts/home/controllers/ActivityCalendar.js}"></script>
-<script src="/scripts/home/directives/ignoreField.js" th:src="@{/scripts/home/directives/ignoreField.js}"></script>
-<!-- endbuild -->
+<!-- Core Scripts - Include with every page -->
+<script src="/bower_components/jquery/dist/jquery.js" th:src="@{/bower_components/jquery/dist/jquery.js}"></script>
+<script src="/js/bootstrap.min.js" th:src="@{/js/bootstrap.min.js}"></script>
+<script src="/js/plugins/metisMenu/jquery.metisMenu.js" th:src="@{/js/plugins/metisMenu/jquery.metisMenu.js}"></script>
+
+<!-- Page-Level Plugin Scripts -->
+
+<!-- SB Admin Scripts - Include with every page -->
+<script src="/js/sb-admin.js" th:src="@{/js/sb-admin.js}"></script>
+
+
 </body>
+
 </html>
