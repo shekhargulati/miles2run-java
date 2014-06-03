@@ -201,7 +201,9 @@ public class TimelineService {
                 Pipeline pipeline = jedis.pipelined();
                 pipeline.del(key);
                 pipeline.zrem("home:timeline:" + username, String.valueOf(activityId));
+                pipeline.zrem("profile:timeline:" + username, String.valueOf(activityId));
                 UserProfile userProfile = profileMongoService.findProfile(username);
+                logger.info("Deleting activity from all the followers timeline");
                 final List<String> followers = userProfile.getFollowers();
                 logger.info(String.format("Followers for %s are %s", username, followers));
                 for (String follower : followers) {
