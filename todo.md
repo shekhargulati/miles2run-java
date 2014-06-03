@@ -14,3 +14,4 @@
 12. Pagination of timeline
 13. Activity sharing is not working
 14. The user profile page should load data from profile:timeline
+15. Jenkins setup
