@@ -125,6 +125,7 @@ public class TimelineService {
                 data.put("distanceCovered", String.valueOf(activity.getDistanceCovered()));
                 data.put("goalUnit", activity.getGoalUnit().getUnit());
                 data.put("profilePic", profile.getProfilePic());
+                data.put("status", activity.getStatus() == null ? "" : activity.getStatus());
                 pipeline.hmset("activity:" + id, data);
                 pipeline.sync();
                 return id;

@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('milestogo')
-    .controller('MainCtrl', function ($scope, ActivityService, activeProfile, $modal, ConfigService) {
+    .controller('MainCtrl', function ($scope, ActivityService, activeProfile, $modal, ConfigService, $location) {
         $scope.currentUser = activeProfile;
 
         ActivityService.timeline($scope.currentUser.username).success(function (data, status, headers, config) {
@@ -9,6 +9,24 @@ angular.module('milestogo')
         }).error(function (data, status, headers, config) {
             toastr.error("Unable to fetch timeline. Please try after sometime.");
         });
+
+        $scope.messageToShare = function (activity) {
+            return activity.fullname + ' ran ' + activity.distanceCovered + ' ' + activity.goalUnit + ' &via=miles2runorg';
+        };
+
+        $scope.redirectUri = function () {
+            if ($location.host() === "localhost") {
+                return "http://localhost:8080/miles2run"
+            }
+            return "http://" + $location.host();
+        }
+
+        $scope.facebookAppId = function(){
+            if ($location.host() === "localhost") {
+                return 433218286822536;
+            }
+            return 433218286822536;
+        }
 
         $scope.delete = function (idx) {
             var modalIntance = $modal.open({
@@ -58,5 +76,6 @@ var DeleteActivityCtrl = function ($scope, ActivityService, activeProfile, $moda
 
     $scope.appContext = function () {
         return ConfigService.appContext();
-    }
+    };
+
 };

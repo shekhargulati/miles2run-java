@@ -51,6 +51,8 @@ public class ActivityDetails {
         this.goalUnit = GoalUnit.fromStringToGoalUnit(hash.get("goalUnit"));
         this.distanceCovered = Long.valueOf(hash.get("distanceCovered")) / this.goalUnit.getConversion();
         this.fullname = hash.get("fullname");
+        this.profilePic = hash.get("profilePic");
+        this.status = hash.get("status");
     }
 
     public Long getId() {

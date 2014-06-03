@@ -1,0 +1,85 @@
+<script type="text/ng-template" id="confirm.html">
+    <div class="modal-footer">
+        <p class="pull-left">Are you sure you want to delete this activity?</p>
+        <button class="btn btn-danger" ng-click="ok()">Delete</button>
+        <button class="btn btn-default" ng-click="cancel()">Cancel</button>
+    </div>
+</script>
+
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-header">Timeline</h1>
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+<!-- /.row -->
+<div class="row">
+    <div class="col-lg-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <i class="fa fa-clock-o fa-fw"></i> Your activities
+            </div>
+            <!-- /.panel-heading -->
+            <div class="panel-body">
+                <div class="well" ng-if="activities.length == 0" ng-cloak>
+                    <h2>You haven't tracked any activities yet!!</h2>
+
+                    <p class="lead">But don't worry! It's really easy to get started. Just click on the button below to
+                        enter your first activity:</p>
+                    <a class="btn btn-success" ng-href="#activity/post">Post New Activity</a>
+                </div>
+
+                <ul class="timeline" ng-if="activities.length">
+                    <li ng-repeat="activity in activities" ng-class-even="'timeline-inverted'">
+                        <div class="timeline-badge">
+                            <span class="avatar"><img ng-src="{{activity.profilePic}}"></span>
+                        </div>
+                        <div class="timeline-panel">
+                            <div class="timeline-heading clearfix ">
+                                <h4 class="timeline-title">@<a ng-href="{{appContext()}}profiles/{{activity.username}}">{{activity.username}}</a> ran {{activity.distanceCovered}} {{activity.goalUnit | lowercase}}</h4>
+                                <span class="pull-right text-muted small"><i class="fa fa-calendar fa-fw"></i><em>{{activity.activityDate | date:'MMM dd, yyyy'}}</em></span>
+                            </div>
+                            <div class="timeline-body">
+                                <p>{{activity.status}}</p>
+                                <hr>
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-default btn-xs dropdown-toggle"
+                                            data-toggle="dropdown">
+                                        <i class="fa fa-cog"></i>
+                                        <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu" role="menu" ng-if="activity.username == currentUser.username" ng-cloak>
+                                        <li>
+                                            <a ng-href="#/activity/{{activity.id}}" title="view activity">View</a>
+                                        </li>
+                                        <li>
+                                            <a ng-href="#/activity/edit/{{activity.id}}" title="edit activity">Edit</a>
+                                        </li>
+                                        <li class="divider"></li>
+                                        <li>
+                                            <a href="#timeline" ng-click="delete($index)" title="delete activity">Delete</a>
+                                        </li>
+                                    </ul>
+                                    <ul class="dropdown-menu" role="menu" ng-if="activity.username != currentUser.username" ng-cloak>
+                                        <li>
+                                            <a ng-href="#/activity/{{activity.id}}" title="view activity">View</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="pull-right">
+                                    <a class="btn btn-xs btn-social-icon btn-facebook" target="_blank" href="https://www.facebook.com/dialog/feed?redirect_uri={{redirectUri()}}&display=popup&app_id={{facebookAppId()}}"><i class="fa fa-facebook"></i></a>
+                                    <a class="btn btn-xs btn-social-icon btn-twitter" target="_blank" href="https://twitter.com/intent/tweet?text={{messageToShare(activity)}}"><i class="fa fa-twitter"></i></a>
+                                    <a class="btn btn-xs btn-social-icon btn-google-plus"><i class="fa fa-google-plus"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <!-- /.panel-body -->
+        </div>
+        <!-- /.panel -->
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+<!-- /.row -->
