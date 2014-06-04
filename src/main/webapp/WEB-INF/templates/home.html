@@ -102,7 +102,7 @@
     <ul class="dropdown-menu dropdown-user">
         <li>
             <a href="#" th:href="@{'/profiles/' + ${profile.username}}" th:inline="text">
-                <i class="fa fa-user fa-fw"></i> [[${profile.fullname}]]
+                <img width="25" height="25" th:src="${profile.profilePic}"/> [[${profile.fullname}]]
             </a>
         </li>
         <li class="divider"></li>
