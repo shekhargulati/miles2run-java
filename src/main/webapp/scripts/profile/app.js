@@ -27,8 +27,10 @@ var app = angular.module('milestogo', [
     });
 
 app.config(['$provide', function ($provide) {
-    var profile = angular.copy(window.activeUserProfile);
-    $provide.constant('activeProfile', profile);
+    var activeUserProfile = angular.copy(window.activeUserProfile);
+    $provide.constant('activeProfile', activeUserProfile);
+    var userProfile = angular.copy(window.userProfile);
+    $provide.constant('userProfile', userProfile);
 }]);
 
 app.run(function ($rootScope, $location) {
@@ -43,7 +45,6 @@ app.run(function ($rootScope, $location) {
 
 
 function HeaderCtrl($scope, $location) {
-
     $scope.isActive = function (viewLocation) {
         return viewLocation === $location.path();
     };

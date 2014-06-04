@@ -203,4 +203,26 @@ public class TimelineService {
             }
         });
     }
+
+    public List<ActivityDetails> getProfileTimeline(final String username, final int page, final int count) {
+        return jedisExecutionService.execute(new JedisOperation<List<ActivityDetails>>() {
+            @Override
+            public List<ActivityDetails> perform(Jedis jedis) {
+                Set<String> activityIds = jedis.zrevrange("profile:timeline:" + username, (page - 1) * count, page * (count - 1));
+                Pipeline pipeline = jedis.pipelined();
+                List<Response<Map<String, String>>> result = new ArrayList<>();
+                for (String activityId : activityIds) {
+                    Response<Map<String, String>> response = pipeline.hgetAll("activity:" + activityId);
+                    result.add(response);
+                }
+                pipeline.sync();
+                List<ActivityDetails> profileTimeline = new ArrayList<>();
+                for (Response<Map<String, String>> response : result) {
+                    Map<String, String> hash = response.get();
+                    profileTimeline.add(new ActivityDetails(hash));
+                }
+                return profileTimeline;
+            }
+        });
+    }
 }

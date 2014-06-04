@@ -9,10 +9,7 @@ import org.miles2run.business.vo.ProfileSocialConnectionDetails;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
@@ -67,6 +64,34 @@ public class ProfileResource {
             return Collections.emptyList();
         }
         return profileService.findAllProfiles(following);
+    }
+
+    @Path("/{username}/followers")
+    @GET
+    @Produces("application/json")
+    @LoggedIn
+    public List<ProfileDetails> followingForProfile(@PathParam("username") String username) {
+        UserProfile userProfile = profileMongoService.findProfile(username);
+        List<String> following = userProfile.getFollowing();
+        logger.info(String.format("User %s is following %s", username, following));
+        if (following.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return profileService.findAllProfiles(following);
+    }
+
+    @Path("/{username}/followers")
+    @GET
+    @Produces("application/json")
+    @LoggedIn
+    public List<ProfileDetails> followersForProfile(@PathParam("username") String username) {
+        UserProfile userProfile = profileMongoService.findProfile(username);
+        List<String> followers = userProfile.getFollowers();
+        logger.info(String.format("User %s is followers %s", username, followers));
+        if (followers.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return profileService.findAllProfiles(followers);
     }
 
 }
