@@ -156,6 +156,37 @@
                         <p th:text="${userProfile.bio}"></p>
                         <p th:text="${userProfile.city} + ', '+ ${userProfile.country}"></p>
                     </div>
+                    <div class="panel-footer">
+                        <div class="row">
+                            <div class="col-lg-3 col-sm-3 text-center">
+                                <h4>Active Goal</h4>
+
+                                <div th:inline="text">
+                                    [[${userProfile.goal} + ' ' + ${userProfile.goalUnit.upperCase()}]]
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-sm-3 text-center">
+                                <h4>Distance Covered</h4>
+
+                                <div th:inline="text">
+                                    [[${progress.totalDistanceCovered} + ' ' + ${userProfile.goalUnit.upperCase()}]]
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-sm-3 text-center">
+                                <h4>Average Pace</h4>
+
+                                <div th:inline="text">
+                                    [[${#numbers.formatDecimal(progress.averagePace,1,2)} + ' MINS/' + ${userProfile.goalUnit.upperCase()}]]
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-sm-3 text-center">
+                                <h4>Total Activities</h4>
+
+                                <div th:text="${activities}">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <!-- /.panel-body -->
                 </div>
                 <!-- /.panel -->

@@ -28,3 +28,8 @@
 26. <s>ProfileForm validation is not working</s>
 27. Fix signin page
 28. Fix error pages
+29. If user exist in session then bypass social authentication
+30. Add few charts in the dashboard view -- pace, chart like https://github.com/openshift-evangelists/miles2run/graphs/commit-activity,https://github.com/openshift-evangelists/miles2run/graphs/punch-card
+31. show login logout when user is signed in
+32. There is no way to update or remove a photo
+33. Ability to add more than one social connection to a profile
