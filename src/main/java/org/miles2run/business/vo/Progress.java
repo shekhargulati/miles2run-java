@@ -1,6 +1,7 @@
 package org.miles2run.business.vo;
 
 import org.miles2run.business.domain.GoalUnit;
+import org.miles2run.business.domain.Profile;
 
 /**
  * Created by shekhargulati on 06/03/14.
@@ -11,16 +12,24 @@ public class Progress {
     private long totalDistanceCovered;
     private long percentage;
     private long activityCount;
+    private long totalDurationInSecs;
+    private long totalDurationInMins;
+    private double averagePace;
 
-    public Progress(long goal, GoalUnit goalUnit, long totalDistanceCovered, long activityCount) {
+    public Progress(long goal, GoalUnit goalUnit, long totalDistanceCovered, long activityCount, long totalDurationInSecs) {
         this.goalUnit = goalUnit;
         this.goal = goal / this.goalUnit.getConversion();
         this.totalDistanceCovered = totalDistanceCovered / this.goalUnit.getConversion();
         this.activityCount = activityCount;
         if (goal != 0) {
             double percentageInDouble = ((double) totalDistanceCovered / goal) * 100;
-            this.percentage = Double.valueOf(Math.ceil(percentageInDouble)).longValue();
+            this.percentage = Double.valueOf(Math.floor(percentageInDouble)).longValue();
             this.percentage = this.percentage > 100 ? 100 : this.percentage;
+        }
+        this.totalDurationInSecs = totalDurationInSecs;
+        this.totalDurationInMins = this.totalDurationInSecs / 60;
+        if (this.totalDistanceCovered != 0) {
+            this.averagePace = Double.valueOf(this.totalDurationInMins) / this.totalDistanceCovered;
         }
     }
 
@@ -30,6 +39,15 @@ public class Progress {
         this.totalDistanceCovered = 0;
         this.percentage = 0;
         this.activityCount = 0;
+    }
+
+    public Progress(Profile profile) {
+        this.goal = profile.getGoal() / profile.getGoalUnit().getConversion();
+        this.percentage = 0;
+        this.totalDistanceCovered = 0;
+        this.averagePace = 0;
+        this.activityCount = 0;
+        this.goalUnit = profile.getGoalUnit();
     }
 
     public long getGoal() {
@@ -70,6 +88,10 @@ public class Progress {
 
     public void setActivityCount(long activityCount) {
         this.activityCount = activityCount;
+    }
+
+    public double getAveragePace() {
+        return this.averagePace;
     }
 }
 

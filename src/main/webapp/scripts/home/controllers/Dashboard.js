@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('milestogo')
-    .controller('ProgressCtrl', function ($scope, ProgressService, ConfigService, activeProfile) {
+    .controller('DashboardCtrl', function ($scope, ProgressService, ConfigService, activeProfile) {
         $scope.currentUser = activeProfile;
         $scope.error = null;
         $scope.data = {};

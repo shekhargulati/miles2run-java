@@ -36,7 +36,7 @@ public class ProgressResource {
         if (loggedInUser == null) {
             return Response.status(Response.Status.NOT_FOUND).entity("No user exist with username " + username).build();
         }
-        Progress progress = activityService.findTotalDistanceCovered(loggedInUser);
+        Progress progress = activityService.calculateUserProgress(loggedInUser);
         return Response.status(Response.Status.OK).entity(progress).build();
     }
 

@@ -83,12 +83,12 @@ public class ActivityService {
 
     }
 
-    public Progress findTotalDistanceCovered(Profile profile) {
+    public Progress calculateUserProgress(Profile profile) {
         long count = entityManager.createNamedQuery("Activity.countByProfile", Long.class).setParameter("profile", profile).getSingleResult();
         if (count == 0) {
-            return null;
+            return new Progress(profile);
         }
-        TypedQuery<Progress> query = entityManager.createQuery("SELECT new org.miles2run.business.vo.Progress(a.postedBy.goal,a.postedBy.goalUnit, SUM(a.distanceCovered),COUNT(a)) from Activity a WHERE a.postedBy =:postedBy", Progress.class).setParameter("postedBy", profile);
+        TypedQuery<Progress> query = entityManager.createQuery("SELECT new org.miles2run.business.vo.Progress(a.postedBy.goal,a.postedBy.goalUnit, SUM(a.distanceCovered),COUNT(a), SUM(a.duration) ) from Activity a WHERE a.postedBy =:postedBy", Progress.class).setParameter("postedBy", profile);
         return query.getSingleResult();
     }
 
@@ -102,7 +102,7 @@ public class ActivityService {
         if (count == 0) {
             return new Progress();
         }
-        TypedQuery<Progress> query = entityManager.createQuery("SELECT new org.miles2run.business.vo.Progress(a.postedBy.goal,a.postedBy.goalUnit, SUM(a.distanceCovered),COUNT(a)) from Activity a WHERE a.postedBy =:postedBy", Progress.class).setParameter("postedBy", profile);
+        TypedQuery<Progress> query = entityManager.createQuery("SELECT new org.miles2run.business.vo.Progress(a.postedBy.goal,a.postedBy.goalUnit, SUM(a.distanceCovered),COUNT(a),SUM(a.duration)) from Activity a WHERE a.postedBy =:postedBy", Progress.class).setParameter("postedBy", profile);
         return query.getSingleResult();
     }
 
