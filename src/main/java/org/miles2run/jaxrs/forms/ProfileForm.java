@@ -1,8 +1,11 @@
 package org.miles2run.jaxrs.forms;
 
+import org.hibernate.validator.constraints.NotBlank;
 import org.miles2run.business.domain.Gender;
 import org.miles2run.business.domain.GoalUnit;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import javax.ws.rs.FormParam;
 
 /**
@@ -11,29 +14,38 @@ import javax.ws.rs.FormParam;
 public class ProfileForm {
 
     @FormParam("email")
+    @NotBlank
     private String email;
 
     @FormParam("username")
+    @NotBlank
     private String username;
 
     @FormParam("fullname")
+    @NotBlank
     private String fullname;
 
     @FormParam("bio")
+    @NotBlank
+    @Size(max = 200)
     private String bio;
 
     @FormParam("city")
+    @NotBlank
     private String city;
 
     @FormParam("country")
+    @NotBlank
     private String country;
 
     @FormParam("gender")
     private Gender gender;
 
     @FormParam("goal")
+    @NotNull
     private long goal;
 
+    @NotNull
     @FormParam("goalUnit")
     private GoalUnit goalUnit;
 

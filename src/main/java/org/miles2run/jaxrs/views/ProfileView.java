@@ -33,12 +33,14 @@ import twitter4j.TwitterFactory;
 import twitter4j.User;
 import twitter4j.auth.AccessToken;
 
+import javax.ejb.EJBTransactionRolledbackException;
 import javax.inject.Inject;
 import javax.persistence.PersistenceException;
 import javax.transaction.RollbackException;
 import javax.transaction.Transactional;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
+import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.SecurityContext;
@@ -107,10 +109,11 @@ public class ProfileView {
     @POST
     @Path("/new")
     @AfterLogin
+    @Produces("text/html")
     public View createProfile(@Form ProfileForm profileForm) {
+        List<String> errors = new ArrayList<>();
         try {
-            logger.info(profileForm.toString());
-            List<String> errors = new ArrayList<>();
+            logger.info("createProfile() ... profileForm : " + profileForm.toString());
             if (profileService.findProfileByEmail(profileForm.getEmail()) != null) {
                 errors.add(String.format("User already exist with email %s", profileForm.getEmail()));
             }
@@ -121,26 +124,7 @@ public class ProfileView {
                 return View.of("/createProfile", templateEngine).withModel("profile", new ProfileDetails(profileForm)).withModel("errors", errors);
             }
             Profile profile = new Profile(profileForm);
-            try {
-                profileService.save(profile);
-            } catch (Exception e) {
-                logger.info(e.getClass().getCanonicalName());
-                RollbackException rollbackException = (RollbackException) e;
-                Throwable rollbackCause = rollbackException.getCause();
-                if (rollbackCause instanceof PersistenceException) {
-                    PersistenceException persistenceException = (PersistenceException) rollbackCause;
-                    if (persistenceException.getCause() instanceof ConstraintViolationException) {
-                        ConstraintViolationException constraintViolationException = (ConstraintViolationException) persistenceException.getCause();
-                        Set<ConstraintViolation<?>> constraintViolations = constraintViolationException.getConstraintViolations();
-                        for (ConstraintViolation<?> constraintViolation : constraintViolations) {
-                            errors.add(String.format("Field '%s' with value '%s' is invalid. %s", constraintViolation.getPropertyPath(), constraintViolation.getInvalidValue(), constraintViolation.getMessage()));
-                        }
-                        return View.of("/createProfile", templateEngine).withModel("profile", profileForm).withModel("errors", errors);
-                    }
-                }
-                errors.add(e.getMessage());
-                return View.of("/createProfile", templateEngine).withModel("profile", profileForm).withModel("errors", errors);
-            }
+            profileService.save(profile);
             socialConnectionService.update(profile, profileForm.getConnectionId());
             profileMongoService.save(profile);
             counterService.updateRunnerCount();
@@ -148,9 +132,22 @@ public class ProfileView {
             counterService.addCity(profile.getCity());
             return View.of("/home", true).withModel("principal", profile.getUsername());
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "Unable to load create profile.", e);
-            throw new ViewException(e.getMessage(), e, templateEngine);
+            logger.info("createProfile() Exception class " + e.getClass().getCanonicalName());
+            Throwable cause = e.getCause();
+            if(cause instanceof ConstraintViolationException){
+                return constraintVoilationView(profileForm,errors,(ConstraintViolationException)cause);
+            }
+            errors.add(e.getMessage());
+            return View.of("/createProfile", templateEngine).withModel("profile", profileForm).withModel("errors", errors);
         }
+    }
+
+    private View constraintVoilationView(ProfileForm profileForm, List<String> errors, ConstraintViolationException constraintViolationException) {
+        Set<ConstraintViolation<?>> constraintViolations = constraintViolationException.getConstraintViolations();
+        for (ConstraintViolation<?> constraintViolation : constraintViolations) {
+            errors.add(String.format("Field '%s' with value '%s' is invalid. %s", constraintViolation.getPropertyPath(), constraintViolation.getInvalidValue(), constraintViolation.getMessage()));
+        }
+        return View.of("/createProfile", templateEngine).withModel("profile", profileForm).withModel("errors", errors);
     }
 
     @GET

@@ -1,6 +1,7 @@
 package org.miles2run.business.domain;
 
 import org.hibernate.validator.constraints.Email;
+import org.hibernate.validator.constraints.NotBlank;
 import org.miles2run.business.bean_validation.ImageUrl;
 import org.miles2run.jaxrs.forms.ProfileForm;
 
@@ -32,35 +33,35 @@ public class Profile implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @NotNull
+    @NotBlank
     @Column(unique = true)
     @Email
     private String email;
 
-    @NotNull
+    @NotBlank
     @Column(unique = true, updatable = false)
     @Size(max = 20)
     private String username;
 
-    @NotNull
+    @NotBlank
     @Size(max = 50)
     private String fullname;
 
-    @NotNull
+    @NotBlank
     @Size(max = 200)
     private String bio;
 
-    @NotNull
+    @NotBlank
     private String city;
 
-    @NotNull
+    @NotBlank
     private String country;
 
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
     @NotNull
-    private long goal;
+    private long goal = 0;
 
     @NotNull
     @Enumerated(EnumType.STRING)
