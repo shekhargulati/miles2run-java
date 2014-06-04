@@ -25,6 +25,10 @@ angular.module('milestogo')
             $scope.friends = response.data;
         });
 
+        $http.get('api/v1/profiles/me/followers').then(function (response) {
+            $scope.followers = response.data;
+        });
+
 
         $scope.followUser = function (friend, idx) {
             console.log(friend);

@@ -1,6 +1,8 @@
 package org.miles2run.jaxrs.api.v1;
 
 import org.jug.filters.LoggedIn;
+import org.miles2run.business.domain.UserProfile;
+import org.miles2run.business.services.ProfileMongoService;
 import org.miles2run.business.services.ProfileService;
 import org.miles2run.business.vo.ProfileDetails;
 import org.miles2run.business.vo.ProfileSocialConnectionDetails;
@@ -14,7 +16,9 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
+import java.util.Collections;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * Created by shekhargulati on 12/03/14.
@@ -29,6 +33,10 @@ public class ProfileResource {
     private ProfileService profileService;
     @Context
     private SecurityContext securityContext;
+    @Inject
+    private ProfileMongoService profileMongoService;
+    @Inject
+    private Logger logger;
 
     @Path("/me")
     @GET
@@ -46,6 +54,20 @@ public class ProfileResource {
         return profileService.findProfileWithFullnameLike(name);
     }
 
+    @Path("/me/followers")
+    @GET
+    @Produces("application/json")
+    @LoggedIn
+    public List<ProfileDetails> followings() {
+        String username = securityContext.getUserPrincipal().getName();
+        UserProfile userProfile = profileMongoService.findProfile(username);
+        List<String> following = userProfile.getFollowing();
+        logger.info(String.format("User %s is following %s", username, following));
+        if (following.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return profileService.findAllProfiles(following);
+    }
 
 }
 
