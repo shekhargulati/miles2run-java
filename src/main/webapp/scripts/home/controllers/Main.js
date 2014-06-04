@@ -50,7 +50,7 @@ angular.module('milestogo')
 
     });
 
-var DeleteActivityCtrl = function ($scope, ActivityService, activeProfile, $modalInstance, activityToDelete, idx, activities) {
+var DeleteActivityCtrl = function ($scope, ActivityService, activeProfile, $modalInstance, activityToDelete, idx, activities, $rootScope) {
 
     $scope.currentUser = activeProfile;
 
@@ -58,6 +58,7 @@ var DeleteActivityCtrl = function ($scope, ActivityService, activeProfile, $moda
         ActivityService.deleteActivity($scope.currentUser.username, activityToDelete.id).success(function (data, status) {
             toastr.success("Deleted activity");
             activities.splice(idx, 1);
+            $rootScope.$broadcast('update.progress', 'true');
             $modalInstance.close({});
         }).error(function (data, status, headers, config) {
             console.log("Status code %s", status);

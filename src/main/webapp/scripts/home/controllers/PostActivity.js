@@ -1,6 +1,6 @@
 'use strict';
 
-function PostActivityCtrl($scope, ActivityService, $location, ProfileService, activeProfile) {
+function PostActivityCtrl($scope, ActivityService, $location, ProfileService, activeProfile, $rootScope) {
 
     $scope.currentUser = activeProfile;
     $scope.activity = {
@@ -17,6 +17,7 @@ function PostActivityCtrl($scope, ActivityService, $location, ProfileService, ac
     $scope.postActivity = function () {
         $scope.activity.duration = toAppSeconds($scope.duration);
         ActivityService.postActivity($scope.currentUser.username, $scope.activity).success(function (data, status, headers, config) {
+            $rootScope.$broadcast('update.progress', 'true');
             toastr.success("Posted new activity");
             $location.path('/');
         }).error(function (data, status, headers, config) {

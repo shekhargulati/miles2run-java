@@ -270,8 +270,8 @@
         </ul>
         <!-- /#side-menu -->
 
-        <div class="radial-progress-block">
-            <div class="radial-progress" data-progress="43">
+        <div class="radial-progress-block" ng-controller="ProgressCtrl">
+            <div class="radial-progress" data-progress="{{data.percentage}}">
                 <div class="circle">
                     <div class="mask full">
                         <div class="fill"></div>

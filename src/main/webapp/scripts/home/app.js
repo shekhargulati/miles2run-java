@@ -97,5 +97,25 @@ function HeaderCtrl($scope, $location) {
     $scope.isActive = function (viewLocation) {
         return viewLocation === $location.path();
     };
+}
 
+function ProgressCtrl($scope, ProgressService, activeProfile, $rootScope) {
+
+    $scope.currentUser = activeProfile;
+
+    ProgressService.progress($scope.currentUser.username).success(function (data, status, headers, config) {
+        $scope.error = null;
+        $scope.status = status;
+        $scope.data = data;
+        $scope.style = "width:" + data.percentage + "%";
+    });
+
+    $rootScope.$on('update.progress',function(event,value){
+        ProgressService.progress($scope.currentUser.username).success(function (data, status, headers, config) {
+            $scope.error = null;
+            $scope.status = status;
+            $scope.data = data;
+            $scope.style = "width:" + data.percentage + "%";
+        });
+    });
 }
