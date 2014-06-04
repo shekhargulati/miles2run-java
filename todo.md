@@ -33,3 +33,4 @@
 31. show login logout when user is signed in
 32. There is no way to update or remove a photo
 33. Ability to add more than one social connection to a profile
+34. Ability to add map to a run

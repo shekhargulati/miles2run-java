@@ -51,7 +51,7 @@ public class ProfileResource {
         return profileService.findProfileWithFullnameLike(name);
     }
 
-    @Path("/me/followers")
+    @Path("/me/following")
     @GET
     @Produces("application/json")
     @LoggedIn
@@ -66,10 +66,9 @@ public class ProfileResource {
         return profileService.findAllProfiles(following);
     }
 
-    @Path("/{username}/followers")
+    @Path("/{username}/following")
     @GET
     @Produces("application/json")
-    @LoggedIn
     public List<ProfileDetails> followingForProfile(@PathParam("username") String username) {
         UserProfile userProfile = profileMongoService.findProfile(username);
         List<String> following = userProfile.getFollowing();
@@ -83,7 +82,6 @@ public class ProfileResource {
     @Path("/{username}/followers")
     @GET
     @Produces("application/json")
-    @LoggedIn
     public List<ProfileDetails> followersForProfile(@PathParam("username") String username) {
         UserProfile userProfile = profileMongoService.findProfile(username);
         List<String> followers = userProfile.getFollowers();
