@@ -37,7 +37,7 @@ var app = angular.module('milestogo', [
                 controller: 'NotificationsCtrl'
             })
             .when('/friends', {
-                templateUrl: 'views/friends.html',
+                templateUrl: 'views/friends_new.html',
                 controller: 'FriendsCtrl'
             })
             .when('/activity/edit/:activityId', {

@@ -1,0 +1,165 @@
+<script type="text/ng-template" id="user.html">
+    <a ng-href="profiles/{{match.model.username}}">
+        <img ng-src="{{match.model.pic}}" width="18">
+        <span bind-html-unsafe="match.label | typeaheadHighlight:query"></span>
+    </a>
+</script>
+<!-- /.row -->
+<div class="row">
+    <div class="col-lg-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <i class="fa fa-users fa-fw"></i> Search Miles2Run community
+            </div>
+            <!-- /.panel-heading -->
+            <div class="panel-body">
+                <form ng-submit="fetchProfile()">
+                    <div class="form-group input-group">
+                        <input type="text" ng-model="profile" placeholder="Type user full name"
+                               typeahead="profile as profile.fullname for profile in getProfiles($viewValue) | filter:$viewValue"
+                            typeahead-template-url="user.html" typeahead-editable=false class="form-control">
+                               <span class="input-group-btn">
+                                    <button class="btn btn-default" type="button"><i class="fa fa-search"></i>
+                                    </button>
+                                </span>
+                        </div>
+                </form>
+            </div>
+            <!-- /.panel-body -->
+        </div>
+        <!-- /.panel -->
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <i class="fa fa-comments fa-fw"></i> Currently following
+            </div>
+            <!-- /.panel-heading -->
+            <div class="panel-body">
+                <ul class="chat">
+                    <li class="left clearfix">
+                                    <span class="chat-img pull-left">
+                                        <span class="avatar"><img src="http://pbs.twimg.com/profile_images/460492229459472385/rlX8q-sf.png"></span>
+                                    </span>
+                        <div class="chat-body clearfix">
+                            <div class="header">
+                                <strong>Shekhar Gulati</strong><span class="pull-right text-muted small"><em>Latest activity 6 hours ago</em></span>
+                            </div>
+                            <p>
+                                Curabitur bibendum ornare dolor, quis ullamcorper ligula sodales.
+                            </p>
+                        </div>
+                    </li>
+                    <li class="left clearfix">
+                                    <span class="chat-img pull-left">
+                                        <span class="avatar"><img alt="default avatar" src="../../dist/images/avatar.jpg"></span>
+                                    </span>
+                        <div class="chat-body clearfix">
+                            <div class="header">
+                                <strong>Jordan Liggitt</strong><span class="pull-right text-muted small"><em>Latest activity 2 days ago</em></span>
+                            </div>
+                            <p>
+                                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                            </p>
+                        </div>
+                    </li>
+                    <li class="left clearfix">
+                                    <span class="chat-img pull-left">
+                                        <span class="avatar"><img alt="default avatar" src="../../dist/images/avatar.jpg"></span>
+                                    </span>
+                        <div class="chat-body clearfix">
+                            <div class="header">
+                                <strong>Jessica Forrest</strong><span class="pull-right text-muted small"><em>Latest activity 5 days ago</em></span>
+                                <p>
+                                    Curabitur bibendum ornare dolor, quis ullamcorper.
+                                </p>
+                            </div>
+                    </li>
+                    <li class="left clearfix">
+                                    <span class="chat-img pull-left">
+                                        <span class="avatar"><img alt="default avatar" src="../../dist/images/avatar.jpg"></span>
+                                    </span>
+                        <div class="chat-body clearfix">
+                            <div class="header">
+                                <strong>Fabio Franz</strong><span class="pull-right text-muted small"><em>Latest activity 8 days ago</em></span>
+                            </div>
+                            <p>
+                                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur bibendum ornare dolor, quis ullamcorper ligula sodales.
+                            </p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <!-- /.panel-body -->
+        </div>
+        <!-- /.panel -->
+    </div>
+    <!-- /.col-lg-6 -->
+    <div class="col-lg-6">
+        <div class="chat-panel members panel panel-default">
+            <div class="panel-heading">
+                <i class="fa fa-comment fa-fw"></i>
+                People you might enjoy following
+            </div>
+            <!-- /.panel-heading -->
+            <div class="panel-body">
+                <ul class="chat">
+                    <li class="left clearfix">
+                                    <span class="chat-img pull-left">
+                                        <span class="avatar"><img alt="default avatar" src="../../dist/images/avatar.jpg"></span>
+                                    </span>
+                        <div class="chat-body clearfix">
+                            <div class="header">
+                                <strong>Jack Sparrow</strong> <button type="button" class="btn btn-info btn-xs pull-right">Follow</button>
+                            </div>
+                            <p>
+                                Curabitur bibendum ornare dolor, quis ullamcorper ligula sodales.
+                            </p>
+                        </div>
+                    </li>
+                    <li class="left clearfix">
+                                    <span class="chat-img pull-left">
+                                        <span class="avatar"><img alt="default avatar" src="../../dist/images/avatar.jpg"></span>
+                                    </span>
+                        <div class="chat-body clearfix">
+                            <div class="header">
+                                <strong>Bhaumik Patel</strong> <button type="button" class="btn btn-info btn-xs pull-right">Follow</button>
+                            </div>
+                            <p>
+                                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                            </p>
+                        </div>
+                    </li>
+                    <li class="left clearfix">
+                                    <span class="chat-img pull-left">
+                                        <span class="avatar"><img alt="default avatar" src="../../dist/images/avatar.jpg"></span>
+                                    </span>
+                        <div class="chat-body clearfix">
+                            <div class="header">
+                                <strong>Jack Sparrow</strong> <button type="button" class="btn btn-info btn-xs pull-right">Follow</button>
+                            </div>
+                            <p>
+                                Curabitur bibendum ornare dolor, quis ullamcorper.
+                            </p>
+                        </div>
+                    </li>
+                    <li class="left clearfix">
+                                    <span class="chat-img pull-left">
+                                        <span class="avatar"><img alt="default avatar" src="../../dist/images/avatar.jpg"></span>
+                                    </span>
+                        <div class="chat-body clearfix">
+                            <div class="header">
+                                <strong>Bhaumik Patel</strong> <button type="button" class="btn btn-info btn-xs pull-right">Follow</button>
+                            </div>
+                            <p>
+                                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur bibendum ornare dolor, quis ullamcorper ligula sodales.
+                            </p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <!-- /.panel-body -->
+        </div>
+        <!-- /.panel .chat-panel -->
+    </div>
+    <!-- /.col-lg-6 -->
+</div>
+<!-- /.row -->
