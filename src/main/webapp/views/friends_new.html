@@ -4,6 +4,12 @@
         <span bind-html-unsafe="match.label | typeaheadHighlight:query"></span>
     </a>
 </script>
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-header">Community</h1>
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
 <!-- /.row -->
 <div class="row">
     <div class="col-lg-6">
@@ -72,6 +78,7 @@
                                     Curabitur bibendum ornare dolor, quis ullamcorper.
                                 </p>
                             </div>
+                            </div>
                     </li>
                     <li class="left clearfix">
                                     <span class="chat-img pull-left">
@@ -102,55 +109,16 @@
             <!-- /.panel-heading -->
             <div class="panel-body">
                 <ul class="chat">
-                    <li class="left clearfix">
+                    <li class="left clearfix" ng-repeat="friend in friends">
                                     <span class="chat-img pull-left">
-                                        <span class="avatar"><img alt="default avatar" src="../../dist/images/avatar.jpg"></span>
+                                        <span class="avatar"><a ng-href="profiles/{{friend.username}}"><img alt="default avatar" ng-src="{{friend.pic}}"></a></span>
                                     </span>
                         <div class="chat-body clearfix">
                             <div class="header">
-                                <strong>Jack Sparrow</strong> <button type="button" class="btn btn-info btn-xs pull-right">Follow</button>
+                                <strong>{{friend.fullname}}</strong> <button type="button" class="btn btn-info btn-xs pull-right" ng-click="followUser(friend,$index)">Follow</button>
                             </div>
                             <p>
-                                Curabitur bibendum ornare dolor, quis ullamcorper ligula sodales.
-                            </p>
-                        </div>
-                    </li>
-                    <li class="left clearfix">
-                                    <span class="chat-img pull-left">
-                                        <span class="avatar"><img alt="default avatar" src="../../dist/images/avatar.jpg"></span>
-                                    </span>
-                        <div class="chat-body clearfix">
-                            <div class="header">
-                                <strong>Bhaumik Patel</strong> <button type="button" class="btn btn-info btn-xs pull-right">Follow</button>
-                            </div>
-                            <p>
-                                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                            </p>
-                        </div>
-                    </li>
-                    <li class="left clearfix">
-                                    <span class="chat-img pull-left">
-                                        <span class="avatar"><img alt="default avatar" src="../../dist/images/avatar.jpg"></span>
-                                    </span>
-                        <div class="chat-body clearfix">
-                            <div class="header">
-                                <strong>Jack Sparrow</strong> <button type="button" class="btn btn-info btn-xs pull-right">Follow</button>
-                            </div>
-                            <p>
-                                Curabitur bibendum ornare dolor, quis ullamcorper.
-                            </p>
-                        </div>
-                    </li>
-                    <li class="left clearfix">
-                                    <span class="chat-img pull-left">
-                                        <span class="avatar"><img alt="default avatar" src="../../dist/images/avatar.jpg"></span>
-                                    </span>
-                        <div class="chat-body clearfix">
-                            <div class="header">
-                                <strong>Bhaumik Patel</strong> <button type="button" class="btn btn-info btn-xs pull-right">Follow</button>
-                            </div>
-                            <p>
-                                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur bibendum ornare dolor, quis ullamcorper ligula sodales.
+                                {{friend.bio}}
                             </p>
                         </div>
                     </li>
