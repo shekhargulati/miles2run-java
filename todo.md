@@ -39,3 +39,5 @@
 37. Full name should be shown in camel case
 38. Producer classes scope http://stackoverflow.com/questions/19427608/what-scope-to-you-use-for-class-with-producer-methods-in-cdi
 39. there is no way to unfollow a user right now.
+40. Miles2Run favicon
+41. Notifications page design
