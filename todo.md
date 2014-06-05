@@ -34,3 +34,7 @@
 32. There is no way to update or remove a photo
 33. Ability to add more than one social connection to a profile
 34. Ability to add map to a run
+35. domain mapping
+36. username should be stored in lowercase
+37. Full name should be shown in camel case
+38. Producer classes scope http://stackoverflow.com/questions/19427608/what-scope-to-you-use-for-class-with-producer-methods-in-cdi

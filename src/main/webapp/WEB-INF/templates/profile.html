@@ -41,7 +41,16 @@
         </div>
         <!-- /.navbar-header -->
 
-        <ul class="nav navbar-top-links navbar-right">
+        <ul class="nav navbar-top-links navbar-right"  th:if="${profile != null}">
+            <!-- /.dropdown -->
+            <li class="dropdown">
+                <a href="/home" th:href="@{/home}">
+                    <div>
+                        <i class="fa fa-home fa-fw"></i> Home
+                    </div>
+                </a>
+            </li>
+            <!-- /.dropdown -->
             <!-- /.dropdown -->
             <li class="dropdown">
                 <a class="dropdown-toggle" data-toggle="dropdown" href="#">
@@ -98,7 +107,7 @@
                 <a class="dropdown-toggle" data-toggle="dropdown" href="#">
                     <i class="fa fa-user fa-fw"></i> <i class="fa fa-caret-down"></i>
                 </a>
-                <ul class="dropdown-menu dropdown-user" th:if="${profile != null}">
+                <ul class="dropdown-menu dropdown-user">
                     <li>
                         <a href="#" th:href="@{'/profiles/' + ${profile.username}}" th:inline="text">
                             <img width="25" height="25" th:src="${profile.profilePic}"/> [[${profile.fullname}]]
@@ -206,7 +215,7 @@
 <script th:inline="javascript">
     /*<![CDATA[*/
 
-    var activeUserProfile = [[${activeProfile}]];
+    var activeUserProfile = [[${profile}]];
     var userProfile = [[${userProfile}]];
 
     /*]]>*/

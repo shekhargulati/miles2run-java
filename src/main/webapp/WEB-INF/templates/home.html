@@ -42,77 +42,86 @@
 </div>
 <!-- /.navbar-header -->
 
-<ul class="nav navbar-top-links navbar-right">
-<!-- /.dropdown -->
-<li class="dropdown">
-    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-        <i class="fa fa-bell fa-fw"></i> <i class="fa fa-caret-down"></i>
-    </a>
-    <ul class="dropdown-menu dropdown-alerts">
-        <li>
-            <a href="#">
+    <ul class="nav navbar-top-links navbar-right"  th:if="${profile != null}">
+        <!-- /.dropdown -->
+        <li class="dropdown">
+            <a href="/home" th:href="@{/home}">
                 <div>
-                    <i class="fa fa-comment fa-fw"></i> New Comment
-                    <span class="pull-right text-muted small">4 minutes ago</span>
+                    <i class="fa fa-home fa-fw"></i> Home
                 </div>
             </a>
         </li>
-        <li class="divider"></li>
-        <li>
-            <a href="#">
-                <div>
-                    <i class="fa fa-twitter fa-fw"></i> 3 New Followers
-                    <span class="pull-right text-muted small">12 minutes ago</span>
-                </div>
+        <!-- /.dropdown -->
+        <!-- /.dropdown -->
+        <li class="dropdown">
+            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                <i class="fa fa-bell fa-fw"></i> <i class="fa fa-caret-down"></i>
             </a>
+            <ul class="dropdown-menu dropdown-alerts">
+                <li>
+                    <a href="#">
+                        <div>
+                            <i class="fa fa-comment fa-fw"></i> New Comment
+                            <span class="pull-right text-muted small">4 minutes ago</span>
+                        </div>
+                    </a>
+                </li>
+                <li class="divider"></li>
+                <li>
+                    <a href="#">
+                        <div>
+                            <i class="fa fa-twitter fa-fw"></i> 3 New Followers
+                            <span class="pull-right text-muted small">12 minutes ago</span>
+                        </div>
+                    </a>
+                </li>
+                <li class="divider"></li>
+                <li>
+                    <a href="#">
+                        <div>
+                            <i class="fa fa-envelope fa-fw"></i> Message Sent
+                            <span class="pull-right text-muted small">4 minutes ago</span>
+                        </div>
+                    </a>
+                </li>
+                <li class="divider"></li>
+                <li>
+                    <a href="#">
+                        <div>
+                            <i class="fa fa-tasks fa-fw"></i> New Task
+                            <span class="pull-right text-muted small">4 minutes ago</span>
+                        </div>
+                    </a>
+                </li>
+                <li class="divider"></li>
+                <li>
+                    <a class="text-center" href="#">
+                        <strong>See All Alerts</strong>
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+                </li>
+            </ul>
+            <!-- /.dropdown-alerts -->
         </li>
-        <li class="divider"></li>
-        <li>
-            <a href="#">
-                <div>
-                    <i class="fa fa-envelope fa-fw"></i> Message Sent
-                    <span class="pull-right text-muted small">4 minutes ago</span>
-                </div>
+        <!-- /.dropdown -->
+        <li class="dropdown">
+            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                <i class="fa fa-user fa-fw"></i> <i class="fa fa-caret-down"></i>
             </a>
+            <ul class="dropdown-menu dropdown-user">
+                <li>
+                    <a href="#" th:href="@{'/profiles/' + ${profile.username}}" th:inline="text">
+                        <img width="25" height="25" th:src="${profile.profilePic}"/> [[${profile.fullname}]]
+                    </a>
+                </li>
+                <li class="divider"></li>
+                <li><a href="/logout" th:href="@{/logout}"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
+                </li>
+            </ul>
+            <!-- /.dropdown-user -->
         </li>
-        <li class="divider"></li>
-        <li>
-            <a href="#">
-                <div>
-                    <i class="fa fa-tasks fa-fw"></i> New Task
-                    <span class="pull-right text-muted small">4 minutes ago</span>
-                </div>
-            </a>
-        </li>
-        <li class="divider"></li>
-        <li>
-            <a class="text-center" href="#">
-                <strong>See All Alerts</strong>
-                <i class="fa fa-angle-right"></i>
-            </a>
-        </li>
+        <!-- /.dropdown -->
     </ul>
-    <!-- /.dropdown-alerts -->
-</li>
-<!-- /.dropdown -->
-<li class="dropdown">
-    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-        <i class="fa fa-user fa-fw"></i> <i class="fa fa-caret-down"></i>
-    </a>
-    <ul class="dropdown-menu dropdown-user">
-        <li>
-            <a href="#" th:href="@{'/profiles/' + ${profile.username}}" th:inline="text">
-                <img width="25" height="25" th:src="${profile.profilePic}"/> [[${profile.fullname}]]
-            </a>
-        </li>
-        <li class="divider"></li>
-        <li><a href="/logout" th:href="@{/logout}"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
-        </li>
-    </ul>
-    <!-- /.dropdown-user -->
-</li>
-<!-- /.dropdown -->
-</ul>
 <!-- /.navbar-top-links -->
 
 <div class="navbar-default navbar-static-side" role="navigation" ng-controller="HeaderCtrl">

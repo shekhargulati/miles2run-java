@@ -134,8 +134,8 @@ public class ProfileView {
         } catch (Exception e) {
             logger.info("createProfile() Exception class " + e.getClass().getCanonicalName());
             Throwable cause = e.getCause();
-            if(cause instanceof ConstraintViolationException){
-                return constraintVoilationView(profileForm,errors,(ConstraintViolationException)cause);
+            if (cause instanceof ConstraintViolationException) {
+                return constraintVoilationView(profileForm, errors, (ConstraintViolationException) cause);
             }
             errors.add(e.getMessage());
             return View.of("/createProfile", templateEngine).withModel("profile", profileForm).withModel("errors", errors);
@@ -225,12 +225,13 @@ public class ProfileView {
             if (progress != null) {
                 model.put("progress", progress);
             }
-            List<ActivityDetails> timeline = activityService.findAll(username);
-            model.put("timeline", timeline);
-            model.put("activities", timeline.size());
-            UserProfile userProfile = profileMongoService.findProfile(username);
-            model.put("followers", userProfile.getFollowers().size());
-            model.put("following", userProfile.getFollowing().size());
+            model.put("activities", activityService.count(username));
+//            List<ActivityDetails> timeline = activityService.findAll(username);
+//            model.put("timeline", timeline);
+//            model.put("activities", timeline.size());
+//            UserProfile userProfile = profileMongoService.findProfile(username);
+//            model.put("followers", userProfile.getFollowers().size());
+//            model.put("following", userProfile.getFollowing().size());
             return View.of("/profile", templateEngine).withModel(model);
         } catch (Exception e) {
             if (e instanceof ViewResourceNotFoundException) {
