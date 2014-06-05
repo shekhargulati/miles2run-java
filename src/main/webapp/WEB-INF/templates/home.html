@@ -52,50 +52,22 @@
             </a>
         </li>
         <!-- /.dropdown -->
-        <!-- /.dropdown -->
-        <li class="dropdown">
-            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+        <li class="dropdown" ng-controller="NotificationCtrl">
+            <a class="dropdown-toggle" data-toggle="dropdown" href="#" ng-click="fetchNotifications()">
                 <i class="fa fa-bell fa-fw"></i> <i class="fa fa-caret-down"></i>
             </a>
             <ul class="dropdown-menu dropdown-alerts">
-                <li>
-                    <a href="#">
+                <li ng-repeat="notification in notifications">
+                    <a ng-href="{{appContext()}}profiles/{{notification.userTookAction}}">
                         <div>
-                            <i class="fa fa-comment fa-fw"></i> New Comment
-                            <span class="pull-right text-muted small">4 minutes ago</span>
+                            <i class="fa fa-comment fa-fw"></i> {{notification.userTookAction}} {{notification.action|lowercase}}ed you
+                            <span class="pull-right text-muted small">{{notification.timestamp | date:'MMddyyyy HH mm ss'|moment}}</span>
                         </div>
                     </a>
                 </li>
                 <li class="divider"></li>
                 <li>
-                    <a href="#">
-                        <div>
-                            <i class="fa fa-twitter fa-fw"></i> 3 New Followers
-                            <span class="pull-right text-muted small">12 minutes ago</span>
-                        </div>
-                    </a>
-                </li>
-                <li class="divider"></li>
-                <li>
-                    <a href="#">
-                        <div>
-                            <i class="fa fa-envelope fa-fw"></i> Message Sent
-                            <span class="pull-right text-muted small">4 minutes ago</span>
-                        </div>
-                    </a>
-                </li>
-                <li class="divider"></li>
-                <li>
-                    <a href="#">
-                        <div>
-                            <i class="fa fa-tasks fa-fw"></i> New Task
-                            <span class="pull-right text-muted small">4 minutes ago</span>
-                        </div>
-                    </a>
-                </li>
-                <li class="divider"></li>
-                <li>
-                    <a class="text-center" href="#">
+                    <a class="text-center" href="#notifications">
                         <strong>See All Alerts</strong>
                         <i class="fa fa-angle-right"></i>
                     </a>
@@ -208,6 +180,7 @@
 <script src="/js/libs/toastr.js" th:src="@{/js/libs/toastr.js}"></script>
 <script src="/js/libs/d3.js" th:src="@{/js/libs/d3.js}"></script>
 <script src="/js/libs/cal-heatmap.js" th:src="@{/js/libs/cal-heatmap.js}"></script>
+<script src="/js/libs/moment.js" th:src="@{/js/libs/moment.js}"></script>
 
 
 <script src="/scripts/home/app.js" th:src="@{/scripts/home/app.js}"></script>
