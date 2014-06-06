@@ -45,6 +45,24 @@ public class DashboardResource {
         }
     }
 
+    @GET
+    @LoggedIn
+    @Produces("application/json")
+    @Path("/charts/pace")
+    public List<Map<String, Object>> getDataForAveragePace(@QueryParam("interval") String interval) {
+        String loggedInUser = securityContext.getUserPrincipal().getName();
+        Profile profile = profileService.findProfile(loggedInUser);
+        switch (interval) {
+            case "day":
+                return timelineService.paceOverTime(profile, interval, 15);
+            case "month":
+                return timelineService.paceOverTime(profile, interval, 6);
+            default:
+                return timelineService.paceOverTime(profile, interval, 15);
+        }
+    }
+
+
     private List<Map<String, Object>> getMapDataForYear() {
         List<Map<String, Object>> chartData = new ArrayList<>();
         chartData.add(newEntryForYear("2010", 400));

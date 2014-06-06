@@ -83,6 +83,7 @@ public class Activity {
         this.goalUnit = activityDetails.getGoalUnit();
         this.distanceCovered = activityDetails.getDistanceCovered();
         this.activityDate = activityDetails.getActivityDate();
+        this.duration = activityDetails.getDuration();
     }
 
     public Long getId() {

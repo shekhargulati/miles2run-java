@@ -130,6 +130,7 @@ public class TimelineService {
                 data.put("goalUnit", activity.getGoalUnit().getUnit());
                 data.put("profilePic", profile.getProfilePic());
                 data.put("status", activity.getStatus() == null ? "" : activity.getStatus());
+                data.put("duration", String.valueOf(activity.getDuration()));
                 pipeline.hmset("activity:" + id, data);
                 pipeline.sync();
                 return id;
@@ -251,7 +252,6 @@ public class TimelineService {
                 Date nMonthsBack = calendar.getTime();
                 Set<Tuple> activityIdsInNDaysWithScores = jedis.zrangeByScoreWithScores("profile:timeline:" + profile.getUsername(), nMonthsBack.getTime(), today.getTime());
                 List<Response<Map<String, String>>> result = new ArrayList<>();
-                List<Map<String, Object>> chartData = new ArrayList<>();
                 Map<String, Long> monthDistanceHash = new HashMap<>();
                 for (Tuple activityIdTuple : activityIdsInNDaysWithScores) {
                     String activityId = activityIdTuple.getElement();
@@ -267,6 +267,7 @@ public class TimelineService {
                     }
 
                 }
+                List<Map<String, Object>> chartData = new ArrayList<>();
                 Set<Map.Entry<String, Long>> entries = monthDistanceHash.entrySet();
                 for (Map.Entry<String, Long> entry : entries) {
                     Map<String, Object> data = new HashMap<>();
@@ -317,6 +318,90 @@ public class TimelineService {
         calendar.add(Calendar.MONTH, -6);
         Date nMonthsBack = calendar.getTime();
         System.out.println(nMonthsBack.toString());
+    }
+
+    public List<Map<String, Object>> paceOverTime(Profile profile, String interval, int n) {
+        switch (interval) {
+            case "day":
+                return getPaceInLastNDays(profile, interval, n);
+            case "month":
+                return getPaceInLastNMonths(profile, interval, n);
+            default:
+                return getDistanceCoveredInLastNDays(profile, interval, n);
+        }
+    }
+
+    private List<Map<String, Object>> getPaceInLastNMonths(final Profile profile, final String interval, final int nMonths) {
+        return jedisExecutionService.execute(new JedisOperation<List<Map<String, Object>>>() {
+            @Override
+            public List<Map<String, Object>> perform(Jedis jedis) {
+                Date today = new Date();
+                Calendar calendar = Calendar.getInstance();
+                calendar.add(Calendar.MONTH, -nMonths);
+                Date nMonthsBack = calendar.getTime();
+                Set<Tuple> activityIdsInNDaysWithScores = jedis.zrangeByScoreWithScores("profile:timeline:" + profile.getUsername(), nMonthsBack.getTime(), today.getTime());
+                List<Response<Map<String, String>>> result = new ArrayList<>();
+                Map<String, Double> monthPaceHash = new HashMap<>();
+                for (Tuple activityIdTuple : activityIdsInNDaysWithScores) {
+                    String activityId = activityIdTuple.getElement();
+                    double activityTimestamp = activityIdTuple.getScore();
+                    List<String> values = jedis.hmget(String.format("activity:%s", activityId), "distanceCovered", "duration");
+                    Date activityDate = new Date(Double.valueOf(activityTimestamp).longValue());
+                    String key = formatDateToYearAndMonth(activityDate);
+                    if (monthPaceHash.containsKey(key)) {
+                        Double value = monthPaceHash.get(key);
+                        Double durationInSeconds = Double.valueOf(Long.valueOf(values.get(1)));
+                        double durationInMinutes = durationInSeconds / 60;
+                        long distance = Long.valueOf(values.get(0)) / profile.getGoalUnit().getConversion();
+                        double pace = durationInMinutes / distance;
+                        monthPaceHash.put(key, (value + pace) / 2);
+                    } else {
+                        Double durationInSeconds = Double.valueOf(Long.valueOf(values.get(1)));
+                        double durationInMinutes = durationInSeconds / 60;
+                        long distance = Long.valueOf(values.get(0)) / profile.getGoalUnit().getConversion();
+                        double pace = durationInMinutes / distance;
+                        monthPaceHash.put(key, pace);
+                    }
+
+                }
+                List<Map<String, Object>> chartData = new ArrayList<>();
+                Set<Map.Entry<String, Double>> entries = monthPaceHash.entrySet();
+                for (Map.Entry<String, Double> entry : entries) {
+                    Map<String, Object> data = new HashMap<>();
+                    data.put(interval, entry.getKey());
+                    data.put("pace", entry.getValue());
+                    chartData.add(data);
+                }
+                return chartData;
+            }
+        });
+    }
+
+    private List<Map<String, Object>> getPaceInLastNDays(final Profile profile, final String interval, final int n) {
+        return jedisExecutionService.execute(new JedisOperation<List<Map<String, Object>>>() {
+            @Override
+            public List<Map<String, Object>> perform(Jedis jedis) {
+                Date today = new Date();
+                Date nDaysBack = new Date(today.getTime() - n * 24 * 3600 * 1000);
+                Set<Tuple> activityIdsInNDaysWithScores = jedis.zrangeByScoreWithScores("profile:timeline:" + profile.getUsername(), nDaysBack.getTime(), today.getTime());
+                List<Response<Map<String, String>>> result = new ArrayList<>();
+                List<Map<String, Object>> chartData = new ArrayList<>();
+                for (Tuple activityIdTuple : activityIdsInNDaysWithScores) {
+                    String activityId = activityIdTuple.getElement();
+                    double activityDate = activityIdTuple.getScore();
+                    List<String> values = jedis.hmget(String.format("activity:%s", activityId), "distanceCovered", "duration");
+                    Map<String, Object> data = new HashMap<>();
+                    data.put(interval, activityDate);
+                    Double durationInSeconds = Double.valueOf(Long.valueOf(values.get(1)));
+                    double durationInMinutes = durationInSeconds / 60;
+                    long distance = Long.valueOf(values.get(0)) / profile.getGoalUnit().getConversion();
+                    double pace = durationInMinutes / distance;
+                    data.put("pace", pace);
+                    chartData.add(data);
+                }
+                return chartData;
+            }
+        });
     }
 }
 

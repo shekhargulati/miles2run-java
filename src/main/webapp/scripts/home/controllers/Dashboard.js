@@ -59,6 +59,46 @@ angular.module('milestogo')
         renderDistanceChart("day");
         $scope.renderDistanceChart = renderDistanceChart;
 
+        var renderPaceChart = function (interval) {
+            $("#pace-line-graph").empty();
+            console.log('User selected interval ' + interval);
+            $http.get("api/v1/dashboard/charts/pace?interval=" + interval).success(function (data, status, headers, config) {
+                Morris.Line({
+                    element: 'pace-line-graph',
+                    data: data,
+                    xLabels: interval,
+                    xLabelFormat: function (date) {
+                        if (interval === "month") {
+                            return moment(dateFormat(date.getTime()), "YYYYMMDD").format("MMM YYYY");
+                        } else if (interval === "year") {
+                            return date.getFullYear().toString();
+                        }
+                        return moment(dateFormat(date.getTime()), "YYYYMMDD").format('MMM Do');
+                    },
+                    yLabelFormat: function (pace) {
+                        return pace.toString() + ' mins/' + activeProfile.goalUnit.$name;
+                    },
+                    xkey: interval,
+                    ykeys: ['pace'],
+                    dateFormat: function (x) {
+                        if (interval === "month") {
+                            return moment(dateFormat(x), "YYYYMMDD").format("MMM YYYY");
+                        } else if (interval === "year") {
+                            return new Date(x).getFullYear().toString();
+                        }
+                        return moment(dateFormat(x), "YYYYMMDD").format('dddd, MMM Do YYYY');
+                    },
+                    labels: ['Pace']
+
+                });
+            }).error(function (data, status, headers, config) {
+                console.log(data);
+            });
+        }
+
+        renderPaceChart("day");
+        $scope.renderPaceChart = renderPaceChart;
+
         var dateFormat = function (x) {
             var date = new Date(x);
             var yyyy = date.getFullYear().toString();
