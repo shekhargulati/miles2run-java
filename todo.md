@@ -44,3 +44,5 @@
 42. Users should be able to comment on other people activities.
 43. Signin page is using the old design
 44. When user tweet the activity then url ui is broken.
+45. If people are running for weight loss, then allow people to enter their weight and track their weight loss progress.
+46. Allow people to upload their images
