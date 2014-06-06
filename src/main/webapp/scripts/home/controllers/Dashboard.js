@@ -19,30 +19,45 @@ angular.module('milestogo')
                 console.log(status);
             });
 
+        var renderDistanceChart = function (interval) {
+            $("#activities-line-graph").empty();
+            console.log('User selected interval ' + interval);
+            $http.get("api/v1/dashboard/charts/distance?interval=" + interval).success(function (data, status, headers, config) {
+                Morris.Line({
+                    element: 'activities-line-graph',
+                    data: data,
+                    xLabels: interval,
+                    xLabelFormat: function (date) {
+                        if (interval === "month") {
+                            return moment(dateFormat(date.getTime()), "YYYYMMDD").format("MMM YYYY");
+                        } else if (interval === "year") {
+                            return date.getFullYear().toString();
+                        }
+                        return moment(dateFormat(date.getTime()), "YYYYMMDD").format('MMM Do');
+                    },
+                    yLabelFormat: function (distance) {
+                        return distance.toString() + ' ' + activeProfile.goalUnit.$name;
+                    },
+                    xkey: interval,
+                    ykeys: ['distance'],
+                    dateFormat: function (x) {
+                        if (interval === "month") {
+                            return moment(dateFormat(x), "YYYYMMDD").format("MMM YYYY");
+                        } else if (interval === "year") {
+                            return new Date(x).getFullYear().toString();
+                        }
+                        return moment(dateFormat(x), "YYYYMMDD").format('dddd, MMM Do YYYY');
+                    },
+                    labels: ['Distance Ran']
 
-        $http.get("api/v1/dashboard/charts/distance").success(function (data, status, headers, config) {
-            console.log('Got data ' + data);
-            Morris.Line({
-                element: 'activities-line-graph',
-                data: data,
-                xLabels: 'day',
-                xLabelFormat: function (date) {
-                    return moment(dateFormat(date.getTime()), "YYYYMMDD").format('MMM Do');
-                },
-                yLabelFormat: function (distance) {
-                    return distance.toString() + ' ' + activeProfile.goalUnit.$name;
-                },
-                xkey: 'activityDate',
-                ykeys: ['distance'],
-                dateFormat: function (x) {
-                    return moment(dateFormat(x), "YYYYMMDD").format('dddd, MMM Do YYYY');
-                },
-                labels: ['Distance Ran']
-
+                });
+            }).error(function (data, status, headers, config) {
+                console.log(data);
             });
-        }).error(function (data, status, headers, config) {
-            console.log(data);
-        });
+        }
+
+        renderDistanceChart("day");
+        $scope.renderDistanceChart = renderDistanceChart;
 
         var dateFormat = function (x) {
             var date = new Date(x);
