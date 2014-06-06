@@ -41,3 +41,6 @@
 39. there is no way to unfollow a user right now.
 40. Miles2Run favicon
 41. Notifications page design
+42. Users should be able to comment on other people activities.
+43. Signin page is using the old design
+44. When user tweet the activity then url ui is broken.

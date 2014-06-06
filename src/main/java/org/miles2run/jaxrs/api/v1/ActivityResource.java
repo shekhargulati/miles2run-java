@@ -150,6 +150,7 @@ public class ActivityResource {
         return Response.ok().build();
     }
 
+
     private String toActivityMessage(Activity activity, Profile profile) {
         String activityUrl = UrlUtils.absoluteUrlForResourceUri(request, "/profiles/{username}/activities/{activityId}", profile.getUsername(), activity.getId());
         return new StringBuilder(profile.getFullname()).append(" ran ").append(activity.getDistanceCovered() / activity.getGoalUnit().getConversion()).append(" " + activity.getGoalUnit().toString()).append(" via @miles2runorg.").append(" Read full status here ").append(activityUrl).toString();

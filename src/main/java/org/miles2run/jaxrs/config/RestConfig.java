@@ -47,6 +47,7 @@ public class RestConfig extends Application {
         classes.add(GoogleCallbackView.class);
         classes.add(ActivityView.class);
         classes.add(TimelineResource.class);
+        classes.add(DashboardResource.class);
         return classes;
     }
 }
