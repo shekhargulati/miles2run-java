@@ -12,7 +12,7 @@
 12. <s>The user profile page should load data from profile:timeline</s>
 13. <s>ProfileForm validation is not working</s>
 14. <s>show login logout when user is signed in</s>
-15. Pagination of timeline
+15. <s>Pagination of timeline</s>
 16. Activity sharing is not working
 17. Jenkins setup
 18. About page does not exist
@@ -50,3 +50,5 @@
 50. Compare your progress with other user progress. -- charts that that can compare two users.
 51. From inside the angular application, when user tries to perform action without authentication then he/she should be redirected to signin page.
 52. Pagination would be required for followers and following views as well
+53. Charts does not take into account multiple activities on the same date
+54. Charts does not take into account days on which activity was not performed.

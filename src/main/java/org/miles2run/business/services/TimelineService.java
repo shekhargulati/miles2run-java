@@ -1,6 +1,7 @@
 package org.miles2run.business.services;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeUtils;
 import org.joda.time.Days;
 import org.joda.time.Months;
 import org.miles2run.business.domain.Activity;
@@ -285,7 +286,9 @@ public class TimelineService {
             @Override
             public List<Map<String, Object>> perform(Jedis jedis) {
                 Date today = new Date();
-                Date nDaysBack = new Date(today.getTime() - n * 24 * 3600 * 1000);
+                DateTime dateTime = new DateTime(today);
+                dateTime = dateTime.minusDays(n);
+                Date nDaysBack = dateTime.toDate();
                 Set<Tuple> activityIdsInNDaysWithScores = jedis.zrangeByScoreWithScores("profile:timeline:" + profile.getUsername(), nDaysBack.getTime(), today.getTime());
                 List<Response<Map<String, String>>> result = new ArrayList<>();
                 List<Map<String, Object>> chartData = new ArrayList<>();
@@ -382,7 +385,9 @@ public class TimelineService {
             @Override
             public List<Map<String, Object>> perform(Jedis jedis) {
                 Date today = new Date();
-                Date nDaysBack = new Date(today.getTime() - n * 24 * 3600 * 1000);
+                DateTime dateTime = new DateTime(today);
+                dateTime = dateTime.minusDays(n);
+                Date nDaysBack = dateTime.toDate();
                 Set<Tuple> activityIdsInNDaysWithScores = jedis.zrangeByScoreWithScores("profile:timeline:" + profile.getUsername(), nDaysBack.getTime(), today.getTime());
                 List<Response<Map<String, String>>> result = new ArrayList<>();
                 List<Map<String, Object>> chartData = new ArrayList<>();

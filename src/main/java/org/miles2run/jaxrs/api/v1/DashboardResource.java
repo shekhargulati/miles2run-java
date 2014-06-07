@@ -37,11 +37,11 @@ public class DashboardResource {
         Profile profile = profileService.findProfile(loggedInUser);
         switch (interval) {
             case "day":
-                return timelineService.distanceCoveredOverTime(profile, interval, 15);
+                return timelineService.distanceCoveredOverTime(profile, interval, 30);
             case "month":
                 return timelineService.distanceCoveredOverTime(profile, interval, 6);
             default:
-                return timelineService.distanceCoveredOverTime(profile, interval, 15);
+                return timelineService.distanceCoveredOverTime(profile, interval, 30);
         }
     }
 
@@ -54,11 +54,11 @@ public class DashboardResource {
         Profile profile = profileService.findProfile(loggedInUser);
         switch (interval) {
             case "day":
-                return timelineService.paceOverTime(profile, interval, 15);
+                return timelineService.paceOverTime(profile, interval, 30);
             case "month":
                 return timelineService.paceOverTime(profile, interval, 6);
             default:
-                return timelineService.paceOverTime(profile, interval, 15);
+                return timelineService.paceOverTime(profile, interval, 30);
         }
     }
 
