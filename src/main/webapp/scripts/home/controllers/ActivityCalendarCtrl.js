@@ -14,7 +14,7 @@ angular.module('milestogo')
         $scope.config = {
             minDate: startDate(),
             maxDate: new Date(),
-            data: ConfigService.getBaseUrl() + "profiles/" + $scope.currentUser.username + "/progress/timeline",
+            data: ConfigService.getBaseUrl() + "activities/calendar",
             itemName: $scope.currentUser.goalUnit.$name.toString().toLowerCase().replace("s", "")
         };
 

@@ -20,10 +20,10 @@
 20. Facebook page https://facebook.com/miles2run does not exist
 21. Google+ https://plus.google.com/u/0/+Miles2Run does not exist
 22. When unable to connect with social login provider, then rather than showing error page, show them the index page again and ask them to signin again.
-23. Dashboard view when user first logs in -- when there is no data. Charts should not be shown.
+23. <s>Dashboard view when user first logs in -- when there is no data. Charts should not be shown.</s>
 24. Using growl instead of toastr
 25. Google+ and Facebook share only works with URL.think about proper fix
-26. Calendar view show wrong date when app is running on OpenShift
+26. <s>Calendar view show wrong date when app is running on OpenShift</s>
 27. Unfollow is not working because of missing profile.js. There is no way to unfollow a user right now.
 28. Fix signin page
 29. Fix error pages
@@ -53,3 +53,6 @@
 53. Charts does not take into account multiple activities on the same date
 54. Charts does not take into account days on which activity was not performed.
 55. When timeline is empty, pagination is still shown. Angular ng-if directive is not working.
+56. After user finishes a goal, there should be a way to share that
+57. Edit activity shows wrong date when run on OpenShift.
+58. Month Charts show wrong month when date is 1st

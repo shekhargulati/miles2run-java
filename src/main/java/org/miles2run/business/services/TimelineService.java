@@ -417,6 +417,29 @@ public class TimelineService {
             }
         });
     }
+
+    public Map<String, Long> getActivityCalendarForNMonths(final Profile profile, final int nMonths) {
+        return jedisExecutionService.execute(new JedisOperation<Map<String, Long>>() {
+            @Override
+            public Map<String, Long> perform(Jedis jedis) {
+                Date today = new Date();
+                Calendar calendar = Calendar.getInstance();
+                calendar.add(Calendar.MONTH, -nMonths);
+                Date nMonthsBack = calendar.getTime();
+                Set<Tuple> activityIdsInNMonthWithScores = jedis.zrangeByScoreWithScores("profile:timeline:" + profile.getUsername(), nMonthsBack.getTime(), today.getTime());
+                Map<String, Long> data = new LinkedHashMap<>();
+                for (Tuple tuple : activityIdsInNMonthWithScores) {
+                    String activityId = tuple.getElement();
+                    double score = tuple.getScore();
+                    String distanceCovered = jedis.hget(String.format("activity:%s", activityId), "distanceCovered");
+                    long timestamp = (Double.valueOf(score).longValue()) / 1000;
+                    long distanceCoveredInRequiredUnits = Long.valueOf(distanceCovered) / (profile.getGoalUnit().getConversion());
+                    data.put(String.valueOf(timestamp), distanceCoveredInRequiredUnits);
+                }
+                return data;
+            }
+        });
+    }
 }
 
 

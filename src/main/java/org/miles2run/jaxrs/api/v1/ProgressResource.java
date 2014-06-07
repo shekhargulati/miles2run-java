@@ -12,7 +12,9 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +32,6 @@ public class ProgressResource {
 
     @GET
     @Produces("application/json")
-    @LoggedIn
     public Response progress(@PathParam("username") String username) {
         Profile loggedInUser = profileService.findProfile(username);
         if (loggedInUser == null) {
@@ -38,23 +39,6 @@ public class ProgressResource {
         }
         Progress progress = activityService.calculateUserProgress(loggedInUser);
         return Response.status(Response.Status.OK).entity(progress).build();
-    }
-
-    @Path("/timeline")
-    @GET
-    @Produces("application/json")
-    @LoggedIn
-    public Response progressTimeline(@PathParam("username") String username) {
-        Profile loggedInUser = profileService.findProfile(username);
-        if (loggedInUser == null) {
-            return Response.status(Response.Status.NOT_FOUND).entity("No user exist with username " + username).build();
-        }
-        List<Activity> activities = activityService.findActivitiesWithTimeStamp(loggedInUser);
-        Map<String, Long> progressTimeline = new LinkedHashMap<>();
-        for (Activity activity : activities) {
-            progressTimeline.put(String.valueOf(activity.getActivityDate().getTime() / 1000), activity.getDistanceCovered() / activity.getGoalUnit().getConversion());
-        }
-        return Response.status(Response.Status.OK).entity(progressTimeline).build();
     }
 
 }

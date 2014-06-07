@@ -17,7 +17,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 /**
@@ -133,6 +135,17 @@ public class ActivityResource {
         return Response.ok().build();
     }
 
+    @Path("/calendar")
+    @GET
+    @Produces("application/json")
+    @LoggedIn
+    public Response activityCalendar(@QueryParam("months") int nMonths) {
+        nMonths = nMonths == 0 || nMonths > 12 ? 3 : nMonths;
+        String loggedInUser = securityContext.getUserPrincipal().getName();
+        Profile profile = profileService.findProfile(loggedInUser);
+        Map<String, Long> data = timelineService.getActivityCalendarForNMonths(profile, nMonths);
+        return Response.status(Response.Status.OK).entity(data).build();
+    }
 
     private String toActivityMessage(Activity activity, Profile profile) {
         String activityUrl = UrlUtils.absoluteUrlForResourceUri(request, "/activities/{activityId}", profile.getUsername(), activity.getId());
