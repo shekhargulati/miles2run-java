@@ -46,9 +46,10 @@
 46. On user profile page show progress indicator
 47. Introduce concept of goal -- UI should be familiar with Google Analytics page where they list all the web sites.
 48. Loading icon when getting data from rest backend
-49. In the dashboard view, charts should show last 30 days for Day interval
+49. <s>In the dashboard view, charts should show last 30 days for Day interval</s>
 50. Compare your progress with other user progress. -- charts that that can compare two users.
 51. From inside the angular application, when user tries to perform action without authentication then he/she should be redirected to signin page.
 52. Pagination would be required for followers and following views as well
 53. Charts does not take into account multiple activities on the same date
 54. Charts does not take into account days on which activity was not performed.
+55. When timeline is empty, pagination is still shown. Angular ng-if directive is not working.
