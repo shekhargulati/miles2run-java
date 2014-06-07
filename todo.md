@@ -49,3 +49,4 @@
 49. In the dashboard view, charts should show last 30 days for Day interval
 50. Compare your progress with other user progress. -- charts that that can compare two users.
 51. From inside the angular application, when user tries to perform action without authentication then he/she should be redirected to signin page.
+52. Pagination would be required for followers and following views as well

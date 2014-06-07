@@ -13,10 +13,7 @@ import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.SecurityContext;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Logger;
 
 /**
@@ -37,14 +34,18 @@ public class TimelineResource {
     @Path("/user_timeline")
     @GET
     @Produces("application/json")
-    public List<ActivityDetails> userTimeline(@NotBlank @QueryParam("username") String username, @QueryParam("page") int page, @QueryParam("count") int count) {
+    public Map<String, Object> userTimeline(@NotBlank @QueryParam("username") String username, @QueryParam("page") int page, @QueryParam("count") int count) {
         Profile profile = profileService.findProfile(username);
         if (profile == null) {
-            return Collections.emptyList();
+            return Collections.emptyMap();
         }
         page = page == 0 ? 1 : page;
         count = count == 0 || count > 50 ? 10 : count;
-        return timelineService.getProfileTimeline(username, page, count);
+        List<ActivityDetails> homeTimeline = timelineService.getProfileTimeline(username, page, count);
+        Map<String, Object> response = new HashMap<>();
+        response.put("timeline", homeTimeline);
+        response.put("totalItems", timelineService.totalItems(username));
+        return response;
     }
 
     @Path("/home_timeline")

@@ -4,14 +4,15 @@ var app = angular.module('milestogo', [
         'ngCookies',
         'ngResource',
         'ngSanitize',
-        'ngRoute'
+        'ngRoute',
+        'ui.bootstrap'
     ])
     .config(function ($routeProvider) {
 
         $routeProvider
             .when('/', {
                 templateUrl: 'views/profile/timeline.html',
-                controller: 'TimelineCtrl'
+                controller: 'UserTimelineCtrl'
             })
             .when('/followers', {
                 templateUrl: 'views/profile/followers.html',

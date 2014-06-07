@@ -4,10 +4,11 @@ angular.module('milestogo')
     .controller('TimelineCtrl', function ($scope, TimelineService, $modal, $location, activeProfile) {
         $scope.currentUser = activeProfile;
 
-        var currentPage = 1;
-        TimelineService.homeTimeline(currentPage).success(function (data, status, headers, config) {
+        if (!angular.isDefined($scope.currentPage)) {
+            $scope.currentPage = 1;
+        }
+        TimelineService.homeTimeline(1).success(function (data, status, headers, config) {
             $scope.activities = data.timeline;
-            $scope.currentPage = currentPage;
             $scope.totalItems = data.totalItems;
         }).error(function (data, status, headers, config) {
             toastr.error("Unable to fetch home timeline. Please try after sometime.");

@@ -36,8 +36,10 @@
                         </div>
                         <div class="timeline-panel">
                             <div class="timeline-heading clearfix ">
-                                <h4 class="timeline-title">@<a ng-href="{{appContext()}}profiles/{{activity.username}}">{{activity.username}}</a> ran {{activity.distanceCovered}} {{activity.goalUnit | lowercase}}</h4>
-                                <span class="pull-right text-muted small"><i class="fa fa-calendar fa-fw"></i><em>{{activity.activityDate | date:'MMM dd, yyyy'}}</em></span>
+                                <h4 class="timeline-title">@<a ng-href="{{appContext()}}profiles/{{activity.username}}">{{activity.username}}</a>
+                                    ran {{activity.distanceCovered}} {{activity.goalUnit | lowercase}}</h4>
+                                <span class="pull-right text-muted small"><i class="fa fa-calendar fa-fw"></i><em>{{activity.activityDate
+                                    | date:'MMM dd, yyyy'}}</em></span>
                             </div>
                             <div class="timeline-body">
                                 <p>{{activity.status}}</p>
@@ -48,7 +50,8 @@
                                         <i class="fa fa-cog"></i>
                                         <span class="caret"></span>
                                     </button>
-                                    <ul class="dropdown-menu" role="menu" ng-if="activity.username == currentUser.username" ng-cloak>
+                                    <ul class="dropdown-menu" role="menu"
+                                        ng-if="activity.username == currentUser.username" ng-cloak>
                                         <li>
                                             <a ng-href="#/activity/{{activity.id}}" title="view activity">View</a>
                                         </li>
@@ -57,26 +60,34 @@
                                         </li>
                                         <li class="divider"></li>
                                         <li>
-                                            <a href="#timeline" ng-click="delete($index)" title="delete activity">Delete</a>
+                                            <a href="#timeline" ng-click="delete($index)"
+                                               title="delete activity">Delete</a>
                                         </li>
                                     </ul>
-                                    <ul class="dropdown-menu" role="menu" ng-if="activity.username != currentUser.username" ng-cloak>
+                                    <ul class="dropdown-menu" role="menu"
+                                        ng-if="activity.username != currentUser.username" ng-cloak>
                                         <li>
                                             <a ng-href="#/activity/{{activity.id}}" title="view activity">View</a>
                                         </li>
                                     </ul>
                                 </div>
                                 <div class="pull-right">
-                                    <a class="btn btn-xs btn-social-icon btn-facebook" target="_blank" href="https://www.facebook.com/dialog/feed?redirect_uri={{redirectUri()}}&display=popup&app_id={{facebookAppId()}}"><i class="fa fa-facebook"></i></a>
-                                    <a class="btn btn-xs btn-social-icon btn-twitter" target="_blank" href="https://twitter.com/intent/tweet?text={{messageToShare(activity)}}"><i class="fa fa-twitter"></i></a>
-                                    <a class="btn btn-xs btn-social-icon btn-google-plus"><i class="fa fa-google-plus"></i></a>
+                                    <a class="btn btn-xs btn-social-icon btn-facebook" target="_blank"
+                                       href="https://www.facebook.com/dialog/feed?redirect_uri={{redirectUri()}}&display=popup&app_id={{facebookAppId()}}"><i
+                                            class="fa fa-facebook"></i></a>
+                                    <a class="btn btn-xs btn-social-icon btn-twitter" target="_blank"
+                                       href="https://twitter.com/intent/tweet?text={{messageToShare(activity)}}"><i
+                                            class="fa fa-twitter"></i></a>
+                                    <a class="btn btn-xs btn-social-icon btn-google-plus"><i
+                                            class="fa fa-google-plus"></i></a>
                                 </div>
                             </div>
                         </div>
                     </li>
                 </ul>
-                <pagination direction-links="false" total-items="totalItems" ng-model="currentPage" ng-change="pageChanged()" ng-if="activities.length"></pagination>
+                <pagination direction-links="false" total-items="totalItems" ng-model="currentPage" ng-change="pageChanged()"></pagination>
             </div>
+
             <!-- /.panel-body -->
         </div>
         <!-- /.panel -->
