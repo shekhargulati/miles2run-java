@@ -1,5 +1,7 @@
 package org.miles2run.jaxrs.api.v1;
 
+import org.hibernate.validator.constraints.NotBlank;
+import org.jug.filters.LoggedIn;
 import org.miles2run.business.domain.Profile;
 import org.miles2run.business.services.ActivityService;
 import org.miles2run.business.services.ProfileService;
@@ -7,15 +9,20 @@ import org.miles2run.business.services.TimelineService;
 import org.miles2run.business.vo.ActivityDetails;
 
 import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.SecurityContext;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 /**
  * Created by shekhargulati on 05/06/14.
  */
-@Path("/api/v1/timeline")
+@Path("/api/v1/activities")
 public class TimelineResource {
 
     @Inject
@@ -24,17 +31,35 @@ public class TimelineResource {
     private TimelineService timelineService;
     @Inject
     private ProfileService profileService;
+    @Context
+    private SecurityContext securityContext;
 
-    @Path("/{username}/profile")
+    @Path("/user_timeline")
     @GET
     @Produces("application/json")
-    public List<ActivityDetails> profileTimeline(@PathParam("username") String username, @QueryParam("page") int page, @QueryParam("count") int count) {
+    public List<ActivityDetails> userTimeline(@NotBlank @QueryParam("username") String username, @QueryParam("page") int page, @QueryParam("count") int count) {
         Profile profile = profileService.findProfile(username);
         if (profile == null) {
             return Collections.emptyList();
         }
         page = page == 0 ? 1 : page;
-        count = count == 0 || count > 50 ? 30 : count;
+        count = count == 0 || count > 50 ? 10 : count;
         return timelineService.getProfileTimeline(username, page, count);
     }
+
+    @Path("/home_timeline")
+    @GET
+    @Produces("application/json")
+    @LoggedIn
+    public Map<String, Object> homeTimeline(@QueryParam("page") int page, @QueryParam("count") int count) {
+        String loggedInUser = securityContext.getUserPrincipal().getName();
+        page = page == 0 ? 1 : page;
+        count = count == 0 || count > 50 ? 10 : count;
+        List<ActivityDetails> homeTimeline = timelineService.getHomeTimeline(loggedInUser, page, count);
+        Map<String, Object> response = new HashMap<>();
+        response.put("timeline", homeTimeline);
+        response.put("totalItems", timelineService.totalItems(loggedInUser));
+        return response;
+    }
+
 }

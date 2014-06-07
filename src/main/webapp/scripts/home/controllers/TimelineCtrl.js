@@ -1,14 +1,27 @@
 'use strict';
 
 angular.module('milestogo')
-    .controller('MainCtrl', function ($scope, ActivityService, activeProfile, $modal, ConfigService, $location) {
+    .controller('TimelineCtrl', function ($scope, TimelineService, $modal, $location, activeProfile) {
         $scope.currentUser = activeProfile;
 
-        ActivityService.timeline($scope.currentUser.username).success(function (data, status, headers, config) {
-            $scope.activities = data;
+        var currentPage = 1;
+        TimelineService.homeTimeline(currentPage).success(function (data, status, headers, config) {
+            $scope.activities = data.timeline;
+            $scope.currentPage = currentPage;
+            $scope.totalItems = data.totalItems;
         }).error(function (data, status, headers, config) {
-            toastr.error("Unable to fetch timeline. Please try after sometime.");
+            toastr.error("Unable to fetch home timeline. Please try after sometime.");
         });
+
+        $scope.pageChanged = function () {
+            console.log('Page changed to: ' + $scope.currentPage);
+            TimelineService.homeTimeline($scope.currentPage).success(function (data, status, headers, config) {
+                $scope.activities = data.timeline;
+                $scope.totalItems = data.totalItems;
+            }).error(function (data, status, headers, config) {
+                toastr.error("Unable to fetch home timeline. Please try after sometime.");
+            });
+        };
 
         $scope.messageToShare = function (activity) {
             return activity.fullname + ' ran ' + activity.distanceCovered + ' ' + activity.goalUnit + ' &via=miles2runorg';
@@ -21,7 +34,7 @@ angular.module('milestogo')
             return "http://" + $location.host();
         }
 
-        $scope.facebookAppId = function(){
+        $scope.facebookAppId = function () {
             if ($location.host() === "localhost") {
                 return 433218286822536;
             }
@@ -50,12 +63,10 @@ angular.module('milestogo')
 
     });
 
-var DeleteActivityCtrl = function ($scope, ActivityService, activeProfile, $modalInstance, activityToDelete, idx, activities, $rootScope) {
-
-    $scope.currentUser = activeProfile;
+var DeleteActivityCtrl = function ($scope, ActivityService, $modalInstance, activityToDelete, idx, activities, $rootScope) {
 
     $scope.ok = function () {
-        ActivityService.deleteActivity($scope.currentUser.username, activityToDelete.id).success(function (data, status) {
+        ActivityService.deleteActivity(activityToDelete.id).success(function (data, status) {
             toastr.success("Deleted activity");
             activities.splice(idx, 1);
             $rootScope.$broadcast('update.progress', 'true');
@@ -74,9 +85,4 @@ var DeleteActivityCtrl = function ($scope, ActivityService, activeProfile, $moda
     $scope.cancel = function () {
         $modalInstance.dismiss('cancel');
     };
-
-    $scope.appContext = function () {
-        return ConfigService.appContext();
-    };
-
 };

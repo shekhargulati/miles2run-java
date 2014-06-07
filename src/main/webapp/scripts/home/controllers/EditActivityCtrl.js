@@ -1,10 +1,9 @@
 'use strict';
 
 angular.module('milestogo')
-    .controller('EditActivityCtrl', function ($scope, $routeParams, ActivityService, $location, activeProfile,$rootScope) {
-        $scope.currentUser = activeProfile;
+    .controller('EditActivityCtrl', function ($scope, $routeParams, ActivityService, $location, $rootScope) {
         var activityId = $routeParams.activityId;
-        ActivityService.get($scope.currentUser.username, activityId).success(function (data) {
+        ActivityService.get(activityId).success(function (data) {
             $scope.activityDetails = data;
             $scope.duration = toHrMinSec(data.duration);
         }).error(function (data) {
@@ -24,7 +23,7 @@ angular.module('milestogo')
                 activityDate: $scope.activityDetails.activityDate
             };
             activity.duration = toAppSeconds($scope.duration);
-            ActivityService.updateActivity($scope.currentUser.username, activityId, activity).success(function (data, status, headers, config) {
+            ActivityService.updateActivity(activityId, activity).success(function (data, status, headers, config) {
                 $rootScope.$broadcast('update.progress', 'true');
                 toastr.success("Updated activity");
                 $location.path('/');

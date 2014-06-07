@@ -403,6 +403,15 @@ public class TimelineService {
             }
         });
     }
+
+    public Long totalItems(final String loggedInUser) {
+        return jedisExecutionService.execute(new JedisOperation<Long>() {
+            @Override
+            public Long perform(Jedis jedis) {
+                return jedis.zcard(String.format("home:timeline:%s", loggedInUser));
+            }
+        });
+    }
 }
 
 

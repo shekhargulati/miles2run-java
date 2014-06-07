@@ -1,5 +1,3 @@
-[Github Issue 53](https://github.com/shekhargulati/miles2run/issues/53)
-
 1. <s>When user profile is updated then timeline should also get updated as it uses user fullname.</s>
 2. <s>When activity is updated, timeline should also be updated.</s>
 3. <s>Users should not be allowed to edit other user activities</s>
@@ -11,39 +9,43 @@
 9. <s>Activity date is always set to current day date. It should be the activity date entered using the form.</s>
 10. <s>After deleting activity, activity id was not removed from profile:timeline. SO when a user followed a new user, they got dangling activityid in their timeline</s>
 11. <s>When activity time is updated then timeline timestamp is not updated.</s>
-12. Pagination of timeline
-13. Activity sharing is not working
-14. The user profile page should load data from profile:timeline
-15. Jenkins setup
-16. About page does not exist
-17. Contact page does not exist
-18. Facebook page https://facebook.com/miles2run does not exist
-19. Google+ https://plus.google.com/u/0/+Miles2Run does not exist
-20. When unable to connect with social login provider, then rather than showing error page, show them the index page again and ask them to signin again.
-21. Dashboard view when user first logs in.
-22. Using growl instead of toastr
-23. Google+ and Facebook share only works with URL.think about proper URL
-24. Calendar view show wrong date when app is run on OpenShift
-25. Unfollow is not working because of missing profile.js
-26. <s>ProfileForm validation is not working</s>
-27. Fix signin page
-28. Fix error pages
-29. If user exist in session then bypass social authentication
-30. Add few charts in the dashboard view -- pace, chart like https://github.com/openshift-evangelists/miles2run/graphs/commit-activity,https://github.com/openshift-evangelists/miles2run/graphs/punch-card
-31. show login logout when user is signed in
+12. <s>The user profile page should load data from profile:timeline</s>
+13. <s>ProfileForm validation is not working</s>
+14. <s>show login logout when user is signed in</s>
+15. Pagination of timeline
+16. Activity sharing is not working
+17. Jenkins setup
+18. About page does not exist
+19. Contact page does not exist
+20. Facebook page https://facebook.com/miles2run does not exist
+21. Google+ https://plus.google.com/u/0/+Miles2Run does not exist
+22. When unable to connect with social login provider, then rather than showing error page, show them the index page again and ask them to signin again.
+23. Dashboard view when user first logs in -- when there is no data. Charts should not be shown.
+24. Using growl instead of toastr
+25. Google+ and Facebook share only works with URL.think about proper fix
+26. Calendar view show wrong date when app is running on OpenShift
+27. Unfollow is not working because of missing profile.js. There is no way to unfollow a user right now.
+28. Fix signin page
+29. Fix error pages
+20. If user exist in session then bypass social authentication
+31. Add few charts in the dashboard view -- pace, chart like https://github.com/openshift-evangelists/miles2run/graphs/commit-activity,https://github.com/openshift-evangelists/miles2run/graphs/punch-card
 32. There is no way to update or remove a photo
 33. Ability to add more than one social connection to a profile
 34. Ability to add map to a run
-35. domain mapping
+35. domain mapping to miles2run.org
 36. username should be stored in lowercase
 37. Full name should be shown in camel case
 38. Producer classes scope http://stackoverflow.com/questions/19427608/what-scope-to-you-use-for-class-with-producer-methods-in-cdi
-39. there is no way to unfollow a user right now.
-40. Miles2Run favicon
-41. Notifications page design
-42. Users should be able to comment on other people activities.
-43. Signin page is using the old design
-44. When user tweet the activity then url ui is broken.
-45. If people are running for weight loss, then allow people to enter their weight and track their weight loss progress.
-46. Allow people to upload their images
-47. Show graphs when there is data
+39. Miles2Run favicon
+40. Notifications page design
+41. Users should be able to comment on other people activities.
+42. When user tweet the activity then url ui is broken.
+43. If people are running for weight loss, then allow people to enter their weight and track their weight loss progress.
+44. Allow people to upload their images
+45. Show graphs when there is data
+46. On user profile page show progress indicator
+47. Introduce concept of goal -- UI should be familiar with Google Analytics page where they list all the web sites.
+48. Loading icon when getting data from rest backend
+49. In the dashboard view, charts should show last 30 days for Day interval
+50. Compare your progress with other user progress. -- charts that that can compare two users.
+51. From inside the angular application, when user tries to perform action without authentication then he/she should be redirected to signin page.

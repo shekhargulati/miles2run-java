@@ -75,6 +75,7 @@
                         </div>
                     </li>
                 </ul>
+                <pagination direction-links="false" total-items="totalItems" ng-model="currentPage" ng-change="pageChanged()" ng-if="activities.length"></pagination>
             </div>
             <!-- /.panel-body -->
         </div>

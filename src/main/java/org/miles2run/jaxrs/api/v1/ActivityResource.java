@@ -23,7 +23,7 @@ import java.util.logging.Logger;
 /**
  * Created by shekhargulati on 15/03/14.
  */
-@Path("/api/v1/profiles/{username}/activities")
+@Path("/api/v1/activities")
 public class ActivityResource {
 
     @Inject
@@ -52,11 +52,9 @@ public class ActivityResource {
     @Consumes("application/json")
     @Produces("application/json")
     @LoggedIn
-    public Response postActivity(@PathParam("username") String username, @Valid final Activity activity) {
-        Profile profile = profileService.findProfile(username);
-        if (profile == null) {
-            return Response.status(Response.Status.NOT_FOUND).entity("No user exists with username " + username).build();
-        }
+    public Response postActivity(@Valid final Activity activity) {
+        String loggedInUser = securityContext.getUserPrincipal().getName();
+        Profile profile = profileService.findProfile(loggedInUser);
         long distanceCovered = activity.getDistanceCovered() * activity.getGoalUnit().getConversion();
         activity.setDistanceCovered(distanceCovered);
         Activity savedActivity = activityService.save(activity, profile);
@@ -67,19 +65,6 @@ public class ActivityResource {
         String message = toActivityMessage(activity, profile);
         shareActivity(message, profile, share);
         return Response.status(Response.Status.CREATED).build();
-    }
-
-    @GET
-    @Produces("application/json")
-    @LoggedIn
-    public List<ActivityDetails> homeTimeline(@PathParam("username") String username, @QueryParam("page") int page, @QueryParam("count") int count) {
-        Profile profile = profileService.findProfile(username);
-        if (profile == null) {
-            return Collections.emptyList();
-        }
-        page = page == 0 ? 1 : page;
-        count = count == 0 || count > 50 ? 30 : count;
-        return timelineService.getHomeTimeline(username, page, count);
     }
 
     @GET
@@ -140,11 +125,9 @@ public class ActivityResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/{id}/share")
     @LoggedIn
-    public Response shareActivity(@PathParam("username") String username, @PathParam("id") Long id, Activity activity) {
-        Profile profile = profileService.findProfile(username);
-        if (profile == null) {
-            return Response.status(Response.Status.NOT_FOUND).entity("No user exists with username " + username).build();
-        }
+    public Response shareActivity(@PathParam("id") Long id, Activity activity) {
+        String loggedInUser = securityContext.getUserPrincipal().getName();
+        Profile profile = profileService.findProfile(loggedInUser);
         Share share = activity.getShare();
         shareActivity(toActivityMessage(activity, profile), profile, share);
         return Response.ok().build();
@@ -152,7 +135,7 @@ public class ActivityResource {
 
 
     private String toActivityMessage(Activity activity, Profile profile) {
-        String activityUrl = UrlUtils.absoluteUrlForResourceUri(request, "/profiles/{username}/activities/{activityId}", profile.getUsername(), activity.getId());
+        String activityUrl = UrlUtils.absoluteUrlForResourceUri(request, "/activities/{activityId}", profile.getUsername(), activity.getId());
         return new StringBuilder(profile.getFullname()).append(" ran ").append(activity.getDistanceCovered() / activity.getGoalUnit().getConversion()).append(" " + activity.getGoalUnit().toString()).append(" via @miles2runorg.").append(" Read full status here ").append(activityUrl).toString();
     }
 

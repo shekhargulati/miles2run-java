@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('milestogo')
-    .controller('DashboardCtrl', function ($scope, ProgressService, ConfigService, activeProfile, $http, $timeout) {
+    .controller('DashboardCtrl', function ($scope, ProgressService, ConfigService, activeProfile, $http, $timeout, $filter) {
         $scope.currentUser = activeProfile;
         $scope.error = null;
         $scope.data = {};
@@ -76,7 +76,7 @@ angular.module('milestogo')
                         return moment(dateFormat(date.getTime()), "YYYYMMDD").format('MMM Do');
                     },
                     yLabelFormat: function (pace) {
-                        return pace.toString() + ' mins/' + activeProfile.goalUnit.$name;
+                        return $filter('number')(pace, 2) + ' mins/' + activeProfile.goalUnit.$name;
                     },
                     xkey: interval,
                     ykeys: ['pace'],

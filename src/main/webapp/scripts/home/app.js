@@ -15,7 +15,7 @@ var app = angular.module('milestogo', [
             })
             .when('/timeline', {
                 templateUrl: 'views/home/timeline.html',
-                controller: 'MainCtrl'
+                controller: 'TimelineCtrl'
             })
             .when('/activity/post', {
                 templateUrl: 'views/home/postactivity.html',

@@ -4,24 +4,21 @@ angular.module('milestogo')
     .service('ActivityService', function ActivityService($http, ConfigService) {
         var baseUrl = ConfigService.getBaseUrl();
         return {
-            postActivity: function (username, data) {
-                return $http.post(baseUrl + "profiles/" + username + "/activities", data);
+            postActivity: function (data) {
+                return $http.post(baseUrl + "activities", data);
             },
-            timeline: function (username) {
-                return $http.get(baseUrl + "profiles/" + username + "/activities");
-            },
-            get: function (username, activityId) {
-                return $http.get(baseUrl + "profiles/" + username + "/activities/" + activityId);
+            get: function (activityId) {
+                return $http.get(baseUrl + "activities/" + activityId);
             },
 
-            updateActivity: function (username, activityId, data) {
-                return $http.put(baseUrl + "profiles/" + username + "/activities/" + activityId, data);
+            updateActivity: function (activityId, data) {
+                return $http.put(baseUrl + "activities/" + activityId, data);
             },
-            deleteActivity: function (username, activityId) {
-                return $http.delete(baseUrl + "profiles/" + username + "/activities/" + activityId);
+            deleteActivity: function (activityId) {
+                return $http.delete(baseUrl + "activities/" + activityId);
             },
-            shareActivity: function (username, activityId, data) {
-                return $http.put(baseUrl + "profiles/" + username + "/activities/" + activityId + "/share", data);
+            shareActivity: function (activityId, data) {
+                return $http.put(baseUrl + "activities/" + activityId + "/share", data);
             }
 
         };
