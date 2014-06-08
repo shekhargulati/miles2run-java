@@ -47,7 +47,7 @@
                                     </span>
                         <div class="chat-body clearfix">
                             <div class="header">
-                                <strong>{{user.fullname}}</strong>
+                                <strong>{{friend.fullname}}</strong> <button type="button" class="btn btn-info btn-xs pull-right" ng-click="unfollowUser(user,$index)">Following</button>
                             </div>
                             <p>
                                 {{user.bio}}

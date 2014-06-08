@@ -27,7 +27,7 @@
 27. Unfollow is not working because of missing profile.js. There is no way to unfollow a user right now.
 28. Fix signin page
 29. Fix error pages
-20. If user exist in session then bypass social authentication
+30. If user exist in session then bypass social authentication
 31. Add few charts in the dashboard view -- pace, chart like https://github.com/openshift-evangelists/miles2run/graphs/commit-activity,https://github.com/openshift-evangelists/miles2run/graphs/punch-card
 32. There is no way to update or remove a photo
 33. Ability to add more than one social connection to a profile
@@ -42,7 +42,7 @@
 42. When user tweet the activity then url ui is broken.
 43. If people are running for weight loss, then allow people to enter their weight and track their weight loss progress.
 44. Allow people to upload their images
-45. Show graphs when there is data
+45. <s>Show graphs when there is data</s>
 46. On user profile page show progress indicator
 47. Introduce concept of goal -- UI should be familiar with Google Analytics page where they list all the web sites.
 48. Loading icon when getting data from rest backend
@@ -56,3 +56,6 @@
 56. After user finishes a goal, there should be a way to share that
 57. <s>Edit activity shows wrong date when run on OpenShift.</s>
 58. <s>Month Charts show wrong month when date is 1st</s>
+59. Check and increase session timeout
+60. Users should be able to like other people activities
+61. On user activity page show joined as well.

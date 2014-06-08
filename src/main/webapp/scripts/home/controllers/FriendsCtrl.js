@@ -41,4 +41,14 @@ angular.module('milestogo')
             });
         }
 
+        $scope.unfollowUser = function (friend, idx) {
+            $http.post('api/v1/profiles/' + $scope.currentUser.username + "/friendships/destroy", {"userToUnfollow": friend.username}).success(function (data, status, headers, config) {
+                console.log("User unfollowed... " + status);
+                $scope.following.splice(idx, 1);
+                toastr.success("Successfully unfollowed user");
+            }).error(function (data, status, headers, config) {
+                toastr.error("Unable to unfollow user. Please try later.");
+            });
+        }
+
     });
