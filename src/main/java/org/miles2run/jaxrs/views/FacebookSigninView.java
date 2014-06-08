@@ -3,7 +3,9 @@ package org.miles2run.jaxrs.views;
 import facebook4j.Facebook;
 import facebook4j.FacebookFactory;
 import org.jug.view.View;
+import org.jug.view.ViewException;
 import org.miles2run.business.utils.UrlUtils;
+import org.thymeleaf.TemplateEngine;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -25,6 +27,8 @@ public class FacebookSigninView {
 
     @Inject
     private Logger logger;
+    @Inject
+    private TemplateEngine templateEngine;
 
     @GET
     @Produces("text/html")
@@ -39,7 +43,7 @@ public class FacebookSigninView {
             logger.info(String.format("Facebook redirectUrl %s", redirectUrl));
             return View.of(facebook.getOAuthAuthorizationURL(redirectUrl), true).withAbsoluteUrl();
         } catch (Exception e) {
-            throw new RuntimeException("Unable to get Facebook AuthorizationURL. Exception is: " + e);
+            throw new ViewException("Unable to get Facebook AuthorizationURL. Exception is: " + e.getMessage(), e, templateEngine);
         }
     }
 }

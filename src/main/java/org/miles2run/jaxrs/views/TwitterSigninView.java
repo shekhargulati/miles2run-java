@@ -1,7 +1,9 @@
 package org.miles2run.jaxrs.views;
 
 import org.jug.view.View;
+import org.jug.view.ViewException;
 import org.miles2run.business.utils.UrlUtils;
+import org.thymeleaf.TemplateEngine;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
@@ -27,6 +29,8 @@ public class TwitterSigninView {
 
     @Inject
     private Logger logger;
+    @Inject
+    private TemplateEngine templateEngine;
 
     @GET
     @Produces("text/html")
@@ -40,7 +44,7 @@ public class TwitterSigninView {
             RequestToken requestToken = twitter.getOAuthRequestToken(UrlUtils.absoluteUrlForResourceMethod(request, TwitterCallbackView.class, "callback"));
             return View.of(requestToken.getAuthenticationURL(), true).withAbsoluteUrl();
         } catch (TwitterException e) {
-            throw new RuntimeException("Unable to get Twitter Authentication Url. Exception is: " + e);
+            throw new ViewException("Unable to get Twitter Authentication Url. Exception is: " + e.getMessage(), e, templateEngine);
         }
     }
 }

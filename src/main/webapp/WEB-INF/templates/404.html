@@ -1,30 +1,37 @@
-<!doctype html>
-<html lang="en" ng-app="milestogo" xmlns:th="http://www.thymeleaf.org">
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
+
     <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1"/>
-    <meta name="author" content="Shekhar Gulati"/>
 
-    <title>Error 404(Not Found)!</title>
+    <title>Page not found - Miles2Run</title>
 
+    <!-- Core CSS - Include with every page -->
     <link href="/css/bootstrap.css" th:href="@{/css/bootstrap.css}" rel="stylesheet"/>
-    <link rel="stylesheet" href="/css/font-awesome.css" th:href="@{/css/font-awesome.css}"/>
-    <link href="/css/main.css" th:href="@{/css/main.css}" rel="stylesheet"/>
+    <link href="/css/sb-admin.css" th:href="@{/css/sb-admin.css}" rel="stylesheet"/>
+    <link href='http://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic' rel='stylesheet'
+          type='text/css'/>
 
-    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!--[if lt IE 9]>
-    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
+    <!-- Page-Level Plugin CSS -->
+    <link href="/css/plugins/timeline/timeline.css" th:href="@{/css/plugins/timeline/timeline.css}" rel="stylesheet"/>
+    <link href="/css/plugins/social-buttons/social-buttons.css"
+          th:href="@{/css/plugins/social-buttons/social-buttons.css}" rel="stylesheet"/>
+
+    <!-- Miles2Run Overrides -->
+    <link href="/css/miles2run.css" th:href="@{/css/miles2run.css}" rel="stylesheet"/>
+
+
 </head>
 
-<body>
+<body id="home">
 
-<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-    <div class="container">
+<div class="wrap">
+
+    <nav class="navbar navbar-default" role="navigation">
         <div class="navbar-header">
-            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".sidebar-collapse">
                 <span class="sr-only">Toggle navigation</span>
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
@@ -32,43 +39,82 @@
             </button>
             <a class="navbar-brand" href="/" th:href="@{/}">Miles2Run</a>
         </div>
-        <div class="collapse navbar-collapse">
-            <ul class="nav navbar-nav">
-                <li class="active"><a href="home" th:href="@{/home}">Home</a></li>
-                <li><a href="about" th:href="@{/about}">About</a></li>
-            </ul>
+        <!-- /.navbar-header -->
 
-            <ul class="nav navbar-collapse pull-right" th:if="${profile != null}">
-                <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" th:inline="text">
-                        <img width="25" height="25" th:src="${profile.profilePic}"/> [[${profile.fullname}]] <b class="caret"></b></a>
-                    <ul class="dropdown-menu">
-                        <li><a href="/" th:href="@{'/profiles/' + ${profile.username}}" th:text="${profile.fullname}"></a></li>
-                        <li><a href="/logout" th:href="@{/logout}">Logout</a></li>
-                    </ul>
-                </li>
-            </ul>
+        <ul class="nav navbar-top-links navbar-right" th:if="${profile != null}">
+            <!-- /.dropdown -->
+            <li class="dropdown">
+                <a href="/home" th:href="@{/home}">
+                    <div>
+                        <i class="fa fa-home fa-fw"></i> Home
+                    </div>
+                </a>
+            </li>
+            <!-- /.dropdown -->
+            <li class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                    <i class="fa fa-user fa-fw"></i> <i class="fa fa-caret-down"></i>
+                </a>
+                <ul class="dropdown-menu dropdown-user">
+                    <li>
+                        <a href="#" th:href="@{'/profiles/' + ${profile.username}}" th:inline="text">
+                            <img width="25" height="25" th:src="${profile.profilePic}"/> [[${profile.fullname}]]
+                        </a>
+                    </li>
+                    <li class="divider"></li>
+                    <li><a href="/logout" th:href="@{/logout}"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
+                    </li>
+                </ul>
+                <!-- /.dropdown-user -->
+            </li>
+            <!-- /.dropdown -->
+        </ul>
+    </nav>
+
+    <section id="second">
+        <div class="container clearfix">
+            <div class="row">
+                <div class="jumbotron">
+                    <h1 style="color: red">Oops, 404!</h1>
+
+                    <p th:text="${error}"></p>
+                </div>
+            </div>
         </div>
-
-        <!--/.nav-collapse -->
-    </div>
-</div>
-
-<div id="main" class="container-fluid" ng-controller="CounterCtrl">
-
-    <div class="jumbotron">
-        <h1 style="color: red">Oops, 404!</h1>
-        <p th:text="${error}"></p>
-    </div>
+    </section>
 
 </div>
+<!-- /.wrap -->
 
+<footer>
+    <div class="container clearfix">
+        <div class="col-lg-6 links">
+            <a href="/about" th:href="@{/about}">About</a>
+            <a href="/contact" th:href="@{/contact}">Contact</a>
+        </div>
+        <!-- /.col-lg-6 -->
+        <div class="col-lg-6 text-right">
+            <a class="btn btn-social-icon btn-facebook" href="https://facebook.com/miles2run" target="_blank"><i
+                    class="fa fa-facebook"></i></a>
+            <a class="btn btn-social-icon btn-google-plus" href="https://plus.google.com/u/0/+Miles2Run"
+               target="_blank"><i class="fa fa-google-plus"></i></a>
+            <a class="btn btn-social-icon btn-twitter" href="https://twitter.com/miles2runorg" target="_blank"><i
+                    class="fa fa-twitter"></i></a>
+        </div>
+        <!-- /.col-lg-6 -->
+    </div>
+</footer>
 
-<script src="/js/jquery.js" th:src="@{/js/jquery.js}"></script>
-<script src="/js/bootstrap.js" th:src="@{/js/bootstrap.js}"></script>
-<script src="/js/angular.js" th:src="@{/js/angular.js}"></script>
-<script src="/js/index.js" th:src="@{/js/index.js}"></script>
+<!-- Core Scripts - Include with every page -->
+<script src="/js/libs/jquery.js" th:src="@{/js/libs/jquery.js}"></script>
+<script src="/js/bootstrap.min.js" th:src="@{/js/bootstrap.min.js}"></script>
+<script src="/js/plugins/metisMenu/jquery.metisMenu.js" th:src="@{/js/plugins/metisMenu/jquery.metisMenu.js}"></script>
+<script src="/js/libs/moment.js" th:src="@{/js/libs/moment.js}"></script>
 
+<!-- Page-Level Plugin Scripts -->
+
+<!-- SB Admin Scripts - Include with every page -->
+<script src="/js/sb-admin.js" th:src="@{/js/sb-admin.js}"></script>
 <script>
     (function (i, s, o, g, r, a, m) {
         i['GoogleAnalyticsObject'] = r;
@@ -86,5 +132,7 @@
     ga('send', 'pageview');
 
 </script>
+
 </body>
+
 </html>
