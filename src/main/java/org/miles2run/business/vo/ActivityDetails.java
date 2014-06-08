@@ -31,6 +31,7 @@ public class ActivityDetails {
 
     private long duration;
 
+
     public ActivityDetails(Long id, String status, long distanceCovered, GoalUnit goalUnit, Date activityDate, Share share, String fullname, long duration, String username, String profilePic) {
         this.id = id;
         this.status = status;
@@ -94,6 +95,7 @@ public class ActivityDetails {
     public long getDuration() {
         return duration;
     }
+
 
     @Override
     public String toString() {

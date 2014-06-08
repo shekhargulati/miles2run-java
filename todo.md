@@ -54,5 +54,5 @@
 54. Charts does not take into account days on which activity was not performed.
 55. When timeline is empty, pagination is still shown. Angular ng-if directive is not working.
 56. After user finishes a goal, there should be a way to share that
-57. Edit activity shows wrong date when run on OpenShift.
-58. Month Charts show wrong month when date is 1st
+57. <s>Edit activity shows wrong date when run on OpenShift.</s>
+58. <s>Month Charts show wrong month when date is 1st</s>

@@ -125,7 +125,8 @@ public class TimelineService {
                 data.put("id", id);
                 data.put("username", profile.getUsername());
                 data.put("userId", String.valueOf(profile.getId()));
-                data.put("posted", String.valueOf(activity.getActivityDate().getTime()));
+                String posted = String.valueOf(activity.getActivityDate().getTime());
+                data.put("posted", posted);
                 data.put("fullname", profile.getFullname());
                 data.put("distanceCovered", String.valueOf(activity.getDistanceCovered()));
                 data.put("goalUnit", activity.getGoalUnit().getUnit());
@@ -259,7 +260,9 @@ public class TimelineService {
                     double activityTimestamp = activityIdTuple.getScore();
                     String distanceCovered = jedis.hget(String.format("activity:%s", activityId), "distanceCovered");
                     Date activityDate = new Date(Double.valueOf(activityTimestamp).longValue());
+                    logger.info(String.format("Activity Date : %s", activityDate));
                     String key = formatDateToYearAndMonth(activityDate);
+                    logger.info(String.format("DateToYearAndMonth : %s", key));
                     if (monthDistanceHash.containsKey(key)) {
                         Long value = monthDistanceHash.get(key);
                         monthDistanceHash.put(key, value + Long.valueOf(distanceCovered));
@@ -314,13 +317,6 @@ public class TimelineService {
     private String formatDateToYearAndMonth(Date date) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM");
         return dateFormat.format(date);
-    }
-
-    public static void main(String[] args) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.MONTH, -6);
-        Date nMonthsBack = calendar.getTime();
-        System.out.println(nMonthsBack.toString());
     }
 
     public List<Map<String, Object>> paceOverTime(Profile profile, String interval, int n) {

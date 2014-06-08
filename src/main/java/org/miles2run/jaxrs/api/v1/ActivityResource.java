@@ -16,9 +16,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -59,6 +56,7 @@ public class ActivityResource {
         Profile profile = profileService.findProfile(loggedInUser);
         long distanceCovered = activity.getDistanceCovered() * activity.getGoalUnit().getConversion();
         activity.setDistanceCovered(distanceCovered);
+        logger.info("Activity Date stored in database " + activity.getActivityDate());
         Activity savedActivity = activityService.save(activity, profile);
         counterService.updateDistanceCount(distanceCovered);
         counterService.updateActivitySecondsCount(activity.getDuration());
@@ -72,7 +70,6 @@ public class ActivityResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/{id}")
-    @LoggedIn
     public ActivityDetails get(@NotNull @PathParam("id") Long id) {
         return activityService.findById(id);
     }

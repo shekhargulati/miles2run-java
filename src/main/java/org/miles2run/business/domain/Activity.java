@@ -37,7 +37,7 @@ public class Activity {
     @Temporal(TemporalType.TIMESTAMP)
     private Date postedAt = new Date();
 
-    @Temporal(TemporalType.DATE)
+    @Temporal(TemporalType.TIMESTAMP)
     @NotNull
     private Date activityDate;
 
@@ -157,4 +157,5 @@ public class Activity {
     public void setDuration(long duration) {
         this.duration = duration;
     }
+
 }
