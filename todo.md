@@ -24,7 +24,7 @@
 24. Using growl instead of toastr
 25. Google+ and Facebook share only works with URL.think about proper fix
 26. <s>Calendar view show wrong date when app is running on OpenShift</s>
-27. Unfollow is not working because of missing profile.js. There is no way to unfollow a user right now.
+27. <s>Unfollow is not working because of missing profile.js. There is no way to unfollow a user right now.</s>
 28. Fix signin page
 29. Fix error pages
 30. If user exist in session then bypass social authentication
@@ -59,5 +59,5 @@
 59. Check and increase session timeout
 60. Users should be able to like other people activities
 61. On user activity page show joined as well.
-62. Edit profile link is not shown on user profile
+62. <s>Edit profile link is not shown on user profile</s>
 63. User profile page when user has not posted any activity
