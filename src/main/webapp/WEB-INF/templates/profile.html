@@ -138,32 +138,40 @@
                     </div>
                     <div class="panel-footer">
                         <div class="row">
-                            <div class="col-lg-3 col-sm-3 text-center">
-                                <h4>Active Goal</h4>
+                            <div class="col-lg-2 col-sm-2 text-center">
+                                <h5>Active Goal</h5>
 
                                 <div th:inline="text">
                                     [[${userProfile.goal} + ' ' + ${userProfile.goalUnit.upperCase()}]]
                                 </div>
                             </div>
-                            <div class="col-lg-3 col-sm-3 text-center">
-                                <h4>Distance Covered</h4>
+                            <div class="col-lg-2 col-sm-2 text-center">
+                                <h5>Distance Covered</h5>
 
                                 <div th:inline="text">
                                     [[${progress.totalDistanceCovered} + ' ' + ${userProfile.goalUnit.upperCase()}]]
                                 </div>
                             </div>
-                            <div class="col-lg-3 col-sm-3 text-center">
-                                <h4>Average Pace</h4>
+                            <div class="col-lg-2 col-sm-2 text-center">
+                                <h5>Average Pace</h5>
 
                                 <div th:inline="text">
                                     [[${#numbers.formatDecimal(progress.averagePace,1,2)} + ' MINS/' + ${userProfile.goalUnit.upperCase()}]]
                                 </div>
                             </div>
-                            <div class="col-lg-3 col-sm-3 text-center">
-                                <h4>Total Activities</h4>
+                            <div class="col-lg-2 col-sm-2 text-center">
+                                <h5>Total Activities</h5>
 
                                 <div th:text="${activities}">
                                 </div>
+                            </div>
+                            <div class="col-lg-2 col-sm-2 text-center pull-right" th:if="${profile != null}" ng-controller="FriendsCtrl">
+                                <h4></h4>
+                                <a th:href="@{/profiles/edit}" class="btn btn-default" th:if="${isMyProfile} == true">Edit
+                                    Profile</a>
+                                <a href="#unfollow" class="btn btn-info" th:if="${isFollowing} == true" ng-click="unfollowUser()">Following</a>
+                                <a href="#follow" class="btn btn-default" th:if="${isFollowing} == false" ng-click="followUser()"><span
+                                        class="glyphicon glyphicon-user"></span> Follow</a>
                             </div>
                         </div>
                     </div>
@@ -218,6 +226,7 @@
 <script src="/scripts/profile/controllers/UserTimelineCtrl.js" th:src="@{/scripts/profile/controllers/UserTimelineCtrl.js}"></script>
 <script src="/scripts/profile/controllers/FollowersCtrl.js" th:src="@{/scripts/profile/controllers/FollowersCtrl.js}"></script>
 <script src="/scripts/profile/controllers/FollowingCtrl.js" th:src="@{/scripts/profile/controllers/FollowingCtrl.js}"></script>
+<script src="/scripts/profile/controllers/FriendsCtrl.js" th:src="@{/scripts/profile/controllers/FriendsCtrl.js}"></script>
 
 
 

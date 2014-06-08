@@ -59,3 +59,5 @@
 59. Check and increase session timeout
 60. Users should be able to like other people activities
 61. On user activity page show joined as well.
+62. Edit profile link is not shown on user profile
+63. User profile page when user has not posted any activity

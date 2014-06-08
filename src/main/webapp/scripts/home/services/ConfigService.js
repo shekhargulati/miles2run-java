@@ -13,12 +13,13 @@ angular.module('milestogo')
                 }
             },
 
-            appContext : function(){
+            appContext: function () {
                 if ($location.port() === 8080) {
                     return "/miles2run/";
                 } else {
                     return "/";
                 }
             }
+
         };
     });

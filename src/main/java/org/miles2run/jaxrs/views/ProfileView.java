@@ -226,12 +226,6 @@ public class ProfileView {
                 model.put("progress", progress);
             }
             model.put("activities", activityService.count(username));
-//            List<ActivityDetails> timeline = activityService.findAll(username);
-//            model.put("timeline", timeline);
-//            model.put("activities", timeline.size());
-//            UserProfile userProfile = profileMongoService.findProfile(username);
-//            model.put("followers", userProfile.getFollowers().size());
-//            model.put("following", userProfile.getFollowing().size());
             return View.of("/profile", templateEngine).withModel(model);
         } catch (Exception e) {
             if (e instanceof ViewResourceNotFoundException) {
