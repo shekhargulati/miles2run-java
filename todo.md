@@ -27,7 +27,7 @@
 27. <s>Unfollow is not working because of missing profile.js. There is no way to unfollow a user right now.</s>
 28. Fix signin page
 29. Fix error pages
-30. If user exist in session then bypass social authentication
+30. <s>If user exist in session then bypass social authentication</s>
 31. Add few charts in the dashboard view -- pace, chart like https://github.com/openshift-evangelists/miles2run/graphs/commit-activity,https://github.com/openshift-evangelists/miles2run/graphs/punch-card
 32. There is no way to update or remove a photo
 33. Ability to add more than one social connection to a profile
@@ -61,4 +61,4 @@
 61. On user activity page show joined as well.
 62. <s>Edit profile link is not shown on user profile</s>
 63. User profile page when user has not posted any activity
-64. Fix edit profile design and test its functionality
+64. <s>Fix edit profile design and test its functionality</s>
