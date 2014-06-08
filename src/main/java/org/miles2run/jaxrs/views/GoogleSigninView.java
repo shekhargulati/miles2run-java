@@ -6,6 +6,7 @@ import org.miles2run.business.utils.UrlUtils;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -30,6 +31,10 @@ public class GoogleSigninView {
     @Produces("text/html")
     public View signin() {
         logger.info("Inside GoogleSigninView signin()..");
+        HttpSession session = request.getSession(false);
+        if (session != null && session.getAttribute("principal") != null) {
+            return View.of("/home", true);
+        }
         return View.of(googleService.buildLoginUrl(UrlUtils.getBaseUrl(request)), true).withAbsoluteUrl();
     }
 

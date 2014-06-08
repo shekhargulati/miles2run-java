@@ -9,6 +9,7 @@ import twitter4j.auth.RequestToken;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -30,6 +31,10 @@ public class TwitterSigninView {
     @GET
     @Produces("text/html")
     public View signin(@Context HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if (session != null && session.getAttribute("principal") != null) {
+            return View.of("/home", true);
+        }
         Twitter twitter = twitterFactory.getInstance();
         try {
             RequestToken requestToken = twitter.getOAuthRequestToken(UrlUtils.absoluteUrlForResourceMethod(request, TwitterCallbackView.class, "callback"));

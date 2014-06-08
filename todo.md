@@ -61,3 +61,4 @@
 61. On user activity page show joined as well.
 62. <s>Edit profile link is not shown on user profile</s>
 63. User profile page when user has not posted any activity
+64. Fix edit profile design and test its functionality
