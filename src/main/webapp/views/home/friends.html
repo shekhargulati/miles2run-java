@@ -47,7 +47,7 @@
                                     </span>
                         <div class="chat-body clearfix">
                             <div class="header">
-                                <strong>{{friend.fullname}}</strong> <button type="button" class="btn btn-info btn-xs pull-right" ng-click="unfollowUser(user,$index)">Following</button>
+                                <strong>{{friend.fullname}}</strong> <button type="button" ng-mouseover="unfollowBtnState = {'text':'Unfollow','btnClass':'btn btn-danger btn-xs pull-right'}" ng-mouseleave="unfollowBtnState = {'text':'Following','btnClass':'btn btn-info btn-xs pull-right'}" ng-init="unfollowBtnState = {'text':'Following','btnClass':'btn btn-info btn-xs pull-right'}" ng-class="unfollowBtnState.btnClass" ng-click="unfollowUser(user,$index)">{{unfollowBtnState.text}}</button>
                             </div>
                             <p>
                                 {{user.bio}}
