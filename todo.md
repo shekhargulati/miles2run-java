@@ -28,7 +28,7 @@
 28. Fix signin page
 29. Fix error pages
 30. <s>If user exist in session then bypass social authentication</s>
-31. Add few charts in the dashboard view -- pace, chart like https://github.com/openshift-evangelists/miles2run/graphs/commit-activity,https://github.com/openshift-evangelists/miles2run/graphs/punch-card
+31. <s>Add few charts in the dashboard view</s>
 32. There is no way to update or remove a photo
 33. Ability to add more than one social connection to a profile
 34. Ability to add map to a run
