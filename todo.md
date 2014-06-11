@@ -65,3 +65,4 @@
 ##Goal Functionality##
 47. Introduce concept of goal -- UI should be familiar with Google Analytics page where they list all the web sites.
 56. After user finishes a goal, there should be a way to share that
+66. Goals can be private as well and then activities would not be visible to other users.

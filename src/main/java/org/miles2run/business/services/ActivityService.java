@@ -1,6 +1,7 @@
 package org.miles2run.business.services;
 
 import org.miles2run.business.domain.Activity;
+import org.miles2run.business.domain.Goal;
 import org.miles2run.business.domain.Profile;
 import org.miles2run.business.vo.ActivityDetails;
 import org.miles2run.business.vo.Progress;
@@ -24,9 +25,10 @@ public class ActivityService {
     private EntityManager entityManager;
     @Inject
     private ProfileService profileService;
+    @Inject
+    private GoalService goalService;
 
-    public Activity save(Activity activity, Profile profile) {
-        activity.setPostedBy(profile);
+    public Activity save(Activity activity) {
         entityManager.persist(activity);
         return activity;
     }
@@ -83,27 +85,23 @@ public class ActivityService {
 
     }
 
-    public Progress calculateUserProgress(Profile profile) {
-        long count = entityManager.createNamedQuery("Activity.countByProfile", Long.class).setParameter("profile", profile).getSingleResult();
+    public Progress calculateUserProgressForGoal(Profile profile, Long goalId) {
+        Goal goal = goalService.find(goalId);
+        long count = entityManager.createNamedQuery("Activity.countByProfileAndGoal", Long.class).setParameter("profile", profile).setParameter("goal", goal).getSingleResult();
         if (count == 0) {
-            return new Progress(profile);
+            return new Progress(goal);
         }
-        TypedQuery<Progress> query = entityManager.createQuery("SELECT new org.miles2run.business.vo.Progress(a.postedBy.goal,a.postedBy.goalUnit, SUM(a.distanceCovered),COUNT(a), SUM(a.duration) ) from Activity a WHERE a.postedBy =:postedBy", Progress.class).setParameter("postedBy", profile);
+        TypedQuery<Progress> query = entityManager.createNamedQuery("Activity.userGoalProgress", Progress.class).setParameter("postedBy", profile).setParameter("goal", goal);
         return query.getSingleResult();
     }
+
+    public Progress calculateUserProgressForGoal(String loggedInUser, Long goalId) {
+        return calculateUserProgressForGoal(profileService.findProfile(loggedInUser), goalId);
+    }
+
 
     public List<Activity> findActivitiesWithTimeStamp(Profile profile) {
         return entityManager.createQuery("SELECT NEW Activity(a.activityDate,a.distanceCovered,a.goalUnit) from Activity a WHERE a.postedBy =:profile", Activity.class).setParameter("profile", profile).getResultList();
-    }
-
-    public Progress findTotalDistanceCovered(String username) {
-        Profile profile = profileService.findProfile(username);
-        long count = entityManager.createNamedQuery("Activity.countByProfile", Long.class).setParameter("profile", profile).getSingleResult();
-        if (count == 0) {
-            return new Progress();
-        }
-        TypedQuery<Progress> query = entityManager.createQuery("SELECT new org.miles2run.business.vo.Progress(a.postedBy.goal,a.postedBy.goalUnit, SUM(a.distanceCovered),COUNT(a),SUM(a.duration)) from Activity a WHERE a.postedBy =:postedBy", Progress.class).setParameter("postedBy", profile);
-        return query.getSingleResult();
     }
 
 

@@ -1,5 +1,6 @@
 package org.miles2run.business.vo;
 
+import org.miles2run.business.domain.Goal;
 import org.miles2run.business.domain.GoalUnit;
 import org.miles2run.business.domain.Profile;
 
@@ -33,7 +34,6 @@ public class Progress {
         }
     }
 
-
     public Progress() {
         this.goal = 0;
         this.totalDistanceCovered = 0;
@@ -41,13 +41,13 @@ public class Progress {
         this.activityCount = 0;
     }
 
-    public Progress(Profile profile) {
-        this.goal = profile.getGoal() / profile.getGoalUnit().getConversion();
+    public Progress(Goal goal) {
+        this.goal = goal.getGoal() / goal.getGoalUnit().getConversion();
         this.percentage = 0;
         this.totalDistanceCovered = 0;
         this.averagePace = 0;
         this.activityCount = 0;
-        this.goalUnit = profile.getGoalUnit();
+        this.goalUnit = goal.getGoalUnit();
     }
 
     public long getGoal() {
@@ -92,6 +92,10 @@ public class Progress {
 
     public double getAveragePace() {
         return this.averagePace;
+    }
+
+    public static Progress format(Progress progress, Goal goal) {
+        return null;
     }
 }
 

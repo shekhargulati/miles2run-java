@@ -49,6 +49,7 @@ public class RestConfig extends Application {
         classes.add(TimelineResource.class);
         classes.add(DashboardResource.class);
         classes.add(GoalView.class);
+        classes.add(GoalTimelineResource.class);
         return classes;
     }
 }

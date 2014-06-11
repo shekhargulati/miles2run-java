@@ -10,41 +10,41 @@ var app = angular.module('milestogo', [
     .config(function ($routeProvider) {
         $routeProvider
             .when('/', {
-                templateUrl: 'views/home/dashboard.html',
+                templateUrl: '../views/home/dashboard.html',
                 controller: 'DashboardCtrl'
             })
             .when('/timeline', {
-                templateUrl: 'views/home/timeline.html',
+                templateUrl: '../views/home/timeline.html',
                 controller: 'TimelineCtrl'
             })
             .when('/activity/post', {
-                templateUrl: 'views/home/postactivity.html',
+                templateUrl: '../views/home/postactivity.html',
                 controller: 'PostActivityCtrl'
             }).when('/activity/calendar', {
-                templateUrl: 'views/home/calendar.html',
+                templateUrl: '../views/home/calendar.html',
                 controller: 'ActivityCalendarCtrl'
             })
             .when('/activity/share/:activityId', {
-                templateUrl: 'views/home/share.html',
+                templateUrl: '../views/home/share.html',
                 controller: 'ShareActivityCtrl'
             })
             .when('/progress', {
-                templateUrl: 'views/home/progress.html',
+                templateUrl: '../views/home/progress.html',
                 controller: 'ProgressCtrl'
             })
             .when('/notifications', {
-                templateUrl: 'views/home/notifications.html',
+                templateUrl: '../views/home/notifications.html',
                 controller: 'NotificationsCtrl'
             })
             .when('/friends', {
-                templateUrl: 'views/home/friends.html',
+                templateUrl: '../views/home/friends.html',
                 controller: 'FriendsCtrl'
             })
             .when('/activity/edit/:activityId', {
-                templateUrl: 'views/home/EditActivity.html',
+                templateUrl: '../views/home/EditActivity.html',
                 controller: 'EditActivityCtrl'
             }).when('/activity/:activityId', {
-                templateUrl: 'views/home/ViewActivity.html',
+                templateUrl: '../views/home/ViewActivity.html',
                 controller: 'ViewActivityCtrl'
             })
             .otherwise({
@@ -89,6 +89,8 @@ app.filter('pace', function () {
 app.config(['$provide', function ($provide) {
     var profile = angular.copy(window.activeUserProfile);
     $provide.constant('activeProfile', profile);
+    var activeGoal = angular.copy(window.activeGoal);
+    $provide.constant('activeGoal', activeGoal);
 }]);
 
 
@@ -99,11 +101,11 @@ function HeaderCtrl($scope, $location) {
     };
 }
 
-function ProgressCtrl($scope, ProgressService, activeProfile, $rootScope) {
+function ProgressCtrl($scope, ProgressService, activeProfile, $rootScope, activeGoal) {
 
     $scope.currentUser = activeProfile;
 
-    ProgressService.progress($scope.currentUser.username).success(function (data, status, headers, config) {
+    ProgressService.progress(activeGoal.id).success(function (data, status, headers, config) {
         $scope.error = null;
         $scope.status = status;
         $scope.data = data;
@@ -111,7 +113,7 @@ function ProgressCtrl($scope, ProgressService, activeProfile, $rootScope) {
     });
 
     $rootScope.$on('update.progress', function (event, value) {
-        ProgressService.progress($scope.currentUser.username).success(function (data, status, headers, config) {
+        ProgressService.progress(activeGoal.id).success(function (data, status, headers, config) {
             $scope.error = null;
             $scope.status = status;
             $scope.data = data;

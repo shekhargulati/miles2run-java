@@ -1,13 +1,13 @@
 'use strict';
 
 angular.module('milestogo')
-    .controller('TimelineCtrl', function ($scope, TimelineService, $modal, $location, activeProfile) {
+    .controller('TimelineCtrl', function ($scope, TimelineService, $modal, $location, activeProfile, activeGoal) {
         $scope.currentUser = activeProfile;
 
         if (!angular.isDefined($scope.currentPage)) {
             $scope.currentPage = 1;
         }
-        TimelineService.homeTimeline(1).success(function (data, status, headers, config) {
+        TimelineService.goalTimeline(activeGoal.id, 1).success(function (data, status, headers, config) {
             $scope.activities = data.timeline;
             $scope.totalItems = data.totalItems;
         }).error(function (data, status, headers, config) {
@@ -16,7 +16,7 @@ angular.module('milestogo')
 
         $scope.pageChanged = function () {
             console.log('Page changed to: ' + $scope.currentPage);
-            TimelineService.homeTimeline($scope.currentPage).success(function (data, status, headers, config) {
+            TimelineService.goalTimeline(activeGoal.id, $scope.currentPage).success(function (data, status, headers, config) {
                 $scope.activities = data.timeline;
                 $scope.totalItems = data.totalItems;
             }).error(function (data, status, headers, config) {
@@ -64,10 +64,10 @@ angular.module('milestogo')
 
     });
 
-var DeleteActivityCtrl = function ($scope, ActivityService, $modalInstance, activityToDelete, idx, activities, $rootScope) {
+var DeleteActivityCtrl = function ($scope, ActivityService, $modalInstance, activityToDelete, idx, activities, $rootScope, activeGoal) {
 
     $scope.ok = function () {
-        ActivityService.deleteActivity(activityToDelete.id).success(function (data, status) {
+        ActivityService.deleteActivity(activityToDelete.id, activeGoal.id).success(function (data, status) {
             toastr.success("Deleted activity");
             activities.splice(idx, 1);
             $rootScope.$broadcast('update.progress', 'true');

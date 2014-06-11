@@ -15,7 +15,8 @@ import java.util.List;
 @Entity
 @NamedQueries(
         {
-                @NamedQuery(name = "Goal.findAllForProfile", query = "SELECT new Goal(g.id,g.purpose,g.targetDate,g.goal, g.goalUnit, g.active) FROM Goal g where g.profile =:profile")
+                @NamedQuery(name = "Goal.findAllForProfile", query = "SELECT new Goal(g.id,g.purpose,g.targetDate,g.goal, g.goalUnit, g.active) FROM Goal g where g.profile =:profile"),
+                @NamedQuery(name = "Goal.findGoalWithIdAndProfile", query = "SELECT new Goal(g.id,g.purpose,g.targetDate,g.goal, g.goalUnit, g.active) FROM Goal g where g.profile =:profile and g.id =:goalId")
         }
 )
 public class Goal {
@@ -62,8 +63,8 @@ public class Goal {
         this.id = id;
         this.purpose = purpose;
         this.targetDate = targetDate;
-        this.goal = goal;
         this.goalUnit = goalUnit;
+        this.goal = goal / this.goalUnit.getConversion();
         this.active = active;
     }
 

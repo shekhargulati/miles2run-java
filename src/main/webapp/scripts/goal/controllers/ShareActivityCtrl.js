@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('milestogo')
-    .controller('ShareActivityCtrl', function ($scope, $routeParams, ActivityService, $location, activeProfile) {
+    .controller('ShareActivityCtrl', function ($scope, $routeParams, ActivityService, $location, activeProfile, activeGoal) {
         $scope.currentUser = activeProfile;
 
         var activityId = $routeParams.activityId;
@@ -21,7 +21,7 @@ angular.module('milestogo')
                 share: $scope.activityDetails.share
             };
 
-            ActivityService.shareActivity($scope.currentUser.username, activityId, activity).success(function (data, status, headers, config) {
+            ActivityService.shareActivity(activityId, activity, activeGoal.id).success(function (data, status, headers, config) {
                 toastr.success("Shared activity");
                 $location.path('/');
             }).error(function (data, status, headers, config) {
@@ -32,14 +32,14 @@ angular.module('milestogo')
         };
 
         $scope.socialProviderSelected = function () {
-            if(!$scope.activityDetails){
+            if (!$scope.activityDetails) {
                 return "disabled";
             }
             return anyProviderSelected($scope.activityDetails.share) ? "goodtogo" : "disabled";
         }
 
-        var anyProviderSelected = function(share){
-            if(share.facebook || share.twitter || share.googlePlus){
+        var anyProviderSelected = function (share) {
+            if (share.facebook || share.twitter || share.googlePlus) {
                 return true;
             }
             return false;

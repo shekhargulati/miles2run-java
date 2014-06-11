@@ -1,10 +1,11 @@
 'use strict';
 
-function PostActivityCtrl($scope, ActivityService, $location, ProfileService, activeProfile, $rootScope) {
+function PostActivityCtrl($scope, ActivityService, $location, ProfileService, activeProfile, $rootScope, activeGoal) {
 
     $scope.currentUser = activeProfile;
+    $scope.activeGoal = activeGoal;
     $scope.activity = {
-        goalUnit: $scope.currentUser.goalUnit.$name,
+        goalUnit: $scope.activeGoal.goalUnit.$name,
         share: {}
     };
 
@@ -16,7 +17,7 @@ function PostActivityCtrl($scope, ActivityService, $location, ProfileService, ac
 
     $scope.postActivity = function () {
         $scope.activity.duration = toAppSeconds($scope.duration);
-        ActivityService.postActivity($scope.activity).success(function (data, status, headers, config) {
+        ActivityService.postActivity($scope.activity, activeGoal.id).success(function (data, status, headers, config) {
             $rootScope.$broadcast('update.progress', 'true');
             toastr.success("Posted new activity");
             $location.path('/');

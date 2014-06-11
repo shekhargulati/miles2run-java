@@ -22,7 +22,7 @@ import java.util.logging.Logger;
 /**
  * Created by shekhargulati on 15/03/14.
  */
-@Path("/api/v1/activities")
+@Path("/api/v1/goals/{goalId}/activities")
 public class ActivityResource {
 
     @Inject
@@ -46,21 +46,29 @@ public class ActivityResource {
     private TimelineService timelineService;
     @Context
     private SecurityContext securityContext;
+    @Inject
+    private GoalService goalService;
 
     @POST
     @Consumes("application/json")
     @Produces("application/json")
     @LoggedIn
-    public Response postActivity(@Valid final Activity activity) {
+    public Response postActivity(@PathParam("goalId") Long goalId, @Valid final Activity activity) {
         String loggedInUser = securityContext.getUserPrincipal().getName();
         Profile profile = profileService.findProfile(loggedInUser);
+        Goal goal = goalService.findGoal(profile, goalId);
+        if (goal == null) {
+            return Response.status(Response.Status.NOT_FOUND).entity("No goal exists with id " + goalId).build();
+        }
         long distanceCovered = activity.getDistanceCovered() * activity.getGoalUnit().getConversion();
         activity.setDistanceCovered(distanceCovered);
         logger.info("Activity Date stored in database " + activity.getActivityDate());
-        Activity savedActivity = activityService.save(activity, profile);
+        activity.setPostedBy(profile);
+        activity.setGoal(goal);
+        Activity savedActivity = activityService.save(activity);
         counterService.updateDistanceCount(distanceCovered);
         counterService.updateActivitySecondsCount(activity.getDuration());
-        timelineService.postActivityToTimeline(savedActivity, profile);
+        timelineService.postActivityToTimeline(savedActivity, profile, goal);
         Share share = activity.getShare();
         String message = toActivityMessage(activity, profile);
         shareActivity(message, profile, share);
@@ -79,8 +87,14 @@ public class ActivityResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/{id}")
     @LoggedIn
-    public Response updateActivity(@PathParam("id") Long id, @Valid Activity activity) {
+    public Response updateActivity(@PathParam("goalId") Long goalId, @PathParam("id") Long id, @Valid Activity activity) {
         String loggedInUser = securityContext.getUserPrincipal().getName();
+        Profile profile = profileService.findProfile(loggedInUser);
+        Goal goal = goalService.findGoal(profile, goalId);
+        if (goal == null) {
+            return Response.status(Response.Status.NOT_FOUND).entity("No goal exists with id " + goalId).build();
+        }
+
         ActivityDetails existingActivity = activityService.findById(id);
         if (existingActivity == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
@@ -89,13 +103,13 @@ public class ActivityResource {
         if (!StringUtils.equals(loggedInUser, activityBy)) {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }
+
         long distanceCovered = activity.getDistanceCovered() * activity.getGoalUnit().getConversion();
         long activityPreviousDistanceCovered = existingActivity.getDistanceCovered();
         long updatedRunCounter = distanceCovered - activityPreviousDistanceCovered;
         activity.setDistanceCovered(distanceCovered);
         ActivityDetails updatedActivity = activityService.update(existingActivity, activity);
-        Profile profile = profileService.findProfile(loggedInUser);
-        timelineService.updateActivity(updatedActivity, profile);
+        timelineService.updateActivity(updatedActivity, profile, goal);
         counterService.updateDistanceCount(updatedRunCounter);
         counterService.updateActivitySecondsCount(activity.getDuration());
         return Response.status(Response.Status.OK).entity(updatedActivity).build();
@@ -104,8 +118,13 @@ public class ActivityResource {
     @DELETE
     @Path("/{activityId}")
     @LoggedIn
-    public Response deleteActivity(@PathParam("activityId") Long activityId) {
+    public Response deleteActivity(@PathParam("goalId") Long goalId, @PathParam("activityId") Long activityId) {
         String loggedInUser = securityContext.getUserPrincipal().getName();
+        Profile profile = profileService.findProfile(loggedInUser);
+        Goal goal = goalService.findGoal(profile, goalId);
+        if (goal == null) {
+            return Response.status(Response.Status.NOT_FOUND).entity("No goal exists with id " + goalId).build();
+        }
         ActivityDetails existingActivity = activityService.findById(activityId);
         if (existingActivity == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
@@ -115,7 +134,7 @@ public class ActivityResource {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }
         activityService.delete(activityId);
-        timelineService.deleteActivityFromTimeline(loggedInUser, activityId);
+        timelineService.deleteActivityFromTimeline(loggedInUser, activityId, goal);
         return Response.noContent().build();
     }
 
@@ -136,11 +155,15 @@ public class ActivityResource {
     @GET
     @Produces("application/json")
     @LoggedIn
-    public Response activityCalendar(@QueryParam("months") int nMonths) {
-        nMonths = nMonths == 0 || nMonths > 12 ? 3 : nMonths;
+    public Response activityCalendar(@PathParam("goalId") Long goalId, @QueryParam("months") int nMonths) {
         String loggedInUser = securityContext.getUserPrincipal().getName();
         Profile profile = profileService.findProfile(loggedInUser);
-        Map<String, Long> data = timelineService.getActivityCalendarForNMonths(profile, nMonths);
+        Goal goal = goalService.findGoal(profile, goalId);
+        if (goal == null) {
+            return Response.status(Response.Status.NOT_FOUND).entity("No goal exists with id " + goalId).build();
+        }
+        nMonths = nMonths == 0 || nMonths > 12 ? 3 : nMonths;
+        Map<String, Long> data = timelineService.getActivityCalendarForNMonths(profile, goal, nMonths);
         return Response.status(Response.Status.OK).entity(data).build();
     }
 

@@ -9,6 +9,9 @@ angular.module('milestogo')
             },
             userTimeline: function (username, page) {
                 return $http.get(baseUrl + "activities/user_timeline", {params: {username: username, page: page}});
+            },
+            goalTimeline: function (goalId, page) {
+                return $http.get(baseUrl + "goals/" + goalId + "/activities/goal_timeline", {params: {page: page}});
             }
         };
     });

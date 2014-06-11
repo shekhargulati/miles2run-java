@@ -14,7 +14,9 @@ import java.util.Date;
 @NamedQueries({
         @NamedQuery(name = "Activity.findAll", query = "SELECT NEW org.miles2run.business.vo.ActivityDetails(a.id,a.status,a.distanceCovered,a.goalUnit,a.activityDate,a.share,a.postedBy.fullname,a.duration,a.postedBy.username,a.postedBy.profilePic) FROM Activity a WHERE a.postedBy =:postedBy ORDER BY a.activityDate DESC"),
         @NamedQuery(name = "Activity.findById", query = "SELECT new org.miles2run.business.vo.ActivityDetails(a.id,a.status,a.distanceCovered,a.goalUnit,a.activityDate,a.share,a.postedBy.fullname,a.duration,a.postedBy.username,a.postedBy.profilePic) from Activity a where a.id =:id"),
-        @NamedQuery(name = "Activity.countByProfile", query = "SELECT COUNT(a) FROM Activity a WHERE a.postedBy =:profile")
+        @NamedQuery(name = "Activity.countByProfile", query = "SELECT COUNT(a) FROM Activity a WHERE a.postedBy =:profile"),
+        @NamedQuery(name = "Activity.countByProfileAndGoal", query = "SELECT COUNT(a) FROM Activity a WHERE a.postedBy =:profile and a.goal =:goal"),
+        @NamedQuery(name = "Activity.userGoalProgress", query = "SELECT new org.miles2run.business.vo.Progress(a.goal.goal,a.goal.goalUnit,SUM(a.distanceCovered),COUNT(a), SUM(a.duration) ) from Activity a WHERE a.postedBy =:postedBy and a.goal =:goal")
 
 })
 public class Activity {
@@ -42,7 +44,6 @@ public class Activity {
     private Date activityDate;
 
     @ManyToOne
-    @NotNull
     private Profile postedBy;
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
@@ -51,7 +52,6 @@ public class Activity {
     private long duration;
 
     @ManyToOne
-    @NotNull
     private Goal goal;
 
     public Activity() {
