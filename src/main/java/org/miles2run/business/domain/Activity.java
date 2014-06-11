@@ -42,12 +42,17 @@ public class Activity {
     private Date activityDate;
 
     @ManyToOne
+    @NotNull
     private Profile postedBy;
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Share share;
 
     private long duration;
+
+    @ManyToOne
+    @NotNull
+    private Goal goal;
 
     public Activity() {
     }
@@ -158,4 +163,11 @@ public class Activity {
         this.duration = duration;
     }
 
+    public Goal getGoal() {
+        return goal;
+    }
+
+    public void setGoal(Goal goal) {
+        this.goal = goal;
+    }
 }
