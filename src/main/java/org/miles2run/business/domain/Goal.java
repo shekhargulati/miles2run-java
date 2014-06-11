@@ -2,12 +2,9 @@ package org.miles2run.business.domain;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import javax.ws.rs.FormParam;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 /**
  * Created by shekhargulati on 11/06/14.
@@ -26,12 +23,7 @@ public class Goal {
     private Long id;
 
     @NotNull
-    @FormParam("purpose")
     private String purpose;
-
-    @FormParam("targetDate")
-    @Transient
-    private String targetDateStr;
 
     @Temporal(TemporalType.TIMESTAMP)
     @NotNull
@@ -42,16 +34,13 @@ public class Goal {
     private final Date createdAt = new Date();
 
     @ManyToOne
-    @NotNull
     private Profile profile;
 
     @NotNull
-    @FormParam("goal")
     private long goal = 0;
 
     @NotNull
     @Enumerated(EnumType.STRING)
-    @FormParam("goalUnit")
     private GoalUnit goalUnit = GoalUnit.KMS;
 
     private boolean active = false;
@@ -137,18 +126,6 @@ public class Goal {
                 ", goalUnit=" + goalUnit +
                 ", active=" + active +
                 '}';
-    }
-
-    public Date getTargetDateFromString() {
-        if (this.targetDateStr == null) {
-            return null;
-        }
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-        try {
-            return df.parse(this.targetDateStr);
-        } catch (ParseException e) {
-            return null;
-        }
     }
 
 }

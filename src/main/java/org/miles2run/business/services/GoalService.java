@@ -62,4 +62,18 @@ public class GoalService {
     public Goal find(Long goalId) {
         return entityManager.find(Goal.class, goalId);
     }
+
+    public void update(Goal goal, Long goalId) {
+        Goal existingGoal = this.find(goalId);
+        existingGoal.setGoal(goal.getGoal());
+        existingGoal.setTargetDate(goal.getTargetDate());
+        existingGoal.setActive(goal.isActive());
+        existingGoal.setGoalUnit(goal.getGoalUnit());
+        existingGoal.setPurpose(goal.getPurpose());
+        entityManager.persist(existingGoal);
+    }
+
+    public void delete(Long goalId) {
+        entityManager.remove(this.find(goalId));
+    }
 }

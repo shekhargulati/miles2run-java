@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('milestogo')
+angular.module('miles2run-home')
     .controller('FriendsCtrl', function ($scope, $http, $window, activeProfile, ConfigService) {
 
         $scope.currentUser = activeProfile;

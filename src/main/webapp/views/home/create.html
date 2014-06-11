@@ -1,0 +1,80 @@
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-header">Goals</h1>
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+<!-- /.row -->
+<div class="row">
+    <div class="col-lg-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <i class="fa fa-clock-o fa-fw"></i> Create New Goal
+            </div>
+            <!-- /.panel-heading -->
+            <div class="panel-body">
+                <form id="goalForm" class="form-horizontal" role="form" ng-submit="createGoal()">
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="col-md-2 control-label" for="purpose">Purpose</label>
+
+                            <div class="col-md-6 input-group">
+                                <input id="purpose" name="purpose" type="text"
+                                       placeholder="Purpose of goal"
+                                       class="form-control" ng-model="goal.purpose"
+                                       title="Goal"
+                                       required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-md-2 control-label" for="targetDate">Date</label>
+
+                            <div class="col-md-6 input-group">
+                                <input type="text" id="targetDate" name="targetDate" class="form-control"
+                                       datepicker-popup="dd-MMMM-yyyy" ng-model="goal.targetDate"
+                                       is-open="opened"
+                                       min-date="minDate"
+                                       datepicker-options="dateOptions" ng-required="true" close-text="Close"
+                                       placeholder="Date you ran"
+                                       title="Goal completion Date">
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-info" ng-click="open($event)"><i
+                                                class="fa fa-calendar fa-fw"></i>
+                                        </button>
+                                    </span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-2 control-label" for="goal">Goal</label>
+
+                            <div class="col-md-6 input-group">
+                                <input id="goal" name="goal" type="number"
+                                       placeholder="Goal"
+                                       class="form-control" ng-model="goal.goal" min="0" step="1"
+                                       title="Goal"
+                                       required>
+                                <label class="radio-inline">
+                                    <input type="radio" name="goalUnit" id="kms" value="KMS" checked ng-model="goal.goalUnit">kms
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" name="goalUnit" id="miles" value="MILES" ng-model="goal.goalUnit">miles
+                                </label>
+                            </div>
+                        </div>
+
+
+                        <div class="form-group">
+                            <div class="col-md-offset-2 col-md-4 pull-left">
+                                <button class="btn btn-primary btn-block" type="submit">
+                                    Create
+                                </button>
+                            </div>
+                        </div>
+
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

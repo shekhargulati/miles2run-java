@@ -10,41 +10,37 @@ var app = angular.module('milestogo', [
     .config(function ($routeProvider) {
         $routeProvider
             .when('/', {
-                templateUrl: '../views/home/dashboard.html',
+                templateUrl: '../views/goal/dashboard.html',
                 controller: 'DashboardCtrl'
             })
             .when('/timeline', {
-                templateUrl: '../views/home/timeline.html',
+                templateUrl: '../views/goal/timeline.html',
                 controller: 'TimelineCtrl'
             })
             .when('/activity/post', {
-                templateUrl: '../views/home/postactivity.html',
+                templateUrl: '../views/goal/postactivity.html',
                 controller: 'PostActivityCtrl'
             }).when('/activity/calendar', {
-                templateUrl: '../views/home/calendar.html',
+                templateUrl: '../views/goal/calendar.html',
                 controller: 'ActivityCalendarCtrl'
             })
             .when('/activity/share/:activityId', {
-                templateUrl: '../views/home/share.html',
+                templateUrl: '../views/goal/share.html',
                 controller: 'ShareActivityCtrl'
             })
             .when('/progress', {
-                templateUrl: '../views/home/progress.html',
+                templateUrl: '../views/goal/progress.html',
                 controller: 'ProgressCtrl'
             })
             .when('/notifications', {
-                templateUrl: '../views/home/notifications.html',
+                templateUrl: '../views/goal/notifications.html',
                 controller: 'NotificationsCtrl'
             })
-            .when('/friends', {
-                templateUrl: '../views/home/friends.html',
-                controller: 'FriendsCtrl'
-            })
             .when('/activity/edit/:activityId', {
-                templateUrl: '../views/home/EditActivity.html',
+                templateUrl: '../views/goal/EditActivity.html',
                 controller: 'EditActivityCtrl'
             }).when('/activity/:activityId', {
-                templateUrl: '../views/home/ViewActivity.html',
+                templateUrl: '../views/goal/ViewActivity.html',
                 controller: 'ViewActivityCtrl'
             })
             .otherwise({

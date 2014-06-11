@@ -1,26 +1,23 @@
 package org.miles2run.jaxrs.views;
 
-import org.jboss.resteasy.annotations.Form;
 import org.jug.filters.LoggedIn;
 import org.jug.view.View;
 import org.jug.view.ViewException;
 import org.jug.view.ViewResourceNotFoundException;
 import org.miles2run.business.domain.Goal;
-import org.miles2run.business.domain.Profile;
 import org.miles2run.business.services.GoalService;
 import org.miles2run.business.services.ProfileService;
 import org.miles2run.business.vo.ProfileSocialConnectionDetails;
 import org.miles2run.jaxrs.filters.InjectProfile;
-import org.miles2run.jaxrs.forms.ProfileForm;
 import org.thymeleaf.TemplateEngine;
 
 import javax.inject.Inject;
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
-import javax.ws.rs.*;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.SecurityContext;
-import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -62,48 +59,4 @@ public class GoalView {
         }
     }
 
-    @Path("/create")
-    @GET
-    @Produces("text/html")
-    @LoggedIn
-    @InjectProfile
-    public View createGoalForm() {
-        return View.of("/createGoal", templateEngine).withModel("goal", new Goal());
-    }
-
-
-    @Path("/create")
-    @POST
-    @Produces("text/html")
-    @LoggedIn
-    @InjectProfile
-    public View createGoal(@Form Goal goal) {
-        try {
-            logger.info("Goal : " + goal);
-            String loggedInUser = securityContext.getUserPrincipal().getName();
-            Profile profile = profileService.findProfile(loggedInUser);
-            goal.setTargetDate(goal.getTargetDateFromString());
-            goal.setGoal(goal.getGoal() * goal.getGoalUnit().getConversion());
-            goalService.save(goal, profile);
-            return View.of("/home", true);
-        } catch (Exception e) {
-            logger.info("createGoal() Exception class " + e.getClass().getCanonicalName());
-            Throwable cause = e.getCause();
-            if (cause instanceof ConstraintViolationException) {
-                return constraintVoilationView(goal, (ConstraintViolationException) cause);
-            }
-            List<String> errors = new ArrayList<>();
-            errors.add(e.getMessage());
-            return View.of("/goals/create", templateEngine).withModel("profile", goal).withModel("errors", errors);
-        }
-    }
-
-    private View constraintVoilationView(Goal goal, ConstraintViolationException constraintViolationException) {
-        List<String> errors = new ArrayList<>();
-        Set<ConstraintViolation<?>> constraintViolations = constraintViolationException.getConstraintViolations();
-        for (ConstraintViolation<?> constraintViolation : constraintViolations) {
-            errors.add(String.format("Field '%s' with value '%s' is invalid. %s", constraintViolation.getPropertyPath(), constraintViolation.getInvalidValue(), constraintViolation.getMessage()));
-        }
-        return View.of("/goals/create", templateEngine).withModel("profile", goal).withModel("errors", errors);
-    }
 }
