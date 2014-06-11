@@ -83,7 +83,7 @@
         <label class="col-md-4 control-label" for="email">Email</label>
 
         <div class="col-md-6">
-            <input id="email" name="email" type="email" placeholder="Your valid email address" title="Please enter valid 'email'" th:value="${profile.email}" class="form-control input-md" required=""/>
+            <input id="email" name="email" type="email" placeholder="Your valid email address" title="Please enter valid 'email'" th:value="${profile.email}" class="form-control input-md"/>
 
         </div>
     </div>
@@ -373,15 +373,15 @@
 
         <div class="col-md-4">
             <label class="radio-inline pull-left" for="male">
-                <input type="radio"  name="gender" id="male" th:checked="${profile.gender == 'male'}" value="MALE"/>
+                <input type="radio"  name="gender" id="male" th:checked="${profile.gender != null and profile.gender.toString() == 'male'}" value="MALE"/>
                 Male
             </label>
             <label class="radio-inline pull-left" for="female">
-                <input type="radio" name="gender" id="female" th:checked="${profile.gender == 'female'}" value="FEMALE"/>
+                <input type="radio" name="gender" id="female" th:checked="${profile.gender != null and profile.gender.toString() == 'female'}" value="FEMALE"/>
                 Female
             </label>
             <label class="radio-inline pull-left" for="other">
-                <input type="radio" name="gender" id="other" th:checked="${profile.gender == 'other'}" value="OTHER"/>
+                <input type="radio" name="gender" id="other" th:checked="${profile.gender != null and profile.gender.toString() == 'other'}" value="OTHER"/>
                 Other
             </label>
         </div>
@@ -402,14 +402,14 @@
 
         <div class="col-md-4">
             <input id="goal" name="goal" type="number" placeholder="Distance you want to run" title="Please enter 'goal'"
-                   class="form-control input-md" required="" min="1" step="1"/>
+                   class="form-control input-md" required="" min="1" step="1" th:value="${profile.goal}"/>
         </div>
         <div class="col-md-4">
             <label class="radio-inline pull-left" for="kms">
-                <input type="radio"  name="goalUnit" id="kms" value="KMS" checked="checked"/>km
+                <input type="radio"  name="goalUnit" id="kms" value="KMS" checked="checked" th:checked="${profile.goalUnit != null and profile.goalUnit.toString() == 'kms'}"/>kms
             </label>
             <label class="radio-inline pull-left" for="miles">
-                <input type="radio" name="goalUnit" id="miles" value="MILES"/>miles
+                <input type="radio" name="goalUnit" id="miles" value="MILES" th:checked="${profile.goalUnit != null and profile.goalUnit.toString() == 'miles'}"/>miles
             </label>
         </div>
     </div>
@@ -462,7 +462,26 @@
 
 <script>
     $(document).ready(function () {
-        $('#profileForm').validate();
+
+        $.validator.addMethod("loginRegex", function(value, element) {
+            return this.optional(element) || /^[a-z0-9\_\.]+$/i.test(value);
+        }, "Username must contain only letters, numbers, or underscore or dots.");
+
+        $('#profileForm').validate({
+            rules: {
+                "username": {
+                    required: true,
+                    loginRegex: true
+                }
+            },
+            messages: {
+                "username": {
+                    required: "You must enter a valid username name",
+                    loginRegex: "Username must contain only letters, numbers, or underscore or dots."
+                }
+            }
+        });
+
     });
 </script>
 

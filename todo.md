@@ -25,8 +25,8 @@
 25. Google+ and Facebook share only works with URL.think about proper fix
 26. <s>Calendar view show wrong date when app is running on OpenShift</s>
 27. <s>Unfollow is not working because of missing profile.js. There is no way to unfollow a user right now.</s>
-28. Fix signin page
-29. Fix error pages
+28. <s>Fix signin page</s>
+29. <s>Fix error pages</s>
 30. <s>If user exist in session then bypass social authentication</s>
 31. <s>Add few charts in the dashboard view</s>
 32. There is no way to update or remove a photo
@@ -44,7 +44,6 @@
 44. Allow people to upload their images
 45. <s>Show graphs when there is data</s>
 46. On user profile page show progress indicator
-47. Introduce concept of goal -- UI should be familiar with Google Analytics page where they list all the web sites.
 48. Loading icon when getting data from rest backend
 49. <s>In the dashboard view, charts should show last 30 days for Day interval</s>
 50. Compare your progress with other user progress. -- charts that that can compare two users.
@@ -53,7 +52,6 @@
 53. Charts does not take into account multiple activities on the same date
 54. Charts does not take into account days on which activity was not performed.
 55. When timeline is empty, pagination is still shown. Angular ng-if directive is not working.
-56. After user finishes a goal, there should be a way to share that
 57. <s>Edit activity shows wrong date when run on OpenShift.</s>
 58. <s>Month Charts show wrong month when date is 1st</s>
 59. Check and increase session timeout
@@ -62,3 +60,8 @@
 62. <s>Edit profile link is not shown on user profile</s>
 63. User profile page when user has not posted any activity
 64. <s>Fix edit profile design and test its functionality</s>
+65. CodeHale Metrics filter
+
+##Goal Functionality##
+47. Introduce concept of goal -- UI should be familiar with Google Analytics page where they list all the web sites.
+56. After user finishes a goal, there should be a way to share that

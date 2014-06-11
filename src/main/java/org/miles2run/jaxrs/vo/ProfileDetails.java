@@ -1,5 +1,6 @@
 package org.miles2run.jaxrs.vo;
 
+import org.miles2run.business.domain.GoalUnit;
 import org.miles2run.jaxrs.forms.ProfileForm;
 
 /**
@@ -14,6 +15,8 @@ public class ProfileDetails {
     private final String profilePic;
     private final String city;
     private final String country;
+    private GoalUnit goalUnit;
+    private long goal;
     private String email;
     private String gender;
 
@@ -39,7 +42,10 @@ public class ProfileDetails {
         if (profileForm.getGender() != null) {
             this.gender = profileForm.getGender().getGender();
         }
+        this.goal = profileForm.getGoal();
+        this.goalUnit = profileForm.getGoalUnit();
     }
+
 
     public String getUsername() {
         return username;
@@ -83,6 +89,14 @@ public class ProfileDetails {
 
     public void setGender(String gender) {
         this.gender = gender;
+    }
+
+    public GoalUnit getGoalUnit() {
+        return goalUnit;
+    }
+
+    public long getGoal() {
+        return goal;
     }
 
     @Override

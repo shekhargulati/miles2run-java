@@ -113,7 +113,6 @@ public class ProfileView {
     public View createProfile(@Form ProfileForm profileForm) {
         List<String> errors = new ArrayList<>();
         try {
-            logger.info("createProfile() ... profileForm : " + profileForm.toString());
             if (profileService.findProfileByEmail(profileForm.getEmail()) != null) {
                 errors.add(String.format("User already exist with email %s", profileForm.getEmail()));
             }
@@ -121,7 +120,7 @@ public class ProfileView {
                 errors.add(String.format("User already exist with username %s", profileForm.getUsername()));
             }
             if (!errors.isEmpty()) {
-                return View.of("/createProfile", templateEngine).withModel("profile", new ProfileDetails(profileForm)).withModel("errors", errors);
+                return View.of("/createProfile", templateEngine).withModel("profile", profileForm).withModel("errors", errors);
             }
             Profile profile = new Profile(profileForm);
             profileService.save(profile);

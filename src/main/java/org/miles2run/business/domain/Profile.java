@@ -104,13 +104,13 @@ public class Profile implements Serializable {
 
     public Profile(ProfileForm profileForm) {
         this.email = profileForm.getEmail();
-        this.username = profileForm.getUsername();
+        this.username = profileForm.getUsername().toLowerCase();
         this.bio = profileForm.getBio();
         this.city = profileForm.getCity();
         this.country = profileForm.getCountry();
         this.fullname = profileForm.getFullname();
         this.gender = profileForm.getGender();
-        this.goalUnit = profileForm.getGoalUnit();
+        this.goalUnit = profileForm.getGoalUnit() == null ? GoalUnit.KMS : profileForm.getGoalUnit();
         this.goal = profileForm.getGoal() * this.goalUnit.getConversion();
         this.profilePic = profileForm.getProfilePic();
     }

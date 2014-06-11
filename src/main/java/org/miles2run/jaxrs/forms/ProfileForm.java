@@ -55,6 +55,10 @@ public class ProfileForm {
     @FormParam("connectionId")
     private String connectionId;
 
+    public ProfileForm() {
+        this.goalUnit = GoalUnit.KMS;
+    }
+
     public String getEmail() {
         return email;
     }
