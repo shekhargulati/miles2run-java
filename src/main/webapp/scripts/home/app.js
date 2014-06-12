@@ -13,6 +13,10 @@ var app = angular.module('miles2run-home', [
                 templateUrl: 'views/home/goals.html',
                 controller: 'GoalsCtrl'
             })
+            .when('/timeline', {
+                templateUrl: 'views/home/timeline.html',
+                controller: 'HomeTimelineCtrl'
+            })
             .when('/goals/create', {
                 templateUrl: 'views/home/create.html',
                 controller: 'CreateGoalCtrl'

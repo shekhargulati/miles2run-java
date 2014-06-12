@@ -18,7 +18,15 @@
                 </div>
                 <!-- /.panel-heading -->
                 <div class="panel-body">
-                    <div class="table-responsive">
+                    <div class="well" ng-if="goals.length == 0" ng-cloak>
+                        <h2>You haven't created any goals yet!!</h2>
+
+                        <p class="lead">But don't worry! It's really easy to get started. Just click on the button below to
+                            create your first goal:</p>
+                        <a class="btn btn-success" ng-href="#goals/create">New Goal</a>
+                    </div>
+
+                    <div class="table-responsive" ng-if="goals.length">
                         <table class="table table-striped table-bordered table-hover" id="goals-table">
                             <thead>
                             <tr>
@@ -51,7 +59,7 @@
                                             </li>
                                             <li class="divider"></li>
                                             <li>
-                                                <a href="#" ng-click="delete($index)"
+                                                <a ng-click="delete($index)"
                                                    title="delete goal">Delete</a>
                                             </li>
                                         </ul>

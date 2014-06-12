@@ -77,3 +77,5 @@
 79. Edit Goal
 80. Archive Goal
 81. Delete goal should also delete all data associated with goal.
+82. Delete goal functionality is not working.
+83. Home timeline
