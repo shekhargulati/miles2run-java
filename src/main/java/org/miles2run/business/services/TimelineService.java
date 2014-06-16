@@ -365,13 +365,13 @@ public class TimelineService {
                         Double value = monthPaceHash.get(key);
                         Double durationInSeconds = Double.valueOf(Long.valueOf(values.get(1)));
                         double durationInMinutes = durationInSeconds / 60;
-                        long distance = Long.valueOf(values.get(0)) / profile.getGoalUnit().getConversion();
+                        long distance = Long.valueOf(values.get(0)) / goal.getGoalUnit().getConversion();
                         double pace = durationInMinutes / distance;
                         monthPaceHash.put(key, (value + pace) / 2);
                     } else {
                         Double durationInSeconds = Double.valueOf(Long.valueOf(values.get(1)));
                         double durationInMinutes = durationInSeconds / 60;
-                        long distance = Long.valueOf(values.get(0)) / profile.getGoalUnit().getConversion();
+                        long distance = Long.valueOf(values.get(0)) / goal.getGoalUnit().getConversion();
                         double pace = durationInMinutes / distance;
                         monthPaceHash.put(key, pace);
                     }
@@ -409,7 +409,7 @@ public class TimelineService {
                     data.put(interval, activityDate);
                     Double durationInSeconds = Double.valueOf(Long.valueOf(values.get(1)));
                     double durationInMinutes = durationInSeconds / 60;
-                    long distance = Long.valueOf(values.get(0)) / profile.getGoalUnit().getConversion();
+                    long distance = Long.valueOf(values.get(0)) / goal.getGoalUnit().getConversion();
                     double pace = durationInMinutes / distance;
                     data.put("pace", pace);
                     chartData.add(data);
@@ -443,7 +443,7 @@ public class TimelineService {
                     double score = tuple.getScore();
                     String distanceCovered = jedis.hget(String.format("activity:%s", activityId), "distanceCovered");
                     long timestamp = (Double.valueOf(score).longValue()) / 1000;
-                    long distanceCoveredInRequiredUnits = Long.valueOf(distanceCovered) / (profile.getGoalUnit().getConversion());
+                    long distanceCoveredInRequiredUnits = Long.valueOf(distanceCovered) / (goal.getGoalUnit().getConversion());
                     data.put(String.valueOf(timestamp), distanceCoveredInRequiredUnits);
                 }
                 return data;
