@@ -60,7 +60,7 @@
                 </a>
                 <ul class="dropdown-menu dropdown-user">
                     <li>
-                        <a href="#" th:href="@{'/profiles/' + ${profile.username}}" th:inline="text">
+                        <a th:href="@{'/profiles/' + ${profile.username}} + '#/'" th:inline="text">
                             <img width="25" height="25" th:src="${profile.profilePic}"/> [[${profile.fullname}]]
                         </a>
                     </li>

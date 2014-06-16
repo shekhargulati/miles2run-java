@@ -94,3 +94,7 @@
 ## Profile View##
 
 1. Edit profile is broken
+
+## Notifications##
+
+1. It is broken on profile page -- move notifications to home page
