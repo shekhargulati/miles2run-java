@@ -90,10 +90,12 @@
 8. <s>Home timeline shows "You haven't created any goals yet!!" message when goal is created but no activity is performed.</s>
 9. <s>User should be able to view all goals as well. Goals that are achieved as well. -- Already done via Archived goals page</s>
 10. Think about what to do when Goal is achieved or not achieved.
+11. For user it is not clear what to do after creating goal. Should the user be forward to goals page after goal creation. In Goal actions also add view
+12. In home page, make Active Goals a drop down -- probably we can make goals SPA part of home SPA only
 
 ## Profile View##
 
-1. Edit profile is broken
+1. <s>Edit profile is broken</s>
 
 ## Notifications##
 

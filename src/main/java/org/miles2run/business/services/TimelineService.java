@@ -213,6 +213,7 @@ public class TimelineService {
                 pipeline.zrem(homeTimelineKey, String.valueOf(activityId));
                 pipeline.zrem(profileTimelineKey, String.valueOf(activityId));
                 pipeline.zrem(String.format(PROFILE_S_GOAL_S_TIMELINE, username, goal.getId()), String.valueOf(activityId));
+                pipeline.zrem(String.format(PROFILE_S_TIMELINE_LATEST, username), String.valueOf(activityId));
                 UserProfile userProfile = profileMongoService.findProfile(username);
                 logger.info("Deleting activity from all the followers timeline");
                 final List<String> followers = userProfile.getFollowers();

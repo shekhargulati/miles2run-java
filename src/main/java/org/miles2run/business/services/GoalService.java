@@ -11,6 +11,7 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import java.util.List;
 import java.util.Set;
@@ -129,5 +130,14 @@ public class GoalService {
                 return null;
             }
         });
+    }
+
+    public Goal findLatestCreatedGoal(String username) {
+        Profile profile = profileService.findProfile(username);
+        TypedQuery<Goal> query = entityManager.createNamedQuery("Goal.findLastedCreatedGoal", Goal.class);
+        query.setParameter("profile", profile);
+        query.setMaxResults(1);
+        List<Goal> goals = query.getResultList();
+        return goals.isEmpty() ? null : goals.get(0);
     }
 }

@@ -222,7 +222,11 @@ public class ProfileView {
 
             Long goalId = goalService.findLatestGoalWithActivity(username);
             if (goalId == null) {
-                model.put("progress", new Progress());
+                Goal activeGoal = goalService.findLatestCreatedGoal(username);
+                if (activeGoal != null) {
+                    model.put("activeGoal", new GoalDetails(activeGoal));
+                    model.put("progress", new Progress(activeGoal));
+                }
                 return View.of("/profile", templateEngine).withModel(model);
             }
             Goal activeGoal = goalService.findGoal(username, goalId);
