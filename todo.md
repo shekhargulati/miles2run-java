@@ -90,3 +90,7 @@
 8. <s>Home timeline shows "You haven't created any goals yet!!" message when goal is created but no activity is performed.</s>
 9. <s>User should be able to view all goals as well. Goals that are achieved as well. -- Already done via Archived goals page</s>
 10. Think about what to do when Goal is achieved or not achieved.
+
+## Profile View##
+
+1. Edit profile is broken
