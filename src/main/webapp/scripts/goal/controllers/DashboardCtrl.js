@@ -1,12 +1,12 @@
 'use strict';
 
 angular.module('milestogo')
-    .controller('DashboardCtrl', function ($scope, ProgressService, ConfigService, activeProfile, $http, $timeout, $filter) {
+    .controller('DashboardCtrl', function ($scope, ProgressService, ConfigService, activeProfile, $http, $timeout, $filter, activeGoal) {
         $scope.currentUser = activeProfile;
         $scope.error = null;
         $scope.data = {};
 
-        ProgressService.progress($scope.currentUser.username).success(function (data, status, headers, config) {
+        ProgressService.progress(activeGoal.id).success(function (data, status, headers, config) {
             $scope.error = null;
             $scope.status = status;
             $scope.data = data;
@@ -22,7 +22,7 @@ angular.module('milestogo')
         var renderDistanceChart = function (interval) {
             $("#activities-line-graph").empty();
             console.log('User selected interval ' + interval);
-            $http.get("api/v1/dashboard/charts/distance?interval=" + interval).success(function (data, status, headers, config) {
+            $http.get(ConfigService.getBaseUrl() + "goals/" + activeGoal.id + "/dashboard/charts/distance?interval=" + interval).success(function (data, status, headers, config) {
                 if (data && data.length) {
                     console.log("Rendering activity distance chart as data exists");
                     $scope.showNoDistanceChartDataMessage = false;
@@ -39,7 +39,7 @@ angular.module('milestogo')
                             return moment(dateFormat(date.getTime()), "YYYYMMDD").format('MMM Do');
                         },
                         yLabelFormat: function (distance) {
-                            return distance.toString() + ' ' + activeProfile.goalUnit.$name;
+                            return distance.toString() + ' ' + activeGoal.goalUnit.$name;
                         },
                         xkey: interval,
                         ykeys: ['distance'],
@@ -54,7 +54,7 @@ angular.module('milestogo')
                         labels: ['Distance Ran']
 
                     });
-                }else{
+                } else {
                     $scope.showNoDistanceChartDataMessage = true;
                 }
             }).error(function (data, status, headers, config) {
@@ -69,7 +69,7 @@ angular.module('milestogo')
         var renderPaceChart = function (interval) {
             $("#pace-line-graph").empty();
             console.log('User selected interval ' + interval);
-            $http.get("api/v1/dashboard/charts/pace?interval=" + interval).success(function (data, status, headers, config) {
+            $http.get(ConfigService.getBaseUrl() + "goals/" + activeGoal.id + "/dashboard/charts/pace?interval=" + interval).success(function (data, status, headers, config) {
                 if (data && data.length) {
                     console.log("Rendering pace chart as data exists");
                     $scope.showNoPaceChartDataMessage = false;
@@ -86,7 +86,7 @@ angular.module('milestogo')
                             return moment(dateFormat(date.getTime()), "YYYYMMDD").format('MMM Do');
                         },
                         yLabelFormat: function (pace) {
-                            return $filter('number')(pace, 2) + ' mins/' + activeProfile.goalUnit.$name;
+                            return $filter('number')(pace, 2) + ' mins/' + activeGoal.goalUnit.$name;
                         },
                         xkey: interval,
                         ykeys: ['pace'],
@@ -101,7 +101,7 @@ angular.module('milestogo')
                         labels: ['Pace']
 
                     });
-                }else{
+                } else {
                     $scope.showNoPaceChartDataMessage = true;
                 }
             }).error(function (data, status, headers, config) {

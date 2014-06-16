@@ -11,6 +11,7 @@ import java.util.Map;
  */
 public class ActivityDetails {
 
+    private Long goalId;
     private Long id;
 
     private String status;
@@ -54,7 +55,9 @@ public class ActivityDetails {
         this.fullname = hash.get("fullname");
         this.profilePic = hash.get("profilePic");
         this.status = hash.get("status");
+        this.goalId = Long.valueOf(hash.get("goalId"));
     }
+
 
     public Long getId() {
         return id;
@@ -96,6 +99,10 @@ public class ActivityDetails {
         return duration;
     }
 
+
+    public Long getGoalId() {
+        return goalId;
+    }
 
     @Override
     public String toString() {

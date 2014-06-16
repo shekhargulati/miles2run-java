@@ -76,9 +76,7 @@ public class ProfileService {
                 Object[] row = (Object[]) object;
                 profileSocialConnectionDetails.setId((Long) row[0]);
                 profileSocialConnectionDetails.setUsername((String) row[1]);
-                profileSocialConnectionDetails.setGoal((Long) row[2]);
-                profileSocialConnectionDetails.setGoalUnit((GoalUnit) row[3]);
-                profileSocialConnectionDetails.getProviders().add(((SocialProvider) row[4]).getProvider());
+                profileSocialConnectionDetails.getProviders().add(((SocialProvider) row[2]).getProvider());
             }
         }
         return profileSocialConnectionDetails;
@@ -96,11 +94,9 @@ public class ProfileService {
     }
 
     public void update(Profile profile) {
-        Query updateQuery = entityManager.createQuery("UPDATE Profile p SET p.fullname =:fullname, p.bio =:bio,p.goal =:goal,p.goalUnit =:goalUnit,p.city =:city, p.country =:country, p.gender =:gender WHERE p.username =:username");
+        Query updateQuery = entityManager.createQuery("UPDATE Profile p SET p.fullname =:fullname, p.bio =:bio,p.city =:city, p.country =:country, p.gender =:gender WHERE p.username =:username");
         updateQuery.setParameter("fullname", profile.getFullname());
         updateQuery.setParameter("bio", profile.getBio());
-        updateQuery.setParameter("goal", profile.getGoal());
-        updateQuery.setParameter("goalUnit", profile.getGoalUnit());
         updateQuery.setParameter("city", profile.getCity());
         updateQuery.setParameter("country", profile.getCountry());
         updateQuery.setParameter("gender", profile.getGender());

@@ -1,10 +1,8 @@
 package org.miles2run.business.services;
 
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeUtils;
-import org.joda.time.Days;
-import org.joda.time.Months;
 import org.miles2run.business.domain.Activity;
+import org.miles2run.business.domain.Goal;
 import org.miles2run.business.domain.Profile;
 import org.miles2run.business.domain.UserProfile;
 import org.miles2run.business.vo.ActivityDetails;
@@ -26,6 +24,9 @@ import java.util.logging.Logger;
 public class TimelineService {
 
     private static final long HOME_TIMELINE_SIZE = 1000;
+    public static final String PROFILE_S_TIMELINE = "profile:%s:timeline";
+    public static final String HOME_S_TIMELINE = "home:%s:timeline";
+    public static final String PROFILE_S_GOAL_S_TIMELINE = "profile:%s:goal:%s:timeline";
 
     @Inject
     private JedisExecutionService jedisExecutionService;
@@ -38,7 +39,8 @@ public class TimelineService {
         return jedisExecutionService.execute(new JedisOperation<List<ActivityDetails>>() {
             @Override
             public List<ActivityDetails> perform(Jedis jedis) {
-                Set<String> activityIds = jedis.zrevrange("home:timeline:" + username, (page - 1) * count, page * (count - 1));
+                String key = String.format("home:%s:timeline", username);
+                Set<String> activityIds = jedis.zrevrange(key, (page - 1) * count, page * (count - 1));
                 Pipeline pipeline = jedis.pipelined();
                 List<Response<Map<String, String>>> result = new ArrayList<>();
                 for (String activityId : activityIds) {
@@ -56,11 +58,11 @@ public class TimelineService {
         });
     }
 
-    public void postActivityToTimeline(final Activity activity, final Profile profile) {
+    public void postActivityToTimeline(final Activity activity, final Profile profile, final Goal goal) {
         final String username = profile.getUsername();
         final String activityId = String.valueOf(activity.getId());
         logger.info("Storing activity in redis");
-        storeActivity(activity, profile);
+        storeActivity(activity, profile, goal);
         logger.info("Activity created with id : " + activityId);
         logger.info("Getting posted time from Redis..");
         final Long posted = jedisExecutionService.execute(new JedisOperation<Long>() {
@@ -77,18 +79,19 @@ public class TimelineService {
         if (posted == null) {
             return;
         }
-        logger.info(String.format("Updating %s profile:timeline with new activity..", username));
+        logger.info(String.format("Updating %s timelines with new activity..", username));
         jedisExecutionService.execute(new JedisOperation<Object>() {
             @Override
             public <T> T perform(Jedis jedis) {
                 Pipeline pipeline = jedis.pipelined();
-                pipeline.zadd("profile:timeline:" + username, posted, activityId);
-                pipeline.zadd("home:timeline:" + username, posted, activityId);
+                pipeline.zadd(String.format(PROFILE_S_TIMELINE, username), posted, activityId);
+                pipeline.zadd(String.format(HOME_S_TIMELINE, username), posted, activityId);
+                pipeline.zadd(String.format(PROFILE_S_GOAL_S_TIMELINE, username, goal.getId()), posted, activityId);
                 pipeline.sync();
                 return null;
             }
         });
-        logger.info("Updated user profile:timeline with new activity..");
+        logger.info("Updated user timeline with new activity..");
         logger.info("Posting new activity to all the followers ...");
         postActivityToFollowersTimeline(username, activityId, posted);
         logger.info("Posted new activity to all the followers ...");
@@ -103,8 +106,9 @@ public class TimelineService {
             public <T> T perform(Jedis jedis) {
                 Pipeline pipeline = jedis.pipelined();
                 for (String follower : followers) {
-                    pipeline.zadd("home:timeline:" + follower, posted, activityId);
-                    pipeline.zremrangeByRank("home:timeline:" + follower, 0, -(HOME_TIMELINE_SIZE - 1));
+                    String key = String.format("home:%s:timeline", follower);
+                    pipeline.zadd(key, posted, activityId);
+                    pipeline.zremrangeByRank(key, 0, -(HOME_TIMELINE_SIZE - 1));
                 }
                 pipeline.sync();
                 return null;
@@ -113,7 +117,7 @@ public class TimelineService {
     }
 
 
-    private String storeActivity(final Activity activity, final Profile profile) {
+    private String storeActivity(final Activity activity, final Profile profile, final Goal goal) {
 
         return jedisExecutionService.execute(new JedisOperation<String>() {
             @Override
@@ -129,7 +133,8 @@ public class TimelineService {
                 data.put("posted", posted);
                 data.put("fullname", profile.getFullname());
                 data.put("distanceCovered", String.valueOf(activity.getDistanceCovered()));
-                data.put("goalUnit", activity.getGoalUnit().getUnit());
+                data.put("goalUnit", goal.getGoalUnit().getUnit());
+                data.put("goalId", String.valueOf(goal.getId()));
                 data.put("profilePic", profile.getProfilePic());
                 data.put("status", activity.getStatus() == null ? "" : activity.getStatus());
                 data.put("duration", String.valueOf(activity.getDuration()));
@@ -145,11 +150,13 @@ public class TimelineService {
         jedisExecutionService.execute(new JedisOperation<Void>() {
             @Override
             public Void perform(Jedis jedis) {
-                Set<Tuple> activitiesWithScore = jedis.zrevrangeWithScores("profile:timeline:" + userToFollow, 0, HOME_TIMELINE_SIZE - 1);
+                String profileTimelineKey = String.format("profile:%s:timeline", userToFollow);
+                Set<Tuple> activitiesWithScore = jedis.zrevrangeWithScores(profileTimelineKey, 0, HOME_TIMELINE_SIZE - 1);
                 if (activitiesWithScore != null && !activitiesWithScore.isEmpty()) {
                     Pipeline pipeline = jedis.pipelined();
-                    pipeline.zadd("home:timeline:" + username, toMap(activitiesWithScore));
-                    pipeline.zremrangeByRank("home:timeline:" + username, 0, -(HOME_TIMELINE_SIZE - 1));
+                    String key = String.format("home:%s:timeline", username);
+                    pipeline.zadd(key, toMap(activitiesWithScore));
+                    pipeline.zremrangeByRank(key, 0, -(HOME_TIMELINE_SIZE - 1));
                     pipeline.sync();
                 }
                 return null;
@@ -169,24 +176,26 @@ public class TimelineService {
         jedisExecutionService.execute(new JedisOperation<Void>() {
             @Override
             public Void perform(Jedis jedis) {
-                Set<String> activities = jedis.zrevrange("profile:timeline:" + userToUnfollow, 0, HOME_TIMELINE_SIZE - 1);
+                String profileTimelineKey = String.format("profile:%s:timeline", userToUnfollow);
+                Set<String> activities = jedis.zrevrange(profileTimelineKey, 0, HOME_TIMELINE_SIZE - 1);
                 if (activities != null && !activities.isEmpty()) {
                     String[] members = new ArrayList<String>(activities).toArray(new String[0]);
-                    jedis.zrem("home:timeline:" + username, members);
+                    String key = String.format("home:%s:timeline", username);
+                    jedis.zrem(key, members);
                 }
                 return null;
             }
         });
     }
 
-    public void updateActivity(final ActivityDetails updatedActivity, final Profile profile) {
-        deleteActivityFromTimeline(profile.getUsername(), updatedActivity.getId());
+    public void updateActivity(final ActivityDetails updatedActivity, final Profile profile, Goal goal) {
+        deleteActivityFromTimeline(profile.getUsername(), updatedActivity.getId(), goal);
         Activity activity = new Activity(updatedActivity);
         activity.setDistanceCovered(activity.getDistanceCovered() * activity.getGoalUnit().getConversion());
-        postActivityToTimeline(activity, profile);
+        postActivityToTimeline(activity, profile, goal);
     }
 
-    public void deleteActivityFromTimeline(final String username, final Long activityId) {
+    public void deleteActivityFromTimeline(final String username, final Long activityId, final Goal goal) {
         jedisExecutionService.execute(new JedisOperation<Void>() {
             @Override
             public Void perform(Jedis jedis) {
@@ -196,14 +205,18 @@ public class TimelineService {
                 }
                 Pipeline pipeline = jedis.pipelined();
                 pipeline.del(key);
-                pipeline.zrem("home:timeline:" + username, String.valueOf(activityId));
-                pipeline.zrem("profile:timeline:" + username, String.valueOf(activityId));
+                String homeTimelineKey = String.format(HOME_S_TIMELINE, username);
+                String profileTimelineKey = String.format(PROFILE_S_TIMELINE, username);
+                pipeline.zrem(homeTimelineKey, String.valueOf(activityId));
+                pipeline.zrem(profileTimelineKey, String.valueOf(activityId));
+                pipeline.zrem(String.format(PROFILE_S_GOAL_S_TIMELINE, username, goal.getId()), String.valueOf(activityId));
                 UserProfile userProfile = profileMongoService.findProfile(username);
                 logger.info("Deleting activity from all the followers timeline");
                 final List<String> followers = userProfile.getFollowers();
                 logger.info(String.format("Followers for %s are %s", username, followers));
                 for (String follower : followers) {
-                    pipeline.zrem("home:timeline:" + follower, String.valueOf(activityId));
+                    String homeTimelineKeyForFollower = String.format("home:%s:timeline", follower);
+                    pipeline.zrem(homeTimelineKeyForFollower, String.valueOf(activityId));
                 }
                 pipeline.sync();
                 return null;
@@ -215,7 +228,8 @@ public class TimelineService {
         return jedisExecutionService.execute(new JedisOperation<List<ActivityDetails>>() {
             @Override
             public List<ActivityDetails> perform(Jedis jedis) {
-                Set<String> activityIds = jedis.zrevrange("profile:timeline:" + username, (page - 1) * count, page * (count - 1));
+                String profileTimelineKey = String.format("profile:%s:timeline", username);
+                Set<String> activityIds = jedis.zrevrange(profileTimelineKey, (page - 1) * count, page * (count - 1));
                 Pipeline pipeline = jedis.pipelined();
                 List<Response<Map<String, String>>> result = new ArrayList<>();
                 for (String activityId : activityIds) {
@@ -233,18 +247,18 @@ public class TimelineService {
         });
     }
 
-    public List<Map<String, Object>> distanceCoveredOverTime(final Profile profile, final String interval, final int n) {
+    public List<Map<String, Object>> distanceCoveredOverTime(final Profile profile, final Goal goal, final String interval, final int n) {
         switch (interval) {
             case "day":
-                return getDistanceCoveredInLastNDays(profile, interval, n);
+                return getDistanceCoveredInLastNDays(profile, goal, interval, n);
             case "month":
-                return getDistanceCoveredInLastNMonths(profile, interval, n);
+                return getDistanceCoveredInLastNMonths(profile, goal, interval, n);
             default:
-                return getDistanceCoveredInLastNDays(profile, interval, n);
+                return getDistanceCoveredInLastNDays(profile, goal, interval, n);
         }
     }
 
-    private List<Map<String, Object>> getDistanceCoveredInLastNMonths(final Profile profile, final String interval, final int nMonths) {
+    private List<Map<String, Object>> getDistanceCoveredInLastNMonths(final Profile profile, final Goal goal, final String interval, final int nMonths) {
         return jedisExecutionService.execute(new JedisOperation<List<Map<String, Object>>>() {
             @Override
             public List<Map<String, Object>> perform(Jedis jedis) {
@@ -252,7 +266,7 @@ public class TimelineService {
                 Calendar calendar = Calendar.getInstance();
                 calendar.add(Calendar.MONTH, -nMonths);
                 Date nMonthsBack = calendar.getTime();
-                Set<Tuple> activityIdsInNDaysWithScores = jedis.zrangeByScoreWithScores("profile:timeline:" + profile.getUsername(), nMonthsBack.getTime(), today.getTime());
+                Set<Tuple> activityIdsInNDaysWithScores = jedis.zrangeByScoreWithScores(String.format(PROFILE_S_GOAL_S_TIMELINE, profile.getUsername(), goal.getId()), nMonthsBack.getTime(), today.getTime());
                 List<Response<Map<String, String>>> result = new ArrayList<>();
                 Map<String, Long> monthDistanceHash = new HashMap<>();
                 for (Tuple activityIdTuple : activityIdsInNDaysWithScores) {
@@ -276,7 +290,7 @@ public class TimelineService {
                 for (Map.Entry<String, Long> entry : entries) {
                     Map<String, Object> data = new HashMap<>();
                     data.put(interval, entry.getKey());
-                    data.put("distance", entry.getValue() / profile.getGoalUnit().getConversion());
+                    data.put("distance", entry.getValue() / goal.getGoalUnit().getConversion());
                     chartData.add(data);
                 }
                 return chartData;
@@ -284,7 +298,7 @@ public class TimelineService {
         });
     }
 
-    private List<Map<String, Object>> getDistanceCoveredInLastNDays(final Profile profile, final String interval, final int n) {
+    private List<Map<String, Object>> getDistanceCoveredInLastNDays(final Profile profile, final Goal goal, final String interval, final int n) {
         return jedisExecutionService.execute(new JedisOperation<List<Map<String, Object>>>() {
             @Override
             public List<Map<String, Object>> perform(Jedis jedis) {
@@ -292,7 +306,7 @@ public class TimelineService {
                 DateTime dateTime = new DateTime(today);
                 dateTime = dateTime.minusDays(n);
                 Date nDaysBack = dateTime.toDate();
-                Set<Tuple> activityIdsInNDaysWithScores = jedis.zrangeByScoreWithScores("profile:timeline:" + profile.getUsername(), nDaysBack.getTime(), today.getTime());
+                Set<Tuple> activityIdsInNDaysWithScores = jedis.zrangeByScoreWithScores(String.format(PROFILE_S_GOAL_S_TIMELINE, profile.getUsername(), goal.getId()), nDaysBack.getTime(), today.getTime());
                 List<Response<Map<String, String>>> result = new ArrayList<>();
                 List<Map<String, Object>> chartData = new ArrayList<>();
                 for (Tuple activityIdTuple : activityIdsInNDaysWithScores) {
@@ -301,7 +315,7 @@ public class TimelineService {
                     String distanceCovered = jedis.hget(String.format("activity:%s", activityId), "distanceCovered");
                     Map<String, Object> data = new HashMap<>();
                     data.put(interval, activityDate);
-                    data.put("distance", Long.valueOf(distanceCovered) / profile.getGoalUnit().getConversion());
+                    data.put("distance", Long.valueOf(distanceCovered) / goal.getGoalUnit().getConversion());
                     chartData.add(data);
                 }
                 return chartData;
@@ -319,18 +333,18 @@ public class TimelineService {
         return dateFormat.format(date);
     }
 
-    public List<Map<String, Object>> paceOverTime(Profile profile, String interval, int n) {
+    public List<Map<String, Object>> paceOverTime(Profile profile, Goal goal, String interval, int n) {
         switch (interval) {
             case "day":
-                return getPaceInLastNDays(profile, interval, n);
+                return getPaceInLastNDays(profile, goal, interval, n);
             case "month":
-                return getPaceInLastNMonths(profile, interval, n);
+                return getPaceInLastNMonths(profile, goal, interval, n);
             default:
-                return getDistanceCoveredInLastNDays(profile, interval, n);
+                return getPaceInLastNDays(profile, goal, interval, n);
         }
     }
 
-    private List<Map<String, Object>> getPaceInLastNMonths(final Profile profile, final String interval, final int nMonths) {
+    private List<Map<String, Object>> getPaceInLastNMonths(final Profile profile, final Goal goal, final String interval, final int nMonths) {
         return jedisExecutionService.execute(new JedisOperation<List<Map<String, Object>>>() {
             @Override
             public List<Map<String, Object>> perform(Jedis jedis) {
@@ -338,7 +352,7 @@ public class TimelineService {
                 Calendar calendar = Calendar.getInstance();
                 calendar.add(Calendar.MONTH, -nMonths);
                 Date nMonthsBack = calendar.getTime();
-                Set<Tuple> activityIdsInNDaysWithScores = jedis.zrangeByScoreWithScores("profile:timeline:" + profile.getUsername(), nMonthsBack.getTime(), today.getTime());
+                Set<Tuple> activityIdsInNDaysWithScores = jedis.zrangeByScoreWithScores(String.format(PROFILE_S_GOAL_S_TIMELINE, profile.getUsername(), goal.getId()), nMonthsBack.getTime(), today.getTime());
                 List<Response<Map<String, String>>> result = new ArrayList<>();
                 Map<String, Double> monthPaceHash = new HashMap<>();
                 for (Tuple activityIdTuple : activityIdsInNDaysWithScores) {
@@ -351,13 +365,13 @@ public class TimelineService {
                         Double value = monthPaceHash.get(key);
                         Double durationInSeconds = Double.valueOf(Long.valueOf(values.get(1)));
                         double durationInMinutes = durationInSeconds / 60;
-                        long distance = Long.valueOf(values.get(0)) / profile.getGoalUnit().getConversion();
+                        long distance = Long.valueOf(values.get(0)) / goal.getGoalUnit().getConversion();
                         double pace = durationInMinutes / distance;
                         monthPaceHash.put(key, (value + pace) / 2);
                     } else {
                         Double durationInSeconds = Double.valueOf(Long.valueOf(values.get(1)));
                         double durationInMinutes = durationInSeconds / 60;
-                        long distance = Long.valueOf(values.get(0)) / profile.getGoalUnit().getConversion();
+                        long distance = Long.valueOf(values.get(0)) / goal.getGoalUnit().getConversion();
                         double pace = durationInMinutes / distance;
                         monthPaceHash.put(key, pace);
                     }
@@ -376,7 +390,7 @@ public class TimelineService {
         });
     }
 
-    private List<Map<String, Object>> getPaceInLastNDays(final Profile profile, final String interval, final int n) {
+    private List<Map<String, Object>> getPaceInLastNDays(final Profile profile, final Goal goal, final String interval, final int n) {
         return jedisExecutionService.execute(new JedisOperation<List<Map<String, Object>>>() {
             @Override
             public List<Map<String, Object>> perform(Jedis jedis) {
@@ -384,7 +398,7 @@ public class TimelineService {
                 DateTime dateTime = new DateTime(today);
                 dateTime = dateTime.minusDays(n);
                 Date nDaysBack = dateTime.toDate();
-                Set<Tuple> activityIdsInNDaysWithScores = jedis.zrangeByScoreWithScores("profile:timeline:" + profile.getUsername(), nDaysBack.getTime(), today.getTime());
+                Set<Tuple> activityIdsInNDaysWithScores = jedis.zrangeByScoreWithScores(String.format(PROFILE_S_GOAL_S_TIMELINE, profile.getUsername(), goal.getId()), nDaysBack.getTime(), today.getTime());
                 List<Response<Map<String, String>>> result = new ArrayList<>();
                 List<Map<String, Object>> chartData = new ArrayList<>();
                 for (Tuple activityIdTuple : activityIdsInNDaysWithScores) {
@@ -395,7 +409,7 @@ public class TimelineService {
                     data.put(interval, activityDate);
                     Double durationInSeconds = Double.valueOf(Long.valueOf(values.get(1)));
                     double durationInMinutes = durationInSeconds / 60;
-                    long distance = Long.valueOf(values.get(0)) / profile.getGoalUnit().getConversion();
+                    long distance = Long.valueOf(values.get(0)) / goal.getGoalUnit().getConversion();
                     double pace = durationInMinutes / distance;
                     data.put("pace", pace);
                     chartData.add(data);
@@ -409,12 +423,12 @@ public class TimelineService {
         return jedisExecutionService.execute(new JedisOperation<Long>() {
             @Override
             public Long perform(Jedis jedis) {
-                return jedis.zcard(String.format("home:timeline:%s", loggedInUser));
+                return jedis.zcard(String.format(HOME_S_TIMELINE, loggedInUser));
             }
         });
     }
 
-    public Map<String, Long> getActivityCalendarForNMonths(final Profile profile, final int nMonths) {
+    public Map<String, Long> getActivityCalendarForNMonths(final Profile profile, final Goal goal, final int nMonths) {
         return jedisExecutionService.execute(new JedisOperation<Map<String, Long>>() {
             @Override
             public Map<String, Long> perform(Jedis jedis) {
@@ -422,17 +436,48 @@ public class TimelineService {
                 Calendar calendar = Calendar.getInstance();
                 calendar.add(Calendar.MONTH, -nMonths);
                 Date nMonthsBack = calendar.getTime();
-                Set<Tuple> activityIdsInNMonthWithScores = jedis.zrangeByScoreWithScores("profile:timeline:" + profile.getUsername(), nMonthsBack.getTime(), today.getTime());
+                Set<Tuple> activityIdsInNMonthWithScores = jedis.zrangeByScoreWithScores(String.format(PROFILE_S_GOAL_S_TIMELINE, profile.getUsername(), goal.getId()), nMonthsBack.getTime(), today.getTime());
                 Map<String, Long> data = new LinkedHashMap<>();
                 for (Tuple tuple : activityIdsInNMonthWithScores) {
                     String activityId = tuple.getElement();
                     double score = tuple.getScore();
                     String distanceCovered = jedis.hget(String.format("activity:%s", activityId), "distanceCovered");
                     long timestamp = (Double.valueOf(score).longValue()) / 1000;
-                    long distanceCoveredInRequiredUnits = Long.valueOf(distanceCovered) / (profile.getGoalUnit().getConversion());
+                    long distanceCoveredInRequiredUnits = Long.valueOf(distanceCovered) / (goal.getGoalUnit().getConversion());
                     data.put(String.valueOf(timestamp), distanceCoveredInRequiredUnits);
                 }
                 return data;
+            }
+        });
+    }
+
+    public List<ActivityDetails> getGoalTimeline(final String loggedInUser, final Goal goal, final int page, final int count) {
+        return jedisExecutionService.execute(new JedisOperation<List<ActivityDetails>>() {
+            @Override
+            public List<ActivityDetails> perform(Jedis jedis) {
+                Set<String> activityIds = jedis.zrevrange(String.format(PROFILE_S_GOAL_S_TIMELINE, loggedInUser, goal.getId()), (page - 1) * count, page * (count - 1));
+                Pipeline pipeline = jedis.pipelined();
+                List<Response<Map<String, String>>> result = new ArrayList<>();
+                for (String activityId : activityIds) {
+                    Response<Map<String, String>> response = pipeline.hgetAll("activity:" + activityId);
+                    result.add(response);
+                }
+                pipeline.sync();
+                List<ActivityDetails> profileTimeline = new ArrayList<>();
+                for (Response<Map<String, String>> response : result) {
+                    Map<String, String> hash = response.get();
+                    profileTimeline.add(new ActivityDetails(hash));
+                }
+                return profileTimeline;
+            }
+        });
+    }
+
+    public Long totalActivitiesForGoal(final String loggedInUser, final Goal goal) {
+        return jedisExecutionService.execute(new JedisOperation<Long>() {
+            @Override
+            public Long perform(Jedis jedis) {
+                return jedis.zcard(String.format(PROFILE_S_GOAL_S_TIMELINE, loggedInUser, goal.getId()));
             }
         });
     }

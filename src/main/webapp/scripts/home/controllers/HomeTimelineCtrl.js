@@ -1,13 +1,13 @@
 'use strict';
 
-angular.module('milestogo')
-    .controller('TimelineCtrl', function ($scope, TimelineService, $modal, $location, activeProfile) {
+angular.module('miles2run-home')
+    .controller('HomeTimelineCtrl', function ($scope, $http, $modal, $location, activeProfile, ConfigService) {
         $scope.currentUser = activeProfile;
 
         if (!angular.isDefined($scope.currentPage)) {
             $scope.currentPage = 1;
         }
-        TimelineService.homeTimeline(1).success(function (data, status, headers, config) {
+        $http.get(ConfigService.getBaseUrl() + 'activities/home_timeline').success(function (data, status, headers, config) {
             $scope.activities = data.timeline;
             $scope.totalItems = data.totalItems;
         }).error(function (data, status, headers, config) {
@@ -16,7 +16,7 @@ angular.module('milestogo')
 
         $scope.pageChanged = function () {
             console.log('Page changed to: ' + $scope.currentPage);
-            TimelineService.homeTimeline($scope.currentPage).success(function (data, status, headers, config) {
+            $http.get(ConfigService.getBaseUrl() + 'activities/home_timeline').success(function (data, status, headers, config) {
                 $scope.activities = data.timeline;
                 $scope.totalItems = data.totalItems;
             }).error(function (data, status, headers, config) {
@@ -64,13 +64,12 @@ angular.module('milestogo')
 
     });
 
-var DeleteActivityCtrl = function ($scope, ActivityService, $modalInstance, activityToDelete, idx, activities, $rootScope) {
+var DeleteActivityCtrl = function ($scope, $modalInstance, activityToDelete, idx, activities, ConfigService, $http) {
 
     $scope.ok = function () {
-        ActivityService.deleteActivity(activityToDelete.id).success(function (data, status) {
+        $http.delete(ConfigService.getBaseUrl() + "goals/" + activityToDelete.goalId + "/activities/" + activityToDelete.id).success(function (data, status) {
             toastr.success("Deleted activity");
             activities.splice(idx, 1);
-            $rootScope.$broadcast('update.progress', 'true');
             $modalInstance.close({});
         }).error(function (data, status, headers, config) {
             console.log("Status code %s", status);

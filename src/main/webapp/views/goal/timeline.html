@@ -8,7 +8,7 @@
 
 <div class="row">
     <div class="col-lg-12">
-        <h1 class="page-header">Home Timeline</h1>
+        <h1 class="page-header">Timeline</h1>
     </div>
     <!-- /.col-lg-12 -->
 </div>
@@ -17,14 +17,16 @@
     <div class="col-lg-12">
         <div class="panel panel-default">
             <div class="panel-heading">
-                <i class="fa fa-clock-o fa-fw"></i> Your home timeline
+                <i class="fa fa-clock-o fa-fw"></i> Your activities
             </div>
             <!-- /.panel-heading -->
             <div class="panel-body">
                 <div class="well" ng-if="activities.length == 0" ng-cloak>
-                    <h2>Nothing posted yet!!</h2>
+                    <h2>You haven't tracked any activities yet!!</h2>
 
-                    <p class="lead">Start posting activities or follow other runners to track their activities.</p>
+                    <p class="lead">But don't worry! It's really easy to get started. Just click on the button below to
+                        enter your first activity:</p>
+                    <a class="btn btn-success" ng-href="#activity/post">Post New Activity</a>
                 </div>
 
                 <ul class="timeline" ng-if="activities.length">
@@ -51,10 +53,10 @@
                                     <ul class="dropdown-menu" role="menu"
                                         ng-if="activity.username == currentUser.username" ng-cloak>
                                         <li>
-                                            <a ng-href="{{appContext()}}goals/{{activity.goalId}}#/activity/{{activity.id}}" title="view activity">View</a>
+                                            <a ng-href="#/activity/{{activity.id}}" title="view activity">View</a>
                                         </li>
                                         <li>
-                                            <a ng-href="{{appContext()}}goals/{{activity.goalId}}#/activity/edit/{{activity.id}}" title="edit activity">Edit</a>
+                                            <a ng-href="#/activity/edit/{{activity.id}}" title="edit activity">Edit</a>
                                         </li>
                                         <li class="divider"></li>
                                         <li>
@@ -65,7 +67,7 @@
                                     <ul class="dropdown-menu" role="menu"
                                         ng-if="activity.username != currentUser.username" ng-cloak>
                                         <li>
-                                            <a ng-href="#goals/{{activity.goalId}}/activity/{{activity.id}}" title="view activity">View</a>
+                                            <a ng-href="#/activity/{{activity.id}}" title="view activity">View</a>
                                         </li>
                                     </ul>
                                 </div>

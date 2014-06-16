@@ -1,8 +1,9 @@
 'use strict';
 
 angular.module('milestogo')
-    .controller('ActivityCalendarCtrl', function ($scope, ConfigService, activeProfile) {
+    .controller('ActivityCalendarCtrl', function ($scope, ConfigService, activeProfile, activeGoal) {
         $scope.currentUser = activeProfile;
+        $scope.activeGoal = activeGoal;
         $scope.data = {};
 
         function startDate() {
@@ -14,8 +15,8 @@ angular.module('milestogo')
         $scope.config = {
             minDate: startDate(),
             maxDate: new Date(),
-            data: ConfigService.getBaseUrl() + "activities/calendar",
-            itemName: $scope.currentUser.goalUnit.$name.toString().toLowerCase().replace("s", "")
+            data: ConfigService.getBaseUrl() + "goals/" + activeGoal.id + "/activities/calendar",
+            itemName: $scope.activeGoal.goalUnit.$name.toString().toLowerCase().replace("s", "")
         };
 
 

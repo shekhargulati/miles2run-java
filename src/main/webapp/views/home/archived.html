@@ -1,0 +1,69 @@
+<script type="text/ng-template" id="confirm.html">
+    <div class="modal-footer">
+        <p class="pull-left">Are you sure you want to unarchive this goal?</p>
+        <button class="btn btn-success" ng-click="ok()">UnArchive</button>
+        <button class="btn btn-default" ng-click="cancel()">Cancel</button>
+    </div>
+</script>
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-header">Goals</h1>
+    </div>
+    <!-- /.col-lg-12 -->
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    Archived Goals
+                </div>
+                <!-- /.panel-heading -->
+                <div class="panel-body">
+                    <div class="well" ng-if="goals.length == 0" ng-cloak>
+                        <h2>You don't have any archived goals!!</h2>
+                    </div>
+
+                    <div class="table-responsive" ng-if="goals.length">
+                        <table class="table table-striped table-bordered table-hover" id="goals-table">
+                            <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Purpose</th>
+                                <th>Goal</th>
+                                <th>Target Date</th>
+                                <th>% Completed</th>
+                                <th>Actions</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr class="odd gradeX" ng-repeat="goal in goals">
+                                <td>{{$index+1}}</td>
+                                <td>
+                                    <a ng-href="{{appContext}}goals/{{goal.id}}">{{goal.purpose}}</a>
+                                </td>
+                                <td>{{goal.goal + ' ' + goal.goalUnit}}</td>
+                                <td>{{goal.targetDate | date:'MMddyyyy HH mm ss'|moment}}</td>
+                                <td>{{goal.percentageCompleted | number:0}}% Complete</td>
+                                <td>
+                                    <div class="btn-group pull-right">
+                                        <button type="button" class="btn btn-default btn-xs dropdown-toggle"
+                                                data-toggle="dropdown">
+                                            <i class="fa fa-cog"></i>
+                                            <span class="caret"></span>
+                                        </button>
+                                        <ul class="dropdown-menu" role="menu">
+                                            <li>
+                                                <a ng-click="unarchive($index)"
+                                                   title="unarchive goal">UnArchive</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('miles2run-home')
+angular.module('milestogo')
     .service('ConfigService', function ConfigService($location) {
         return {
             getBaseUrl: function () {

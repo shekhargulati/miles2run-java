@@ -12,7 +12,7 @@
     <link href="/css/bootstrap.css" th:href="@{/css/bootstrap.css}" rel="stylesheet"/>
     <link href="/css/sb-admin.css" th:href="@{/css/sb-admin.css}" rel="stylesheet"/>
     <link href='http://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic' rel='stylesheet' type='text/css'/>
-
+    <link href="/css/plugins/social-buttons/social-buttons.css" th:href="@{/css/plugins/social-buttons/social-buttons.css}" rel="stylesheet"/>
     <!-- Miles2Run Overrides -->
     <link href="/css/miles2run.css" th:href="@{/css/miles2run.css}" rel="stylesheet"/>
 
@@ -393,24 +393,6 @@
 
         <div class="col-md-4">
             <textarea class="form-control" id="bio" name="bio" th:text="${profile.bio}" maxlength="200" title="Please enter 'bio' in under 200 characters" required="" placeholder="Tell us about yourself(max 200 characters)"></textarea>
-        </div>
-    </div>
-
-    <!-- Text input-->
-    <div id="goalFormGroup" class="form-group">
-        <label class="col-md-4 control-label" for="goal">Goal</label>
-
-        <div class="col-md-4">
-            <input id="goal" name="goal" type="number" placeholder="Distance you want to run" title="Please enter 'goal'"
-                   class="form-control input-md" required="" min="1" step="1" th:value="${profile.goal}"/>
-        </div>
-        <div class="col-md-4">
-            <label class="radio-inline pull-left" for="kms">
-                <input type="radio"  name="goalUnit" id="kms" value="KMS" checked="checked" th:checked="${profile.goalUnit != null and profile.goalUnit.toString() == 'kms'}"/>kms
-            </label>
-            <label class="radio-inline pull-left" for="miles">
-                <input type="radio" name="goalUnit" id="miles" value="MILES" th:checked="${profile.goalUnit != null and profile.goalUnit.toString() == 'miles'}"/>miles
-            </label>
         </div>
     </div>
 

@@ -20,7 +20,7 @@ import java.util.List;
 @NamedQueries({
         @NamedQuery(name = "Profile.findByUsername", query = "select new Profile(p) from Profile p where p.username =:username"),
         @NamedQuery(name = "Profile.findByEmail", query = "select new Profile(p) from Profile p where p.email =:email"),
-        @NamedQuery(name = "Profile.findProfileWithSocialNetworks", query = "select p.id,p.username,p.goal,p.goalUnit,s.provider from Profile p JOIN p.socialConnections s where p.username =:username"),
+        @NamedQuery(name = "Profile.findProfileWithSocialNetworks", query = "select p.id,p.username, s.provider from Profile p JOIN p.socialConnections s where p.username =:username"),
         @NamedQuery(name = "Profile.findFullProfileByUsername", query = "select new Profile(p) from Profile p where p.username =:username")
 })
 @Table(indexes = {
@@ -60,13 +60,6 @@ public class Profile implements Serializable {
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
-    @NotNull
-    private long goal = 0;
-
-    @NotNull
-    @Enumerated(EnumType.STRING)
-    private GoalUnit goalUnit;
-
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "profile")
     private final List<SocialConnection> socialConnections = new ArrayList<>();
 
@@ -98,8 +91,6 @@ public class Profile implements Serializable {
         this.fullname = p.fullname;
         this.profilePic = p.profilePic;
         this.gender = p.gender;
-        this.goal = p.goal / p.goalUnit.getConversion();
-        this.goalUnit = p.goalUnit;
     }
 
     public Profile(ProfileForm profileForm) {
@@ -110,8 +101,6 @@ public class Profile implements Serializable {
         this.country = profileForm.getCountry();
         this.fullname = profileForm.getFullname();
         this.gender = profileForm.getGender();
-        this.goalUnit = profileForm.getGoalUnit() == null ? GoalUnit.KMS : profileForm.getGoalUnit();
-        this.goal = profileForm.getGoal() * this.goalUnit.getConversion();
         this.profilePic = profileForm.getProfilePic();
     }
 
@@ -163,13 +152,6 @@ public class Profile implements Serializable {
         this.country = country;
     }
 
-    public long getGoal() {
-        return goal;
-    }
-
-    public void setGoal(long goal) {
-        this.goal = goal;
-    }
 
     public List<SocialConnection> getSocialConnections() {
         return socialConnections;
@@ -203,13 +185,6 @@ public class Profile implements Serializable {
         this.gender = gender;
     }
 
-    public GoalUnit getGoalUnit() {
-        return goalUnit;
-    }
-
-    public void setGoalUnit(GoalUnit goalUnit) {
-        this.goalUnit = goalUnit;
-    }
 
     public Role getRole() {
         return role;
@@ -234,7 +209,6 @@ public class Profile implements Serializable {
                 ", fullName='" + fullname + '\'' +
                 ", bio='" + bio + '\'' +
                 ", city='" + city + '\'' +
-                ", goal=" + goal +
                 ", country='" + country + '\'' +
                 ", profilePic='" + profilePic + '\'' +
                 ", registeredOn=" + registeredOn +

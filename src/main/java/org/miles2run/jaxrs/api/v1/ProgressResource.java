@@ -1,7 +1,6 @@
 package org.miles2run.jaxrs.api.v1;
 
 import org.jug.filters.LoggedIn;
-import org.miles2run.business.domain.Activity;
 import org.miles2run.business.domain.Profile;
 import org.miles2run.business.services.ActivityService;
 import org.miles2run.business.services.ProfileService;
@@ -15,29 +14,27 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Created by shekhargulati on 15/03/14.
  */
-@Path("/api/v1/profiles/{username}/progress")
+@Path("/api/v1/goals/{goalId}/progress")
 public class ProgressResource {
 
     @Inject
     private ActivityService activityService;
     @Inject
     private ProfileService profileService;
+    @Context
+    private SecurityContext securityContext;
 
     @GET
     @Produces("application/json")
-    public Response progress(@PathParam("username") String username) {
+    @LoggedIn
+    public Response progress(@PathParam("goalId") Long goalId) {
+        String username = securityContext.getUserPrincipal().getName();
         Profile loggedInUser = profileService.findProfile(username);
-        if (loggedInUser == null) {
-            return Response.status(Response.Status.NOT_FOUND).entity("No user exist with username " + username).build();
-        }
-        Progress progress = activityService.calculateUserProgress(loggedInUser);
+        Progress progress = activityService.calculateUserProgressForGoal(loggedInUser, goalId);
         return Response.status(Response.Status.OK).entity(progress).build();
     }
 

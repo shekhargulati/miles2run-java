@@ -220,11 +220,11 @@ public class ProfileView {
                 }
             }
 
-            Progress progress = activityService.findTotalDistanceCovered(username);
+            Long goalId = null; // current active goal
+            Progress progress = activityService.calculateUserProgressForGoal(username, goalId);
             if (progress != null) {
                 model.put("progress", progress);
             }
-            model.put("activities", activityService.count(username));
             return View.of("/profile", templateEngine).withModel(model);
         } catch (Exception e) {
             if (e instanceof ViewResourceNotFoundException) {
