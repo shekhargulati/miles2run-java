@@ -81,7 +81,7 @@
                 </a>
                 <ul class="dropdown-menu dropdown-user">
                     <li>
-                        <a href="#" th:href="@{'/profiles/' + ${profile.username}}" th:inline="text">
+                        <a href="#" th:href="@{'/profiles/' + ${profile.username}} + '#/'" th:inline="text">
                             <img width="25" height="25" th:src="${profile.profilePic}"/> [[${profile.fullname}]]
                         </a>
                     </li>
@@ -98,7 +98,7 @@
             <div class="sidebar-collapse">
                 <ul class="nav" id="side-menu">
                     <li ng-class="{ active: isActive('/')}">
-                        <a href="#"><i class="fa fa-clock-o fa-fw"></i> Timeline</a>
+                        <a href="#/"><i class="fa fa-clock-o fa-fw"></i> Timeline</a>
                     </li>
                     <li ng-class="{ active: isActive('/followers')}">
                         <a href="#followers"><i class="fa fa-users fa-fw"></i> Followers</a>
@@ -138,31 +138,33 @@
                     </div>
                     <div class="panel-footer">
                         <div class="row">
-                            <div class="col-lg-2 col-sm-2 text-center">
-                                <h5>Active Goal</h5>
+                            <div class="col-lg-10 col-sm-10" th:if="${activeGoal != null}">
+                                <div class="col-lg-3 col-sm-3 text-center">
+                                    <h5>Active Goal</h5>
 
-                                <div th:inline="text">
-                                    [[${userProfile.goal} + ' ' + ${userProfile.goalUnit.upperCase()}]]
+                                    <div th:inline="text">
+                                        [[${activeGoal.goal} + ' ' + ${activeGoal.goalUnit.upperCase()}]]
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-lg-2 col-sm-2 text-center">
-                                <h5>Distance Covered</h5>
+                                <div class="col-lg-3 col-sm-3 text-center">
+                                    <h5>Distance Covered</h5>
 
-                                <div th:inline="text">
-                                    [[${progress.totalDistanceCovered} + ' ' + ${userProfile.goalUnit.upperCase()}]]
+                                    <div th:inline="text">
+                                        [[${progress.totalDistanceCovered} + ' ' + ${activeGoal.goalUnit.upperCase()}]]
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-lg-2 col-sm-2 text-center">
-                                <h5>Average Pace</h5>
+                                <div class="col-lg-3 col-sm-3 text-center">
+                                    <h5>Average Pace</h5>
 
-                                <div th:inline="text">
-                                    [[${#numbers.formatDecimal(progress.averagePace,1,2)} + ' MINS/' + ${userProfile.goalUnit.upperCase()}]]
+                                    <div th:inline="text">
+                                        [[${#numbers.formatDecimal(progress.averagePace,1,2)} + ' MINS/' + ${activeGoal.goalUnit.upperCase()}]]
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-lg-2 col-sm-2 text-center">
-                                <h5>Total Activities</h5>
+                                <div class="col-lg-3 col-sm-3 text-center">
+                                    <h5>Total Activities</h5>
 
-                                <div th:text="${activities}">
+                                    <div th:text="${progress.activityCount}">
+                                    </div>
                                 </div>
                             </div>
                             <div class="col-lg-2 col-sm-2 text-center pull-right" th:if="${profile != null}" ng-controller="FriendsCtrl">
@@ -174,6 +176,8 @@
                                         class="glyphicon glyphicon-user"></span> Follow</a>
                             </div>
                         </div>
+
+
                     </div>
                     <!-- /.panel-body -->
                 </div>
@@ -197,6 +201,7 @@
 
     var activeUserProfile = [[${profile}]];
     var userProfile = [[${userProfile}]];
+    var activeGoal = [[${activeGoal}]];
 
     /*]]>*/
 </script>
@@ -220,8 +225,8 @@
 <script src="/js/libs/moment.js" th:src="@{/js/libs/moment.js}"></script>
 
 <script src="/scripts/profile/app.js" th:src="@{/scripts/profile/app.js}"></script>
-<script src="/scripts/home/services/TimelineService.js" th:src="@{/scripts/home/services/TimelineService.js}"></script>
-<script src="/scripts/home/services/ConfigService.js" th:src="@{/scripts/home/services/ConfigService.js}"></script>
+<script src="/scripts/goal/services/TimelineService.js" th:src="@{/scripts/goal/services/TimelineService.js}"></script>
+<script src="/scripts/goal/services/ConfigService.js" th:src="@{/scripts/goal/services/ConfigService.js}"></script>
 <script src="/scripts/profile/services/FriendsService.js" th:src="@{/scripts/profile/services/FriendsService.js}"></script>
 <script src="/scripts/profile/controllers/UserTimelineCtrl.js" th:src="@{/scripts/profile/controllers/UserTimelineCtrl.js}"></script>
 <script src="/scripts/profile/controllers/FollowersCtrl.js" th:src="@{/scripts/profile/controllers/FollowersCtrl.js}"></script>

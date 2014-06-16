@@ -403,24 +403,6 @@
     </div>
 </div>
 
-<!-- Text input-->
-<div id="goalFormGroup" class="form-group">
-    <label class="col-md-4 control-label" for="goal">Goal</label>
-
-    <div class="col-md-4">
-        <input id="goal" name="goal" type="number" placeholder="Distance you want to run" title="Please enter 'goal'"
-               class="form-control input-md" th:value="${profile.goal}" required="" min="1" step="1"/>
-    </div>
-    <div class="col-md-4">
-        <label class="radio-inline pull-left" for="kms">
-            <input type="radio"  name="goalUnit" id="kms" value="KMS" th:checked="${profile.goalUnit.toString() == 'kms'}"/>km
-        </label>
-        <label class="radio-inline pull-left" for="miles">
-            <input type="radio" name="goalUnit" id="miles" value="MILES" th:checked="${profile.goalUnit.toString() == 'miles'}"/>miles
-        </label>
-    </div>
-</div>
-
 <input type="hidden" name="username" id="username" th:value="${profile.username}"/>
 <input type="hidden" name="profilePic" id="profilePic" th:value="${profile.profilePic}"/>
 <!-- Button -->

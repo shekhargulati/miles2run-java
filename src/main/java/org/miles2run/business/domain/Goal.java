@@ -13,7 +13,8 @@ import java.util.Date;
 @NamedQueries(
         {
                 @NamedQuery(name = "Goal.findAllWithProfileAndArchive", query = "SELECT new Goal(g.id,g.purpose,g.targetDate,g.goal, g.goalUnit, g.archived) FROM Goal g where g.profile =:profile and g.archived =:archived"),
-                @NamedQuery(name = "Goal.findGoalWithIdAndProfile", query = "SELECT new Goal(g.id,g.purpose,g.targetDate,g.goal, g.goalUnit, g.archived) FROM Goal g where g.profile =:profile and g.id =:goalId")
+                @NamedQuery(name = "Goal.findGoalWithIdAndProfile", query = "SELECT new Goal(g.id,g.purpose,g.targetDate,g.goal, g.goalUnit, g.archived) FROM Goal g where g.profile =:profile and g.id =:goalId"),
+                @NamedQuery(name = "Goal.findLastedCreatedGoal", query = "SELECT new Goal(g.id,g.purpose,g.targetDate,g.goal, g.goalUnit, g.archived) from Goal g where g.profile =:profile order by g.createdAt desc")
         }
 )
 public class Goal {

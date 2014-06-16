@@ -38,6 +38,8 @@ app.config(['$provide', function ($provide) {
     $provide.constant('activeProfile', activeUserProfile);
     var userProfile = angular.copy(window.userProfile);
     $provide.constant('userProfile', userProfile);
+    var activeGoal = angular.copy(window.activeGoal);
+    $provide.constant('activeGoal', activeGoal);
 }]);
 
 app.run(function ($rootScope, $location) {

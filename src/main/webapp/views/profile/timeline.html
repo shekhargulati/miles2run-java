@@ -14,11 +14,7 @@
             <!-- /.panel-heading -->
             <div class="panel-body">
                 <div class="well" ng-if="activities.length == 0" ng-cloak>
-                    <h2>You haven't tracked any activities yet!!</h2>
-
-                    <p class="lead">But don't worry! It's really easy to get started. Just click on the button below to
-                        enter your first activity:</p>
-                    <a class="btn btn-success" ng-href="#activity/post">Post New Activity</a>
+                    <h2>@{{userProfile.username}} hasn't tracked any activities yet!!</h2>
                 </div>
 
                 <ul class="timeline" ng-if="activities.length">

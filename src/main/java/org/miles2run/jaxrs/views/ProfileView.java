@@ -12,10 +12,7 @@ import org.jug.filters.LoggedIn;
 import org.jug.view.View;
 import org.jug.view.ViewException;
 import org.jug.view.ViewResourceNotFoundException;
-import org.miles2run.business.domain.Profile;
-import org.miles2run.business.domain.SocialConnection;
-import org.miles2run.business.domain.SocialProvider;
-import org.miles2run.business.domain.UserProfile;
+import org.miles2run.business.domain.*;
 import org.miles2run.business.services.*;
 import org.miles2run.business.utils.CityAndCountry;
 import org.miles2run.business.utils.UrlUtils;
@@ -24,6 +21,7 @@ import org.miles2run.business.vo.Google;
 import org.miles2run.business.vo.Progress;
 import org.miles2run.jaxrs.filters.InjectProfile;
 import org.miles2run.business.utils.GeocoderUtils;
+import org.miles2run.jaxrs.vo.GoalDetails;
 import org.miles2run.jaxrs.vo.ProfileDetails;
 import org.miles2run.jaxrs.forms.ProfileForm;
 import org.thymeleaf.TemplateEngine;
@@ -80,6 +78,8 @@ public class ProfileView {
     private ProfileMongoService profileMongoService;
     @Inject
     private GoogleService googleService;
+    @Inject
+    private GoalService goalService;
 
 
     @GET
@@ -220,11 +220,19 @@ public class ProfileView {
                 }
             }
 
-            Long goalId = null; // current active goal
-            Progress progress = activityService.calculateUserProgressForGoal(username, goalId);
-            if (progress != null) {
-                model.put("progress", progress);
+            Long goalId = goalService.findLatestGoalWithActivity(username);
+            if (goalId == null) {
+                Goal activeGoal = goalService.findLatestCreatedGoal(username);
+                if (activeGoal != null) {
+                    model.put("activeGoal", new GoalDetails(activeGoal));
+                    model.put("progress", new Progress(activeGoal));
+                }
+                return View.of("/profile", templateEngine).withModel(model);
             }
+            Goal activeGoal = goalService.findGoal(username, goalId);
+            model.put("activeGoal", new GoalDetails(activeGoal));
+            Progress progress = activityService.calculateUserProgressForGoal(username, goalId);
+            model.put("progress", progress);
             return View.of("/profile", templateEngine).withModel(model);
         } catch (Exception e) {
             if (e instanceof ViewResourceNotFoundException) {

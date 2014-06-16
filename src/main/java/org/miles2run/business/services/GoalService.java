@@ -11,8 +11,10 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Logger;
 
 /**
@@ -115,4 +117,27 @@ public class GoalService {
         });
     }
 
+    public Long findLatestGoalWithActivity(final String username) {
+        return jedisExecutionService.execute(new JedisOperation<Long>() {
+            @Override
+            public Long perform(Jedis jedis) {
+                Set<String> activities = jedis.zrevrange(String.format(TimelineService.PROFILE_S_TIMELINE_LATEST, username), 0, -1);
+                if (activities != null && !activities.isEmpty()) {
+                    String latestActivityId = activities.iterator().next();
+                    String goalId = jedis.hget(String.format("activity:%s", latestActivityId), "goalId");
+                    return Long.valueOf(goalId);
+                }
+                return null;
+            }
+        });
+    }
+
+    public Goal findLatestCreatedGoal(String username) {
+        Profile profile = profileService.findProfile(username);
+        TypedQuery<Goal> query = entityManager.createNamedQuery("Goal.findLastedCreatedGoal", Goal.class);
+        query.setParameter("profile", profile);
+        query.setMaxResults(1);
+        List<Goal> goals = query.getResultList();
+        return goals.isEmpty() ? null : goals.get(0);
+    }
 }
