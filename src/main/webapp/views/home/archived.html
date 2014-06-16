@@ -14,7 +14,7 @@
         <div class="col-lg-12">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    Your Goals
+                    Archived Goals
                 </div>
                 <!-- /.panel-heading -->
                 <div class="panel-body">
@@ -30,6 +30,7 @@
                                 <th>Purpose</th>
                                 <th>Goal</th>
                                 <th>Target Date</th>
+                                <th>% Completed</th>
                                 <th>Actions</th>
                             </tr>
                             </thead>
@@ -41,6 +42,7 @@
                                 </td>
                                 <td>{{goal.goal + ' ' + goal.goalUnit}}</td>
                                 <td>{{goal.targetDate | date:'MMddyyyy HH mm ss'|moment}}</td>
+                                <td>{{goal.percentageCompleted | number:0}}% Complete</td>
                                 <td>
                                     <div class="btn-group pull-right">
                                         <button type="button" class="btn btn-default btn-xs dropdown-toggle"

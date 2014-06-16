@@ -82,7 +82,7 @@
 
 1. <s>Make delete archive</s>
 2. Add pagination in goals page
-3. Show progress of each goal
+3. <s>Show progress of each goal</s>
 4. Remove goal and goal unit from the profile creation page.
 5. In update Goal, calendar should show the goal date instead of today
 6. After user finishes a goal, there should be a way to share that

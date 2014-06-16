@@ -21,7 +21,8 @@
                     <div class="well" ng-if="goals.length == 0" ng-cloak>
                         <h2>You don't have any active goals!!</h2>
 
-                        <p class="lead">But don't worry! It's really easy to get started. Just click on the button below to
+                        <p class="lead">But don't worry! It's really easy to get started. Just click on the button below
+                            to
                             create a new goal:</p>
                         <a class="btn btn-success" ng-href="#goals/create">New Goal</a>
                     </div>
@@ -34,6 +35,7 @@
                                 <th>Purpose</th>
                                 <th>Goal</th>
                                 <th>Target Date</th>
+                                <th>% Completed</th>
                                 <th>Actions</th>
                             </tr>
                             </thead>
@@ -45,6 +47,7 @@
                                 </td>
                                 <td>{{goal.goal + ' ' + goal.goalUnit}}</td>
                                 <td>{{goal.targetDate | date:'MMddyyyy HH mm ss'|moment}}</td>
+                                <td>{{goal.percentageCompleted | number:0}}% Complete</td>
                                 <td>
                                     <div class="btn-group pull-right">
                                         <button type="button" class="btn btn-default btn-xs dropdown-toggle"

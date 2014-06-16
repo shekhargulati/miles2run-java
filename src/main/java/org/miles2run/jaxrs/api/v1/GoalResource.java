@@ -6,6 +6,7 @@ import org.miles2run.business.domain.Goal;
 import org.miles2run.business.domain.Profile;
 import org.miles2run.business.services.GoalService;
 import org.miles2run.business.services.ProfileService;
+import org.miles2run.jaxrs.vo.GoalDetails;
 
 import javax.inject.Inject;
 import javax.validation.Valid;
@@ -13,6 +14,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -35,10 +37,18 @@ public class GoalResource {
     @GET
     @Produces("application/json")
     @LoggedIn
-    public List<Goal> allGoal(@QueryParam("archived") boolean archived) {
+    public List<GoalDetails> allGoal(@QueryParam("archived") boolean archived) {
         String loggedInUser = securityContext.getUserPrincipal().getName();
         List<Goal> goals = goalService.findAllGoals(loggedInUser, archived);
-        return goals;
+
+        List<GoalDetails> goalsDetails = new ArrayList<>();
+        for (Goal goal : goals) {
+            long totalDistanceCoveredForGoal = goalService.totalDistanceCoveredForGoal(goal.getId());
+            double percentageCompleted = (Double.valueOf(totalDistanceCoveredForGoal) / goal.getGoal()) * 100;
+            percentageCompleted = percentageCompleted > 100 ? 100 : percentageCompleted;
+            goalsDetails.add(new GoalDetails(goal, percentageCompleted));
+        }
+        return goalsDetails;
     }
 
     @Path("{goalId}")

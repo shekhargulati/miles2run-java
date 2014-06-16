@@ -53,7 +53,7 @@ public class Goal {
         this.purpose = purpose;
         this.targetDate = targetDate;
         this.goalUnit = goalUnit;
-        this.goal = goal / this.goalUnit.getConversion();
+        this.goal = goal;
         this.archived = archived;
     }
 
