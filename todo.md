@@ -87,6 +87,6 @@
 5. <s>In update Goal, calendar should show the goal date instead of today</s>
 6. After user finishes a goal, there should be a way to share that
 7. Goals can be private as well and then activities would not be visible to other users.
-8. Home timeline shows "You haven't created any goals yet!!" message when goal is created but no activity is performed.
-9. User should be able to view all goals as well. Goals that are achieved as well.
+8. <s>Home timeline shows "You haven't created any goals yet!!" message when goal is created but no activity is performed.</s>
+9. <s>User should be able to view all goals as well. Goals that are achieved as well. -- Already done via Archived goals page</s>
 10. Think about what to do when Goal is achieved or not achieved.
