@@ -53,4 +53,21 @@ public class GoalTimelineResource {
         response.put("totalItems", timelineService.totalActivitiesForGoal(loggedInUser, goal));
         return response;
     }
+
+    @Path("/user_goal_timeline")
+    @GET
+    @Produces("application/json")
+    public Map<String, Object> getUserGoalTimeline(@PathParam("goalId") Long goalId, @QueryParam("username") String username, @QueryParam("page") int page, @QueryParam("count") int count) {
+        Goal goal = goalService.findGoal(username, goalId);
+        if (goal == null) {
+            return Collections.emptyMap();
+        }
+        page = page == 0 ? 1 : page;
+        count = count == 0 || count > 50 ? 10 : count;
+        List<ActivityDetails> goalTimeline = timelineService.getGoalTimeline(username, goal, page, count);
+        Map<String, Object> response = new HashMap<>();
+        response.put("timeline", goalTimeline);
+        response.put("totalItems", timelineService.totalActivitiesForGoal(username, goal));
+        return response;
+    }
 }

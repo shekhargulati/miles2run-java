@@ -27,6 +27,7 @@ public class TimelineService {
     public static final String PROFILE_S_TIMELINE = "profile:%s:timeline";
     public static final String HOME_S_TIMELINE = "home:%s:timeline";
     public static final String PROFILE_S_GOAL_S_TIMELINE = "profile:%s:goal:%s:timeline";
+    public static final String PROFILE_S_TIMELINE_LATEST = "profile:%s:timeline:latest";
 
     @Inject
     private JedisExecutionService jedisExecutionService;
@@ -87,6 +88,8 @@ public class TimelineService {
                 pipeline.zadd(String.format(PROFILE_S_TIMELINE, username), posted, activityId);
                 pipeline.zadd(String.format(HOME_S_TIMELINE, username), posted, activityId);
                 pipeline.zadd(String.format(PROFILE_S_GOAL_S_TIMELINE, username, goal.getId()), posted, activityId);
+                pipeline.zadd(String.format(PROFILE_S_TIMELINE_LATEST, username), activity.getPostedAt().getTime(), activityId);
+                pipeline.zremrangeByRank(String.format(PROFILE_S_TIMELINE_LATEST, username), 0, -2);
                 pipeline.sync();
                 return null;
             }

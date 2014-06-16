@@ -13,6 +13,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Logger;
 
 /**
@@ -115,4 +116,18 @@ public class GoalService {
         });
     }
 
+    public Long findLatestGoalWithActivity(final String username) {
+        return jedisExecutionService.execute(new JedisOperation<Long>() {
+            @Override
+            public Long perform(Jedis jedis) {
+                Set<String> activities = jedis.zrevrange(String.format(TimelineService.PROFILE_S_TIMELINE_LATEST, username), 0, -1);
+                if (activities != null && !activities.isEmpty()) {
+                    String latestActivityId = activities.iterator().next();
+                    String goalId = jedis.hget(String.format("activity:%s", latestActivityId), "goalId");
+                    return Long.valueOf(goalId);
+                }
+                return null;
+            }
+        });
+    }
 }

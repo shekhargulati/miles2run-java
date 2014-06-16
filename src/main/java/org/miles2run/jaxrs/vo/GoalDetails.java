@@ -16,7 +16,7 @@ public class GoalDetails {
     private final long goal;
     private final GoalUnit goalUnit;
     private final boolean archived;
-    private final long percentageCompleted;
+    private long percentageCompleted;
 
     public GoalDetails(Goal goal, long percentageCompleted) {
         this.id = goal.getId();
@@ -26,6 +26,15 @@ public class GoalDetails {
         this.goalUnit = goal.getGoalUnit();
         this.archived = goal.isArchived();
         this.percentageCompleted = percentageCompleted;
+    }
+
+    public GoalDetails(Goal goal) {
+        this.id = goal.getId();
+        this.purpose = goal.getPurpose();
+        this.targetDate = goal.getTargetDate();
+        this.goal = goal.getGoal() / goal.getGoalUnit().getConversion();
+        this.goalUnit = goal.getGoalUnit();
+        this.archived = goal.isArchived();
     }
 
     public Long getId() {
