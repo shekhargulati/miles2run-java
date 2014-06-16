@@ -5,6 +5,7 @@ angular.module('miles2run-home')
 
         $http.get(ConfigService.getBaseUrl() + "goals/" + $routeParams.goalId).success(function (data) {
             $scope.goal = data;
+            $scope.today();
         }).error(function (data, status) {
             toastr.error("Unable to fetch goal. Please try after sometime.");
             console.log("Error " + data);
@@ -13,7 +14,15 @@ angular.module('miles2run-home')
 
         $scope.editGoal = function () {
             console.log($scope.goal);
-            $http.put(ConfigService.getBaseUrl() + "goals/" + $scope.goal.id, $scope.goal).success(function (data) {
+            var goal = {
+                id: $scope.goal.id,
+                purpose: $scope.goal.purpose,
+                targetDate: $scope.goal.targetDate,
+                goal: $scope.goal.goal,
+                goalUnit: $scope.goal.goalUnit,
+                archived: $scope.goal.archived
+            }
+            $http.put(ConfigService.getBaseUrl() + "goals/" + $scope.goal.id, goal).success(function (data) {
                 toastr.success("Updated goal");
                 $location.path("/");
             }).error(function (data, status) {
@@ -25,9 +34,8 @@ angular.module('miles2run-home')
         };
 
         $scope.today = function () {
-            $scope.dt = new Date();
+            $scope.goal.targetDate = new Date($scope.goal.targetDate);
         };
-        $scope.today();
 
         $scope.showWeeks = true;
         $scope.toggleWeeks = function () {
@@ -35,7 +43,7 @@ angular.module('miles2run-home')
         };
 
         $scope.clear = function () {
-            $scope.dt = null;
+            $scope.goal.targetDate = null;
         };
 
         // Disable weekend selection
@@ -51,7 +59,6 @@ angular.module('miles2run-home')
         $scope.open = function ($event) {
             $event.preventDefault();
             $event.stopPropagation();
-
             $scope.opened = true;
         };
 

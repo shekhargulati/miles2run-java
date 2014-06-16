@@ -43,9 +43,7 @@ public class GoalResource {
 
         List<GoalDetails> goalsDetails = new ArrayList<>();
         for (Goal goal : goals) {
-            long totalDistanceCoveredForGoal = goalService.totalDistanceCoveredForGoal(goal.getId());
-            double percentageCompleted = (Double.valueOf(totalDistanceCoveredForGoal) / goal.getGoal()) * 100;
-            percentageCompleted = percentageCompleted > 100 ? 100 : percentageCompleted;
+            long percentageCompleted = percentageGoalCompleted(goal);
             goalsDetails.add(new GoalDetails(goal, percentageCompleted));
         }
         return goalsDetails;
@@ -55,9 +53,11 @@ public class GoalResource {
     @GET
     @Produces("application/json")
     @LoggedIn
-    public Goal goal(@PathParam("goalId") Long goalId) {
+    public GoalDetails goal(@PathParam("goalId") Long goalId) {
         String loggedInUser = securityContext.getUserPrincipal().getName();
-        return goalService.findGoal(loggedInUser, goalId);
+        Goal goal = goalService.findGoal(loggedInUser, goalId);
+        long percentageCompleted = percentageGoalCompleted(goal);
+        return new GoalDetails(goal, percentageCompleted);
     }
 
 
@@ -124,5 +124,13 @@ public class GoalResource {
         }
         goalService.delete(goalId);
         return Response.status(Response.Status.OK).build();
+    }
+
+    private long percentageGoalCompleted(Goal goal) {
+        long totalDistanceCoveredForGoal = goalService.totalDistanceCoveredForGoal(goal.getId());
+        double percentageCompleted = (Double.valueOf(totalDistanceCoveredForGoal) * 100 / goal.getGoal());
+        long percentage = Double.valueOf(percentageCompleted).longValue();
+        percentage = percentage > 100 ? 100 : percentage;
+        return percentage;
     }
 }

@@ -16,9 +16,9 @@ public class GoalDetails {
     private final long goal;
     private final GoalUnit goalUnit;
     private final boolean archived;
-    private final double percentageCompleted;
+    private final long percentageCompleted;
 
-    public GoalDetails(Goal goal, double percentageCompleted) {
+    public GoalDetails(Goal goal, long percentageCompleted) {
         this.id = goal.getId();
         this.purpose = goal.getPurpose();
         this.targetDate = goal.getTargetDate();
@@ -52,7 +52,7 @@ public class GoalDetails {
         return archived;
     }
 
-    public double getPercentageCompleted() {
+    public long getPercentageCompleted() {
         return percentageCompleted;
     }
 }

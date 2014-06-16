@@ -84,7 +84,7 @@
 2. Add pagination in goals page
 3. <s>Show progress of each goal</s>
 4. <s>Remove goal and goal unit from the profile creation page.</s>
-5. In update Goal, calendar should show the goal date instead of today
+5. <s>In update Goal, calendar should show the goal date instead of today</s>
 6. After user finishes a goal, there should be a way to share that
 7. Goals can be private as well and then activities would not be visible to other users.
 8. Home timeline shows "You haven't created any goals yet!!" message when goal is created but no activity is performed.
