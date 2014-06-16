@@ -21,19 +21,10 @@
             </div>
             <!-- /.panel-heading -->
             <div class="panel-body">
-                <div class="well" ng-if="goals.length == 0" ng-cloak>
-                    <h2>You haven't created any goals yet!!</h2>
-
-                    <p class="lead">But don't worry! It's really easy to get started. Just click on the button below to
-                        create your first goal:</p>
-                    <a class="btn btn-success" ng-href="#goals/create">New Goal</a>
-                </div>
                 <div class="well" ng-if="activities.length == 0" ng-cloak>
-                    <h2>You haven't created any goals yet!!</h2>
+                    <h2>Nothing posted yet!!</h2>
 
-                    <p class="lead">But don't worry! It's really easy to get started. Just click on the button below to
-                        create your first goal:</p>
-                    <a class="btn btn-success" ng-href="#goals/create">New Goal</a>
+                    <p class="lead">Start posting activities or follow other runners to track their activities.</p>
                 </div>
 
                 <ul class="timeline" ng-if="activities.length">
