@@ -55,11 +55,21 @@
                                        title="Goal"
                                        required>
                                 <label class="radio-inline">
-                                    <input type="radio" name="goalUnit" id="kms" value="KMS" checked ng-model="goal.goalUnit">kms
+                                    <input type="radio" name="goalUnit" id="kms" value="KMS" checked
+                                           ng-model="goal.goalUnit">kms
                                 </label>
                                 <label class="radio-inline">
-                                    <input type="radio" name="goalUnit" id="miles" value="MILES" ng-model="goal.goalUnit">miles
+                                    <input type="radio" name="goalUnit" id="miles" value="MILES"
+                                           ng-model="goal.goalUnit">miles
                                 </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-md-offset-2 col-md-6 input-group">
+                                <input type="checkbox" id="archived" name="archived"
+                                       ng-model="goal.archived"> Archive
+
                             </div>
                         </div>
 

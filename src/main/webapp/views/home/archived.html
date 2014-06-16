@@ -1,7 +1,7 @@
 <script type="text/ng-template" id="confirm.html">
     <div class="modal-footer">
-        <p class="pull-left">Are you sure you want to archive this goal?</p>
-        <button class="btn btn-danger" ng-click="ok()">Archive</button>
+        <p class="pull-left">Are you sure you want to unarchive this goal?</p>
+        <button class="btn btn-success" ng-click="ok()">UnArchive</button>
         <button class="btn btn-default" ng-click="cancel()">Cancel</button>
     </div>
 </script>
@@ -19,11 +19,7 @@
                 <!-- /.panel-heading -->
                 <div class="panel-body">
                     <div class="well" ng-if="goals.length == 0" ng-cloak>
-                        <h2>You don't have any active goals!!</h2>
-
-                        <p class="lead">But don't worry! It's really easy to get started. Just click on the button below to
-                            create a new goal:</p>
-                        <a class="btn btn-success" ng-href="#goals/create">New Goal</a>
+                        <h2>You don't have any archived goals!!</h2>
                     </div>
 
                     <div class="table-responsive" ng-if="goals.length">
@@ -54,13 +50,8 @@
                                         </button>
                                         <ul class="dropdown-menu" role="menu">
                                             <li>
-                                                <a ng-href="#/goals/edit/{{goal.id}}"
-                                                   title="edit goal">Edit</a>
-                                            </li>
-                                            <li class="divider"></li>
-                                            <li>
-                                                <a ng-click="archive($index)"
-                                                   title="archive goal">Archive</a>
+                                                <a ng-click="unarchive($index)"
+                                                   title="unarchive goal">UnArchive</a>
                                             </li>
                                         </ul>
                                     </div>

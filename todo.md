@@ -64,8 +64,6 @@
 
 ##Goal Functionality -- Home View##
 47. Introduce concept of goal -- UI should be familiar with Google Analytics page where they list all the web sites.
-56. After user finishes a goal, there should be a way to share that
-66. Goals can be private as well and then activities would not be visible to other users.
 67. Show progress in Goals page.
 68. Change title of page to Home
 69. Move friends functionality to home page
@@ -79,3 +77,16 @@
 81. Delete goal should also delete all data associated with goal.
 82. Delete goal functionality is not working.
 83. Home timeline
+
+## Goal functionality -- must##
+
+1. <s>Make delete archive</s>
+2. Add pagination in goals page
+3. Show progress of each goal
+4. Remove goal and goal unit from the profile creation page.
+5. In update Goal, calendar should show the goal date instead of today
+6. After user finishes a goal, there should be a way to share that
+7. Goals can be private as well and then activities would not be visible to other users.
+8. Home timeline shows "You haven't created any goals yet!!" message when goal is created but no activity is performed.
+9. User should be able to view all goals as well. Goals that are achieved as well.
+10. Think about what to do when Goal is achieved or not achieved.

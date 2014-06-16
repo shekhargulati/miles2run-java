@@ -76,14 +76,16 @@
             <div class="sidebar-collapse">
                 <ul class="nav" id="side-menu">
                     <li ng-class="{ active: isActive('/')}">
-                        <a href="#"><i class="fa fa-list fa-fw"></i> Goals</a>
+                        <a href="#"><i class="fa fa-list fa-fw"></i> Active Goals</a>
                     </li>
-                    <li ng-class="{ active: isActive('/timeline')}">
-                        <a href="#timeline"><i class="fa fa-clock-o fa-fw"></i> Timeline</a>
-                    </li>
-
                     <li ng-class="{ active: isActive('/goals/create')}">
                         <a href="#goals/create"><i class="fa fa-pencil fa-fw"></i> New Goal</a>
+                    </li>
+                    <li ng-class="{ active: isActive('/goals/archive')}">
+                        <a href="#goals/archive"><i class="fa fa-archive fa-fw"></i> Archived Goals</a>
+                    </li>
+                    <li ng-class="{ active: isActive('/timeline')}">
+                        <a href="#timeline"><i class="fa fa-clock-o fa-fw"></i> Home Timeline</a>
                     </li>
                     <li ng-class="{ active: isActive('/friends')}">
                         <a href="#friends"><i class="fa fa-users fa-fw"></i> Friends</a>
@@ -143,6 +145,7 @@
 <script src="/scripts/home/controllers/ViewActivityCtrl.js" th:src="@{/scripts/home/controllers/ViewActivityCtrl.js}"></script>
 <script src="/scripts/home/controllers/CreateGoalCtrl.js" th:src="@{/scripts/home/controllers/CreateGoalCtrl.js}"></script>
 <script src="/scripts/home/controllers/EditGoalCtrl.js" th:src="@{/scripts/home/controllers/EditGoalCtrl.js}"></script>
+<script src="/scripts/home/controllers/ArchivedGoalsCtrl.js" th:src="@{/scripts/home/controllers/ArchivedGoalsCtrl.js}"></script>
 
 </body>
 

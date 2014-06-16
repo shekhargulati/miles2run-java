@@ -1,8 +1,8 @@
 'use strict';
 
 angular.module('miles2run-home')
-    .controller('GoalsCtrl', function ($scope, $http, $window, activeProfile, ConfigService, $modal) {
-        $http.get(ConfigService.getBaseUrl() + "goals").success(function (data) {
+    .controller('ArchivedGoalsCtrl', function ($scope, $http, $window, activeProfile, ConfigService, $modal) {
+        $http.get(ConfigService.getBaseUrl() + "goals/", {params: {"archived": true}}).success(function (data) {
             $scope.goals = data;
         }).error(function (data, status) {
             toastr.error("Unable to fetch goals. Please try after sometime.");
@@ -12,14 +12,14 @@ angular.module('miles2run-home')
 
         $scope.appContext = ConfigService.appContext();
 
-        $scope.archive = function (idx) {
+        $scope.unarchive = function (idx) {
             var modalIntance = $modal.open({
                 templateUrl: "confirm.html",
-                controller: ArchiveGoalCtrl,
+                controller: UnArchiveCtrl,
                 resolve: {
-                    goalToArchive: function () {
-                        var goalToArchive = $scope.goals[idx];
-                        return goalToArchive;
+                    goalToUnArchive: function () {
+                        var goalToUnArchive = $scope.goals[idx];
+                        return goalToUnArchive;
                     },
                     idx: function () {
                         return idx;
@@ -33,11 +33,11 @@ angular.module('miles2run-home')
         };
     });
 
-var ArchiveGoalCtrl = function ($scope, $http, $modalInstance, goalToArchive, idx, goals, ConfigService) {
+var UnArchiveCtrl = function ($scope, $http, $modalInstance, goalToUnArchive, idx, goals, ConfigService) {
 
     $scope.ok = function () {
-        $http.put(ConfigService.getBaseUrl() + 'goals/' + goalToArchive.id + "/archive", {}, {params: {"archived": true}}).success(function (data, status) {
-            toastr.success("Archived goal");
+        $http.put(ConfigService.getBaseUrl() + 'goals/' + goalToUnArchive.id + "/archive", {}, {params: {"archived": false}}).success(function (data, status) {
+            toastr.success("Unarchived goal");
             goals.splice(idx, 1);
             $modalInstance.close({});
         }).error(function (data, status, headers, config) {
@@ -45,7 +45,7 @@ var ArchiveGoalCtrl = function ($scope, $http, $modalInstance, goalToArchive, id
             if (status == 401) {
                 toastr.error("You are not authorized to perform this operation.")
             } else {
-                toastr.error("Unable to archive goal. Please try later.");
+                toastr.error("Unable to Unarchived goal. Please try later.");
             }
             $modalInstance.close({});
         });

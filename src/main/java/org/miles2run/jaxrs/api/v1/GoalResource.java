@@ -2,22 +2,17 @@ package org.miles2run.jaxrs.api.v1;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jug.filters.LoggedIn;
-import org.jug.view.View;
 import org.miles2run.business.domain.Goal;
 import org.miles2run.business.domain.Profile;
 import org.miles2run.business.services.GoalService;
 import org.miles2run.business.services.ProfileService;
-import org.miles2run.jaxrs.filters.InjectProfile;
-import org.thymeleaf.TemplateEngine;
 
 import javax.inject.Inject;
-import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -40,9 +35,9 @@ public class GoalResource {
     @GET
     @Produces("application/json")
     @LoggedIn
-    public List<Goal> allGoal() {
+    public List<Goal> allGoal(@QueryParam("archived") boolean archived) {
         String loggedInUser = securityContext.getUserPrincipal().getName();
-        List<Goal> goals = goalService.findAllGoalsForProfile(loggedInUser);
+        List<Goal> goals = goalService.findAllGoals(loggedInUser, archived);
         return goals;
     }
 
@@ -92,10 +87,21 @@ public class GoalResource {
         return Response.status(Response.Status.OK).build();
     }
 
-    @Path("{goalId}")
-    @DELETE
+    @Path("/{goalId}/archive")
+    @PUT
     @Produces("application/json")
     @LoggedIn
+    public Response archiveGoal(@PathParam("goalId") Long goalId, @QueryParam("archived") boolean archived) {
+        String loggedInUser = securityContext.getUserPrincipal().getName();
+        Profile profile = profileService.findProfile(loggedInUser);
+        Goal existingGoal = goalService.findGoal(profile, goalId);
+        if (existingGoal == null) {
+            return Response.status(Response.Status.NOT_FOUND).entity("No goal exists with id " + goalId).build();
+        }
+        goalService.updatedArchiveStatus(goalId, archived);
+        return Response.status(Response.Status.OK).build();
+    }
+
     public Response deleteGoal(@PathParam("goalId") Long goalId) {
         String loggedInUser = securityContext.getUserPrincipal().getName();
         Profile profile = profileService.findProfile(loggedInUser);

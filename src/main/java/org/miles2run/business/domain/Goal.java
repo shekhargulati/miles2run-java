@@ -12,8 +12,8 @@ import java.util.Date;
 @Entity
 @NamedQueries(
         {
-                @NamedQuery(name = "Goal.findAllForProfile", query = "SELECT new Goal(g.id,g.purpose,g.targetDate,g.goal, g.goalUnit, g.active) FROM Goal g where g.profile =:profile"),
-                @NamedQuery(name = "Goal.findGoalWithIdAndProfile", query = "SELECT new Goal(g.id,g.purpose,g.targetDate,g.goal, g.goalUnit, g.active) FROM Goal g where g.profile =:profile and g.id =:goalId")
+                @NamedQuery(name = "Goal.findAllWithProfileAndArchive", query = "SELECT new Goal(g.id,g.purpose,g.targetDate,g.goal, g.goalUnit, g.archived) FROM Goal g where g.profile =:profile and g.archived =:archived"),
+                @NamedQuery(name = "Goal.findGoalWithIdAndProfile", query = "SELECT new Goal(g.id,g.purpose,g.targetDate,g.goal, g.goalUnit, g.archived) FROM Goal g where g.profile =:profile and g.id =:goalId")
         }
 )
 public class Goal {
@@ -43,18 +43,18 @@ public class Goal {
     @Enumerated(EnumType.STRING)
     private GoalUnit goalUnit = GoalUnit.KMS;
 
-    private boolean active = false;
+    private boolean archived = false;
 
     public Goal() {
     }
 
-    public Goal(Long id, String purpose, Date targetDate, long goal, GoalUnit goalUnit, boolean active) {
+    public Goal(Long id, String purpose, Date targetDate, long goal, GoalUnit goalUnit, boolean archived) {
         this.id = id;
         this.purpose = purpose;
         this.targetDate = targetDate;
         this.goalUnit = goalUnit;
         this.goal = goal / this.goalUnit.getConversion();
-        this.active = active;
+        this.archived = archived;
     }
 
     public Long getId() {
@@ -109,23 +109,24 @@ public class Goal {
         this.goalUnit = goalUnit;
     }
 
-    public boolean isActive() {
-        return active;
+    public boolean isArchived() {
+        return archived;
     }
 
-    public void setActive(boolean active) {
-        this.active = active;
+    public void setArchived(boolean archived) {
+        this.archived = archived;
     }
 
     @Override
     public String toString() {
         return "Goal{" +
-                "purpose='" + purpose + '\'' +
+                "id=" + id +
+                ", purpose='" + purpose + '\'' +
                 ", targetDate=" + targetDate +
+                ", createdAt=" + createdAt +
                 ", goal=" + goal +
                 ", goalUnit=" + goalUnit +
-                ", active=" + active +
+                ", archived=" + archived +
                 '}';
     }
-
 }

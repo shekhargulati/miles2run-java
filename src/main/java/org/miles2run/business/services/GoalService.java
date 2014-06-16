@@ -22,10 +22,11 @@ public class GoalService {
     @Inject
     private ProfileService profileService;
 
-    public List<Goal> findAllGoalsForProfile(String loggedInuser) {
+    public List<Goal> findAllGoals(String loggedInuser, boolean archived) {
         Profile profile = profileService.findProfile(loggedInuser);
-        TypedQuery<Goal> query = entityManager.createNamedQuery("Goal.findAllForProfile", Goal.class);
+        TypedQuery<Goal> query = entityManager.createNamedQuery("Goal.findAllWithProfileAndArchive", Goal.class);
         query.setParameter("profile", profile);
+        query.setParameter("archived", archived);
         return query.getResultList();
     }
 
@@ -67,7 +68,7 @@ public class GoalService {
         Goal existingGoal = this.find(goalId);
         existingGoal.setGoal(goal.getGoal());
         existingGoal.setTargetDate(goal.getTargetDate());
-        existingGoal.setActive(goal.isActive());
+        existingGoal.setArchived(goal.isArchived());
         existingGoal.setGoalUnit(goal.getGoalUnit());
         existingGoal.setPurpose(goal.getPurpose());
         entityManager.persist(existingGoal);
@@ -75,5 +76,11 @@ public class GoalService {
 
     public void delete(Long goalId) {
         entityManager.remove(this.find(goalId));
+    }
+
+    public void updatedArchiveStatus(Long goalId, boolean archived) {
+        Goal goal = this.find(goalId);
+        goal.setArchived(archived);
+        entityManager.persist(goal);
     }
 }
