@@ -29,10 +29,7 @@ angular.module('miles2run-home')
         };
 
         $scope.redirectUri = function () {
-            if ($location.host() === "localhost") {
-                return "http://localhost:8080/miles2run"
-            }
-            return "http://" + $location.host();
+            return ConfigService.absUrl();
         }
 
         $scope.facebookAppId = function () {
@@ -40,6 +37,22 @@ angular.module('miles2run-home')
                 return 433218286822536;
             }
             return 433218286822536;
+        }
+
+        $scope.facebookShareUrl = function (activity) {
+            return "https://www.facebook.com/dialog/feed?redirect_uri=" + $scope.redirectUri() + "&link=" + $scope.activityUrl(activity) + "&display=popup&description=" + $scope.messageToShare(activity) + "&app_id=" + $scope.facebookAppId();
+        }
+
+        $scope.twitterShareUrl = function (activity) {
+            return "https://twitter.com/intent/tweet?url=" + $scope.activityUrl(activity) + "&text=" + $scope.messageToShare(activity);
+        }
+
+        $scope.googleShareUrl = function (activity) {
+            return "https://plus.google.com/share?url=" + $scope.activityUrl(activity);
+        }
+
+        $scope.activityUrl = function (activity) {
+            return ConfigService.absUrl() + 'profiles/' + activity.username + '/activities/' + activity.id;
         }
 
         $scope.delete = function (idx) {

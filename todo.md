@@ -89,7 +89,7 @@
 
 ## 17th June##
 
-1. It is broken on profile page -- move notifications to home page
+1.<s> It is broken on profile page -- move notifications to home page</s>
 2. For user it is not clear what to do after creating goal. Should the user be forward to goals page after goal creation. In Goal actions also add view
 3. In home page, make Active Goals a drop down -- probably we can make goals SPA part of home SPA only
 4. Check and increase session timeout
