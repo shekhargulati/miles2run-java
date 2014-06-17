@@ -1,76 +1,154 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
+
     <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1"/>
-    <title>Activity</title>
+
+    <title th:text="${activity.fullname} + ' activity'"></title>
+
+    <!-- Core CSS - Include with every page -->
     <link href="/css/bootstrap.css" th:href="@{/css/bootstrap.css}" rel="stylesheet"/>
-    <link href="/css/main.css" th:href="@{/css/main.css}" rel="stylesheet"/>
-    <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet"/>
+    <link href="/css/sb-admin.css" th:href="@{/css/sb-admin.css}" rel="stylesheet"/>
+    <link href='http://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic' rel='stylesheet'
+          type='text/css'/>
+    <link href="/css/plugins/social-buttons/social-buttons.css" th:href="@{/css/plugins/social-buttons/social-buttons.css}" rel="stylesheet"/>
+
+    <!-- Miles2Run Overrides -->
+    <link href="/css/miles2run.css" th:href="@{/css/miles2run.css}" rel="stylesheet"/>
+
+
 </head>
 
-<body>
+<body id="home">
 
-<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-    <div class="container">
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" href="#" th:href="@{/}">Miles2Run</a>
-        </div>
-        <div class="collapse navbar-collapse">
-            <ul class="nav navbar-nav">
-                <li><a th:href="@{/home}">Home</a></li>
-                <li><a th:href="@{/about}">About</a></li>
-            </ul>
+<div class="wrap">
 
-            <ul class="nav navbar-collapse pull-right" th:if="${profile != null}">
-                <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" th:inline="text">
-                        <img width="25" height="25" th:src="${profile.profilePic}"/> [[${profile.fullname}]]
-                        <b class="caret"></b></a>
-                    <ul class="dropdown-menu">
-                        <li><a href="#" th:href="@{'/profiles/' + ${profile.username}}" th:text="${profile.fullname}"></a></li>
-                        <li><a href="#" th:href="@{/logout}">Logout</a></li>
-                    </ul>
-                </li>
-            </ul>
-        </div>
-
-        <!--/.nav-collapse -->
-    </div>
-</div>
-
-<div id="main" class="container">
-
-    <div class="row">
-        <div class="row top-buffer" style="border: groove">
-            <div class="col-xs-1">
-                <a href="#" th:href="@{'/profiles/' + ${activity.username}}" th:inline="text"><img
-                        th:src="${activity.profilePic}" width="50px" height="50px"/></a>
+    <nav class="navbar navbar-default" role="navigation">
+        <div class="container">
+            <div class="col-lg-12">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".sidebar-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/" th:href="@{/}">Miles2Run</a>
+                </div>
+                <!-- /.navbar-header -->
+                <ul class="nav navbar-top-links navbar-right" th:if="${profile != null}">
+                    <!-- /.dropdown -->
+                    <li class="dropdown">
+                        <a href="/home" th:href="@{/home}">
+                            <div>
+                                <i class="fa fa-home fa-fw"></i> Home
+                            </div>
+                        </a>
+                    </li>
+                    <!-- /.dropdown -->
+                    <li class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            <i class="fa fa-user fa-fw"></i> <i class="fa fa-caret-down"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-user">
+                            <li>
+                                <a href="#" th:href="@{'/profiles/' + ${profile.username}}" th:inline="text">
+                                    <img width="25" height="25" th:src="${profile.profilePic}"/> [[${profile.fullname}]]
+                                </a>
+                            </li>
+                            <li class="divider"></li>
+                            <li><a href="/logout" th:href="@{/logout}"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
+                            </li>
+                        </ul>
+                        <!-- /.dropdown-user -->
+                    </li>
+                    <!-- /.dropdown -->
+                </ul>
             </div>
-            <div class="col-xs-11">
-                <h4 class="timeline-title" th:inline="text">[[${activity.fullname} + ' ran '+ ${activity.distanceCovered} +' '+ ${activity.goalUnit}]]
-                    <small class="text-muted pull-right">
-                        <i class="glyphicon glyphicon-time" title="activity date"></i>
-                        [[${activity.activityDate}]]
-                    </small>
-                </h4>
+        </div>
+    </nav>
+
+    <section id="first">
+        <div class="container">
+            <div class="row well">
+                <div class="col-md-1">
+                    <a href="#" th:href="@{'/profiles/' + ${activity.username}}" th:inline="text"><img
+                            th:src="${activity.profilePic}" width="50px" height="50px"/></a>
+                </div>
+                <div class="col-md-11">
+                    <h4 th:inline="text">[[${activity.fullname} + ' ran '+ ${activity.distanceCovered} +' '+ ${activity.goalUnit}]]
+                        <small class="text-muted pull-right">
+                            <i class="glyphicon glyphicon-calendar" title="activity date"></i>
+                            [[${#dates.format(activity.activityDate, 'dd-MMM-yyyy')}]]
+                        </small>
+                    </h4>
+                </div>
+
+            </div>
+
+            <div class="row well">
+                <div class="col-md-4" style="border: groove">
+                    <strong class="pull-left" th:text="${activity.goalUnit.upperCase()}"></strong>
+                    <h3 th:inline="text"><i class="glyphicon glyphicon-road"></i> [[${activity.distanceCovered}]]</h3>
+                </div>
+
+                <div class="col-md-4" style="border: groove">
+                    <strong class="pull-left">DURATION (in minutes)</strong>
+                    <h3 th:inline="text"><i class="glyphicon glyphicon-time"></i> [[${activity.duration} / 60]]</h3>
+
+                </div>
+
+                <div class="col-md-4" style="border: groove">
+                    <strong class="pull-left" th:inline="text">AVERAGE PACE (in mins/[[${activity.goalUnit}]])</strong>
+                    <h3 th:inline="text" th:with="pace=((${activity.duration}/60) / ${activity.distanceCovered})"><i class="glyphicon glyphicon-flash"></i> [[${#numbers.formatDecimal(pace,2,2)}]]</h3>
+                </div>
+
+            </div>
+
+            <div class="row well">
                 <p th:if="${activity.status != null}" th:text="${activity.status}"></p>
             </div>
         </div>
 
-    </div>
+    </section>
+
 
 </div>
+<!-- /.wrap -->
 
-<script src="/js/jquery.js" th:src="@{/js/jquery.js}"></script>
-<script src="/js/bootstrap.js" th:src="@{/js/bootstrap.js}"></script>
+<footer>
+    <div class="container clearfix">
+        <div class="col-lg-6 links">
+            <a href="/about" th:href="@{/about}">About</a>
+            <a href="/contact" th:href="@{/contact}">Contact</a>
+        </div>
+        <!-- /.col-lg-6 -->
+        <div class="col-lg-6 text-right">
+            <a class="btn btn-social-icon btn-facebook" href="https://facebook.com/miles2run" target="_blank"><i
+                    class="fa fa-facebook"></i></a>
+            <a class="btn btn-social-icon btn-google-plus" href="https://plus.google.com/u/0/+Miles2Run"
+               target="_blank"><i class="fa fa-google-plus"></i></a>
+            <a class="btn btn-social-icon btn-twitter" href="https://twitter.com/miles2runorg" target="_blank"><i
+                    class="fa fa-twitter"></i></a>
+        </div>
+        <!-- /.col-lg-6 -->
+    </div>
+</footer>
+
+
+<!-- Core Scripts - Include with every page -->
+<script src="/js/libs/jquery.js" th:src="@{/js/libs/jquery.js}"></script>
+<script src="/js/bootstrap.min.js" th:src="@{/js/bootstrap.min.js}"></script>
+<script src="/js/plugins/metisMenu/jquery.metisMenu.js" th:src="@{/js/plugins/metisMenu/jquery.metisMenu.js}"></script>
+
+<!-- Page-Level Plugin Scripts -->
+
+<!-- SB Admin Scripts - Include with every page -->
+<script src="/js/sb-admin.js" th:src="@{/js/sb-admin.js}"></script>
+
 
 </body>
+
 </html>

@@ -35,9 +35,9 @@ public class ActivityView {
     @InjectProfile
     public View viewActivity(@PathParam("username") String username, @PathParam("activityId") Long activityId) {
         logger.info("Inside ActivityView. viewActivity method");
-        ActivityDetails activityDetails = activityService.findById(activityId);
+        ActivityDetails activityDetails = activityService.findByUsernameAndId(username, activityId);
         if (activityDetails == null) {
-            throw new ViewResourceNotFoundException(String.format("No activity exist with id %d", activityId), templateEngine);
+            throw new ViewResourceNotFoundException(String.format("User %s has not posted any activity with id %d", username, activityId), templateEngine);
         }
         return View.of("/activity", templateEngine).withModel("activity", activityDetails);
     }

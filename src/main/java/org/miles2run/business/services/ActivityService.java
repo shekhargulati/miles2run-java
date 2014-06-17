@@ -110,4 +110,16 @@ public class ActivityService {
         long count = entityManager.createNamedQuery("Activity.countByProfile", Long.class).setParameter("profile", profile).getSingleResult();
         return count;
     }
+
+    public ActivityDetails findByUsernameAndId(String username, Long activityId) {
+        Profile profile = profileService.findProfile(username);
+        TypedQuery<ActivityDetails> query = entityManager.createNamedQuery("Activity.findByUsernameAndId", ActivityDetails.class);
+        query.setParameter("activityId", activityId);
+        query.setParameter("profile", profile);
+        try {
+            return query.getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
+    }
 }
