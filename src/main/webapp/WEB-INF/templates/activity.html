@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
 
-    <title th:text="${activity.fullname} + ' activity'"></title>
+    <title th:inline="text">[[${activity.fullname} + ' ran '+ ${activity.distanceCovered} +' '+ ${activity.goalUnit} + ' on ' + ${#dates.format(activity.activityDate, 'dd-MMM-yyyy')}]]</title>
 
     <!-- Core CSS - Include with every page -->
     <link href="/css/bootstrap.css" th:href="@{/css/bootstrap.css}" rel="stylesheet"/>
