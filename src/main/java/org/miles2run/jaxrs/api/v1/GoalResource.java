@@ -4,8 +4,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.jug.filters.LoggedIn;
 import org.miles2run.business.domain.Goal;
 import org.miles2run.business.domain.Profile;
+import org.miles2run.business.services.ActivityService;
 import org.miles2run.business.services.GoalService;
 import org.miles2run.business.services.ProfileService;
+import org.miles2run.business.vo.Progress;
 import org.miles2run.jaxrs.vo.GoalDetails;
 
 import javax.inject.Inject;
@@ -32,6 +34,8 @@ public class GoalResource {
     private GoalService goalService;
     @Inject
     private Logger logger;
+    @Inject
+    private ActivityService activityService;
 
 
     @GET
@@ -110,6 +114,17 @@ public class GoalResource {
         }
         goalService.updatedArchiveStatus(goalId, archived);
         return Response.status(Response.Status.OK).build();
+    }
+
+    @Path("/{goalId}/progress")
+    @GET
+    @Produces("application/json")
+    @LoggedIn
+    public Response progress(@PathParam("goalId") Long goalId) {
+        String username = securityContext.getUserPrincipal().getName();
+        Profile loggedInUser = profileService.findProfile(username);
+        Progress progress = activityService.calculateUserProgressForGoal(loggedInUser, goalId);
+        return Response.status(Response.Status.OK).entity(progress).build();
     }
 
     public Response deleteGoal(@PathParam("goalId") Long goalId) {

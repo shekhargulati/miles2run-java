@@ -7,6 +7,7 @@ import org.miles2run.business.services.ProfileService;
 import org.miles2run.business.vo.Progress;
 
 import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -18,7 +19,7 @@ import javax.ws.rs.core.SecurityContext;
 /**
  * Created by shekhargulati on 15/03/14.
  */
-@Path("/api/v1/goals/{goalId}/progress")
+@Path("/api/v1/profiles/{username}/goals/{goalId}/progress")
 public class ProgressResource {
 
     @Inject
@@ -30,9 +31,7 @@ public class ProgressResource {
 
     @GET
     @Produces("application/json")
-    @LoggedIn
-    public Response progress(@PathParam("goalId") Long goalId) {
-        String username = securityContext.getUserPrincipal().getName();
+    public Response progress(@NotNull @PathParam("username") String username, @NotNull @PathParam("goalId") Long goalId) {
         Profile loggedInUser = profileService.findProfile(username);
         Progress progress = activityService.calculateUserProgressForGoal(loggedInUser, goalId);
         return Response.status(Response.Status.OK).entity(progress).build();

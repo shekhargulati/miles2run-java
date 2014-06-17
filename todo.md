@@ -17,8 +17,9 @@
 15. In create goal page, there is no validation on units. Either make KMS or miles default
 16. In MongoDB add unique constraint on username
 17. After following a user, update Currently following section under Friends page
-18. Goal calendar still shows color coding
+18. <s>Goal calendar still shows color coding</s>
 19. Google sharing is broken
+20. Jenkins setup
 
 
 
