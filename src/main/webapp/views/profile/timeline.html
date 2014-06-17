@@ -43,9 +43,15 @@
                                     </ul>
                                 </div>
                                 <div class="pull-right">
-                                    <a class="btn btn-xs btn-social-icon btn-facebook" target="_blank" href="https://www.facebook.com/dialog/feed?redirect_uri={{redirectUri()}}&display=popup&app_id={{facebookAppId()}}"><i class="fa fa-facebook"></i></a>
-                                    <a class="btn btn-xs btn-social-icon btn-twitter" target="_blank" href="https://twitter.com/intent/tweet?text={{messageToShare(activity)}}"><i class="fa fa-twitter"></i></a>
-                                    <a class="btn btn-xs btn-social-icon btn-google-plus"><i class="fa fa-google-plus"></i></a>
+                                    <a class="btn btn-xs btn-social-icon btn-facebook" target="_blank" ng-href="{{facebookShareUrl(activity)}}">
+                                        <i class="fa fa-facebook"></i>
+                                    </a>
+                                    <a class="btn btn-xs btn-social-icon btn-twitter" target="_blank" ng-href="{{twitterShareUrl(activity)}}">
+                                        <i class="fa fa-twitter"></i>
+                                    </a>
+                                    <a class="btn btn-xs btn-social-icon btn-google-plus" target="_blank" ng-href="{{googleShareUrl(activity)}}">
+                                        <i class="fa fa-google-plus"></i>
+                                    </a>
                                 </div>
                             </div>
                         </div>

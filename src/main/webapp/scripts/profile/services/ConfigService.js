@@ -19,6 +19,13 @@ angular.module('miles2run-profile')
                 } else {
                     return "/";
                 }
+            },
+
+            absUrl: function () {
+                if ($location.host() === "localhost") {
+                    return "http://localhost:8080/miles2run/"
+                }
+                return "http://" + $location.host() + "/";
             }
 
         };
