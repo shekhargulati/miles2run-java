@@ -94,14 +94,11 @@ public class Profile implements Serializable {
     }
 
     public Profile(ProfileForm profileForm) {
-        this.email = profileForm.getEmail();
-        this.username = profileForm.getUsername().toLowerCase();
         this.bio = profileForm.getBio();
         this.city = profileForm.getCity();
         this.country = profileForm.getCountry();
         this.fullname = profileForm.getFullname();
         this.gender = profileForm.getGender();
-        this.profilePic = profileForm.getProfilePic();
     }
 
     public Long getId() {

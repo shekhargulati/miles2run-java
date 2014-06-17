@@ -15,15 +15,15 @@ import org.jug.view.ViewResourceNotFoundException;
 import org.miles2run.business.domain.*;
 import org.miles2run.business.services.*;
 import org.miles2run.business.utils.CityAndCountry;
+import org.miles2run.business.utils.GeocoderUtils;
 import org.miles2run.business.utils.UrlUtils;
-import org.miles2run.business.vo.ActivityDetails;
 import org.miles2run.business.vo.Google;
 import org.miles2run.business.vo.Progress;
 import org.miles2run.jaxrs.filters.InjectProfile;
-import org.miles2run.business.utils.GeocoderUtils;
+import org.miles2run.jaxrs.forms.ProfileForm;
+import org.miles2run.jaxrs.forms.UpdateProfileForm;
 import org.miles2run.jaxrs.vo.GoalDetails;
 import org.miles2run.jaxrs.vo.ProfileDetails;
-import org.miles2run.jaxrs.forms.ProfileForm;
 import org.thymeleaf.TemplateEngine;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
@@ -31,14 +31,12 @@ import twitter4j.TwitterFactory;
 import twitter4j.User;
 import twitter4j.auth.AccessToken;
 
-import javax.ejb.EJBTransactionRolledbackException;
 import javax.inject.Inject;
 import javax.persistence.PersistenceException;
 import javax.transaction.RollbackException;
 import javax.transaction.Transactional;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
-import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.SecurityContext;
@@ -162,12 +160,14 @@ public class ProfileView {
     @Produces("text/html")
     @Path("/edit")
     @LoggedIn
-    public View editProfile(@Form ProfileForm profileForm) {
+    public View editProfile(@Form UpdateProfileForm profileForm) {
         try {
+            String username = securityContext.getUserPrincipal().getName();
             List<String> errors = new ArrayList<>();
-            Profile profile = new Profile(profileForm);
             try {
-                profileService.update(profile);
+                profileService.update(username, profileForm);
+                profileMongoService.update(username, profileForm.getCity(), profileForm.getCountry());
+                return View.of("/profiles/" + username, true);
             } catch (Exception e) {
                 logger.info(e.getClass().getCanonicalName());
                 RollbackException rollbackException = (RollbackException) e;
@@ -185,14 +185,10 @@ public class ProfileView {
                 }
                 errors.add(e.getMessage());
                 return View.of("/editProfile", templateEngine).withModel("profile", profileForm).withModel("errors", errors);
-
             }
-            profileMongoService.update(profile);
-            return View.of("/home", true);
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Unable to load create profile.", e);
             throw new ViewException(e.getMessage(), e, templateEngine);
-
         }
     }
 

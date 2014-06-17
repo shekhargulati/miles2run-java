@@ -5,6 +5,7 @@ import org.miles2run.business.domain.Profile;
 import org.miles2run.business.domain.SocialProvider;
 import org.miles2run.business.vo.ProfileDetails;
 import org.miles2run.business.vo.ProfileSocialConnectionDetails;
+import org.miles2run.jaxrs.forms.UpdateProfileForm;
 
 import javax.ejb.Stateless;
 import javax.enterprise.context.ApplicationScoped;
@@ -93,22 +94,23 @@ public class ProfileService {
         }
     }
 
-    public void update(Profile profile) {
-        Query updateQuery = entityManager.createQuery("UPDATE Profile p SET p.fullname =:fullname, p.bio =:bio,p.city =:city, p.country =:country, p.gender =:gender WHERE p.username =:username");
-        updateQuery.setParameter("fullname", profile.getFullname());
-        updateQuery.setParameter("bio", profile.getBio());
-        updateQuery.setParameter("city", profile.getCity());
-        updateQuery.setParameter("country", profile.getCountry());
-        updateQuery.setParameter("gender", profile.getGender());
-        updateQuery.setParameter("username", profile.getUsername());
-        updateQuery.executeUpdate();
-    }
-
     public List<ProfileDetails> findAllProfiles(List<String> usernames) {
         return entityManager.createQuery("SELECT new org.miles2run.business.vo.ProfileDetails(p.username,p.fullname,p.profilePic, p.city, p.country,p.bio) from Profile p WHERE p.username IN :usernames", ProfileDetails.class).setParameter("usernames", usernames).getResultList();
     }
 
     public List<ProfileDetails> findProfileWithFullnameLike(String name) {
         return entityManager.createQuery("SELECT new org.miles2run.business.vo.ProfileDetails(p.username,p.fullname,p.profilePic, p.city, p.country) from Profile p WHERE p.fullname LIKE :name", ProfileDetails.class).setParameter("name", "%" + name + "%").getResultList();
+    }
+
+    public void update(String username, UpdateProfileForm profileForm) {
+        Query updateQuery = entityManager.createQuery("UPDATE Profile p SET p.fullname =:fullname, p.bio =:bio,p.city =:city, p.country =:country, p.gender =:gender WHERE p.username =:username");
+        updateQuery.setParameter("fullname", profileForm.getFullname());
+        updateQuery.setParameter("bio", profileForm.getBio());
+        updateQuery.setParameter("city", profileForm.getCity());
+        updateQuery.setParameter("country", profileForm.getCountry());
+        updateQuery.setParameter("gender", profileForm.getGender());
+        updateQuery.setParameter("username", username);
+        updateQuery.executeUpdate();
+
     }
 }

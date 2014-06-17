@@ -5,6 +5,7 @@ import org.miles2run.business.domain.Profile;
 import org.miles2run.business.domain.UserProfile;
 
 import javax.enterprise.context.ApplicationScoped;
+
 import org.miles2run.business.utils.*;
 
 import javax.inject.Inject;
@@ -69,10 +70,10 @@ public class ProfileMongoService {
         return list;
     }
 
-    public void update(Profile profile) {
+    public void update(String username, String city, String country) {
         DBCollection profiles = db.getCollection("profiles");
-        double[] lngLat = GeocoderUtils.lngLat(profile.getCity(), profile.getCountry());
-        profiles.update(new BasicDBObject("username", profile.getUsername()), new BasicDBObject("$set", new BasicDBObject("lngLat", lngLat)));
+        double[] lngLat = GeocoderUtils.lngLat(city, country);
+        profiles.update(new BasicDBObject("username", username), new BasicDBObject("$set", new BasicDBObject("lngLat", lngLat)));
     }
 
     public boolean isUserFollowing(String currentLoggedInUser, String username) {
