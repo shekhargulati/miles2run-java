@@ -1,92 +1,3 @@
-1. <s>When user profile is updated then timeline should also get updated as it uses user fullname.</s>
-2. <s>When activity is updated, timeline should also be updated.</s>
-3. <s>Users should not be allowed to edit other user activities</s>
-4. <s>Users should not be allowed to delete other user activities</s>
-5. <s>When user follows other user then user timeline should get updated with their activities</s>
-6. <s>When user unfollows another user then the activities should be removed from the timeline.</s>
-7. <s>When user deletes an activity then timelines should also be cleaned.</s>
-8. <s>Show user profile picture in the timeline</s>
-9. <s>Activity date is always set to current day date. It should be the activity date entered using the form.</s>
-10. <s>After deleting activity, activity id was not removed from profile:timeline. SO when a user followed a new user, they got dangling activityid in their timeline</s>
-11. <s>When activity time is updated then timeline timestamp is not updated.</s>
-12. <s>The user profile page should load data from profile:timeline</s>
-13. <s>ProfileForm validation is not working</s>
-14. <s>show login logout when user is signed in</s>
-15. <s>Pagination of timeline</s>
-16. Activity sharing is not working
-17. Jenkins setup
-18. About page does not exist
-19. Contact page does not exist
-20. Facebook page https://facebook.com/miles2run does not exist
-21. Google+ https://plus.google.com/u/0/+Miles2Run does not exist
-22. When unable to connect with social login provider, then rather than showing error page, show them the index page again and ask them to signin again.
-23. <s>Dashboard view when user first logs in -- when there is no data. Charts should not be shown.</s>
-24. Using growl instead of toastr
-25. Google+ and Facebook share only works with URL.think about proper fix
-26. <s>Calendar view show wrong date when app is running on OpenShift</s>
-27. <s>Unfollow is not working because of missing profile.js. There is no way to unfollow a user right now.</s>
-28. <s>Fix signin page</s>
-29. <s>Fix error pages</s>
-30. <s>If user exist in session then bypass social authentication</s>
-31. <s>Add few charts in the dashboard view</s>
-32. There is no way to update or remove a photo
-33. Ability to add more than one social connection to a profile
-34. Ability to add map to a run
-35. domain mapping to miles2run.org
-36. <s>username should be stored in lowercase</s>
-37. Full name should be shown in camel case
-38. Producer classes scope http://stackoverflow.com/questions/19427608/what-scope-to-you-use-for-class-with-producer-methods-in-cdi
-39. Miles2Run favicon
-40. Notifications page design
-41. Users should be able to comment on other people activities.
-42. When user tweet the activity then url ui is broken.
-43. If people are running for weight loss, then allow people to enter their weight and track their weight loss progress.
-44. Allow people to upload their images
-45. <s>Show graphs when there is data</s>
-49. <s>In the dashboard view, charts should show last 30 days for Day interval</s>
-50. Compare your progress with other user progress. -- charts that that can compare two users.
-52. Pagination would be required for followers and following views as well
-57. <s>Edit activity shows wrong date when run on OpenShift.</s>
-58. <s>Month Charts show wrong month when date is 1st</s>
-60. Users should be able to like other people activities
-62. <s>Edit profile link is not shown on user profile</s>
-63. <s>User profile page when user has not posted any activity</s>
-64. <s>Fix edit profile design and test its functionality</s>
-65. CodeHale Metrics filter
-
-##Goal Functionality -- Home View##
-47. Introduce concept of goal -- UI should be familiar with Google Analytics page where they list all the web sites.
-67. Show progress in Goals page.
-68. Change title of page to Home
-69. Move friends functionality to home page
-70. Make it a single page application
-71. Change icon of New Goal.
-72. proper messaging when no goal exists.
-73. Show days remaining
-78. Show distance remaining for goal
-79. Edit Goal
-80. Archive Goal
-81. Delete goal should also delete all data associated with goal.
-82. Delete goal functionality is not working.
-83. Home timeline
-
-## Goal functionality -- must##
-
-1. <s>Make delete archive</s>
-2. Add pagination in goals page
-3. <s>Show progress of each goal</s>
-4. <s>Remove goal and goal unit from the profile creation page.</s>
-5. <s>In update Goal, calendar should show the goal date instead of today</s>
-6. After user finishes a goal, there should be a way to share that
-7. Goals can be private as well and then activities would not be visible to other users.
-8. <s>Home timeline shows "You haven't created any goals yet!!" message when goal is created but no activity is performed.</s>
-9. <s>User should be able to view all goals as well. Goals that are achieved as well. -- Already done via Archived goals page</s>
-10. Think about what to do when Goal is achieved or not achieved.
-
-## Profile View##
-
-1. <s>Edit profile is broken</s>
-
 ## 17th June##
 
 1.<s> It is broken on profile page -- move notifications to home page</s>
@@ -106,6 +17,8 @@
 15. In create goal page, there is no validation on units. Either make KMS or miles default
 16. In MongoDB add unique constraint on username
 17. After following a user, update Currently following section under Friends page
+18. Goal calendar still shows color coding
+19. Google sharing is broken
 
 
 
