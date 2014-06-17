@@ -81,11 +81,12 @@ function NotificationCtrl($scope, $http, activeProfile, $location) {
 
 function ProgressCtrl($scope, ConfigService, userProfile, activeGoal, $http) {
 
-    $http.get(ConfigService.getBaseUrl() + "profiles/" + userProfile.username + "/goals/" + activeGoal.id + "/progress").success(function (data, status, headers, config) {
-        $scope.error = null;
-        $scope.status = status;
-        $scope.data = data;
-        $scope.style = "width:" + data.percentage + "%";
-    });
-
+    if(activeGoal != null){
+        $http.get(ConfigService.getBaseUrl() + "profiles/" + userProfile.username + "/goals/" + activeGoal.id + "/progress").success(function (data, status, headers, config) {
+            $scope.error = null;
+            $scope.status = status;
+            $scope.data = data;
+            $scope.style = "width:" + data.percentage + "%";
+        });
+    }
 }
