@@ -132,7 +132,8 @@
                     <div class="panel-body">
                         <h4 th:text="'@' + ${userProfile.username}"></h4>
                         <p th:text="${userProfile.bio}"></p>
-                        <p th:text="${userProfile.city} + ', '+ ${userProfile.country}"></p>
+                        <p th:inline="text"><i class="fa fa-map-marker fa-fw"></i> [[${userProfile.city} + ', '+ ${userProfile.country}]]</p>
+                        <p th:inline="text"><i class="fa fa-clock-o fa-fw"></i> [['Joined ' + ${#dates.format(userProfile.registeredOn,'MMMM yyyy')}]]</p>
                     </div>
                     <div class="panel-footer">
                         <div class="row">

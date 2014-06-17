@@ -65,7 +65,8 @@ public class Profile implements Serializable {
 
     @Temporal(TemporalType.DATE)
     @NotNull
-    private final Date registeredOn = new Date();
+    @Column(updatable = false)
+    private Date registeredOn = new Date();
 
     @ImageUrl
     private String profilePic;
@@ -91,6 +92,7 @@ public class Profile implements Serializable {
         this.fullname = p.fullname;
         this.profilePic = p.profilePic;
         this.gender = p.gender;
+        this.registeredOn = new Date(((java.sql.Date) p.registeredOn).getTime());
     }
 
     public Profile(ProfileForm profileForm) {
