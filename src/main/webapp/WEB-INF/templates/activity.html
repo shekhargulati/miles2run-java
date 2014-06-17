@@ -107,8 +107,8 @@
 
             </div>
 
-            <div class="row well">
-                <p th:if="${activity.status != null}" th:text="${activity.status}"></p>
+            <div class="row well" th:if="${activity.status != null}" >
+                <p th:text="${activity.status}"></p>
             </div>
         </div>
 

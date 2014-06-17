@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('milestogo')
+angular.module('miles2run-profile')
     .controller('FollowingCtrl', function ($scope, userProfile, FriendsService, ConfigService) {
 
         FriendsService.following(userProfile.username).then(function (response) {

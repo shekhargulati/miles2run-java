@@ -51,7 +51,7 @@
                                     <ul class="dropdown-menu" role="menu"
                                         ng-if="activity.username == currentUser.username" ng-cloak>
                                         <li>
-                                            <a ng-href="{{appContext()}}goals/{{activity.goalId}}#/activity/{{activity.id}}" title="view activity">View</a>
+                                            <a ng-href="{{appContext()}}profiles/{{activity.username}}/activities/{{activity.id}}" title="view activity">View</a>
                                         </li>
                                         <li>
                                             <a ng-href="{{appContext()}}goals/{{activity.goalId}}#/activity/edit/{{activity.id}}" title="edit activity">Edit</a>
@@ -65,7 +65,7 @@
                                     <ul class="dropdown-menu" role="menu"
                                         ng-if="activity.username != currentUser.username" ng-cloak>
                                         <li>
-                                            <a ng-href="#goals/{{activity.goalId}}/activity/{{activity.id}}" title="view activity">View</a>
+                                            <a ng-href="{{appContext()}}profiles/{{activity.username}}/activities/{{activity.id}}" title="view activity">View</a>
                                         </li>
                                     </ul>
                                 </div>

@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('milestogo')
+angular.module('miles2run-profile')
     .service('FriendsService', function ActivityService($http, ConfigService) {
         var baseUrl = ConfigService.getBaseUrl();
         return {

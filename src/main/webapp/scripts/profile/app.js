@@ -1,6 +1,6 @@
 'use strict';
 
-var app = angular.module('milestogo', [
+var app = angular.module('miles2run-profile', [
         'ngCookies',
         'ngResource',
         'ngSanitize',

@@ -1,9 +1,12 @@
 'use strict';
 
-angular.module('milestogo')
-    .controller('UserTimelineCtrl', function ($scope, activeGoal, $location, $http, TimelineService, userProfile) {
+angular.module('miles2run-profile')
+    .controller('UserTimelineCtrl', function ($scope, activeGoal, $location, $http, TimelineService, userProfile, ConfigService) {
+
         $scope.userProfile = userProfile;
+
         var currentPage = 1;
+
         if (activeGoal != null) {
             TimelineService.userGoalTimeline(userProfile.username, activeGoal.id, currentPage).success(function (data, status, headers, config) {
                 $scope.activities = data.timeline;
@@ -27,4 +30,7 @@ angular.module('milestogo')
             });
         };
 
+        $scope.appContext = function(){
+            return ConfigService.appContext();
+        }
     });
