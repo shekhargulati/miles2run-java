@@ -43,22 +43,14 @@
 43. If people are running for weight loss, then allow people to enter their weight and track their weight loss progress.
 44. Allow people to upload their images
 45. <s>Show graphs when there is data</s>
-46. On user profile page show progress indicator
-48. Loading icon when getting data from rest backend
 49. <s>In the dashboard view, charts should show last 30 days for Day interval</s>
 50. Compare your progress with other user progress. -- charts that that can compare two users.
-51. From inside the angular application, when user tries to perform action without authentication then he/she should be redirected to signin page.
 52. Pagination would be required for followers and following views as well
-53. Charts does not take into account multiple activities on the same date
-54. Charts does not take into account days on which activity was not performed.
-55. When timeline is empty, pagination is still shown. Angular ng-if directive is not working.
 57. <s>Edit activity shows wrong date when run on OpenShift.</s>
 58. <s>Month Charts show wrong month when date is 1st</s>
-59. Check and increase session timeout
 60. Users should be able to like other people activities
-61. On user activity page show joined as well.
 62. <s>Edit profile link is not shown on user profile</s>
-63. User profile page when user has not posted any activity
+63. <s>User profile page when user has not posted any activity</s>
 64. <s>Fix edit profile design and test its functionality</s>
 65. CodeHale Metrics filter
 
@@ -90,13 +82,30 @@
 8. <s>Home timeline shows "You haven't created any goals yet!!" message when goal is created but no activity is performed.</s>
 9. <s>User should be able to view all goals as well. Goals that are achieved as well. -- Already done via Archived goals page</s>
 10. Think about what to do when Goal is achieved or not achieved.
-11. For user it is not clear what to do after creating goal. Should the user be forward to goals page after goal creation. In Goal actions also add view
-12. In home page, make Active Goals a drop down -- probably we can make goals SPA part of home SPA only
 
 ## Profile View##
 
 1. <s>Edit profile is broken</s>
 
-## Notifications##
+## 17th June##
 
 1. It is broken on profile page -- move notifications to home page
+2. For user it is not clear what to do after creating goal. Should the user be forward to goals page after goal creation. In Goal actions also add view
+3. In home page, make Active Goals a drop down -- probably we can make goals SPA part of home SPA only
+4. Check and increase session timeout
+5. On user profile page show progress indicator
+6. Ability to add more than one social provider to a profile
+7. Loading icon when getting data from rest backend
+8. From inside the angular application, when user tries to perform action without authentication then he/she should be redirected to signin page.
+9. Charts does not take into account multiple activities on the same date
+10. Charts does not take into account days on which activity was not performed.
+11. When timeline is empty, pagination is still shown. Angular ng-if directive is not working.
+12. On user profile page show joined as well.
+13. Performance monitoring
+14. Setup profile page design does not look right
+15. In create goal page, there is no validation on units. Either make KMS or miles default
+16. In MongoDB add unique constraint on username
+17. After following a user, update Currently following section under Friends page
+
+
+

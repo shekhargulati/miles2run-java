@@ -49,29 +49,6 @@
                 </a>
             </li>
             <!-- /.dropdown -->
-            <li class="dropdown" ng-controller="NotificationCtrl">
-                <a class="dropdown-toggle" data-toggle="dropdown" ng-click="fetchNotifications()">
-                    <i class="fa fa-bell fa-fw"></i> <i class="fa fa-caret-down"></i>
-                </a>
-                <ul class="dropdown-menu dropdown-alerts">
-                    <li ng-repeat="notification in notifications">
-                        <a ng-href="{{appContext()}}profiles/{{notification.userTookAction}}">
-                            <div>
-                                <i class="fa fa-comment fa-fw"></i> {{notification.userTookAction}} {{notification.action|lowercase}}ed you
-                                <span class="pull-right text-muted small">{{notification.timestamp | date:'MMddyyyy HH mm ss'|moment}}</span>
-                            </div>
-                        </a>
-                    </li>
-                    <li class="divider"></li>
-                    <li>
-                        <a class="text-center" href="#notifications">
-                            <strong>See All Alerts</strong>
-                            <i class="fa fa-angle-right"></i>
-                        </a>
-                    </li>
-                </ul>
-                <!-- /.dropdown-alerts -->
-            </li>
             <!-- /.dropdown -->
             <li class="dropdown">
                 <a class="dropdown-toggle" data-toggle="dropdown" href="#">

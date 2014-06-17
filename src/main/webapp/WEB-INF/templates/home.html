@@ -53,6 +53,29 @@
                     </div>
                 </a>
             </li>
+            <li class="dropdown" ng-controller="NotificationCtrl">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#" ng-click="fetchNotifications()">
+                    <i class="fa fa-bell fa-fw"></i> <i class="fa fa-caret-down"></i>
+                </a>
+                <ul class="dropdown-menu dropdown-alerts">
+                    <li ng-repeat="notification in notifications">
+                        <a ng-href="{{appContext()}}profiles/{{notification.userTookAction}}">
+                            <div>
+                                <i class="fa fa-comment fa-fw"></i> {{notification.userTookAction}} {{notification.action|lowercase}}ed you
+                                <span class="pull-right text-muted small">{{notification.timestamp | date:'MMddyyyy HH mm ss'|moment}}</span>
+                            </div>
+                        </a>
+                    </li>
+                    <li class="divider"></li>
+                    <li>
+                        <a class="text-center" href="#notifications">
+                            <strong>See All Alerts</strong>
+                            <i class="fa fa-angle-right"></i>
+                        </a>
+                    </li>
+                </ul>
+                <!-- /.dropdown-alerts -->
+            </li>
             <!-- /.dropdown -->
             <li class="dropdown">
                 <a class="dropdown-toggle" data-toggle="dropdown" href="#">
@@ -89,6 +112,9 @@
                     </li>
                     <li ng-class="{ active: isActive('/friends')}">
                         <a href="#friends"><i class="fa fa-users fa-fw"></i> Friends</a>
+                    </li>
+                    <li ng-class="{ active: isActive('/notifications')}">
+                        <a href="#notifications"><i class="fa fa-bell fa-fw"></i> Notifications</a>
                     </li>
                 </ul>
                 <!-- /#side-menu -->
@@ -146,7 +172,7 @@
 <script src="/scripts/home/controllers/CreateGoalCtrl.js" th:src="@{/scripts/home/controllers/CreateGoalCtrl.js}"></script>
 <script src="/scripts/home/controllers/EditGoalCtrl.js" th:src="@{/scripts/home/controllers/EditGoalCtrl.js}"></script>
 <script src="/scripts/home/controllers/ArchivedGoalsCtrl.js" th:src="@{/scripts/home/controllers/ArchivedGoalsCtrl.js}"></script>
-
+<script src="/scripts/home/controllers/NotificationsCtrl.js" th:src="@{/scripts/home/controllers/NotificationsCtrl.js}"></script>
 </body>
 
 </html>

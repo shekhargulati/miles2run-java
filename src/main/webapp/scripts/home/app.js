@@ -37,6 +37,10 @@ var app = angular.module('miles2run-home', [
                 templateUrl: 'views/home/view_activity.html',
                 controller: 'ViewActivityCtrl'
             })
+            .when('/notifications', {
+                templateUrl: 'views/home/notifications.html',
+                controller: 'NotificationsCtrl'
+            })
             .otherwise({
                 redirectTo: '/'
             });
@@ -86,4 +90,20 @@ function HeaderCtrl($scope, $location) {
     $scope.isActive = function (viewLocation) {
         return viewLocation === $location.path();
     };
+}
+
+function NotificationCtrl($scope, $http, activeProfile, ConfigService) {
+
+    $scope.fetchNotifications = function () {
+        $http.get(ConfigService.appContext() + 'api/v1/profiles/' + activeProfile.username + "/notifications").success(function (data, status, headers, config) {
+            $scope.notifications = data;
+        }).error(function (data, status, headers, config) {
+            toastr.error("Unable to fetch notifications. Please try later");
+        });
+    }
+
+
+    $scope.appContext = function () {
+        return ConfigService.appContext();
+    }
 }

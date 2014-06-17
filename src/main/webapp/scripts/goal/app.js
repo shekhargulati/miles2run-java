@@ -32,10 +32,6 @@ var app = angular.module('milestogo', [
                 templateUrl: '../views/goal/progress.html',
                 controller: 'ProgressCtrl'
             })
-            .when('/notifications', {
-                templateUrl: '../views/goal/notifications.html',
-                controller: 'NotificationsCtrl'
-            })
             .when('/activity/edit/:activityId', {
                 templateUrl: '../views/goal/EditActivity.html',
                 controller: 'EditActivityCtrl'
@@ -116,20 +112,4 @@ function ProgressCtrl($scope, ProgressService, activeProfile, $rootScope, active
             $scope.style = "width:" + data.percentage + "%";
         });
     });
-}
-
-function NotificationCtrl($scope, $http, activeProfile, ConfigService) {
-
-    $scope.fetchNotifications = function () {
-        $http.get(ConfigService.appContext() + 'api/v1/profiles/' + activeProfile.username + "/notifications").success(function (data, status, headers, config) {
-            $scope.notifications = data;
-        }).error(function (data, status, headers, config) {
-            toastr.error("Unable to fetch notifications. Please try later");
-        });
-    }
-
-
-    $scope.appContext = function () {
-        return ConfigService.appContext();
-    }
 }
