@@ -13,8 +13,8 @@
 11. When timeline is empty, pagination is still shown. Angular ng-if directive is not working.
 12. <s>On user profile page show joined as well.</s>
 13. Performance monitoring
-14. Setup profile page design does not look right
-15. In create goal page, there is no validation on units. Either make KMS or miles default
+14. <s>Setup profile page design does not look right</s>
+15. <s>In create goal page, there is no validation on units. Either make KMS or miles default</s>
 16. In MongoDB add unique constraint on username
 17. After following a user, update Currently following section under Friends page
 18. <s>Goal calendar still shows color coding</s>

@@ -22,7 +22,7 @@
                                 <input id="purpose" name="purpose" type="text"
                                        placeholder="Purpose of goal"
                                        class="form-control" ng-model="goal.purpose"
-                                       title="Goal"
+                                       title="Please provide purpose of this goal"
                                        required>
                             </div>
                         </div>
@@ -52,13 +52,13 @@
                                 <input id="goal" name="goal" type="number"
                                        placeholder="Goal"
                                        class="form-control" ng-model="goal.goal" min="0" step="1"
-                                       title="Goal"
+                                       title="Please enter valid value of goal greater than 0"
                                        required>
                                 <label class="radio-inline">
-                                    <input type="radio" name="goalUnit" id="kms" value="KMS" checked ng-model="goal.goalUnit">kms
+                                    <input type="radio" name="goalUnit" id="kms" value="KMS" ng-model="goal.goalUnit" required title="Please select goal unit">kms
                                 </label>
                                 <label class="radio-inline">
-                                    <input type="radio" name="goalUnit" id="miles" value="MILES" ng-model="goal.goalUnit">miles
+                                    <input type="radio" name="goalUnit" id="miles" value="MILES" ng-model="goal.goalUnit" required title="Please select goal unit">miles
                                 </label>
                             </div>
                         </div>
