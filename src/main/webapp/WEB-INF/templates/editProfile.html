@@ -11,8 +11,10 @@
     <!-- Core CSS - Include with every page -->
     <link href="/css/bootstrap.css" th:href="@{/css/bootstrap.css}" rel="stylesheet"/>
     <link href="/css/sb-admin.css" th:href="@{/css/sb-admin.css}" rel="stylesheet"/>
-    <link href='http://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic' rel='stylesheet' type='text/css'/>
-    <link href="/css/plugins/social-buttons/social-buttons.css" th:href="@{/css/plugins/social-buttons/social-buttons.css}" rel="stylesheet"/>
+    <link href='http://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic' rel='stylesheet'
+          type='text/css'/>
+    <link href="/css/plugins/social-buttons/social-buttons.css"
+          th:href="@{/css/plugins/social-buttons/social-buttons.css}" rel="stylesheet"/>
 
     <!-- Miles2Run Overrides -->
     <link href="/css/miles2run.css" th:href="@{/css/miles2run.css}" rel="stylesheet"/>
@@ -37,7 +39,7 @@
                 <a class="navbar-brand" href="/" th:href="@{/}">Miles2Run</a>
             </div>
             <!-- /.navbar-header -->
-            <ul class="nav navbar-top-links navbar-right"  th:if="${profile != null}">
+            <ul class="nav navbar-top-links navbar-right" th:if="${profile != null}">
                 <!-- /.dropdown -->
                 <li class="dropdown">
                     <a href="/home" th:href="@{/home}">
@@ -70,6 +72,7 @@
 </nav>
 
 <section id="first">
+<div class="container">
 <div id="error" th:unless="${#lists.isEmpty(errors)}">
     <ul class="list-unstyled">
         <li th:each="error : ${errors}">
@@ -102,7 +105,8 @@
 
     <div class="col-md-6">
         <input id="fullname" name="fullname" type="text" placeholder="Your full name(max 50 characters)"
-               class="form-control input-md" th:value="${profile.fullname}" title="Please enter 'fullname' less than 50 characters" required=""/>
+               class="form-control input-md" th:value="${profile.fullname}"
+               title="Please enter 'fullname' less than 50 characters" required=""/>
 
     </div>
 </div>
@@ -112,7 +116,8 @@
     <label class="col-md-4 control-label" for="city">City</label>
 
     <div class="col-md-6">
-        <input id="city" name="city" type="text" placeholder="City you live" class="form-control input-md" th:value="${profile.city}" required=""/>
+        <input id="city" name="city" type="text" placeholder="City you live" class="form-control input-md"
+               th:value="${profile.city}" required=""/>
 
     </div>
 </div>
@@ -381,15 +386,18 @@
 
     <div class="col-md-4">
         <label class="radio-inline pull-left" for="male">
-            <input type="radio"  name="gender" id="male" th:checked="${profile.gender.toString() == 'male'}" value="MALE"/>
+            <input type="radio" name="gender" id="male" th:checked="${profile.gender.toString() == 'male'}"
+                   value="MALE"/>
             Male
         </label>
         <label class="radio-inline pull-left" for="female">
-            <input type="radio" name="gender" id="female" th:checked="${profile.gender.toString() == 'female'}" value="FEMALE"/>
+            <input type="radio" name="gender" id="female" th:checked="${profile.gender.toString() == 'female'}"
+                   value="FEMALE"/>
             Female
         </label>
         <label class="radio-inline pull-left" for="other">
-            <input type="radio" name="gender" id="other" th:checked="${profile.gender.toString() == 'other'}" value="OTHER"/>
+            <input type="radio" name="gender" id="other" th:checked="${profile.gender.toString() == 'other'}"
+                   value="OTHER"/>
             Other
         </label>
     </div>
@@ -400,7 +408,9 @@
     <label class="col-md-4 control-label" for="bio">Bio</label>
 
     <div class="col-md-4">
-        <textarea class="form-control" id="bio" name="bio" th:text="${profile.bio}" maxlength="200" title="Please enter 'bio' in under 200 characters" required="" placeholder="Tell us about yourself(max 200 characters)"></textarea>
+        <textarea class="form-control" id="bio" name="bio" th:text="${profile.bio}" maxlength="200"
+                  title="Please enter 'bio' in under 200 characters" required=""
+                  placeholder="Tell us about yourself(max 200 characters)"></textarea>
     </div>
 </div>
 <!-- Button -->
@@ -412,6 +422,8 @@
 
 </fieldset>
 </form>
+</div>
+
 </section>
 
 
@@ -426,9 +438,12 @@
         </div>
         <!-- /.col-lg-6 -->
         <div class="col-lg-6 text-right">
-            <a class="btn btn-social-icon btn-facebook" href="https://facebook.com/miles2run" target="_blank"><i class="fa fa-facebook"></i></a>
-            <a class="btn btn-social-icon btn-google-plus" href="https://plus.google.com/u/0/+Miles2Run" target="_blank"><i class="fa fa-google-plus"></i></a>
-            <a class="btn btn-social-icon btn-twitter" href="https://twitter.com/miles2runorg" target="_blank"><i class="fa fa-twitter"></i></a>
+            <a class="btn btn-social-icon btn-facebook" href="https://facebook.com/miles2run" target="_blank"><i
+                    class="fa fa-facebook"></i></a>
+            <a class="btn btn-social-icon btn-google-plus" href="https://plus.google.com/u/0/+Miles2Run"
+               target="_blank"><i class="fa fa-google-plus"></i></a>
+            <a class="btn btn-social-icon btn-twitter" href="https://twitter.com/miles2runorg" target="_blank"><i
+                    class="fa fa-twitter"></i></a>
         </div>
         <!-- /.col-lg-6 -->
     </div>
