@@ -18,7 +18,7 @@ angular.module('milestogo')
                     cellSize: config.cellSize ? config.cellSize : 60,
                     range: config.range ? config.range : 1,
                     domainGutter: config.domainGutter ? config.domainGutter : 20,
-//                    legend: config.legend ? config.legend : [2, 5, 8, 10],
+                    legend: config.legend ? config.legend : [100, 200, 300, 400],
                     itemName: config.itemName ? config.itemName : "item",
                     previousSelector: "#previous",
                     displayLegend: false,
