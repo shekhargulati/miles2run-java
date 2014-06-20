@@ -46,7 +46,7 @@ angular.module('miles2run-profile')
             if ($location.host() === "localhost") {
                 return 433218286822536;
             }
-            return 433218286822536;
+            return 1441151639474875;
         }
 
         $scope.facebookShareUrl = function (activity) {
