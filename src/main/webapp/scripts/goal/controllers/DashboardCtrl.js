@@ -11,13 +11,26 @@ angular.module('milestogo')
             $scope.status = status;
             $scope.data = data;
             $scope.style = "width:" + data.percentage + "%";
-        }).
-            error(function (data, status, headers, config) {
-                toastr.error("Unable to fetch your progress. Please try later.");
-                $scope.error = {message: "Unable to fetch your progress. Please try later."};
-                console.log(data);
-                console.log(status);
-            });
+        }).error(function (data, status, headers, config) {
+            toastr.error("Unable to fetch your progress. Please try later.");
+            $scope.error = {message: "Unable to fetch your progress. Please try later."};
+            console.log(data);
+            console.log(status);
+        });
+
+        function calendarStartDate() {
+            var d = new Date();
+            d.setMonth(d.getMonth() - 2);
+            return d;
+        }
+
+        $scope.calendarConfig = {
+            minDate: calendarStartDate(),
+            maxDate: new Date(),
+            data: ConfigService.getBaseUrl() + "goals/" + activeGoal.id + "/activities/calendar",
+            itemName: [activeGoal.goalUnit.$name.toLowerCase(),activeGoal.goalUnit.$name.toLowerCase()]
+        };
+
 
         var renderDistanceChart = function (interval) {
             $("#activities-line-graph").empty();
