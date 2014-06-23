@@ -2,8 +2,6 @@ package org.miles2run.business.domain;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -42,7 +40,7 @@ public class Goal {
 
     @NotNull
     @Enumerated(EnumType.STRING)
-    private GoalUnit goalUnit = GoalUnit.KMS;
+    private GoalUnit goalUnit = GoalUnit.KM;
 
     private boolean archived = false;
 

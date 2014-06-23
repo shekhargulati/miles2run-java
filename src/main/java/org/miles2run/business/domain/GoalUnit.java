@@ -4,7 +4,7 @@ package org.miles2run.business.domain;
  * Created by shekhargulati on 07/03/14.
  */
 public enum GoalUnit {
-    KMS("KMS", 1000), MILES("MILES", 1609);
+    KM("km", 1000), MI("mi", 1609);
 
     private final String unit;
     private final long conversion;

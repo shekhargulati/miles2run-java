@@ -56,7 +56,7 @@ public class ProfileForm {
     private String connectionId;
 
     public ProfileForm() {
-        this.goalUnit = GoalUnit.KMS;
+        this.goalUnit = GoalUnit.KM;
     }
 
     public String getEmail() {

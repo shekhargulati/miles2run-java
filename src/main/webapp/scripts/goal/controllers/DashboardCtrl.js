@@ -51,7 +51,7 @@ angular.module('milestogo')
                             }
                             return moment(dateFormat(x), "YYYYMMDD").format('dddd, MMM Do YYYY');
                         },
-                        labels: ['Distance Ran in ' + activeGoal.goalUnit.$name, 'Pace ' + ' mins/' + activeGoal.goalUnit.$name]
+                        labels: ['Distance (in ' + activeGoal.goalUnit.$name.toLowerCase() + ')', 'Pace ' + '(in mins/' + activeGoal.goalUnit.$name.toLowerCase() + ')']
 
                     });
                 } else {
@@ -135,7 +135,7 @@ angular.module('milestogo')
                             minTickSize: 1
                         },
                         {
-                            // align if we are to the right
+                            min: 0,
                             alignTicksWithAxis: position == "right" ? 1 : null,
                             position: position,
                             tickFormatter: paceFormatter,

@@ -16,7 +16,7 @@ angular.module('milestogo')
             minDate: startDate(),
             maxDate: new Date(),
             data: ConfigService.getBaseUrl() + "goals/" + activeGoal.id + "/activities/calendar",
-            itemName: $scope.activeGoal.goalUnit.$name.toString().toLowerCase().replace("s", "")
+            itemName: [$scope.activeGoal.goalUnit.$name.toLowerCase(),$scope.activeGoal.goalUnit.$name.toLowerCase()]
         };
 
 
