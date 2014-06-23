@@ -47,8 +47,7 @@ public class Profile implements Serializable {
     @Size(max = 50)
     private String fullname;
 
-    @NotBlank
-    @Size(max = 200)
+    @Size(max = 500)
     private String bio;
 
     @NotBlank
