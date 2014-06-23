@@ -330,6 +330,37 @@ public class TimelineService {
         });
     }
 
+    public List<List<Object[]>> distanceAndPace(final Profile profile, final Goal goal, final String interval, final int n) {
+        return jedisExecutionService.execute(new JedisOperation<List<List<Object[]>>>() {
+            @Override
+            public List<List<Object[]>> perform(Jedis jedis) {
+                Date today = new Date();
+                DateTime dateTime = new DateTime(today);
+                dateTime = dateTime.minusDays(n);
+                Date nDaysBack = dateTime.toDate();
+                Set<Tuple> activityIdsInNDaysWithScores = jedis.zrangeByScoreWithScores(String.format(PROFILE_S_GOAL_S_TIMELINE, profile.getUsername(), goal.getId()), nDaysBack.getTime(), today.getTime());
+                List<List<Object[]>> chartData = new ArrayList<>();
+                List<Object[]> distanceData = new ArrayList<>();
+                List<Object[]> paceData = new ArrayList<>();
+                for (Tuple activityIdTuple : activityIdsInNDaysWithScores) {
+                    String activityId = activityIdTuple.getElement();
+                    double activityDate = activityIdTuple.getScore();
+                    List<String> values = jedis.hmget(String.format("activity:%s", activityId), "distanceCovered", "duration");
+                    Map<String, Object> data = new HashMap<>();
+                    long distance = Long.valueOf(values.get(0)) / goal.getGoalUnit().getConversion();
+                    distanceData.add(new Object[]{Double.valueOf(activityDate).longValue(), distance});
+                    Double durationInSeconds = Double.valueOf(Long.valueOf(values.get(1)));
+                    double durationInMinutes = durationInSeconds / 60;
+                    double pace = durationInMinutes / distance;
+                    paceData.add(new Object[]{activityDate, pace});
+                }
+                chartData.add(distanceData);
+                chartData.add(paceData);
+                return chartData;
+            }
+        });
+    }
+
 
     private String formatDate(Date activityDate) {
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");

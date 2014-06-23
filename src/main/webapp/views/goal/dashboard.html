@@ -84,7 +84,7 @@
                     <button type="button" class="btn btn-default" ng-click="renderDistanceChart('day')">Day</button>
                     <button type="button" class="btn btn-default" ng-click="renderDistanceChart('month')">Month</button>
                 </div>
-                Distance ran over time
+                Distance ran and pace over time
             </div>
             <!-- /.panel-heading -->
             <div class="panel-body" ng-if="showNoDistanceChartDataMessage" ng-cloak>
@@ -104,3 +104,22 @@
     </div>
 </div>
 <!-- /.row -->
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <div class="btn-group pull-right" ng-if="!showNoDistanceChartDataMessage" ng-cloak>
+                    <button type="button" class="btn btn-default" ng-click="renderDistanceChart('day')">Day</button>
+                    <button type="button" class="btn btn-default" ng-click="renderDistanceChart('month')">Month</button>
+                </div>
+                Distance ran and pace over time
+            </div>
+            <div class="panel-body">
+                <div class="flot-chart">
+                    <div class="flot-chart-content" id="line-chart"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

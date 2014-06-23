@@ -11,6 +11,7 @@ import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.SecurityContext;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -48,6 +49,20 @@ public class DashboardResource {
             default:
                 return timelineService.distanceAndPaceOverLastNDays(profile, goal, interval, days);
         }
+    }
+
+    @GET
+    @LoggedIn
+    @Produces("application/json")
+    @Path("/charts/distanceandpace")
+    public List<List<Object[]>> getDistanceAndPaceOverTime(@PathParam("goalId") Long goalId, @QueryParam("interval") String interval, @QueryParam("days") int days, @QueryParam("months") int months) {
+        String loggedInUser = securityContext.getUserPrincipal().getName();
+        Profile profile = profileService.findProfile(loggedInUser);
+        Goal goal = goalService.findGoal(profile, goalId);
+        days = days == 0 || days > 60 ? 30 : days;
+        months = months == 0 || months > 12 ? 6 : months;
+        return timelineService.distanceAndPace(profile, goal, interval, days);
+
     }
 
 }

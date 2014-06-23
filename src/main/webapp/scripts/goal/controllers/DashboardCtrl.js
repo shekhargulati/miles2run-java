@@ -74,4 +74,98 @@ angular.module('milestogo')
             return yyyy + "-" + (mm[1] ? mm : "0" + mm[0]) + "-" + (dd[1] ? dd : "0" + dd[0]);
         }
 
+        function paceFormatter(v, axis) {
+            return v.toFixed(axis.tickDecimals) + 'mins/' + activeGoal.goalUnit.$name.toLowerCase();
+        }
+
+        function distanceFormatter(v, axis) {
+            return v.toFixed(axis.tickDecimals) + activeGoal.goalUnit.$name.toLowerCase();
+        }
+
+        function dateFormatter(val, axis) {
+            var d = new Date(val);
+            return d.getUTCDate() + "/" + (d.getUTCMonth() + 1);
+        }
+
+
+        function doPlot(position) {
+            $http.get(ConfigService.getBaseUrl() + "goals/" + activeGoal.id + "/dashboard/charts/distanceandpace").success(function (data, status, headers, config) {
+                var data1 = data[0];
+                var data2 = data[1];
+
+                var dataset = [
+                    {
+                        label: "Distance (" + activeGoal.goalUnit.$name.toLowerCase() + ")",
+                        data: data1,
+                        color: "#FF0000",
+                        points: { fillColor: "#FF0000", show: true },
+                        lines: { show: true }
+                    },
+                    {
+                        label: "Pace (mins/" + activeGoal.goalUnit.$name.toLowerCase() + ")",
+                        data: data2,
+                        yaxis: 2,
+                        color: "#0062E3",
+                        points: { fillColor: "#0062E3", show: true },
+                        lines: { show: true }
+                    }
+                ];
+
+                $.plot($("#line-chart"), dataset, {
+                    axisLabels: {
+                        show: true
+                    },
+                    xaxes: [
+                        {
+                            mode: "time",
+                            timeformat: "%m/%d",
+                            minTickSize: [1, "day"],
+                            color: "black",
+                            axisLabel: "Activity Date",
+                            tickLength: 0
+                        }
+                    ],
+                    yaxes: [
+                        {
+                            min: 0,
+                            tickFormatter: distanceFormatter,
+                            axisLabel: "Distance (" + activeGoal.goalUnit.$name.toLowerCase() + ")",
+                            position: "left",
+                            tickLength: 0,
+                            minTickSize: 1
+                        },
+                        {
+                            // align if we are to the right
+                            alignTicksWithAxis: position == "right" ? 1 : null,
+                            position: position,
+                            tickFormatter: paceFormatter,
+                            axisLabel: "Pace (mins/" + activeGoal.goalUnit.$name.toLowerCase() + ")",
+                            tickLength: 0,
+                            minTickSize: 1
+                        }
+                    ],
+                    legend: {
+                        position: 'nw'
+                    },
+                    grid: {
+                        hoverable: true,
+                        borderWidth: 1
+                    },
+                    tooltip: true,
+                    tooltipOpts: {
+                        content: "%s on %x was %y",
+                        xDateFormat: "%m/%d/%Y",
+
+                        onHover: function (flotItem, $tooltipEl) {
+                            // console.log(flotItem, $tooltipEl);
+                        }
+                    }
+                });
+            }).error(function (data, status, headers, config) {
+                console.log(data);
+            });
+
+        }
+
+        doPlot("right");
     });
