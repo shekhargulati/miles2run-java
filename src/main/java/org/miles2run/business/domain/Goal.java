@@ -10,9 +10,9 @@ import java.util.Date;
 @Entity
 @NamedQueries(
         {
-                @NamedQuery(name = "Goal.findAllWithProfileAndArchive", query = "SELECT new Goal(g.id,g.purpose,g.targetDate,g.goal, g.goalUnit, g.archived) FROM Goal g where g.profile =:profile and g.archived =:archived"),
-                @NamedQuery(name = "Goal.findGoalWithIdAndProfile", query = "SELECT new Goal(g.id,g.purpose,g.targetDate,g.goal, g.goalUnit, g.archived) FROM Goal g where g.profile =:profile and g.id =:goalId"),
-                @NamedQuery(name = "Goal.findLastedCreatedGoal", query = "SELECT new Goal(g.id,g.purpose,g.targetDate,g.goal, g.goalUnit, g.archived) from Goal g where g.profile =:profile order by g.createdAt desc")
+                @NamedQuery(name = "Goal.findAllWithProfileAndArchive", query = "SELECT new Goal(g.id,g.purpose,g.targetDate,g.distance, g.goalUnit, g.archived) FROM Goal g where g.profile =:profile and g.archived =:archived"),
+                @NamedQuery(name = "Goal.findGoalWithIdAndProfile", query = "SELECT new Goal(g.id,g.purpose,g.targetDate,g.distance, g.goalUnit, g.archived) FROM Goal g where g.profile =:profile and g.id =:goalId"),
+                @NamedQuery(name = "Goal.findLastedCreatedGoal", query = "SELECT new Goal(g.id,g.purpose,g.targetDate,g.distance, g.goalUnit, g.archived) from Goal g where g.profile =:profile order by g.createdAt desc")
         }
 )
 public class Goal {
@@ -36,7 +36,7 @@ public class Goal {
     private Profile profile;
 
     @NotNull
-    private long goal = 0;
+    private long distance = 0;
 
     @NotNull
     @Enumerated(EnumType.STRING)
@@ -47,12 +47,12 @@ public class Goal {
     public Goal() {
     }
 
-    public Goal(Long id, String purpose, Date targetDate, long goal, GoalUnit goalUnit, boolean archived) {
+    public Goal(Long id, String purpose, Date targetDate, long distance, GoalUnit goalUnit, boolean archived) {
         this.id = id;
         this.purpose = purpose;
         this.targetDate = targetDate;
         this.goalUnit = goalUnit;
-        this.goal = goal;
+        this.distance = distance;
         this.archived = archived;
     }
 
@@ -92,12 +92,12 @@ public class Goal {
         this.profile = profile;
     }
 
-    public long getGoal() {
-        return goal;
+    public long getDistance() {
+        return distance;
     }
 
-    public void setGoal(long goal) {
-        this.goal = goal;
+    public void setDistance(long goal) {
+        this.distance = goal;
     }
 
     public GoalUnit getGoalUnit() {
@@ -123,7 +123,7 @@ public class Goal {
                 ", purpose='" + purpose + '\'' +
                 ", targetDate=" + targetDate +
                 ", createdAt=" + createdAt +
-                ", goal=" + goal +
+                ", goal=" + distance +
                 ", goalUnit=" + goalUnit +
                 ", archived=" + archived +
                 '}';

@@ -1,17 +1,12 @@
 package org.miles2run.business.services;
 
-import org.apache.commons.lang3.StringUtils;
-import org.miles2run.business.domain.Activity;
 import org.miles2run.business.domain.Goal;
 import org.miles2run.business.domain.Profile;
-import org.miles2run.business.vo.ActivityDetails;
 import redis.clients.jedis.Jedis;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import java.util.List;
 import java.util.Set;
@@ -76,7 +71,7 @@ public class GoalService {
 
     public void update(Goal goal, Long goalId) {
         Goal existingGoal = this.find(goalId);
-        existingGoal.setGoal(goal.getGoal());
+        existingGoal.setDistance(goal.getDistance());
         existingGoal.setTargetDate(goal.getTargetDate());
         existingGoal.setArchived(goal.isArchived());
         existingGoal.setGoalUnit(goal.getGoalUnit());

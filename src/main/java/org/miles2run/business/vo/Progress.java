@@ -2,7 +2,6 @@ package org.miles2run.business.vo;
 
 import org.miles2run.business.domain.Goal;
 import org.miles2run.business.domain.GoalUnit;
-import org.miles2run.business.domain.Profile;
 
 /**
  * Created by shekhargulati on 06/03/14.
@@ -42,7 +41,7 @@ public class Progress {
     }
 
     public Progress(Goal goal) {
-        this.goal = goal.getGoal() / goal.getGoalUnit().getConversion();
+        this.goal = goal.getDistance() / goal.getGoalUnit().getConversion();
         this.percentage = 0;
         this.totalDistanceCovered = 0;
         this.averagePace = 0;

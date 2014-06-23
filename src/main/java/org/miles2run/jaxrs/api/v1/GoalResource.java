@@ -73,7 +73,7 @@ public class GoalResource {
             logger.info("Goal : " + goal);
             String loggedInUser = securityContext.getUserPrincipal().getName();
             Profile profile = profileService.findProfile(loggedInUser);
-            goal.setGoal(goal.getGoal() * goal.getGoalUnit().getConversion());
+            goal.setDistance(goal.getDistance() * goal.getGoalUnit().getConversion());
             goalService.save(goal, profile);
             return Response.status(Response.Status.CREATED).build();
         } catch (Exception e) {
@@ -96,7 +96,7 @@ public class GoalResource {
         if (!StringUtils.equals(loggedInUser, existingGoal.getProfile().getUsername())) {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }
-        goal.setGoal(goal.getGoal() * goal.getGoalUnit().getConversion());
+        goal.setDistance(goal.getDistance() * goal.getGoalUnit().getConversion());
         goalService.update(goal, goalId);
         return Response.status(Response.Status.OK).build();
     }
@@ -143,7 +143,7 @@ public class GoalResource {
 
     private long percentageGoalCompleted(Goal goal) {
         long totalDistanceCoveredForGoal = goalService.totalDistanceCoveredForGoal(goal.getId());
-        double percentageCompleted = (Double.valueOf(totalDistanceCoveredForGoal) * 100 / goal.getGoal());
+        double percentageCompleted = (Double.valueOf(totalDistanceCoveredForGoal) * 100 / goal.getDistance());
         long percentage = Double.valueOf(percentageCompleted).longValue();
         percentage = percentage > 100 ? 100 : percentage;
         return percentage;

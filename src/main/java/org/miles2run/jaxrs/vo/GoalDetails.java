@@ -13,28 +13,28 @@ public class GoalDetails {
     private final Long id;
     private final String purpose;
     private final Date targetDate;
-    private final long goal;
+    private final long distance;
     private final GoalUnit goalUnit;
     private final boolean archived;
     private long percentageCompleted;
 
-    public GoalDetails(Goal goal, long percentageCompleted) {
-        this.id = goal.getId();
-        this.purpose = goal.getPurpose();
-        this.targetDate = goal.getTargetDate();
-        this.goal = goal.getGoal() / goal.getGoalUnit().getConversion();
-        this.goalUnit = goal.getGoalUnit();
-        this.archived = goal.isArchived();
+    public GoalDetails(Goal distance, long percentageCompleted) {
+        this.id = distance.getId();
+        this.purpose = distance.getPurpose();
+        this.targetDate = distance.getTargetDate();
+        this.distance = distance.getDistance() / distance.getGoalUnit().getConversion();
+        this.goalUnit = distance.getGoalUnit();
+        this.archived = distance.isArchived();
         this.percentageCompleted = percentageCompleted;
     }
 
-    public GoalDetails(Goal goal) {
-        this.id = goal.getId();
-        this.purpose = goal.getPurpose();
-        this.targetDate = goal.getTargetDate();
-        this.goal = goal.getGoal() / goal.getGoalUnit().getConversion();
-        this.goalUnit = goal.getGoalUnit();
-        this.archived = goal.isArchived();
+    public GoalDetails(Goal distance) {
+        this.id = distance.getId();
+        this.purpose = distance.getPurpose();
+        this.targetDate = distance.getTargetDate();
+        this.distance = distance.getDistance() / distance.getGoalUnit().getConversion();
+        this.goalUnit = distance.getGoalUnit();
+        this.archived = distance.isArchived();
     }
 
     public Long getId() {
@@ -49,8 +49,8 @@ public class GoalDetails {
         return targetDate;
     }
 
-    public long getGoal() {
-        return goal;
+    public long getDistance() {
+        return distance;
     }
 
     public GoalUnit getGoalUnit() {

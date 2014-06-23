@@ -16,19 +16,25 @@
                 <form id="goalForm" class="form-horizontal" role="form" ng-submit="editGoal()">
                     <fieldset>
                         <div class="form-group">
-                            <label class="col-md-2 control-label" for="purpose">Purpose</label>
+                            <label class="col-md-2 control-label" for="distance">Distance</label>
 
                             <div class="col-md-6 input-group">
-                                <input id="purpose" name="purpose" type="text"
-                                       placeholder="Purpose of goal"
-                                       class="form-control" ng-model="goal.purpose"
-                                       title="Goal"
+                                <input id="distance" name="distance" type="number"
+                                       placeholder="Distance to run"
+                                       class="form-control" ng-model="goal.distance" min="0" step="1"
+                                       title="Please enter valid value of distance greater than 0"
                                        required>
+                                <span class="input-group-addon">
+                                    <select name="goalUnit" ng-model="goal.goalUnit" required>
+                                        <option value="KM" ng-selected="goal.goalUnit.$name == 'KM'">km</option>
+                                        <option value="MI" ng-selected="goal.goalUnit.$name == 'MI'">mi</option>
+                                    </select>
+                                </span>
                             </div>
                         </div>
 
                         <div class="form-group">
-                            <label class="col-md-2 control-label" for="targetDate">Date</label>
+                            <label class="col-md-2 control-label" for="targetDate">Target Date</label>
 
                             <div class="col-md-6 input-group">
                                 <input type="text" id="targetDate" name="targetDate" class="form-control"
@@ -36,8 +42,8 @@
                                        is-open="opened"
                                        min-date="minDate"
                                        datepicker-options="dateOptions" ng-required="true" close-text="Close"
-                                       placeholder="Date you ran"
-                                       title="Goal completion Date">
+                                       placeholder="dd-MMMM-YYYY eg. 02-August-2014"
+                                       title="Target date">
                                     <span class="input-group-btn">
                                         <button class="btn btn-info" ng-click="open($event)"><i
                                                 class="fa fa-calendar fa-fw"></i>
@@ -45,23 +51,16 @@
                                     </span>
                             </div>
                         </div>
+
                         <div class="form-group">
-                            <label class="col-md-2 control-label" for="goal">Goal</label>
+                            <label class="col-md-2 control-label" for="purpose">Purpose</label>
 
                             <div class="col-md-6 input-group">
-                                <input id="goal" name="goal" type="number"
-                                       placeholder="Goal"
-                                       class="form-control" ng-model="goal.goal" min="0" step="1"
-                                       title="Goal"
+                                <input id="purpose" name="purpose" type="text"
+                                       placeholder="Goal purpose"
+                                       class="form-control" ng-model="goal.purpose"
+                                       title="Please provide purpose of this goal"
                                        required>
-                                <label class="radio-inline">
-                                    <input type="radio" name="goalUnit" id="kms" value="KM" checked
-                                           ng-model="goal.goalUnit">km
-                                </label>
-                                <label class="radio-inline">
-                                    <input type="radio" name="goalUnit" id="miles" value="MI"
-                                           ng-model="goal.goalUnit">mi
-                                </label>
                             </div>
                         </div>
 
@@ -72,8 +71,6 @@
 
                             </div>
                         </div>
-
-
                         <div class="form-group">
                             <div class="col-md-offset-2 col-md-4 pull-left">
                                 <button class="btn btn-primary btn-block" type="submit">
