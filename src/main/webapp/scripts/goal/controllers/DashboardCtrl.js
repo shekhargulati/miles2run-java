@@ -38,11 +38,11 @@ angular.module('milestogo')
                             }
                             return moment(dateFormat(date.getTime()), "YYYYMMDD").format('MMM Do');
                         },
-                        yLabelFormat: function (distance) {
-                            return distance.toString() + ' ' + activeGoal.goalUnit.$name;
+                        yLabelFormat: function (value) {
+                            return $filter('number')(value, 2);
                         },
                         xkey: interval,
-                        ykeys: ['distance'],
+                        ykeys: ['distance', 'pace'],
                         dateFormat: function (x) {
                             if (interval === "month") {
                                 return moment(dateFormat(x), "YYYYMMDD").format("MMM YYYY");
@@ -51,7 +51,7 @@ angular.module('milestogo')
                             }
                             return moment(dateFormat(x), "YYYYMMDD").format('dddd, MMM Do YYYY');
                         },
-                        labels: ['Distance Ran']
+                        labels: ['Distance Ran in ' + activeGoal.goalUnit.$name, 'Pace ' + ' mins/' + activeGoal.goalUnit.$name]
 
                     });
                 } else {
@@ -65,53 +65,6 @@ angular.module('milestogo')
 
         renderDistanceChart("day");
         $scope.renderDistanceChart = renderDistanceChart;
-
-        var renderPaceChart = function (interval) {
-            $("#pace-line-graph").empty();
-            console.log('User selected interval ' + interval);
-            $http.get(ConfigService.getBaseUrl() + "goals/" + activeGoal.id + "/dashboard/charts/pace?interval=" + interval).success(function (data, status, headers, config) {
-                if (data && data.length) {
-                    console.log("Rendering pace chart as data exists");
-                    $scope.showNoPaceChartDataMessage = false;
-                    Morris.Line({
-                        element: 'pace-line-graph',
-                        data: data,
-                        xLabels: interval,
-                        xLabelFormat: function (date) {
-                            if (interval === "month") {
-                                return moment(dateFormat(date.getTime()), "YYYYMMDD").format("MMM YYYY");
-                            } else if (interval === "year") {
-                                return date.getFullYear().toString();
-                            }
-                            return moment(dateFormat(date.getTime()), "YYYYMMDD").format('MMM Do');
-                        },
-                        yLabelFormat: function (pace) {
-                            return $filter('number')(pace, 2) + ' mins/' + activeGoal.goalUnit.$name;
-                        },
-                        xkey: interval,
-                        ykeys: ['pace'],
-                        dateFormat: function (x) {
-                            if (interval === "month") {
-                                return moment(dateFormat(x), "YYYYMMDD").format("MMM YYYY");
-                            } else if (interval === "year") {
-                                return new Date(x).getFullYear().toString();
-                            }
-                            return moment(dateFormat(x), "YYYYMMDD").format('dddd, MMM Do YYYY');
-                        },
-                        labels: ['Pace']
-
-                    });
-                } else {
-                    $scope.showNoPaceChartDataMessage = true;
-                }
-            }).error(function (data, status, headers, config) {
-                console.log(data);
-                $scope.showNoPaceChartDataMessage = false;
-            });
-        }
-
-        renderPaceChart("day");
-        $scope.renderPaceChart = renderPaceChart;
 
         var dateFormat = function (x) {
             var date = new Date(x);

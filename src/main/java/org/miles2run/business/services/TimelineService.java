@@ -251,18 +251,7 @@ public class TimelineService {
         });
     }
 
-    public List<Map<String, Object>> distanceCoveredOverTime(final Profile profile, final Goal goal, final String interval, final int n) {
-        switch (interval) {
-            case "day":
-                return getDistanceCoveredInLastNDays(profile, goal, interval, n);
-            case "month":
-                return getDistanceCoveredInLastNMonths(profile, goal, interval, n);
-            default:
-                return getDistanceCoveredInLastNDays(profile, goal, interval, n);
-        }
-    }
-
-    private List<Map<String, Object>> getDistanceCoveredInLastNMonths(final Profile profile, final Goal goal, final String interval, final int nMonths) {
+    public List<Map<String, Object>> distanceAndPaceOverLastNMonths(final Profile profile, final Goal goal, final String interval, final int nMonths) {
         return jedisExecutionService.execute(new JedisOperation<List<Map<String, Object>>>() {
             @Override
             public List<Map<String, Object>> perform(Jedis jedis) {
@@ -271,23 +260,31 @@ public class TimelineService {
                 calendar.add(Calendar.MONTH, -nMonths);
                 Date nMonthsBack = calendar.getTime();
                 Set<Tuple> activityIdsInNDaysWithScores = jedis.zrangeByScoreWithScores(String.format(PROFILE_S_GOAL_S_TIMELINE, profile.getUsername(), goal.getId()), nMonthsBack.getTime(), today.getTime());
-                List<Response<Map<String, String>>> result = new ArrayList<>();
                 Map<String, Long> monthDistanceHash = new HashMap<>();
+                Map<String, Double> monthPaceHash = new HashMap<>();
                 for (Tuple activityIdTuple : activityIdsInNDaysWithScores) {
                     String activityId = activityIdTuple.getElement();
                     double activityTimestamp = activityIdTuple.getScore();
-                    String distanceCovered = jedis.hget(String.format("activity:%s", activityId), "distanceCovered");
+                    List<String> values = jedis.hmget(String.format("activity:%s", activityId), "distanceCovered", "duration");
                     Date activityDate = new Date(Double.valueOf(activityTimestamp).longValue());
                     logger.info(String.format("Activity Date : %s", activityDate));
                     String key = formatDateToYearAndMonth(activityDate);
                     logger.info(String.format("DateToYearAndMonth : %s", key));
+                    long distance = Long.valueOf(values.get(0)) / goal.getGoalUnit().getConversion();
                     if (monthDistanceHash.containsKey(key)) {
                         Long value = monthDistanceHash.get(key);
-                        monthDistanceHash.put(key, value + Long.valueOf(distanceCovered));
+                        monthDistanceHash.put(key, value + distance);
+                        Double durationInSeconds = Double.valueOf(Long.valueOf(values.get(1)));
+                        double durationInMinutes = durationInSeconds / 60;
+                        double pace = durationInMinutes / distance;
+                        monthPaceHash.put(key, (value + pace) / 2);
                     } else {
-                        monthDistanceHash.put(key, Long.valueOf(distanceCovered));
+                        monthDistanceHash.put(key, distance);
+                        Double durationInSeconds = Double.valueOf(Long.valueOf(values.get(1)));
+                        double durationInMinutes = durationInSeconds / 60;
+                        double pace = durationInMinutes / distance;
+                        monthPaceHash.put(key, pace);
                     }
-
                 }
                 List<Map<String, Object>> chartData = new ArrayList<>();
                 Set<Map.Entry<String, Long>> entries = monthDistanceHash.entrySet();
@@ -295,6 +292,7 @@ public class TimelineService {
                     Map<String, Object> data = new HashMap<>();
                     data.put(interval, entry.getKey());
                     data.put("distance", entry.getValue() / goal.getGoalUnit().getConversion());
+                    data.put("pace", monthPaceHash.get(entry.getKey()));
                     chartData.add(data);
                 }
                 return chartData;
@@ -302,7 +300,7 @@ public class TimelineService {
         });
     }
 
-    private List<Map<String, Object>> getDistanceCoveredInLastNDays(final Profile profile, final Goal goal, final String interval, final int n) {
+    public List<Map<String, Object>> distanceAndPaceOverLastNDays(final Profile profile, final Goal goal, final String interval, final int n) {
         return jedisExecutionService.execute(new JedisOperation<List<Map<String, Object>>>() {
             @Override
             public List<Map<String, Object>> perform(Jedis jedis) {
@@ -316,16 +314,22 @@ public class TimelineService {
                 for (Tuple activityIdTuple : activityIdsInNDaysWithScores) {
                     String activityId = activityIdTuple.getElement();
                     double activityDate = activityIdTuple.getScore();
-                    String distanceCovered = jedis.hget(String.format("activity:%s", activityId), "distanceCovered");
+                    List<String> values = jedis.hmget(String.format("activity:%s", activityId), "distanceCovered", "duration");
                     Map<String, Object> data = new HashMap<>();
                     data.put(interval, activityDate);
-                    data.put("distance", Long.valueOf(distanceCovered) / goal.getGoalUnit().getConversion());
+                    long distance = Long.valueOf(values.get(0)) / goal.getGoalUnit().getConversion();
+                    data.put("distance", distance);
+                    Double durationInSeconds = Double.valueOf(Long.valueOf(values.get(1)));
+                    double durationInMinutes = durationInSeconds / 60;
+                    double pace = durationInMinutes / distance;
+                    data.put("pace", pace);
                     chartData.add(data);
                 }
                 return chartData;
             }
         });
     }
+
 
     private String formatDate(Date activityDate) {
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
@@ -335,92 +339,6 @@ public class TimelineService {
     private String formatDateToYearAndMonth(Date date) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM");
         return dateFormat.format(date);
-    }
-
-    public List<Map<String, Object>> paceOverTime(Profile profile, Goal goal, String interval, int n) {
-        switch (interval) {
-            case "day":
-                return getPaceInLastNDays(profile, goal, interval, n);
-            case "month":
-                return getPaceInLastNMonths(profile, goal, interval, n);
-            default:
-                return getPaceInLastNDays(profile, goal, interval, n);
-        }
-    }
-
-    private List<Map<String, Object>> getPaceInLastNMonths(final Profile profile, final Goal goal, final String interval, final int nMonths) {
-        return jedisExecutionService.execute(new JedisOperation<List<Map<String, Object>>>() {
-            @Override
-            public List<Map<String, Object>> perform(Jedis jedis) {
-                Date today = new Date();
-                Calendar calendar = Calendar.getInstance();
-                calendar.add(Calendar.MONTH, -nMonths);
-                Date nMonthsBack = calendar.getTime();
-                Set<Tuple> activityIdsInNDaysWithScores = jedis.zrangeByScoreWithScores(String.format(PROFILE_S_GOAL_S_TIMELINE, profile.getUsername(), goal.getId()), nMonthsBack.getTime(), today.getTime());
-                List<Response<Map<String, String>>> result = new ArrayList<>();
-                Map<String, Double> monthPaceHash = new HashMap<>();
-                for (Tuple activityIdTuple : activityIdsInNDaysWithScores) {
-                    String activityId = activityIdTuple.getElement();
-                    double activityTimestamp = activityIdTuple.getScore();
-                    List<String> values = jedis.hmget(String.format("activity:%s", activityId), "distanceCovered", "duration");
-                    Date activityDate = new Date(Double.valueOf(activityTimestamp).longValue());
-                    String key = formatDateToYearAndMonth(activityDate);
-                    if (monthPaceHash.containsKey(key)) {
-                        Double value = monthPaceHash.get(key);
-                        Double durationInSeconds = Double.valueOf(Long.valueOf(values.get(1)));
-                        double durationInMinutes = durationInSeconds / 60;
-                        long distance = Long.valueOf(values.get(0)) / goal.getGoalUnit().getConversion();
-                        double pace = durationInMinutes / distance;
-                        monthPaceHash.put(key, (value + pace) / 2);
-                    } else {
-                        Double durationInSeconds = Double.valueOf(Long.valueOf(values.get(1)));
-                        double durationInMinutes = durationInSeconds / 60;
-                        long distance = Long.valueOf(values.get(0)) / goal.getGoalUnit().getConversion();
-                        double pace = durationInMinutes / distance;
-                        monthPaceHash.put(key, pace);
-                    }
-
-                }
-                List<Map<String, Object>> chartData = new ArrayList<>();
-                Set<Map.Entry<String, Double>> entries = monthPaceHash.entrySet();
-                for (Map.Entry<String, Double> entry : entries) {
-                    Map<String, Object> data = new HashMap<>();
-                    data.put(interval, entry.getKey());
-                    data.put("pace", entry.getValue());
-                    chartData.add(data);
-                }
-                return chartData;
-            }
-        });
-    }
-
-    private List<Map<String, Object>> getPaceInLastNDays(final Profile profile, final Goal goal, final String interval, final int n) {
-        return jedisExecutionService.execute(new JedisOperation<List<Map<String, Object>>>() {
-            @Override
-            public List<Map<String, Object>> perform(Jedis jedis) {
-                Date today = new Date();
-                DateTime dateTime = new DateTime(today);
-                dateTime = dateTime.minusDays(n);
-                Date nDaysBack = dateTime.toDate();
-                Set<Tuple> activityIdsInNDaysWithScores = jedis.zrangeByScoreWithScores(String.format(PROFILE_S_GOAL_S_TIMELINE, profile.getUsername(), goal.getId()), nDaysBack.getTime(), today.getTime());
-                List<Response<Map<String, String>>> result = new ArrayList<>();
-                List<Map<String, Object>> chartData = new ArrayList<>();
-                for (Tuple activityIdTuple : activityIdsInNDaysWithScores) {
-                    String activityId = activityIdTuple.getElement();
-                    double activityDate = activityIdTuple.getScore();
-                    List<String> values = jedis.hmget(String.format("activity:%s", activityId), "distanceCovered", "duration");
-                    Map<String, Object> data = new HashMap<>();
-                    data.put(interval, activityDate);
-                    Double durationInSeconds = Double.valueOf(Long.valueOf(values.get(1)));
-                    double durationInMinutes = durationInSeconds / 60;
-                    long distance = Long.valueOf(values.get(0)) / goal.getGoalUnit().getConversion();
-                    double pace = durationInMinutes / distance;
-                    data.put("pace", pace);
-                    chartData.add(data);
-                }
-                return chartData;
-            }
-        });
     }
 
     public Long totalItems(final String loggedInUser) {
