@@ -28,7 +28,7 @@ angular.module('milestogo')
             minDate: calendarStartDate(),
             maxDate: new Date(),
             data: ConfigService.getBaseUrl() + "goals/" + activeGoal.id + "/activities/calendar",
-            itemName: [activeGoal.goalUnit.$name.toLowerCase(),activeGoal.goalUnit.$name.toLowerCase()]
+            itemName: [activeGoal.goalUnit.$name.toLowerCase(), activeGoal.goalUnit.$name.toLowerCase()]
         };
 
 
@@ -181,4 +181,149 @@ angular.module('milestogo')
         }
 
         doPlot("right");
+
+        var renderRickshawChart = function () {
+            var palette = new Rickshaw.Color.Palette();
+
+            var dataset = [
+                [
+                    {
+                        x: 1403116200, y: 6
+                    },
+                    {
+                        x: 1403375400,
+                        y: 2
+                    },
+                    {
+                        x: 1403548200,
+                        y: 4
+                    }
+                ],
+                [
+                    {
+                        x: 1403116200, y: 9.0
+                    },
+                    {
+                        x: 1403375400,
+                        y: 12.5
+                    },
+                    {
+                        x: 1403548200,
+                        y: 16.25
+                    }
+                ]
+            ]
+            var graph = new Rickshaw.Graph({
+                element: document.querySelector("#chart"),
+                width: 540,
+                height: 240,
+                renderer: 'line',
+                series: [
+                    {
+                        name: "Distance",
+                        data: dataset[0],
+                        color: "#3182bd"
+                    },
+                    {
+                        name: "Pace",
+                        data: dataset[1],
+                        color: "#f03b20"
+                    }
+                ]
+            });
+
+            var x_axis = new Rickshaw.Graph.Axis.Time({
+                graph: graph
+            });
+
+            var y_axis = new Rickshaw.Graph.Axis.Y({
+                graph: graph,
+                orientation: 'left',
+                tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
+                element: document.getElementById('y_axis')
+            });
+
+            var legend = new Rickshaw.Graph.Legend({
+                element: document.querySelector('#legend'),
+                graph: graph
+            });
+
+            var shelving = new Rickshaw.Graph.Behavior.Series.Toggle({
+                graph: graph,
+                legend: legend
+            });
+
+            var highlighter = new Rickshaw.Graph.Behavior.Series.Highlight({
+                graph: graph,
+                legend: legend
+            });
+
+            var offsetForm = document.getElementById('offset_form');
+
+            offsetForm.addEventListener('change', function (e) {
+                var offsetMode = e.target.value;
+
+                if (offsetMode == 'lines') {
+                    graph.setRenderer('line');
+                    graph.offset = 'zero';
+                } else {
+                    graph.setRenderer('stack');
+                    graph.offset = offsetMode;
+                }
+                graph.render();
+
+            }, false);
+
+            graph.render();
+
+            var legend1 = document.querySelector('#legend1');
+
+            var Hover = Rickshaw.Class.create(Rickshaw.Graph.HoverDetail, {
+
+                render: function (args) {
+
+                    legend1.innerHTML = args.formattedXValue;
+
+                    args.detail.sort(function (a, b) {
+                        return a.order - b.order
+                    }).forEach(function (d) {
+
+                        var line = document.createElement('div');
+                        line.className = 'line';
+
+                        var swatch = document.createElement('div');
+                        swatch.className = 'swatch';
+                        swatch.style.backgroundColor = d.series.color;
+
+                        var label = document.createElement('div');
+                        label.className = 'label';
+                        label.innerHTML = d.name + ": " + d.formattedYValue;
+
+                        line.appendChild(swatch);
+                        line.appendChild(label);
+
+                        legend1.appendChild(line);
+
+                        var dot = document.createElement('div');
+                        dot.className = 'dot';
+                        dot.style.top = graph.y(d.value.y0 + d.value.y) + 'px';
+                        dot.style.borderColor = d.series.color;
+
+                        this.element.appendChild(dot);
+
+                        dot.className = 'dot active';
+
+                        this.show();
+
+                    }, this);
+                }
+            });
+
+            var hover = new Hover({ graph: graph, xFormatter: function (x) {
+                return new Date(x * 1000).toDateString();
+            } });
+        }
+
+        renderRickshawChart();
+
     });

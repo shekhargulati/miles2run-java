@@ -60,6 +60,7 @@
             <!-- /.panel-heading -->
             <div class="panel-body" ng-if="showNoDistanceChartDataMessage" ng-cloak>
                 <h2>You haven't tracked any activities yet!!</h2>
+
                 <p class="lead">But don't worry! It's really easy to get started. Just click on the button below to
                     enter your first activity:</p>
                 <a class="btn btn-success" ng-href="#activity/post">Post New Activity</a>
@@ -106,6 +107,36 @@
             <div class="panel-body">
                 <div class="flot-chart">
                     <div class="flot-chart-content" id="line-chart"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <div class="btn-group pull-right" ng-if="!showNoDistanceChartDataMessage" ng-cloak>
+                    <button type="button" class="btn btn-default" ng-click="renderDistanceChart('day')">Day</button>
+                    <button type="button" class="btn btn-default" ng-click="renderDistanceChart('month')">Month</button>
+                </div>
+                Distance ran and pace over time
+            </div>
+            <div class="panel-body">
+                <div class="flot-chart">
+                    <div id="chart_container">
+                        <div id="y_axis"></div>
+                        <div id="chart"></div>
+                        <div id="legend"></div>
+                        <form id="offset_form" class="toggler">
+                            <input type="radio" name="offset" id="lines" value="lines" checked>
+                            <label class="lines" for="lines">lines</label><br>
+                            <input type="radio" name="offset" id="stack" value="zero">
+                            <label class="stack" for="stack">stack</label>
+                        </form>
+                        <div id="legend1"></div>
+                    </div>
                 </div>
             </div>
         </div>
