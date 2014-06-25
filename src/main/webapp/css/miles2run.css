@@ -4531,18 +4531,6 @@ body#home section b i {
     margin-left: 15px;
 }
 
-#legend1 {
-    float: left;
-    margin-left: 15px;
-    text-align: center;
-}
-
-#offset_form {
-    float: left;
-    margin: 2em 0 0 15px;
-    font-size: 13px;
-}
-
 #y_axis {
     float: left;
     width: 40px;

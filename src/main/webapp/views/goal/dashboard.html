@@ -1,6 +1,7 @@
 <div class="row">
     <div class="col-lg-12">
-        <h1 class="page-header">Dashboard</h1>
+        <h1 class="page-header">Dashboard <a class="btn btn-info pull-right" ng-href="#activity/post">Post New Activity</a></h1>
+
     </div>
     <!-- /.col-lg-12 -->
 </div>
@@ -117,26 +118,12 @@
     <div class="col-lg-12">
         <div class="panel panel-default">
             <div class="panel-heading">
-                <div class="btn-group pull-right" ng-if="!showNoDistanceChartDataMessage" ng-cloak>
-                    <button type="button" class="btn btn-default" ng-click="renderDistanceChart('day')">Day</button>
-                    <button type="button" class="btn btn-default" ng-click="renderDistanceChart('month')">Month</button>
-                </div>
                 Distance ran and pace over time
             </div>
             <div class="panel-body">
-                <div class="flot-chart">
-                    <div id="chart_container">
-                        <div id="y_axis"></div>
-                        <div id="chart"></div>
-                        <div id="legend"></div>
-                        <form id="offset_form" class="toggler">
-                            <input type="radio" name="offset" id="lines" value="lines" checked>
-                            <label class="lines" for="lines">lines</label><br>
-                            <input type="radio" name="offset" id="stack" value="zero">
-                            <label class="stack" for="stack">stack</label>
-                        </form>
-                        <div id="legend1"></div>
-                    </div>
+                <div id="chart_container">
+                    <div id="chart"></div>
+                    <div id="legend"></div>
                 </div>
             </div>
         </div>

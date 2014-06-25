@@ -220,12 +220,12 @@ angular.module('milestogo')
                 renderer: 'line',
                 series: [
                     {
-                        name: "Distance",
+                        name: "Distance (mi)",
                         data: dataset[0],
                         color: "#3182bd"
                     },
                     {
-                        name: "Pace",
+                        name: "Pace (mins/mi)",
                         data: dataset[1],
                         color: "#f03b20"
                     }
@@ -234,13 +234,6 @@ angular.module('milestogo')
 
             var x_axis = new Rickshaw.Graph.Axis.Time({
                 graph: graph
-            });
-
-            var y_axis = new Rickshaw.Graph.Axis.Y({
-                graph: graph,
-                orientation: 'left',
-                tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
-                element: document.getElementById('y_axis')
             });
 
             var legend = new Rickshaw.Graph.Legend({
@@ -258,70 +251,17 @@ angular.module('milestogo')
                 legend: legend
             });
 
-            var offsetForm = document.getElementById('offset_form');
-
-            offsetForm.addEventListener('change', function (e) {
-                var offsetMode = e.target.value;
-
-                if (offsetMode == 'lines') {
-                    graph.setRenderer('line');
-                    graph.offset = 'zero';
-                } else {
-                    graph.setRenderer('stack');
-                    graph.offset = offsetMode;
-                }
-                graph.render();
-
-            }, false);
-
-            graph.render();
-
-            var legend1 = document.querySelector('#legend1');
-
-            var Hover = Rickshaw.Class.create(Rickshaw.Graph.HoverDetail, {
-
-                render: function (args) {
-
-                    legend1.innerHTML = args.formattedXValue;
-
-                    args.detail.sort(function (a, b) {
-                        return a.order - b.order
-                    }).forEach(function (d) {
-
-                        var line = document.createElement('div');
-                        line.className = 'line';
-
-                        var swatch = document.createElement('div');
-                        swatch.className = 'swatch';
-                        swatch.style.backgroundColor = d.series.color;
-
-                        var label = document.createElement('div');
-                        label.className = 'label';
-                        label.innerHTML = d.name + ": " + d.formattedYValue;
-
-                        line.appendChild(swatch);
-                        line.appendChild(label);
-
-                        legend1.appendChild(line);
-
-                        var dot = document.createElement('div');
-                        dot.className = 'dot';
-                        dot.style.top = graph.y(d.value.y0 + d.value.y) + 'px';
-                        dot.style.borderColor = d.series.color;
-
-                        this.element.appendChild(dot);
-
-                        dot.className = 'dot active';
-
-                        this.show();
-
-                    }, this);
+            var hoverDetail = new Rickshaw.Graph.HoverDetail({
+                graph: graph,
+                xFormatter: function (x) {
+                    return new Date(x * 1000).toDateString();
+                },
+                yFormatter: function (y) {
+                    return y;
                 }
             });
 
-            var hover = new Hover({ graph: graph, xFormatter: function (x) {
-                return new Date(x * 1000).toDateString();
-            } });
+            graph.render();
         }
 
         renderRickshawChart();
