@@ -57,7 +57,7 @@ public class FacebookCallbackView {
                 HttpSession session = request.getSession();
                 logger.info("Using Session with id " + session.getId());
                 session.setAttribute("principal", username);
-                return View.of("/home", true);
+                return View.of("/", true);
             }
         }
         SocialConnection socialConnection = new SocialConnection(oAuthAccessToken.getToken(), null, SocialProvider.FACEBOOK, facebook.users().getMe().getUsername(), connectionId);

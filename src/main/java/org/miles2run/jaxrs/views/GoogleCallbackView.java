@@ -55,7 +55,7 @@ public class GoogleCallbackView {
                 HttpSession session = request.getSession();
                 logger.info("Using Session with id " + session.getId());
                 session.setAttribute("principal", username);
-                return View.of("/home", true);
+                return View.of("/", true);
             }
         }
         SocialConnection socialConnection = new SocialConnection(oauthToken.getAccessToken(), null, SocialProvider.GOOGLE_PLUS, user.getName(), connectionId);

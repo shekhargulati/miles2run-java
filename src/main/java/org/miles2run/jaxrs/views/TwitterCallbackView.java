@@ -55,7 +55,7 @@ public class TwitterCallbackView {
                 HttpSession session = request.getSession();
                 logger.info("Using Session with id " + session.getId());
                 session.setAttribute("principal", username);
-                return View.of("/home", true);
+                return View.of("/", true);
             }
         }
         SocialConnection socialConnection = new SocialConnection(oAuthAccessToken.getToken(), oAuthAccessToken.getTokenSecret(), SocialProvider.TWITTER, oAuthAccessToken.getScreenName(), connectionId);
