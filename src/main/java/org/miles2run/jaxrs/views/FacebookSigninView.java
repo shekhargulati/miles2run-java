@@ -35,7 +35,7 @@ public class FacebookSigninView {
     public View signin(@Context HttpServletRequest request) {
         HttpSession session = request.getSession(false);
         if (session != null && session.getAttribute("principal") != null) {
-            return View.of("/home", true);
+            return View.of("/", true);
         }
         try {
             Facebook facebook = facebookFactory.getInstance();

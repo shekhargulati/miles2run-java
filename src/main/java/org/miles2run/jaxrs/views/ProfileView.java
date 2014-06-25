@@ -127,7 +127,7 @@ public class ProfileView {
             counterService.updateRunnerCount();
             counterService.addCountry(profile.getCountry());
             counterService.addCity(profile.getCity());
-            return View.of("/home", true).withModel("principal", profile.getUsername());
+            return View.of("/", true).withModel("principal", profile.getUsername());
         } catch (Exception e) {
             logger.info("createProfile() Exception class " + e.getClass().getCanonicalName());
             Throwable cause = e.getCause();
@@ -363,10 +363,19 @@ public class ProfileView {
         String accessToken = socialConnection.getAccessToken();
         GoogleTokenResponse token = new GoogleTokenResponse().setAccessToken(accessToken);
         Google user = googleService.getUser(token);
-        ProfileDetails profile = new ProfileDetails(null, user.getName(), null, connectionId, UrlUtils.removeProtocol(user.getPicture()), null, null);
+        String username = getUsernameFromEmail(user.getEmail());
+        ProfileDetails profile = new ProfileDetails(username, user.getName(), null, connectionId, UrlUtils.removeProtocol(user.getPicture()), null, null);
         profile.setEmail(user.getEmail());
         profile.setGender(user.getGender());
         return View.of("/createProfile", templateEngine).withModel("profile", profile);
+    }
+
+    private String getUsernameFromEmail(String email) {
+        try {
+            return email.split("@")[0];
+        } catch (Exception e) {
+            return null;
+        }
     }
 
 }

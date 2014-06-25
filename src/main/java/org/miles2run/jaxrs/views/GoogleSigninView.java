@@ -33,7 +33,7 @@ public class GoogleSigninView {
         logger.info("Inside GoogleSigninView signin()..");
         HttpSession session = request.getSession(false);
         if (session != null && session.getAttribute("principal") != null) {
-            return View.of("/home", true);
+            return View.of("/", true);
         }
         return View.of(googleService.buildLoginUrl(UrlUtils.getBaseUrl(request)), true).withAbsoluteUrl();
     }
