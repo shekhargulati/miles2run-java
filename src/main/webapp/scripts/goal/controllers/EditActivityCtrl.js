@@ -12,30 +12,54 @@ angular.module('milestogo')
 
         });
 
-        $scope.update = function () {
+        $scope.validateDuration = function (duration) {
+            var durationVal = toAppSeconds(duration);
+            if (durationVal > 0) {
+                $scope.activityForm.durationHours.$invalid = false;
+                $scope.activityForm.durationMinutes.$invalid = false;
+                $scope.activityForm.durationSeconds.$invalid = false;
+            }
+        }
 
-            var activity = {
-                id: $scope.activityDetails.id,
-                status: $scope.activityDetails.status,
-                goalUnit: $scope.activityDetails.goalUnit,
-                distanceCovered: $scope.activityDetails.distanceCovered,
-                share: $scope.activityDetails.share,
-                activityDate: $scope.activityDetails.activityDate
-            };
-            activity.duration = toAppSeconds($scope.duration);
-            ActivityService.updateActivity(activityId, activity, activeGoal.id).success(function (data, status, headers, config) {
-                $rootScope.$broadcast('update.progress', 'true');
-                toastr.success("Updated activity");
-                $location.path('/');
-            }).error(function (data, status, headers, config) {
-                console.log("Error handler for update activity. Status code " + status);
-                if (status == 401) {
-                    toastr.error("You are not authorized to perform this operation.");
-                } else {
-                    toastr.error("Unable to update activity. Please try later.");
-                }
-                $location.path('/');
-            });
+        $scope.updateActivity = function (isValid) {
+
+            $scope.submitted = true;
+            var duration = toAppSeconds($scope.duration);
+            if (duration === 0) {
+                $scope.activityForm.durationHours.$invalid = true;
+                $scope.activityForm.durationMinutes.$invalid = true;
+                $scope.activityForm.durationSeconds.$invalid = true;
+                isValid = false;
+            } else {
+                $scope.activityForm.durationHours.$invalid = false;
+                $scope.activityForm.durationMinutes.$invalid = false;
+                $scope.activityForm.durationSeconds.$invalid = false;
+            }
+            if (!$scope.activityForm.distanceCovered.$invalid && !$scope.activityForm.durationHours.$invalid) {
+                var activity = {
+                    id: $scope.activityDetails.id,
+                    status: $scope.activityDetails.status,
+                    goalUnit: $scope.activityDetails.goalUnit,
+                    distanceCovered: $scope.activityDetails.distanceCovered,
+                    share: $scope.activityDetails.share,
+                    activityDate: $scope.activityDetails.activityDate
+                };
+                activity.duration = toAppSeconds($scope.duration);
+                ActivityService.updateActivity(activityId, activity, activeGoal.id).success(function (data, status, headers, config) {
+                    $rootScope.$broadcast('update.progress', 'true');
+                    toastr.success("Updated activity");
+                    $location.path('/');
+                }).error(function (data, status, headers, config) {
+                    console.log("Error handler for update activity. Status code " + status);
+                    if (status == 401) {
+                        toastr.error("You are not authorized to perform this operation.");
+                    } else {
+                        toastr.error("Unable to update activity. Please try later.");
+                    }
+                    $location.path('/');
+                });
+            }
+
         };
 
         $scope.today = function () {

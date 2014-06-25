@@ -12,57 +12,61 @@
             </div>
             <!-- /.panel-heading -->
             <div class="panel-body">
-                <form id="activityForm" class="form-horizontal" role="form" ng-submit="update()">
+                <form name="activityForm" class="form-horizontal" role="form"
+                      ng-submit="updateActivity(activityForm.$valid)" novalidate>
                     <fieldset>
-                        <legend>Edit your Run</legend>
+                        <legend>Update your run</legend>
                         <div class="form-group">
                             <label class="col-md-2 control-label" for="activityDate">Date</label>
-
                             <div class="col-md-6 input-group">
                                 <input type="text" id="activityDate" name="activityDate" class="form-control"
                                        datepicker-popup="dd-MMMM-yyyy" ng-model="activityDetails.activityDate"
                                        is-open="opened"
-                                       max-date="minDate" datepicker-options="dateOptions" ng-required="true"
-                                       close-text="Close"
+                                       max-date="minDate"
+                                       datepicker-options="dateOptions" close-text="Close"
                                        placeholder="Date you ran"
                                        title="Run Date">
-                <span class="input-group-btn">
-                    <button class="btn btn-info" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i>
-                    </button>
-                </span>
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-info" ng-click="open($event)"><i
+                                                class="fa fa-calendar fa-fw"></i>
+                                        </button>
+                                    </span>
                             </div>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group"
+                             ng-class="{'has-error':activityForm.distanceCovered.$invalid && submitted}">
                             <label class="col-md-2 control-label" for="distanceCovered">Distance</label>
-
-                            <div class="col-md-6 input-group">
+                            <div class="input-group col-md-6">
                                 <input id="distanceCovered" name="distanceCovered" type="number"
-                                       placeholder="Distance ran"
-                                       class="form-control" ng-model="activityDetails.distanceCovered" min="0" step="1"
+                                       placeholder="Distance ran" class="form-control"
+                                       ng-model="activityDetails.distanceCovered" min="0" step="1"
                                        title="Distance ran" required>
                                 <span class="input-group-addon">{{activityDetails.goalUnit | lowercase}}</span>
                             </div>
+                                <span class="help-block col-md-offset-2"
+                                      ng-if="activityForm.distanceCovered.$invalid  && submitted">The distance field is required.</span>
                         </div>
 
-                        <div class="form-group">
+                        <div class="form-group"
+                             ng-class="{'has-error':((activityForm.durationHours.$invalid || activityForm.durationMinutes.$invalid || activityForm.durationSeconds.$invalid) && submitted)}">
                             <label class="col-md-2 control-label">Duration</label>
-
-                            <div class="col-md-6 input-group">
+                            <div class="input-group col-md-6">
                                 <input id="durationHours" class="col-md-4" name="durationHours"
-                                       ng-model="duration.hours" title="Hours" type="number" min="0" max="23"
-                                       ignore-field>
+                                       ng-model="duration.hours"
+                                       title="Hours" type="number" min="0" max="23" ignore-field ng-blur="validateDuration(duration)">
                                 <input id="durationMinutes" class="col-md-4" name="durationMinutes"
-                                       ng-model="duration.minutes" title="Minutes" type="number" min="0" max="59"
-                                       ignore-field>
+                                       ng-model="duration.minutes"
+                                       title="Minutes" type="number" min="0" max="59" ignore-field ng-blur="validateDuration(duration)">
                                 <input id="durationSeconds" class="col-md-4" name="durationSeconds"
-                                       ng-model="duration.seconds" title="Seconds" type="number" min="0" max="59"
-                                       ignore-field>
+                                       ng-model="duration.seconds"
+                                       title="Seconds" type="number" min="2" max="59" ignore-field ng-blur="validateDuration(duration)">
                             </div>
+                                <span class="help-block col-md-offset-2"
+                                      ng-if="(activityForm.durationHours.$invalid || activityForm.durationMinutes.$invalid || activityForm.durationSeconds.$invalid)  && submitted">The duration field is required.</span>
                         </div>
 
                         <div class="form-group">
                             <label class="col-md-2 control-label" for="status">How did it go?</label>
-
                             <div class="col-md-6 input-group">
                                 <textarea class="form-control" name="status" id="status" rows="5"
                                           placeholder="How did it go?" class="form-control input-md"
@@ -75,7 +79,7 @@
                         <div class="form-group">
                             <div class="col-md-offset-2 col-md-4 pull-left">
                                 <button class="btn btn-primary btn-block" type="submit">
-                                    <i class="glyphicon glyphicon-record"></i> Update
+                                    Update your Run
                                 </button>
                             </div>
                         </div>

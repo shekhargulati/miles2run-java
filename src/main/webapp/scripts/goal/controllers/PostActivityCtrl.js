@@ -16,6 +16,15 @@ function PostActivityCtrl($scope, ActivityService, $location, ProfileService, ac
     };
 
 
+    $scope.validateDuration = function (duration) {
+        var durationVal = toAppSeconds(duration);
+        if (durationVal > 0) {
+            $scope.activityForm.durationHours.$invalid = false;
+            $scope.activityForm.durationMinutes.$invalid = false;
+            $scope.activityForm.durationSeconds.$invalid = false;
+        }
+    }
+
     $scope.postActivity = function (isValid) {
         $scope.submitted = true;
         var duration = toAppSeconds($scope.duration);

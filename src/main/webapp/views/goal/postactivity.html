@@ -53,16 +53,16 @@
                         <div class="form-group"
                              ng-class="{'has-error':((activityForm.durationHours.$invalid || activityForm.durationMinutes.$invalid || activityForm.durationSeconds.$invalid) && submitted)}">
                             <label class="col-md-2 control-label">Duration</label>
-                            <div class="col-md-6 input-group">
+                            <div class="input-group col-md-6">
                                 <input id="durationHours" class="col-md-4" name="durationHours"
                                        ng-model="duration.hours"
-                                       title="Hours" type="number" min="0" max="23" ignore-field>
+                                       title="Hours" type="number" min="0" max="23" ignore-field ng-blur="validateDuration(duration)">
                                 <input id="durationMinutes" class="col-md-4" name="durationMinutes"
                                        ng-model="duration.minutes"
-                                       title="Minutes" type="number" min="0" max="59" ignore-field>
+                                       title="Minutes" type="number" min="0" max="59" ignore-field ng-blur="validateDuration(duration)">
                                 <input id="durationSeconds" class="col-md-4" name="durationSeconds"
                                        ng-model="duration.seconds"
-                                       title="Seconds" type="number" min="0" max="59" ignore-field>
+                                       title="Seconds" type="number" min="2" max="59" ignore-field ng-blur="validateDuration(duration)">
                             </div>
                                 <span class="help-block col-md-offset-2"
                                       ng-if="(activityForm.durationHours.$invalid || activityForm.durationMinutes.$invalid || activityForm.durationSeconds.$invalid)  && submitted">The duration field is required.</span>
