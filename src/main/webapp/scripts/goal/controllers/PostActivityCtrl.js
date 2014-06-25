@@ -15,17 +15,34 @@ function PostActivityCtrl($scope, ActivityService, $location, ProfileService, ac
         seconds: "00"
     };
 
-    $scope.postActivity = function () {
-        $scope.activity.duration = toAppSeconds($scope.duration);
-        ActivityService.postActivity($scope.activity, activeGoal.id).success(function (data, status, headers, config) {
-            $rootScope.$broadcast('update.progress', 'true');
-            toastr.success("Posted new activity");
-            $location.path('/');
-        }).error(function (data, status, headers, config) {
-            console.log("Error handler for PostActivity. Status code " + status);
-            toastr.error("Unable to post activity. Please try later.");
-            $location.path('/');
-        });
+
+    $scope.postActivity = function (isValid) {
+        $scope.submitted = true;
+        var duration = toAppSeconds($scope.duration);
+        if (duration === 0) {
+            $scope.activityForm.durationHours.$invalid = true;
+            $scope.activityForm.durationMinutes.$invalid = true;
+            $scope.activityForm.durationSeconds.$invalid = true;
+            isValid = false;
+        } else {
+            $scope.activityForm.durationHours.$invalid = false;
+            $scope.activityForm.durationMinutes.$invalid = false;
+            $scope.activityForm.durationSeconds.$invalid = false;
+        }
+        if (isValid) {
+            $scope.activity.duration = duration;
+            ActivityService.postActivity($scope.activity, activeGoal.id).success(function (data, status, headers, config) {
+                $rootScope.$broadcast('update.progress', 'true');
+                toastr.success("Posted new activity");
+                $location.path('/');
+            }).error(function (data, status, headers, config) {
+                console.log("Error handler for PostActivity. Status code " + status);
+                toastr.error("Unable to post activity. Please try later.");
+                $location.path('/');
+            });
+        }
+
+
     };
 
     $scope.today = function () {
