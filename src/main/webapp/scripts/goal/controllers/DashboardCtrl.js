@@ -31,54 +31,6 @@ angular.module('milestogo')
             itemName: [activeGoal.goalUnit.$name.toLowerCase(), activeGoal.goalUnit.$name.toLowerCase()]
         };
 
-
-        var renderDistanceChart = function (interval) {
-            $("#activities-line-graph").empty();
-            console.log('User selected interval ' + interval);
-            $http.get(ConfigService.getBaseUrl() + "goals/" + activeGoal.id + "/dashboard/charts/distance?interval=" + interval).success(function (data, status, headers, config) {
-                if (data && data.length) {
-                    console.log("Rendering activity distance chart as data exists");
-                    $scope.showNoDistanceChartDataMessage = false;
-                    Morris.Line({
-                        element: 'activities-line-graph',
-                        data: data,
-                        xLabels: interval,
-                        xLabelFormat: function (date) {
-                            if (interval === "month") {
-                                return moment(dateFormat(date.getTime()), "YYYYMMDD").format("MMM YYYY");
-                            } else if (interval === "year") {
-                                return date.getFullYear().toString();
-                            }
-                            return moment(dateFormat(date.getTime()), "YYYYMMDD").format('MMM Do');
-                        },
-                        yLabelFormat: function (value) {
-                            return $filter('number')(value, 2);
-                        },
-                        xkey: interval,
-                        ykeys: ['distance', 'pace'],
-                        dateFormat: function (x) {
-                            if (interval === "month") {
-                                return moment(dateFormat(x), "YYYYMMDD").format("MMM YYYY");
-                            } else if (interval === "year") {
-                                return new Date(x).getFullYear().toString();
-                            }
-                            return moment(dateFormat(x), "YYYYMMDD").format('dddd, MMM Do YYYY');
-                        },
-                        labels: ['Distance (in ' + activeGoal.goalUnit.$name.toLowerCase() + ')', 'Pace ' + '(in mins/' + activeGoal.goalUnit.$name.toLowerCase() + ')']
-
-                    });
-                } else {
-                    $scope.showNoDistanceChartDataMessage = true;
-                }
-            }).error(function (data, status, headers, config) {
-                console.log(data);
-                $scope.showNoDistanceChartDataMessage = false;
-            });
-        }
-
-        renderDistanceChart("day");
-        $scope.renderDistanceChart = renderDistanceChart;
-
         var dateFormat = function (x) {
             var date = new Date(x);
             var yyyy = date.getFullYear().toString();
@@ -101,169 +53,126 @@ angular.module('milestogo')
         }
 
 
-        function doPlot(position) {
-            $http.get(ConfigService.getBaseUrl() + "goals/" + activeGoal.id + "/dashboard/charts/distanceandpace").success(function (data, status, headers, config) {
-                var data1 = data[0];
-                var data2 = data[1];
-
-                var dataset = [
-                    {
-                        label: "Distance (" + activeGoal.goalUnit.$name.toLowerCase() + ")",
-                        data: data1,
-                        color: "#FF0000",
-                        points: { fillColor: "#FF0000", show: true },
-                        lines: { show: true }
-                    },
-                    {
-                        label: "Pace (mins/" + activeGoal.goalUnit.$name.toLowerCase() + ")",
-                        data: data2,
-                        yaxis: 2,
-                        color: "#0062E3",
-                        points: { fillColor: "#0062E3", show: true },
-                        lines: { show: true }
-                    }
-                ];
-
-                $.plot($("#line-chart"), dataset, {
-                    axisLabels: {
-                        show: true
-                    },
-                    xaxes: [
-                        {
-                            mode: "time",
-                            timeformat: "%m/%d",
-                            minTickSize: [1, "day"],
-                            color: "black",
-                            axisLabel: "Activity Date",
-                            tickLength: 0
-                        }
-                    ],
-                    yaxes: [
-                        {
-                            min: 0,
-                            tickFormatter: distanceFormatter,
-                            axisLabel: "Distance (" + activeGoal.goalUnit.$name.toLowerCase() + ")",
-                            position: "left",
-                            tickLength: 0,
-                            minTickSize: 1
-                        },
-                        {
-                            min: 0,
-                            alignTicksWithAxis: position == "right" ? 1 : null,
-                            position: position,
-                            tickFormatter: paceFormatter,
-                            axisLabel: "Pace (mins/" + activeGoal.goalUnit.$name.toLowerCase() + ")",
-                            tickLength: 0,
-                            minTickSize: 1
-                        }
-                    ],
-                    legend: {
-                        position: 'nw'
-                    },
-                    grid: {
-                        hoverable: true,
-                        borderWidth: 1
-                    },
-                    tooltip: true,
-                    tooltipOpts: {
-                        content: "%s on %x was %y",
-                        xDateFormat: "%m/%d/%Y",
-
-                        onHover: function (flotItem, $tooltipEl) {
-                            // console.log(flotItem, $tooltipEl);
-                        }
-                    }
-                });
-            }).error(function (data, status, headers, config) {
-                console.log(data);
-            });
-
-        }
-
-        doPlot("right");
-
-        var renderRickshawChart = function () {
-            var palette = new Rickshaw.Color.Palette();
-
-            var dataset = [
-                [
-                    {
-                        x: 1403116200, y: 6
-                    },
-                    {
-                        x: 1403375400,
-                        y: 2
-                    },
-                    {
-                        x: 1403548200,
-                        y: 4
-                    }
+        var progressChart = c3.generate({
+            bindto: '#progressChart',
+            size: {
+                height: 300
+            },
+            data: {
+                columns: [
+                    ['completed', 10],
+                    ['remaining', 90]
                 ],
-                [
-                    {
-                        x: 1403116200, y: 9.0
-                    },
-                    {
-                        x: 1403375400,
-                        y: 12.5
-                    },
-                    {
-                        x: 1403548200,
-                        y: 16.25
-                    }
-                ]
-            ]
-            var graph = new Rickshaw.Graph({
-                element: document.querySelector("#chart"),
-                width: 540,
-                height: 240,
-                renderer: 'line',
-                series: [
-                    {
-                        name: "Distance (mi)",
-                        data: dataset[0],
-                        color: "#3182bd"
-                    },
-                    {
-                        name: "Pace (mins/mi)",
-                        data: dataset[1],
-                        color: "#f03b20"
-                    }
-                ]
-            });
-
-            var x_axis = new Rickshaw.Graph.Axis.Time({
-                graph: graph
-            });
-
-            var legend = new Rickshaw.Graph.Legend({
-                element: document.querySelector('#legend'),
-                graph: graph
-            });
-
-            var shelving = new Rickshaw.Graph.Behavior.Series.Toggle({
-                graph: graph,
-                legend: legend
-            });
-
-            var highlighter = new Rickshaw.Graph.Behavior.Series.Highlight({
-                graph: graph,
-                legend: legend
-            });
-
-            var hoverDetail = new Rickshaw.Graph.HoverDetail({
-                graph: graph,
-                xFormatter: function (x) {
-                    return new Date(x * 1000).toDateString();
+                type: 'donut',
+                colors: {
+                    remaining: '#ff0000',
+                    completed: '#00ff00'
+                }
+            },
+            donut: {
+                title: "100 km",
+                onclick: function (d, i) {
+                    console.log(d, i);
                 },
-                yFormatter: function (y) {
-                    return y;
+                onmouseover: function (d, i) {
+                    console.log(d, i);
+                },
+                onmouseout: function (d, i) {
+                    console.log(d, i);
+                }
+            }
+        });
+
+
+        var buildDailyChart = function () {
+            var chart = c3.generate({
+                bindto: "#distance-pace-chart",
+                data: {
+                    colors: {
+                        'pace (mins/km)': "#1b9e77",
+                        'distance (km)': "#d95f02"
+                    },
+                    x: 'x1',
+                    x_format: null,
+                    columns: [
+                        ['x1', 1403742803773, 1403116200000, 1403375400000, 1403548200000],
+                        ['pace (mins/km)', 21, 13, 12, 10],
+                        ['distance (km)', 4, 3, 5, 2]
+                    ]
+                },
+                axis: {
+                    x: {
+                        type: 'timeseries',
+                        tick: {
+                            format: function (x) {
+                                var dateFormat = d3.time.format("%b %d")
+                                return dateFormat(x);
+                            }
+                        }
+                    },
+                    y: {
+                        label: { // ADD
+                            text: 'Distance (km)',
+                            position: 'outer-middle'
+                        }
+
+                    }
+
                 }
             });
-
-            graph.render();
         }
 
-        renderRickshawChart();
+        var buildMonthlyChart = function () {
+            var chart = c3.generate({
+                bindto: "#distance-pace-chart",
+                bar: {
+                    width: {
+                        ratio: 0.25
+                    }
+                },
+                data: {
+                    colors: {
+                        'pace (mins/km)': "#1b9e77",
+                        'distance (km)': "#d95f02"
+                    },
+                    x: 'x1',
+                    x_format: null,
+                    columns: [
+                        ['x1', "Feb", "March", "April", "May", "June"],
+                        ['pace (mins/km)', 10, 14, 16, 18, 20],
+                        ['distance (km)', 20, 40, 60, 80, 75]
+                    ],
+                    types: {
+                        "distance (km)": "bar"
+                    }
+                },
+                axis: {
+                    x: {
+                        type: 'category'
+                    },
+                    y: {
+                        label: { // ADD
+                            text: 'Distance (km)',
+                            position: 'outer-middle'
+                        }
+
+                    }
+
+                }
+            });
+        }
+
+        $scope.distancePaceChart = function (interval) {
+            if (interval === "day") {
+                buildDailyChart();
+            } else if (interval === "month") {
+                buildMonthlyChart();
+            } else {
+                buildDailyChart();
+            }
+        }
+
+
+        buildDailyChart();
 
     });
