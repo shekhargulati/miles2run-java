@@ -200,15 +200,17 @@ angular.module('milestogo')
         }
 
 
-        function calendarStartDate() {
+        function nMonthsBack(n) {
             var d = new Date();
-            d.setMonth(d.getMonth() - 2);
+            d.setMonth(d.getMonth() - n);
             return d;
         }
 
         $scope.calendarConfig = {
-            minDate: calendarStartDate(),
+            start: nMonthsBack(2),
+            minDate: nMonthsBack(5),
             maxDate: new Date(),
+            range: 3,
             data: ConfigService.getBaseUrl() + "goals/" + activeGoal.id + "/activities/calendar",
             itemName: [activeGoal.goalUnit.$name.toLowerCase(), activeGoal.goalUnit.$name.toLowerCase()]
         };
