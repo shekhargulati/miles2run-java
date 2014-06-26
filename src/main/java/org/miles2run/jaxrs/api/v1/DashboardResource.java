@@ -58,7 +58,7 @@ public class DashboardResource {
         String loggedInUser = securityContext.getUserPrincipal().getName();
         Profile profile = profileService.findProfile(loggedInUser);
         Goal goal = goalService.findGoal(profile, goalId);
-        days = days == 0 || days > 60 ? 30 : days;
+        days = days == 0 || days > 60 ? 60 : days;
         months = months == 0 || months > 12 ? 6 : months;
         interval = interval == null ? "day" : interval;
         switch (interval) {

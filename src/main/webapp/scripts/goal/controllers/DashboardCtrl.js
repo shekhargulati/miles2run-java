@@ -61,10 +61,11 @@ angular.module('milestogo')
 
 
         var distancePaceChartPerDay = function () {
-            $scope.showNoDistancePaceChartMessage = true;
+            $("#distance-pace-chart").empty();
             $scope.distancePaceChartPerDayActive = true;
             $scope.distancePaceChartPerMonthActive = false;
             $http.get(ConfigService.getBaseUrl() + "goals/" + activeGoal.id + "/dashboard/charts/distanceandpace").success(function (data, status, headers, config) {
+                $scope.showNoDistancePaceChartMessage = true;
                 if (data && data.length) {
                     $scope.showNoDistancePaceChartMessage = false;
                     buildDailyChart(data);
@@ -79,10 +80,11 @@ angular.module('milestogo')
         }
 
         var distancePaceChartPerMonth = function () {
-            $scope.showNoDistancePaceChartMessage = true;
+            $("#distance-pace-chart").empty();
             $scope.distancePaceChartPerDayActive = false;
             $scope.distancePaceChartPerMonthActive = true;
             $http.get(ConfigService.getBaseUrl() + "goals/" + activeGoal.id + "/dashboard/charts/distanceandpace?interval=month").success(function (data, status, headers, config) {
+                $scope.showNoDistancePaceChartMessage = true;
                 if (data && data.length) {
                     $scope.showNoDistancePaceChartMessage = false;
                     buildMonthlyChart(data);
