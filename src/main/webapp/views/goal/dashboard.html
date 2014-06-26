@@ -50,7 +50,8 @@
                         <p class="size-h2">{{data.totalDistanceCovered}}
                         </p>
 
-                        <p class="text-muted"><span data-i18n="Distance Covered">Distance ({{data.goalUnit | lowercase}})</span></p>
+                        <p class="text-muted"><span data-i18n="Distance Covered">Distance ({{data.goalUnit | lowercase}})</span>
+                        </p>
                     </div>
                 </div>
             </div>
@@ -66,7 +67,8 @@
                         <p class="size-h2">{{data.averagePace | number:2}}
                         </p>
 
-                        <p class="text-muted"><span data-i18n="Pace">Pace (mins/{{data.goalUnit | lowercase}})</span></p>
+                        <p class="text-muted"><span data-i18n="Pace">Pace (mins/{{data.goalUnit | lowercase}})</span>
+                        </p>
                     </div>
                 </div>
             </div>
@@ -96,12 +98,20 @@
     <div class="col-lg-12">
         <div class="panel panel-default">
             <div class="panel-heading">
-                <div class="btn-group pull-right">
+                <div class="btn-group pull-right" ng-if="!showNoDistancePaceChartMessage" ng-cloak>
                     <button type="button" class="btn btn-default" ng-click="distancePaceChart('day')">Day</button>
                     <button type="button" class="btn btn-default" ng-click="distancePaceChart('month')">Month</button>
                 </div>
                 Distance ran and pace over time
             </div>
+            <div class="panel-body" ng-if="showNoDistancePaceChartMessage" ng-cloak>
+                <h2>You haven't tracked any activities yet!!</h2>
+
+                <p class="lead">But don't worry! It's really easy to get started. Just click on the button below to
+                    enter your first activity:</p>
+                <a class="btn btn-success" ng-href="#activity/post">Post New Activity</a>
+            </div>
+
             <div class="panel-body">
                 <div id="distance-pace-chart"></div>
             </div>

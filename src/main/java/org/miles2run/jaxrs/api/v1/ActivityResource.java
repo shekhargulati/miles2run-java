@@ -106,10 +106,10 @@ public class ActivityResource {
         }
 
         long distanceCovered = activity.getDistanceCovered() * activity.getGoalUnit().getConversion();
-        long activityPreviousDistanceCovered = existingActivity.getDistanceCovered();
-        long updatedDistanceCovered = distanceCovered - activityPreviousDistanceCovered;
         activity.setDistanceCovered(distanceCovered);
         ActivityDetails updatedActivity = activityService.update(existingActivity, activity);
+        long activityPreviousDistanceCovered = existingActivity.getDistanceCovered() * existingActivity.getGoalUnit().getConversion();
+        long updatedDistanceCovered = distanceCovered - activityPreviousDistanceCovered;
         timelineService.updateActivity(updatedActivity, profile, goal);
         counterService.updateDistanceCount(updatedDistanceCovered);
         counterService.updateActivitySecondsCount(activity.getDuration());
@@ -137,6 +137,8 @@ public class ActivityResource {
         }
         activityService.delete(activityId);
         timelineService.deleteActivityFromTimeline(loggedInUser, activityId, goal);
+        long activityPreviousDistanceCovered = existingActivity.getDistanceCovered() * existingActivity.getGoalUnit().getConversion();
+        goalService.updateTotalDistanceCoveredForAGoal(goalId, (-1) * activityPreviousDistanceCovered);
         return Response.noContent().build();
     }
 

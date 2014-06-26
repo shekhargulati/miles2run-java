@@ -55,7 +55,7 @@ public class DashboardResource {
     @LoggedIn
     @Produces("application/json")
     @Path("/charts/distanceandpace")
-    public List<List<Object[]>> getDistanceAndPaceOverTime(@PathParam("goalId") Long goalId, @QueryParam("interval") String interval, @QueryParam("days") int days, @QueryParam("months") int months) {
+    public List<Object[]> getDistanceAndPaceOverTime(@PathParam("goalId") Long goalId, @QueryParam("interval") String interval, @QueryParam("days") int days, @QueryParam("months") int months) {
         String loggedInUser = securityContext.getUserPrincipal().getName();
         Profile profile = profileService.findProfile(loggedInUser);
         Goal goal = goalService.findGoal(profile, goalId);
