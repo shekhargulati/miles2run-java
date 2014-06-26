@@ -330,7 +330,7 @@ public class TimelineService {
         });
     }
 
-    public List<Object[]> distanceAndPace(final Profile profile, final Goal goal, final String interval, final int n) {
+    public List<Object[]> distanceAndPaceOverNDays(final Profile profile, final Goal goal, final String interval, final int n) {
         return jedisExecutionService.execute(new JedisOperation<List<Object[]>>() {
             @Override
             public List<Object[]> perform(Jedis jedis) {
@@ -426,6 +426,52 @@ public class TimelineService {
             @Override
             public Long perform(Jedis jedis) {
                 return jedis.zcard(String.format(PROFILE_S_GOAL_S_TIMELINE, loggedInUser, goal.getId()));
+            }
+        });
+    }
+
+    public List<Object[]> distanceAndPaceOverNMonths(final Profile profile, final Goal goal, final String interval, final int nMonths) {
+        return jedisExecutionService.execute(new JedisOperation<List<Object[]>>() {
+            @Override
+            public List<Object[]> perform(Jedis jedis) {
+                Date today = new Date();
+                Calendar calendar = Calendar.getInstance();
+                calendar.add(Calendar.MONTH, -nMonths);
+                Date nMonthsBack = calendar.getTime();
+                Set<Tuple> activityIdsInNDaysWithScores = jedis.zrangeByScoreWithScores(String.format(PROFILE_S_GOAL_S_TIMELINE, profile.getUsername(), goal.getId()), nMonthsBack.getTime(), today.getTime());
+                Map<String, Long> monthDistanceHash = new HashMap<>();
+                Map<String, Double> monthPaceHash = new HashMap<>();
+                for (Tuple activityIdTuple : activityIdsInNDaysWithScores) {
+                    String activityId = activityIdTuple.getElement();
+                    double activityTimestamp = activityIdTuple.getScore();
+                    List<String> values = jedis.hmget(String.format("activity:%s", activityId), "distanceCovered", "duration");
+                    Date activityDate = new Date(Double.valueOf(activityTimestamp).longValue());
+                    logger.info(String.format("Activity Date : %s", activityDate));
+                    String key = formatDateToYearAndMonth(activityDate);
+                    logger.info(String.format("DateToYearAndMonth : %s", key));
+                    long distance = Long.valueOf(values.get(0)) / goal.getGoalUnit().getConversion();
+                    if (monthDistanceHash.containsKey(key)) {
+                        Long value = monthDistanceHash.get(key);
+                        monthDistanceHash.put(key, value + distance);
+                        Double durationInSeconds = Double.valueOf(Long.valueOf(values.get(1)));
+                        double durationInMinutes = durationInSeconds / 60;
+                        double pace = durationInMinutes / distance;
+                        monthPaceHash.put(key, (value + pace) / 2);
+                    } else {
+                        monthDistanceHash.put(key, distance);
+                        Double durationInSeconds = Double.valueOf(Long.valueOf(values.get(1)));
+                        double durationInMinutes = durationInSeconds / 60;
+                        double pace = durationInMinutes / distance;
+                        monthPaceHash.put(key, pace);
+                    }
+                }
+                List<Object[]> chartData = new ArrayList<>();
+                Set<Map.Entry<String, Long>> entries = monthDistanceHash.entrySet();
+                for (Map.Entry<String, Long> entry : entries) {
+                    chartData.add(new Object[]{entry.getKey(), entry.getValue(), monthPaceHash.get(entry.getKey())});
+                }
+                Collections.reverse(chartData);
+                return chartData;
             }
         });
     }

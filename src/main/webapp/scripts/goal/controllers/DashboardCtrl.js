@@ -60,8 +60,10 @@ angular.module('milestogo')
         };
 
 
-        var distancePaceChart = function () {
+        var distancePaceChartPerDay = function () {
             $scope.showNoDistancePaceChartMessage = true;
+            $scope.distancePaceChartPerDayActive = true;
+            $scope.distancePaceChartPerMonthActive = false;
             $http.get(ConfigService.getBaseUrl() + "goals/" + activeGoal.id + "/dashboard/charts/distanceandpace").success(function (data, status, headers, config) {
                 if (data && data.length) {
                     $scope.showNoDistancePaceChartMessage = false;
@@ -75,6 +77,26 @@ angular.module('milestogo')
                 console.log(data);
             });
         }
+
+        var distancePaceChartPerMonth = function () {
+            $scope.showNoDistancePaceChartMessage = true;
+            $scope.distancePaceChartPerDayActive = false;
+            $scope.distancePaceChartPerMonthActive = true;
+            $http.get(ConfigService.getBaseUrl() + "goals/" + activeGoal.id + "/dashboard/charts/distanceandpace?interval=month").success(function (data, status, headers, config) {
+                if (data && data.length) {
+                    $scope.showNoDistancePaceChartMessage = false;
+                    buildMonthlyChart(data);
+                } else {
+                    $scope.showNoDistancePaceChartMessage = true;
+                }
+
+            }).error(function (data, status, headers, config) {
+                $scope.showNoDistancePaceChartMessage = false;
+                console.log(data);
+            });
+        }
+
+
         var buildDailyChart = function (dataElements) {
 
             var headerRow = ['x1', 'distance', 'pace' ];
@@ -125,9 +147,13 @@ angular.module('milestogo')
             });
         };
 
-        distancePaceChart();
+        distancePaceChartPerDay();
 
-        var buildMonthlyChart = function () {
+        var buildMonthlyChart = function (dataElements) {
+
+            var headerRow = ['x1', 'distance', 'pace' ];
+            var rows = [headerRow].concat(dataElements);
+
             var chart = c3.generate({
                 bindto: "#distance-pace-chart",
                 bar: {
@@ -137,18 +163,14 @@ angular.module('milestogo')
                 },
                 data: {
                     colors: {
-                        'pace (mins/km)': "#1b9e77",
-                        'distance (km)': "#d95f02"
+                        'distance': "#d95f02",
+                        'pace': "#1b9e77"
                     },
                     x: 'x1',
                     x_format: null,
-                    columns: [
-                        ['x1', "Feb", "March", "April", "May", "June"],
-                        ['pace (mins/km)', 10, 14, 16, 18, 20],
-                        ['distance (km)', 20, 40, 60, 80, 75]
-                    ],
+                    rows: rows,
                     types: {
-                        "distance (km)": "bar"
+                        "distance": "bar"
                     }
                 },
                 axis: {
@@ -157,7 +179,7 @@ angular.module('milestogo')
                     },
                     y: {
                         label: { // ADD
-                            text: 'Distance (km)',
+                            text: 'Distance (' + goalUnit + ')',
                             position: 'outer-middle'
                         }
 
@@ -169,11 +191,11 @@ angular.module('milestogo')
 
         $scope.distancePaceChart = function (interval) {
             if (interval === "day") {
-                distancePaceChart();
+                distancePaceChartPerDay();
             } else if (interval === "month") {
-                buildMonthlyChart();
+                distancePaceChartPerMonth();
             } else {
-                distancePaceChart();
+                distancePaceChartPerDay();
             }
         }
 

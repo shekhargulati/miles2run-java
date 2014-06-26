@@ -11,7 +11,6 @@ import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.SecurityContext;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -61,7 +60,16 @@ public class DashboardResource {
         Goal goal = goalService.findGoal(profile, goalId);
         days = days == 0 || days > 60 ? 30 : days;
         months = months == 0 || months > 12 ? 6 : months;
-        return timelineService.distanceAndPace(profile, goal, interval, days);
+        interval = interval == null ? "day" : interval;
+        switch (interval) {
+            case "day":
+                return timelineService.distanceAndPaceOverNDays(profile, goal, interval, days);
+            case "month":
+                return timelineService.distanceAndPaceOverNMonths(profile, goal, interval, months);
+            default:
+                return timelineService.distanceAndPaceOverNDays(profile, goal, interval, days);
+        }
+
 
     }
 

@@ -99,8 +99,8 @@
         <div class="panel panel-default">
             <div class="panel-heading">
                 <div class="btn-group pull-right" ng-if="!showNoDistancePaceChartMessage" ng-cloak>
-                    <button type="button" class="btn btn-default" ng-click="distancePaceChart('day')">Day</button>
-                    <button type="button" class="btn btn-default" ng-click="distancePaceChart('month')">Month</button>
+                    <button type="button" class="btn btn-default" ng-click="distancePaceChart('day')" ng-class="{'active' : distancePaceChartPerDayActive}">Day</button>
+                    <button type="button" class="btn btn-default" ng-click="distancePaceChart('month')" ng-class="{'active' : distancePaceChartPerMonthActive}">Month</button>
                 </div>
                 Distance ran and pace over time
             </div>
