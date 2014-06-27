@@ -187,6 +187,18 @@ angular.module('milestogo')
 
                     }
 
+                },
+                tooltip: {
+                    format: {
+                        value: function (data, ratio, id) {
+                            if (id === "distance") {
+                                return data + " " + goalUnit;
+                            } else {
+                                var format = d3.format(".2f");
+                                return format(data) + " " + paceUnit;
+                            }
+                        }
+                    }
                 }
             });
         }
