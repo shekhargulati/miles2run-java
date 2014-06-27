@@ -69,6 +69,7 @@ angular.module('milestogo')
                 if (data && data.length) {
                     $scope.showNoDistancePaceChartMessage = false;
                     buildDailyChart(data);
+                    distanceAcivityCountChart();
                 } else {
                     $scope.showNoDistancePaceChartMessage = true;
                 }
@@ -160,7 +161,7 @@ angular.module('milestogo')
                 bindto: "#distance-pace-chart",
                 bar: {
                     width: {
-                        ratio: 0.25
+                        ratio: 0.1
                     }
                 },
                 data: {
@@ -221,10 +222,10 @@ angular.module('milestogo')
         }
 
         $scope.calendarConfig = {
-            start: nMonthsBack(2),
+            start: new Date(),
             minDate: nMonthsBack(5),
             maxDate: new Date(),
-            range: 3,
+            range: 1,
             data: ConfigService.getBaseUrl() + "goals/" + activeGoal.id + "/activities/calendar",
             itemName: [activeGoal.goalUnit.$name.toLowerCase(), activeGoal.goalUnit.$name.toLowerCase()]
         };
@@ -249,4 +250,71 @@ angular.module('milestogo')
             var d = new Date(val);
             return d.getUTCDate() + "/" + (d.getUTCMonth() + 1);
         }
+
+        var distanceActivityCountChartObj = null;
+
+        var distanceAcivityCountChart = function () {
+            $scope.distanceActityCountLineChartActive = false;
+            $scope.distanceActityCountBarChartActive = true;
+            var data = [
+                ['month', 'distance', 'activityCount'],
+                ['January-2014', 20, 5],
+                ['March-2014', 50, 18],
+                ['March-2014', 45, 18],
+                ['April-2014', 30, 10],
+                ['May-2014', 50 , 15],
+                ['June-2014', 20, 5]
+            ];
+            var chart = c3.generate({
+                bindto: "#distance-activitycount-chart",
+                data: {
+                    rows: data,
+                    type: 'bar',
+                    x: 'month',
+                    colors: {
+                        "distance": "#d95f02",
+                        "activityCount": "#1b9e77"
+                    }
+                },
+                bar: {
+                    width: {
+                        ratio: 0.4
+                    }
+                },
+                axis: {
+                    x: {
+                        type: 'category'
+                    },
+                    y: {
+                        label: {
+                            text: 'Distance (' + goalUnit + ')',
+                            position: 'outer-middle'
+                        }
+
+                    }
+
+                },
+                tooltip: {
+                    format: {
+                        value: function (data, ratio, id) {
+                            if (id === "distance") {
+                                return data + " " + goalUnit;
+                            }
+                            return data;
+                        }
+                    }
+                }
+            });
+
+            distanceActivityCountChartObj = chart;
+        }
+
+        $scope.distanceAcivityCountChart = distanceAcivityCountChart;
+
+        $scope.distanceAcivityCountChartAsLine = function () {
+            $scope.distanceActityCountLineChartActive = true;
+            $scope.distanceActityCountBarChartActive = false;
+            distanceActivityCountChartObj.transform('line');
+        }
+
     });

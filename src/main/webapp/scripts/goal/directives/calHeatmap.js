@@ -15,7 +15,7 @@ angular.module('milestogo')
                     start: config.start ? config.start : new Date(),
                     minDate: config.minDate ? config.minDate : new Date(),
                     maxDate: config.maxDate ? config.maxDate : new Date(),
-                    cellSize: config.cellSize ? config.cellSize : 38,
+                    cellSize: config.cellSize ? config.cellSize : 32,
                     range: config.range ? config.range : 1,
                     domainGutter: config.domainGutter ? config.domainGutter : 25,
                     legend: config.legend ? config.legend : [5, 10, 15, 20],
