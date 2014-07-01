@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('miles2run-home')
-    .controller('FriendsCtrl', function ($scope, $http, $window, activeProfile, ConfigService) {
+    .controller('FriendsCtrl', function ($scope, $http, $window, activeProfile, ConfigService, $rootScope) {
 
         $scope.currentUser = activeProfile;
 
@@ -33,8 +33,8 @@ angular.module('miles2run-home')
         $scope.followUser = function (friend, idx) {
             console.log(friend);
             $http.post(ConfigService.appContext() + 'api/v1/profiles/' + $scope.currentUser.username + "/friendships/create", {"userToFollow": friend.username}).success(function (data, status, headers, config) {
-                console.log("User followed... " + status);
                 $scope.friends.splice(idx, 1);
+                $rootScope.$broadcast('update.following', 'true');
                 toastr.success("Successfully followed user");
             }).error(function (data, status, headers, config) {
                 toastr.error("Unable to follow user. Please try later");
@@ -50,5 +50,12 @@ angular.module('miles2run-home')
                 toastr.error("Unable to unfollow user. Please try later.");
             });
         }
+
+
+        $rootScope.$on('update.following', function (event, value) {
+            $http.get(ConfigService.appContext() + 'api/v1/profiles/me/following').then(function (response) {
+                $scope.following = response.data;
+            });
+        });
 
     });
