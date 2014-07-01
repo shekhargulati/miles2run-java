@@ -39,7 +39,7 @@ public class GoalService {
     public Goal save(Goal goal, Profile profile) {
         goal.setProfile(profile);
         entityManager.persist(goal);
-        return goal;
+        return findGoal(profile, goal.getId());
     }
 
     public Goal findGoal(String loggedInuser, Long goalId) {

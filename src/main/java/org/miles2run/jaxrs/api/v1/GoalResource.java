@@ -74,8 +74,8 @@ public class GoalResource {
             String loggedInUser = securityContext.getUserPrincipal().getName();
             Profile profile = profileService.findProfile(loggedInUser);
             goal.setDistance(goal.getDistance() * goal.getGoalUnit().getConversion());
-            goalService.save(goal, profile);
-            return Response.status(Response.Status.CREATED).build();
+            Goal createdGoal = goalService.save(goal, profile);
+            return Response.status(Response.Status.CREATED).entity(createdGoal).build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }

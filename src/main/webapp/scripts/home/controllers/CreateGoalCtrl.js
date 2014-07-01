@@ -1,6 +1,6 @@
 'use strict';
 
-function CreateGoalCtrl($scope, $location, activeProfile, $http, ConfigService) {
+function CreateGoalCtrl($scope, $location, activeProfile, $http, ConfigService, $window) {
 
     $scope.currentUser = activeProfile;
 
@@ -11,8 +11,8 @@ function CreateGoalCtrl($scope, $location, activeProfile, $http, ConfigService) 
     $scope.createGoal = function () {
         console.log($scope.goal);
         $http.post(ConfigService.getBaseUrl() + "goals", $scope.goal).success(function (data) {
-            toastr.success("Create new goal");
-            $location.path("/");
+            toastr.success("Created new goal");
+            $window.location.href = ConfigService.appContext() + 'goals/' + data.id;
         }).error(function (data, status) {
             toastr.error("Unable to create goal. Please try after sometime.");
             console.log("Error " + data);
