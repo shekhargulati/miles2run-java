@@ -33,7 +33,7 @@ The application would become much more relevant to the conference organisers if 
 <img src="https://whyjava.files.wordpress.com/2014/06/home.jpg" height="600">
 
 ## Design Home Page -- Goals##
-<img src="https://whyjava.files.wordpress.com/2014/06/home-create-cr.jpg" height="600">
+<img src="https://whyjava.files.wordpress.com/2014/06/home-goals.jpg" height="600">
 
 
 ## Design Home Page -- Community Run##
