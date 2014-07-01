@@ -6,14 +6,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
 
-    <title th:inline="text">[[${activity.fullname} + ' ran '+ ${activity.distanceCovered} +' '+ ${activity.goalUnit} + ' on ' + ${#dates.format(activity.activityDate, 'dd-MMM-yyyy')}]]</title>
+    <title th:inline="text">[[${activity.fullname} + ' ran '+ ${activity.distanceCovered} +' '+ ${activity.goalUnit} + '
+        on ' + ${#dates.format(activity.activityDate, 'dd-MMM-yyyy')}]]</title>
 
     <!-- Core CSS - Include with every page -->
     <link href="/css/bootstrap.css" th:href="@{/css/bootstrap.css}" rel="stylesheet"/>
     <link href="/css/sb-admin.css" th:href="@{/css/sb-admin.css}" rel="stylesheet"/>
     <link href='http://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic' rel='stylesheet'
           type='text/css'/>
-    <link href="/css/plugins/social-buttons/social-buttons.css" th:href="@{/css/plugins/social-buttons/social-buttons.css}" rel="stylesheet"/>
+    <link href="/css/plugins/social-buttons/social-buttons.css"
+          th:href="@{/css/plugins/social-buttons/social-buttons.css}" rel="stylesheet"/>
 
     <!-- Miles2Run Overrides -->
     <link href="/css/miles2run.css" th:href="@{/css/miles2run.css}" rel="stylesheet"/>
@@ -72,46 +74,74 @@
 
     <section id="first">
         <div class="container">
-            <div class="row well">
-                <div class="col-md-1">
-                    <a href="#" th:href="@{'/profiles/' + ${activity.username}}" th:inline="text"><img
-                            th:src="${activity.profilePic}" width="50px" height="50px"/></a>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <h4 th:inline="text">
+                                <a href="#" th:href="@{'/profiles/' + ${activity.username}}" th:inline="text"><img th:src="${activity.profilePic}" class="img-thumbnail"/></a> [[${activity.fullname} + ' ran '+ ${activity.distanceCovered} +' '+ ${activity.goalUnit} + ' on ' + ${#dates.format(activity.activityDate, 'dd-MMM-yyyy')}]]
+                            </h4>
+                        </div>
+                    </div>
+
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-lg-4">
+                                <div class="panel mini-box">
+                                    <span class="box-icon rounded bg-success">
+                                        <i class="fa fa-road"></i>
+                                    </span>
+
+                                    <div class="box-info">
+                                        <p class="size-h2" th:text="${activity.distanceCovered}"></p>
+                                        <p class="text-muted"><span data-i18n="Goal" th:inline="text">[['Distance Ran (' + ${activity.goalUnit} + ')']]</span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="panel mini-box">
+                                    <span class="box-icon rounded bg-warning">
+                                        <i class="fa fa-bolt"></i>
+                                    </span>
+                                    <div class="box-info">
+                                        <p class="size-h2" th:inline="text" th:with="pace=((${activity.duration}/60) / ${activity.distanceCovered})">
+                                            [[${#numbers.formatDecimal(pace,2,2)}]]
+                                        </p>
+
+                                        <p class="text-muted">
+                                            <span data-i18n="Pace" th:inline="text">AVERAGE PACE (in mins/[[${activity.goalUnit}]])</span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-4">
+                                <div class="panel mini-box">
+                            <span class="box-icon rounded bg-info">
+                                <i class="fa fa-clock-o"></i>
+                            </span>
+
+                                    <div class="box-info">
+                                        <p class="size-h2" th:text="${activity.durationStr}"></p>
+
+                                        <p class="text-muted"><span data-i18n="Duration">Duration (hh:mm:ss)</span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="panel-footer" th:if="${activity.status != null}">
+                        <p class="lead" th:text="${activity.status}"></p>
+                    </div>
+
                 </div>
-                <div class="col-md-11">
-                    <h4 th:inline="text">[[${activity.fullname} + ' ran '+ ${activity.distanceCovered} +' '+ ${activity.goalUnit}]]
-                        <small class="text-muted pull-right">
-                            <i class="glyphicon glyphicon-calendar" title="activity date"></i>
-                            [[${#dates.format(activity.activityDate, 'dd-MMM-yyyy')}]]
-                        </small>
-                    </h4>
-                </div>
-
-            </div>
-
-            <div class="row well">
-                <div class="col-md-4" style="border: groove">
-                    <strong class="pull-left" th:text="${activity.goalUnit.upperCase()}"></strong>
-                    <h3 th:inline="text"><i class="glyphicon glyphicon-road"></i> [[${activity.distanceCovered}]]</h3>
-                </div>
-
-                <div class="col-md-4" style="border: groove">
-                    <strong class="pull-left">DURATION (in minutes)</strong>
-                    <h3 th:inline="text"><i class="glyphicon glyphicon-time"></i> [[${activity.duration} / 60]]</h3>
-
-                </div>
-
-                <div class="col-md-4" style="border: groove">
-                    <strong class="pull-left" th:inline="text">AVERAGE PACE (in mins/[[${activity.goalUnit}]])</strong>
-                    <h3 th:inline="text" th:with="pace=((${activity.duration}/60) / ${activity.distanceCovered})"><i class="glyphicon glyphicon-flash"></i> [[${#numbers.formatDecimal(pace,2,2)}]]</h3>
-                </div>
-
-            </div>
-
-            <div class="row well" th:if="${activity.status != null}" >
-                <p th:text="${activity.status}"></p>
             </div>
         </div>
-
     </section>
 
 

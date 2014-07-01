@@ -33,6 +33,8 @@ public class ActivityDetails {
 
     private Date postedAt;
 
+    private String durationStr;
+
     public ActivityDetails(Long id, String status, long distanceCovered, GoalUnit goalUnit, Date activityDate, Share share, String fullname, long duration, String username, String profilePic, Date postedAt) {
         this.id = id;
         this.status = status;
@@ -45,7 +47,29 @@ public class ActivityDetails {
         this.profilePic = profilePic;
         this.duration = duration;
         this.postedAt = postedAt;
+        this.durationStr = toDurationText(duration);
     }
+
+    private String toDurationText(long duration) {
+        long secondsInMinute = 60;
+        long minutesInHour = 60;
+        long secondsInHour = minutesInHour * secondsInMinute;
+        long hours = duration / secondsInHour;
+        long minutes = (duration - (hours * secondsInHour)) / secondsInMinute;
+        long seconds = duration - (hours * secondsInHour) - (minutes * secondsInMinute);
+        String hoursText = toText(hours);
+        String minutesText = toText(minutes);
+        String secondsText = toText(seconds);
+        return new StringBuilder(hoursText).append(":")
+                .append(minutesText).append(":")
+                .append(secondsText)
+                .toString();
+    }
+
+    private String toText(long val) {
+        return val < 10 ? "0" + val : String.valueOf(val);
+    }
+
 
     public ActivityDetails(Map<String, String> hash) {
         this.id = Long.valueOf(hash.get("id"));
@@ -108,6 +132,10 @@ public class ActivityDetails {
 
     public Date getPostedAt() {
         return postedAt;
+    }
+
+    public String getDurationStr() {
+        return durationStr;
     }
 
     @Override
