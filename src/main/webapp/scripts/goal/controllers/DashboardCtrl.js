@@ -29,8 +29,8 @@ angular.module('milestogo')
                 },
                 data: {
                     columns: [
-                        ['completed', data.totalDistanceCovered],
-                        ['remaining', (data.goal - data.totalDistanceCovered)]
+                        ['completed', data.totalDistanceCovered > data.goal ? data.goal : data.totalDistanceCovered],
+                        ['remaining', (data.totalDistanceCovered > data.goal ? 0 : data.goal - data.totalDistanceCovered)]
                     ],
                     type: 'donut',
                     colors: {
