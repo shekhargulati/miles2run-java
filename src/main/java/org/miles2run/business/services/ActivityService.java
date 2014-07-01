@@ -28,9 +28,9 @@ public class ActivityService {
     @Inject
     private GoalService goalService;
 
-    public Activity save(Activity activity) {
+    public ActivityDetails save(Activity activity) {
         entityManager.persist(activity);
-        return activity;
+        return findById(activity.getId());
     }
 
     public ActivityDetails findById(@NotNull Long id) {

@@ -1,7 +1,9 @@
 <div class="row top-buffer" id="activity-header" style="border: groove">
     <div class="col-md-6">
         <h3>{{activity.activityDate | date:'EEEE'}} Run</h3>
-        <small class="text-muted"><i class="glyphicon glyphicon-calendar"></i> {{activity.activityDate | date:'MMM dd, yyyy'}}</small>
+        <small class="text-muted"><i class="glyphicon glyphicon-calendar"></i> {{activity.activityDate | date:'MMM dd,
+            yyyy'}}
+        </small>
     </div>
 
     <div class="col-md-offset-4 col-md-2 pull-right">
@@ -10,30 +12,58 @@
                 <i class="glyphicon glyphicon-chevron-down"></i>
             </button>
             <ul class="dropdown-menu" role="menu">
-                <li><a ng-href="#/activity/edit/{{activity.id}}" title="edit activity"><i class="glyphicon glyphicon-edit"></i> Edit</a></li>
-                <li><a ng-href="#/activity/share/{{activity.id}}" title="share activity"><i class="glyphicon glyphicon-share"></i> Share</a></li>
+                <li><a ng-href="#/activity/edit/{{activity.id}}" title="edit activity"><i
+                        class="glyphicon glyphicon-edit"></i> Edit</a></li>
+                <li><a ng-href="#/activity/share/{{activity.id}}" title="share activity"><i
+                        class="glyphicon glyphicon-share"></i> Share</a></li>
             </ul>
         </div>
     </div>
 </div>
 
-<div class="row well top-buffer" id="activity-body">
-        <div class="col-md-4" style="border: groove" title="distance covered in {{activity.goalUnit | lowercase}}">
-            <strong class="pull-left">{{activity.goalUnit}}</strong>
-            <h3><i class="glyphicon glyphicon-road"></i> {{activity.distanceCovered}}</h3>
+<div class="row">
+
+    <div class="col-lg-4">
+        <div class="panel mini-box">
+                        <span class="box-icon rounded bg-success">
+                            <i class="fa fa-road"></i>
+                        </span>
+
+            <div class="box-info">
+                <p class="size-h2">{{activity.distanceCovered}} </p>
+
+                <p class="text-muted"><span data-i18n="Goal">Distance Ran ({{activity.goalUnit | lowercase}})</span></p>
+            </div>
         </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="panel mini-box">
+            <span class="box-icon rounded bg-warning">
+                <i class="fa fa-bolt"></i>
+            </span>
+            <div class="box-info">
+                <p class="size-h2">{{activity.distanceCovered | pace : activity.duration | number:2}}
+                </p>
 
-        <div class="col-md-4" style="border: groove" title="duration in hours:mins:secs">
-            <strong class="pull-left">DURATION</strong>
-            <h3><i class="glyphicon glyphicon-time"></i> {{activity.duration | duration}}</h3>
-
+                <p class="text-muted"><span data-i18n="Pace">Pace (mins/{{activity.goalUnit | lowercase}})</span>
+                </p>
+            </div>
         </div>
+    </div>
 
-        <div class="col-md-4" style="border: groove" title="average pace in mins/{{activity.goalUnit|lowercase}}">
-            <strong class="pull-left">AVERAGE PACE</strong>
-            <h3><i class="glyphicon glyphicon-flash"></i> {{activity.distanceCovered | pace : activity.duration | number:2}}</h3>
+    <div class="col-lg-4">
+        <div class="panel mini-box">
+            <span class="box-icon rounded bg-info">
+                <i class="fa fa-clock-o"></i>
+            </span>
+            <div class="box-info">
+                <p class="size-h2">{{activity.duration | duration}}</p>
+
+                <p class="text-muted"><span data-i18n="Pace">Duration (hh:mm:ss)</span>
+                </p>
+            </div>
         </div>
-
+    </div>
 </div>
 
 <div class="row well top-buffer" id="activity-content">

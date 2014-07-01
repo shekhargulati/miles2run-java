@@ -65,7 +65,7 @@ public class ActivityResource {
         logger.info("Activity Date stored in database " + activity.getActivityDate());
         activity.setPostedBy(profile);
         activity.setGoal(goal);
-        Activity savedActivity = activityService.save(activity);
+        ActivityDetails savedActivity = activityService.save(activity);
         counterService.updateDistanceCount(distanceCovered);
         counterService.updateActivitySecondsCount(activity.getDuration());
         goalService.updateTotalDistanceCoveredForAGoal(goal.getId(), savedActivity.getDistanceCovered());
@@ -73,7 +73,7 @@ public class ActivityResource {
         Share share = activity.getShare();
         String message = toActivityMessage(activity, profile);
         shareActivity(message, profile, share);
-        return Response.status(Response.Status.CREATED).build();
+        return Response.status(Response.Status.CREATED).entity(savedActivity).build();
     }
 
     @GET

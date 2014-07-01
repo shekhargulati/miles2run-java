@@ -59,7 +59,7 @@ public class TimelineService {
         });
     }
 
-    public void postActivityToTimeline(final Activity activity, final Profile profile, final Goal goal) {
+    public void postActivityToTimeline(final ActivityDetails activity, final Profile profile, final Goal goal) {
         final String username = profile.getUsername();
         final String activityId = String.valueOf(activity.getId());
         logger.info("Storing activity in redis");
@@ -120,7 +120,7 @@ public class TimelineService {
     }
 
 
-    private String storeActivity(final Activity activity, final Profile profile, final Goal goal) {
+    private String storeActivity(final ActivityDetails activity, final Profile profile, final Goal goal) {
 
         return jedisExecutionService.execute(new JedisOperation<String>() {
             @Override
@@ -135,7 +135,7 @@ public class TimelineService {
                 String posted = String.valueOf(activity.getActivityDate().getTime());
                 data.put("posted", posted);
                 data.put("fullname", profile.getFullname());
-                data.put("distanceCovered", String.valueOf(activity.getDistanceCovered()));
+                data.put("distanceCovered", String.valueOf(activity.getDistanceCovered() * activity.getGoalUnit().getConversion()));
                 data.put("goalUnit", goal.getGoalUnit().getUnit());
                 data.put("goalId", String.valueOf(goal.getId()));
                 data.put("profilePic", profile.getProfilePic());
@@ -182,7 +182,7 @@ public class TimelineService {
                 String profileTimelineKey = String.format("profile:%s:timeline", userToUnfollow);
                 Set<String> activities = jedis.zrevrange(profileTimelineKey, 0, HOME_TIMELINE_SIZE - 1);
                 if (activities != null && !activities.isEmpty()) {
-                    String[] members = new ArrayList<String>(activities).toArray(new String[0]);
+                    String[] members = new ArrayList<>(activities).toArray(new String[0]);
                     String key = String.format("home:%s:timeline", username);
                     jedis.zrem(key, members);
                 }
@@ -193,9 +193,7 @@ public class TimelineService {
 
     public void updateActivity(final ActivityDetails updatedActivity, final Profile profile, Goal goal) {
         deleteActivityFromTimeline(profile.getUsername(), updatedActivity.getId(), goal);
-        Activity activity = new Activity(updatedActivity);
-        activity.setDistanceCovered(activity.getDistanceCovered() * activity.getGoalUnit().getConversion());
-        postActivityToTimeline(activity, profile, goal);
+        postActivityToTimeline(updatedActivity, profile, goal);
     }
 
     public void deleteActivityFromTimeline(final String username, final Long activityId, final Goal goal) {

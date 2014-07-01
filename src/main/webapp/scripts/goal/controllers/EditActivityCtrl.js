@@ -48,7 +48,7 @@ angular.module('milestogo')
                 ActivityService.updateActivity(activityId, activity, activeGoal.id).success(function (data, status, headers, config) {
                     $rootScope.$broadcast('update.progress', 'true');
                     toastr.success("Updated activity");
-                    $location.path('/');
+                    $location.path('/activity/' + data.id);
                 }).error(function (data, status, headers, config) {
                     console.log("Error handler for update activity. Status code " + status);
                     if (status == 401) {

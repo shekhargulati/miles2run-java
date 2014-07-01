@@ -10,7 +10,6 @@ import java.util.Map;
  * Created by shekhargulati on 11/03/14.
  */
 public class ActivityDetails {
-
     private Long goalId;
     private Long id;
 
@@ -32,8 +31,9 @@ public class ActivityDetails {
 
     private long duration;
 
+    private Date postedAt;
 
-    public ActivityDetails(Long id, String status, long distanceCovered, GoalUnit goalUnit, Date activityDate, Share share, String fullname, long duration, String username, String profilePic) {
+    public ActivityDetails(Long id, String status, long distanceCovered, GoalUnit goalUnit, Date activityDate, Share share, String fullname, long duration, String username, String profilePic, Date postedAt) {
         this.id = id;
         this.status = status;
         this.goalUnit = goalUnit;
@@ -44,6 +44,7 @@ public class ActivityDetails {
         this.username = username;
         this.profilePic = profilePic;
         this.duration = duration;
+        this.postedAt = postedAt;
     }
 
     public ActivityDetails(Map<String, String> hash) {
@@ -102,6 +103,11 @@ public class ActivityDetails {
 
     public Long getGoalId() {
         return goalId;
+    }
+
+
+    public Date getPostedAt() {
+        return postedAt;
     }
 
     @Override

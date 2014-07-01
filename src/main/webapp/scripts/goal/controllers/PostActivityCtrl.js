@@ -43,7 +43,7 @@ function PostActivityCtrl($scope, ActivityService, $location, ProfileService, ac
             ActivityService.postActivity($scope.activity, activeGoal.id).success(function (data, status, headers, config) {
                 $rootScope.$broadcast('update.progress', 'true');
                 toastr.success("Posted new activity");
-                $location.path('/');
+                $location.path('/activity/' + data.id);
             }).error(function (data, status, headers, config) {
                 console.log("Error handler for PostActivity. Status code " + status);
                 toastr.error("Unable to post activity. Please try later.");
