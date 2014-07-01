@@ -1,7 +1,6 @@
 package org.miles2run.business.services;
 
 import org.joda.time.DateTime;
-import org.miles2run.business.domain.Activity;
 import org.miles2run.business.domain.Goal;
 import org.miles2run.business.domain.Profile;
 import org.miles2run.business.domain.UserProfile;
@@ -13,6 +12,7 @@ import redis.clients.jedis.Tuple;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.logging.Logger;
@@ -135,7 +135,7 @@ public class TimelineService {
                 String posted = String.valueOf(activity.getActivityDate().getTime());
                 data.put("posted", posted);
                 data.put("fullname", profile.getFullname());
-                data.put("distanceCovered", String.valueOf(activity.getDistanceCovered() * activity.getGoalUnit().getConversion()));
+                data.put("distanceCovered", String.valueOf(activity.getDistanceCovered()));
                 data.put("goalUnit", goal.getGoalUnit().getUnit());
                 data.put("goalId", String.valueOf(goal.getId()));
                 data.put("profilePic", profile.getProfilePic());
@@ -361,7 +361,7 @@ public class TimelineService {
     }
 
     private String formatDateToYearAndMonth(Date date) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MMMM");
         return dateFormat.format(date);
     }
 
@@ -473,6 +473,62 @@ public class TimelineService {
             }
         });
     }
+
+    public List<Object[]> distanceAndActivityCountOverNMonths(final Profile profile, final Goal goal, final int months) {
+        return jedisExecutionService.execute(new JedisOperation<List<Object[]>>() {
+            @Override
+            public List<Object[]> perform(Jedis jedis) {
+                Date today = new Date();
+                Calendar calendar = Calendar.getInstance();
+                calendar.add(Calendar.MONTH, -months);
+                Date nMonthsBack = calendar.getTime();
+                Set<Tuple> activityIdsInNDaysWithScores = jedis.zrangeByScoreWithScores(String.format(PROFILE_S_GOAL_S_TIMELINE, profile.getUsername(), goal.getId()), nMonthsBack.getTime(), today.getTime());
+                Map<String, Long> monthDistanceHash = new HashMap<>();
+                Map<String, Long> monthActivityCountHash = new HashMap<>();
+                for (Tuple activityIdTuple : activityIdsInNDaysWithScores) {
+                    String activityId = activityIdTuple.getElement();
+                    double activityTimestamp = activityIdTuple.getScore();
+                    List<String> values = jedis.hmget(String.format("activity:%s", activityId), "distanceCovered", "duration");
+                    Date activityDate = new Date(Double.valueOf(activityTimestamp).longValue());
+                    logger.info(String.format("Activity Date : %s", activityDate));
+                    String key = formatDateToYearAndMonth(activityDate);
+                    logger.info(String.format("DateToYearAndMonth : %s", key));
+                    long distance = Long.valueOf(values.get(0)) / goal.getGoalUnit().getConversion();
+                    if (monthDistanceHash.containsKey(key)) {
+                        Long distanceTillNow = monthDistanceHash.get(key);
+                        monthDistanceHash.put(key, distanceTillNow + distance);
+                        Long activityCountTillNow = monthActivityCountHash.get(key);
+                        monthActivityCountHash.put(key, activityCountTillNow + 1L);
+                    } else {
+                        monthDistanceHash.put(key, distance);
+                        monthActivityCountHash.put(key, Long.valueOf(1));
+                    }
+                }
+                List<Object[]> chartData = new ArrayList<>();
+                Set<Map.Entry<String, Long>> entries = monthDistanceHash.entrySet();
+                for (Map.Entry<String, Long> entry : entries) {
+                    chartData.add(new Object[]{entry.getKey(), entry.getValue(), monthActivityCountHash.get(entry.getKey())});
+                }
+                Collections.sort(chartData, new Comparator<Object[]>() {
+                    @Override
+                    public int compare(Object[] m1, Object[] m2) {
+                        String month1 = (String) m1[0];
+                        String month2 = (String) m2[0];
+                        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MMMM");
+                        try {
+                            Date date1 = dateFormat.parse(month1);
+                            Date date2 = dateFormat.parse(month2);
+                            return date1.compareTo(date2);
+                        } catch (ParseException e) {
+                            return 0;
+                        }
+                    }
+                });
+                return chartData;
+            }
+        });
+    }
+
 }
 
 

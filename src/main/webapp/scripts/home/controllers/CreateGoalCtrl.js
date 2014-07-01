@@ -5,7 +5,7 @@ function CreateGoalCtrl($scope, $location, activeProfile, $http, ConfigService, 
     $scope.currentUser = activeProfile;
 
     $scope.goal = {
-
+        goalUnit: 'MI'
     };
 
     $scope.createGoal = function () {

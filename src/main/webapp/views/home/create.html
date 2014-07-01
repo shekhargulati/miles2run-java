@@ -27,8 +27,8 @@
                                        required>
                                 <span class="input-group-addon">
                                     <select name="goalUnit" ng-model="goal.goalUnit" required>
-                                        <option value="KM">km</option>
-                                        <option value="MI" ng-selected="true">mi</option>
+                                        <option value="KM" ng-selected="goal.goalUnit == 'KM'">km</option>
+                                        <option value="MI" ng-selected="goal.goalUnit == 'MI'">mi</option>
                                     </select>
                                 </span>
                             </div>
@@ -40,8 +40,7 @@
                             <div class="col-md-6 input-group">
                                 <input type="text" id="targetDate" name="targetDate" class="form-control"
                                        datepicker-popup="dd-MMMM-yyyy" ng-model="goal.targetDate"
-                                       is-open="dt.open"
-                                       ng-focus="dt.open = true"
+                                       is-open="opened"
                                        min-date="minDate"
                                        datepicker-options="dateOptions" ng-required="true" close-text="Close"
                                        placeholder="dd-MMMM-YYYY eg. 02-August-2014"

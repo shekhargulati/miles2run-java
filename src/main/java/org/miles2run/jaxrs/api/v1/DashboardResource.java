@@ -53,7 +53,7 @@ public class DashboardResource {
     @GET
     @LoggedIn
     @Produces("application/json")
-    @Path("/charts/distanceandpace")
+    @Path("/chart_distance_pace")
     public List<Object[]> getDistanceAndPaceOverTime(@PathParam("goalId") Long goalId, @QueryParam("interval") String interval, @QueryParam("days") int days, @QueryParam("months") int months) {
         String loggedInUser = securityContext.getUserPrincipal().getName();
         Profile profile = profileService.findProfile(loggedInUser);
@@ -69,8 +69,18 @@ public class DashboardResource {
             default:
                 return timelineService.distanceAndPaceOverNDays(profile, goal, interval, days);
         }
-
-
     }
 
+
+    @GET
+    @LoggedIn
+    @Produces("application/json")
+    @Path("/chart_distance_activity")
+    public List<Object[]> getDistanceAndActivityCountOverTime(@PathParam("goalId") Long goalId, @QueryParam("months") int months) {
+        String loggedInUser = securityContext.getUserPrincipal().getName();
+        Profile profile = profileService.findProfile(loggedInUser);
+        Goal goal = goalService.findGoal(profile, goalId);
+        months = months == 0 || months > 12 ? 6 : months;
+        return timelineService.distanceAndActivityCountOverNMonths(profile, goal, months);
+    }
 }

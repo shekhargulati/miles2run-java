@@ -73,14 +73,14 @@ public class ActivityResource {
         Share share = activity.getShare();
         String message = toActivityMessage(activity, profile);
         shareActivity(message, profile, share);
-        return Response.status(Response.Status.CREATED).entity(savedActivity).build();
+        return Response.status(Response.Status.CREATED).entity(ActivityDetails.toHumanReadable(savedActivity)).build();
     }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/{id}")
     public ActivityDetails get(@NotNull @PathParam("id") Long id) {
-        return activityService.findById(id);
+        return ActivityDetails.toHumanReadable(activityService.findById(id));
     }
 
     @PUT
@@ -108,13 +108,13 @@ public class ActivityResource {
         long distanceCovered = activity.getDistanceCovered() * activity.getGoalUnit().getConversion();
         activity.setDistanceCovered(distanceCovered);
         ActivityDetails updatedActivity = activityService.update(existingActivity, activity);
-        long activityPreviousDistanceCovered = existingActivity.getDistanceCovered() * existingActivity.getGoalUnit().getConversion();
+        long activityPreviousDistanceCovered = existingActivity.getDistanceCovered();
         long updatedDistanceCovered = distanceCovered - activityPreviousDistanceCovered;
         timelineService.updateActivity(updatedActivity, profile, goal);
         counterService.updateDistanceCount(updatedDistanceCovered);
         counterService.updateActivitySecondsCount(activity.getDuration());
         goalService.updateTotalDistanceCoveredForAGoal(goalId, updatedDistanceCovered);
-        return Response.status(Response.Status.OK).entity(updatedActivity).build();
+        return Response.status(Response.Status.OK).entity(ActivityDetails.toHumanReadable(updatedActivity)).build();
     }
 
     @DELETE
@@ -137,7 +137,7 @@ public class ActivityResource {
         }
         activityService.delete(activityId);
         timelineService.deleteActivityFromTimeline(loggedInUser, activityId, goal);
-        long activityPreviousDistanceCovered = existingActivity.getDistanceCovered() * existingActivity.getGoalUnit().getConversion();
+        long activityPreviousDistanceCovered = existingActivity.getDistanceCovered();
         goalService.updateTotalDistanceCoveredForAGoal(goalId, (-1) * activityPreviousDistanceCovered);
         return Response.noContent().build();
     }

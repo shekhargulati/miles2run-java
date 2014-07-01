@@ -64,12 +64,11 @@ angular.module('milestogo')
             $("#distance-pace-chart").empty();
             $scope.distancePaceChartPerDayActive = true;
             $scope.distancePaceChartPerMonthActive = false;
-            $http.get(ConfigService.getBaseUrl() + "goals/" + activeGoal.id + "/dashboard/charts/distanceandpace").success(function (data, status, headers, config) {
+            $http.get(ConfigService.getBaseUrl() + "goals/" + activeGoal.id + "/dashboard/chart_distance_pace").success(function (data, status, headers, config) {
                 $scope.showNoDistancePaceChartMessage = true;
                 if (data && data.length) {
                     $scope.showNoDistancePaceChartMessage = false;
                     buildDailyChart(data);
-                    distanceAcivityCountChart();
                 } else {
                     $scope.showNoDistancePaceChartMessage = true;
                 }
@@ -84,7 +83,7 @@ angular.module('milestogo')
             $("#distance-pace-chart").empty();
             $scope.distancePaceChartPerDayActive = false;
             $scope.distancePaceChartPerMonthActive = true;
-            $http.get(ConfigService.getBaseUrl() + "goals/" + activeGoal.id + "/dashboard/charts/distanceandpace?interval=month").success(function (data, status, headers, config) {
+            $http.get(ConfigService.getBaseUrl() + "goals/" + activeGoal.id + "/dashboard/chart_distance_pace?interval=month").success(function (data, status, headers, config) {
                 $scope.showNoDistancePaceChartMessage = true;
                 if (data && data.length) {
                     $scope.showNoDistancePaceChartMessage = false;
@@ -253,18 +252,15 @@ angular.module('milestogo')
 
         var distanceActivityCountChartObj = null;
 
-        var distanceAcivityCountChart = function () {
+        var renderAcivityCountChart = function (dataElements) {
+
+            var headerRow = ['month', 'distance', 'activities' ];
+            var rows = [headerRow].concat(dataElements);
+
             $scope.distanceActityCountLineChartActive = false;
             $scope.distanceActityCountBarChartActive = true;
-            var data = [
-                ['month', 'distance', 'activityCount'],
-                ['January-2014', 20, 5],
-                ['March-2014', 50, 18],
-                ['March-2014', 45, 18],
-                ['April-2014', 30, 10],
-                ['May-2014', 50 , 15],
-                ['June-2014', 20, 5]
-            ];
+
+            var data = rows;
             var chart = c3.generate({
                 bindto: "#distance-activitycount-chart",
                 data: {
@@ -309,7 +305,24 @@ angular.module('milestogo')
             distanceActivityCountChartObj = chart;
         }
 
-        $scope.distanceAcivityCountChart = distanceAcivityCountChart;
+        var distanceActivityCountChart = function () {
+            $http.get(ConfigService.getBaseUrl() + "goals/" + activeGoal.id + "/dashboard/chart_distance_activity").success(function (data, status, headers, config) {
+                if (data && data.length) {
+                    renderAcivityCountChart(data);
+                } else {
+                    $scope.showNoDistancePaceChartMessage = true;
+                }
+
+            }).error(function (data, status, headers, config) {
+                $scope.showNoDistancePaceChartMessage = false;
+                console.log(data);
+            });
+        }
+
+
+        distanceActivityCountChart();
+
+        $scope.distanceAcivityCountChart = distanceActivityCountChart;
 
         $scope.distanceAcivityCountChartAsLine = function () {
             $scope.distanceActityCountLineChartActive = true;
