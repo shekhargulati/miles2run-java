@@ -13,7 +13,6 @@ angular.module('miles2run-home')
         });
 
         $scope.editGoal = function () {
-            console.log($scope.goal);
             var goal = {
                 id: $scope.goal.id,
                 purpose: $scope.goal.purpose,

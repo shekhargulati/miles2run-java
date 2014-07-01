@@ -52,6 +52,14 @@ app.filter('moment', function () {
     }
 });
 
+app.filter('momentDaysBetween', function () {
+    return function (text) {
+        var currentMoment = moment(new Date());
+        var targetMoment = moment(text, "MMDDYYYY HH mm ss")
+        return 'in ' + targetMoment.diff(currentMoment, 'days') + ' days';
+    }
+});
+
 app.filter('duration', function () {
     return function (text) {
         if (text) {
