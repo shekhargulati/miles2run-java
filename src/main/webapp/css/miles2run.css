@@ -2621,13 +2621,14 @@ footer {
 }
 
 .radial-progress-block {
-    text-align: center;
-    margin-top: 50px;
+    width: 125px;
+    margin: 50px auto 0;
     overflow: hidden;
 }
 
 .radial-progress-block h6 {
     color: #a1a8ad;
+    text-align: center;
 }
 
 .radial-progress {
