@@ -27,8 +27,8 @@
                                        required>
                                 <span class="input-group-addon">
                                     <select name="goalUnit" ng-model="goal.goalUnit" required>
-                                        <option value="KM" ng-selected="true">km</option>
-                                        <option value="MI">mi</option>
+                                        <option value="KM">km</option>
+                                        <option value="MI" ng-selected="true">mi</option>
                                     </select>
                                 </span>
                             </div>
@@ -58,7 +58,7 @@
 
                             <div class="col-md-6 input-group">
                                 <input id="purpose" name="purpose" type="text"
-                                       placeholder="Goal purpose"
+                                       placeholder="Why are you creating this goal? eg. loose 10 lbs."
                                        class="form-control" ng-model="goal.purpose"
                                        title="Please provide purpose of this goal"
                                        required>
