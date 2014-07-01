@@ -22,7 +22,8 @@
                             <div class="col-md-6 input-group">
                                 <input type="text" id="activityDate" name="activityDate" class="form-control"
                                        datepicker-popup="dd-MMMM-yyyy" ng-model="activity.activityDate"
-                                       is-open="opened"
+                                       is-open="dt.open"
+                                       ng-focus="dt.open = true"
                                        max-date="minDate"
                                        datepicker-options="dateOptions" close-text="Close"
                                        placeholder="Date you ran"

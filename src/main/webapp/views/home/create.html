@@ -40,7 +40,8 @@
                             <div class="col-md-6 input-group">
                                 <input type="text" id="targetDate" name="targetDate" class="form-control"
                                        datepicker-popup="dd-MMMM-yyyy" ng-model="goal.targetDate"
-                                       is-open="opened"
+                                       is-open="dt.open"
+                                       ng-focus="dt.open = true"
                                        min-date="minDate"
                                        datepicker-options="dateOptions" ng-required="true" close-text="Close"
                                        placeholder="dd-MMMM-YYYY eg. 02-August-2014"
