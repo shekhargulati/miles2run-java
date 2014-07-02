@@ -4,7 +4,8 @@ angular.module('milestogo')
     .controller('EditActivityCtrl', function ($scope, $routeParams, ActivityService, $location, $rootScope, activeGoal) {
         var activityId = $routeParams.activityId;
         ActivityService.get(activityId, activeGoal.id).success(function (data) {
-            $scope.activityDetails = data;
+            $scope.activity = data;
+            $scope.activity.activityDate = new Date(data.activityDate);
             $scope.duration = toHrMinSec(data.duration);
         }).error(function (data) {
             toastr.error("Unable to fetch activity with id: " + activityId);
@@ -13,36 +14,35 @@ angular.module('milestogo')
         });
 
         $scope.validateDuration = function (duration) {
-            var durationVal = toAppSeconds(duration);
+            var durationVal = toAppSeconds(duration)
             if (durationVal > 0) {
                 $scope.activityForm.durationHours.$invalid = false;
-                $scope.activityForm.durationMinutes.$invalid = false;
-                $scope.activityForm.durationSeconds.$invalid = false;
+            }else{
+                $scope.activityForm.durationHours.$invalid = true;
             }
         }
 
-        $scope.updateActivity = function (isValid) {
-
-            $scope.submitted = true;
-            var duration = toAppSeconds($scope.duration);
-            if (duration === 0) {
-                $scope.activityForm.durationHours.$invalid = true;
-                $scope.activityForm.durationMinutes.$invalid = true;
-                $scope.activityForm.durationSeconds.$invalid = true;
-                isValid = false;
-            } else {
-                $scope.activityForm.durationHours.$invalid = false;
-                $scope.activityForm.durationMinutes.$invalid = false;
-                $scope.activityForm.durationSeconds.$invalid = false;
+        var toAppSeconds = function(duration){
+            if (duration) {
+                var hours = duration.hours && duration.hours !== '00' ? duration.hours : 0;
+                var minutes = duration.minutes && duration.minutes !== '00' ? duration.minutes : 0;
+                var seconds = duration.seconds && duration.seconds !== '00' ? duration.seconds : 0;
+                return Number(hours) * 60 * 60 + Number(minutes) * 60 + Number(seconds);
             }
-            if (!$scope.activityForm.distanceCovered.$invalid && !$scope.activityForm.durationHours.$invalid) {
+            return 0;
+        }
+
+        $scope.updateActivity = function () {
+            $scope.submitted = true;
+            $scope.validateDuration($scope.duration);
+            if ($scope.activityForm.$valid && !$scope.activityForm.durationHours.$invalid) {
                 var activity = {
-                    id: $scope.activityDetails.id,
-                    status: $scope.activityDetails.status,
-                    goalUnit: $scope.activityDetails.goalUnit,
-                    distanceCovered: $scope.activityDetails.distanceCovered,
-                    share: $scope.activityDetails.share,
-                    activityDate: $scope.activityDetails.activityDate
+                    id: $scope.activity.id,
+                    status: $scope.activity.status,
+                    goalUnit: $scope.activity.goalUnit,
+                    distanceCovered: $scope.activity.distanceCovered,
+                    share: $scope.activity.share,
+                    activityDate: $scope.activity.activityDate
                 };
                 activity.duration = toAppSeconds($scope.duration);
                 ActivityService.updateActivity(activityId, activity, activeGoal.id).success(function (data, status, headers, config) {
@@ -98,28 +98,16 @@ angular.module('milestogo')
             'starting-day': 1
         };
 
-        $scope.formats = ['dd-MMMM-yyyy', 'yyyy/MM/dd', 'shortDate'];
-        $scope.format = $scope.formats[0];
     });
 
-
-function toAppSeconds(duration) {
-    if (duration) {
-        var hours = duration.hours && duration.hours !== '00' ? duration.hours : 0;
-        var minutes = duration.minutes && duration.minutes !== '00' ? duration.minutes : 0;
-        var seconds = duration.seconds && duration.seconds !== '00' ? duration.seconds : 0;
-        return Number(hours) * 60 * 60 + Number(minutes) * 60 + Number(seconds);
-    }
-    return 0;
-}
 
 function toHrMinSec(duration) {
     var hours = Math.floor(duration / (60 * 60));
     var minutes = Math.floor(duration / 60) - (hours * 60);
     var seconds = duration - (minutes * 60) - (hours * 60 * 60);
     return  {
-        hours: hours && hours !== 0 ? hours : "00",
-        minutes: minutes && minutes != 0 ? minutes : "00",
-        seconds: seconds && seconds != 0 ? seconds : "00"
+        hours: hours && hours !== 0 ? hours : 0,
+        minutes: minutes && minutes != 0 ? minutes : 0,
+        seconds: seconds && seconds != 0 ? seconds : 0
     }
 }

@@ -9,37 +9,30 @@ function PostActivityCtrl($scope, ActivityService, $location, ProfileService, ac
         share: {}
     };
 
-    $scope.duration = {
-        hours: "00",
-        minutes: "00",
-        seconds: "00"
-    };
-
-
     $scope.validateDuration = function (duration) {
-        var durationVal = toAppSeconds(duration);
+        var durationVal = toAppSeconds(duration)
         if (durationVal > 0) {
             $scope.activityForm.durationHours.$invalid = false;
-            $scope.activityForm.durationMinutes.$invalid = false;
-            $scope.activityForm.durationSeconds.$invalid = false;
+        }else{
+            $scope.activityForm.durationHours.$invalid = true;
         }
     }
 
-    $scope.postActivity = function (isValid) {
-        $scope.submitted = true;
-        var duration = toAppSeconds($scope.duration);
-        if (duration === 0) {
-            $scope.activityForm.durationHours.$invalid = true;
-            $scope.activityForm.durationMinutes.$invalid = true;
-            $scope.activityForm.durationSeconds.$invalid = true;
-            isValid = false;
-        } else {
-            $scope.activityForm.durationHours.$invalid = false;
-            $scope.activityForm.durationMinutes.$invalid = false;
-            $scope.activityForm.durationSeconds.$invalid = false;
+    var toAppSeconds = function(duration){
+        if (duration) {
+            var hours = duration.hours && duration.hours !== '00' ? duration.hours : 0;
+            var minutes = duration.minutes && duration.minutes !== '00' ? duration.minutes : 0;
+            var seconds = duration.seconds && duration.seconds !== '00' ? duration.seconds : 0;
+            return Number(hours) * 60 * 60 + Number(minutes) * 60 + Number(seconds);
         }
-        if (isValid) {
-            $scope.activity.duration = duration;
+        return 0;
+    }
+
+    $scope.postActivity = function () {
+        $scope.submitted = true;
+        $scope.validateDuration($scope.duration);
+        if ($scope.activityForm.$valid && !$scope.activityForm.durationHours.$invalid) {
+            $scope.activity.duration = toAppSeconds($scope.duration);
             ActivityService.postActivity($scope.activity, activeGoal.id).success(function (data, status, headers, config) {
                 $rootScope.$broadcast('update.progress', 'true');
                 toastr.success("Posted new activity");
