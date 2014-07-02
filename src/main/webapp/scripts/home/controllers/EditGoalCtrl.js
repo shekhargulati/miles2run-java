@@ -13,23 +13,27 @@ angular.module('miles2run-home')
         });
 
         $scope.editGoal = function () {
-            var goal = {
-                id: $scope.goal.id,
-                purpose: $scope.goal.purpose,
-                targetDate: $scope.goal.targetDate,
-                distance: $scope.goal.distance,
-                goalUnit: $scope.goal.goalUnit,
-                archived: $scope.goal.archived
+            $scope.submitted = true;
+            if ($scope.goalForm.$valid) {
+                var goal = {
+                    id: $scope.goal.id,
+                    purpose: $scope.goal.purpose,
+                    targetDate: $scope.goal.targetDate,
+                    distance: $scope.goal.distance,
+                    goalUnit: $scope.goal.goalUnit,
+                    archived: $scope.goal.archived
+                }
+                $http.put(ConfigService.getBaseUrl() + "goals/" + $scope.goal.id, goal).success(function (data) {
+                    toastr.success("Updated goal");
+                    $location.path("/");
+                }).error(function (data, status) {
+                    toastr.error("Unable to update goal. Please try after sometime.");
+                    console.log("Error " + data);
+                    console.log("Status " + status)
+                    $location.path("/");
+                });
             }
-            $http.put(ConfigService.getBaseUrl() + "goals/" + $scope.goal.id, goal).success(function (data) {
-                toastr.success("Updated goal");
-                $location.path("/");
-            }).error(function (data, status) {
-                toastr.error("Unable to update goal. Please try after sometime.");
-                console.log("Error " + data);
-                console.log("Status " + status)
-                $location.path("/");
-            });
+
         };
 
         $scope.today = function () {

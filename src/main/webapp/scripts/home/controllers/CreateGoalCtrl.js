@@ -9,16 +9,19 @@ function CreateGoalCtrl($scope, $location, activeProfile, $http, ConfigService, 
     };
 
     $scope.createGoal = function () {
-        console.log($scope.goal);
-        $http.post(ConfigService.getBaseUrl() + "goals", $scope.goal).success(function (data) {
-            toastr.success("Created new goal");
-            $window.location.href = ConfigService.appContext() + 'goals/' + data.id;
-        }).error(function (data, status) {
-            toastr.error("Unable to create goal. Please try after sometime.");
-            console.log("Error " + data);
-            console.log("Status " + status)
-            $location.path("/");
-        });
+        $scope.submitted = true;
+        if ($scope.goalForm.$valid) {
+            $http.post(ConfigService.getBaseUrl() + "goals", $scope.goal).success(function (data) {
+                toastr.success("Created new goal");
+                $window.location.href = ConfigService.appContext() + 'goals/' + data.id;
+            }).error(function (data, status) {
+                toastr.error("Unable to create goal. Please try after sometime.");
+                console.log("Error " + data);
+                console.log("Status " + status)
+                $location.path("/");
+            });
+        }
+
     };
 
     $scope.today = function () {
@@ -56,9 +59,6 @@ function CreateGoalCtrl($scope, $location, activeProfile, $http, ConfigService, 
         'year-format': "'yy'",
         'starting-day': 1
     };
-
-    $scope.formats = ['dd-MMMM-yyyy', 'yyyy/MM/dd', 'shortDate'];
-    $scope.format = $scope.formats[0];
 }
 
 angular.module('miles2run-home')
