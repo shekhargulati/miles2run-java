@@ -67,7 +67,7 @@ public class ChartServiceTest {
         Mockito.when(jedis.hget(Matchers.anyString(), Matchers.anyString())).thenReturn("1000");
         Mockito.when(jedis.hget(Matchers.anyString(), Matchers.anyString())).thenReturn("1000");
 
-        Map<String, Long> result = chartService.getActivitiesPerformedInLastNMonthsForGoal("ajy.deb.5", goal, 30);
+        Map<String, Double> result = chartService.getActivitiesPerformedInLastNMonthsForGoal("ajy.deb.5", goal, 30);
         Assert.assertEquals(2, result.size());
         System.out.printf("Result %s", result);
         Mockito.verify(jedis).zrangeByScoreWithScores(Matchers.anyString(), Matchers.anyLong(), Matchers.anyLong());

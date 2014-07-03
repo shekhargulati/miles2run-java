@@ -2,6 +2,8 @@ package org.miles2run.business.services;
 
 import org.miles2run.business.domain.Goal;
 import org.miles2run.business.domain.Profile;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import redis.clients.jedis.Jedis;
 
 import javax.ejb.Stateless;
@@ -10,7 +12,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Logger;
 
 /**
  * Created by shekhargulati on 11/06/14.
@@ -18,14 +19,14 @@ import java.util.logging.Logger;
 @Stateless
 public class GoalService {
 
+    private Logger logger = LoggerFactory.getLogger(GoalService.class);
+
     @Inject
     private EntityManager entityManager;
     @Inject
     private ProfileService profileService;
     @Inject
     private JedisExecutionService jedisExecutionService;
-    @Inject
-    private Logger logger;
 
     public List<Goal> findAllGoals(String loggedInuser, boolean archived) {
         Profile profile = profileService.findProfile(loggedInuser);
@@ -89,25 +90,25 @@ public class GoalService {
         entityManager.persist(goal);
     }
 
-    public void updateTotalDistanceCoveredForAGoal(final Long goalId, final long distanceCovered) {
-        logger.info(String.format("Updating goal with id %d with distance %d", goalId, distanceCovered));
+    public void updateTotalDistanceCoveredForAGoal(final Long goalId, final double distanceCovered) {
+        logger.info("Updating goal with id {} with distance {}", goalId, distanceCovered);
         jedisExecutionService.execute(new JedisOperation<Void>() {
             @Override
             public Void perform(Jedis jedis) {
                 String key = String.format("goal:%s:progress", goalId);
-                jedis.incrBy(key, distanceCovered);
+                jedis.incrByFloat(key, distanceCovered);
                 return null;
             }
         });
     }
 
-    public long totalDistanceCoveredForGoal(final Long goalId) {
-        return jedisExecutionService.execute(new JedisOperation<Long>() {
+    public double totalDistanceCoveredForGoal(final Long goalId) {
+        return jedisExecutionService.execute(new JedisOperation<Double>() {
             @Override
-            public Long perform(Jedis jedis) {
+            public Double perform(Jedis jedis) {
                 String key = String.format("goal:%s:progress", goalId);
                 String value = jedis.get(key);
-                return value == null ? Long.valueOf(0) : Long.valueOf(value);
+                return value == null ? Double.valueOf(0) :Double.valueOf(value);
             }
         });
     }

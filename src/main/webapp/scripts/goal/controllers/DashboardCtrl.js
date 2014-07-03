@@ -29,8 +29,8 @@ angular.module('milestogo')
                 },
                 data: {
                     columns: [
-                        ['completed', data.totalDistanceCovered > data.goal ? data.goal : data.totalDistanceCovered],
-                        ['remaining', (data.totalDistanceCovered > data.goal ? 0 : data.goal - data.totalDistanceCovered)]
+                        ['completed', $filter('number')(data.totalDistanceCovered > data.goal ? data.goal : data.totalDistanceCovered, 2)],
+                        ['remaining', $filter('number')(data.totalDistanceCovered > data.goal ? 0 : data.goal - data.totalDistanceCovered, 2)]
                     ],
                     type: 'donut',
                     colors: {
@@ -40,7 +40,7 @@ angular.module('milestogo')
                     labels: false
                 },
                 legend: {
-                    show:false
+                    show: false
                 },
                 tooltip: {
                     format: {
@@ -131,10 +131,10 @@ angular.module('milestogo')
                 tooltip: {
                     format: {
                         value: function (data, ratio, id) {
+                            var format = d3.format(".2f");
                             if (id === "distance") {
-                                return data + " " + goalUnit;
+                                return format(data) + " " + goalUnit;
                             } else {
-                                var format = d3.format(".2f");
                                 return format(data) + " " + paceUnit;
                             }
                         }
@@ -185,10 +185,10 @@ angular.module('milestogo')
                 tooltip: {
                     format: {
                         value: function (data, ratio, id) {
+                            var format = d3.format(".2f");
                             if (id === "distance") {
-                                return data + " " + goalUnit;
+                                return format(data) + " " + goalUnit;
                             } else {
-                                var format = d3.format(".2f");
                                 return format(data) + " " + paceUnit;
                             }
                         }
@@ -287,8 +287,9 @@ angular.module('milestogo')
                 tooltip: {
                     format: {
                         value: function (data, ratio, id) {
+                            var format = d3.format(".2f");
                             if (id === "distance") {
-                                return data + " " + goalUnit;
+                                return format(data) + " " + goalUnit;
                             }
                             return data;
                         }

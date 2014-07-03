@@ -9,7 +9,7 @@
 <!-- /.row -->
 <div class="row">
 
-    <div class="col-lg-6">
+    <div class="col-lg-5">
         <div class="panel panel-default">
             <div class="panel-body">
                 <div class="row">
@@ -25,7 +25,7 @@
         <!-- /.panel -->
     </div>
 
-    <div class="col-lg-6">
+    <div class="col-lg-7">
         <div class="row">
             <div class="col-lg-6">
                 <div class="panel mini-box">
@@ -34,7 +34,7 @@
                         </span>
 
                     <div class="box-info">
-                        <p class="size-h2">{{data.goal}} </p>
+                        <p class="size-h2">{{data.goal | number:2}} </p>
 
                         <p class="text-muted"><span data-i18n="Goal">Goal ({{data.goalUnit | lowercase}})</span></p>
                     </div>
@@ -47,7 +47,7 @@
                         </span>
 
                     <div class="box-info">
-                        <p class="size-h2">{{data.totalDistanceCovered}}
+                        <p class="size-h2">{{data.totalDistanceCovered | number:2}}
                         </p>
 
                         <p class="text-muted"><span data-i18n="Distance Covered">Distance ({{data.goalUnit | lowercase}})</span>

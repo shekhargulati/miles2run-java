@@ -97,21 +97,21 @@ public class CounterService {
         });
     }
 
-    public Long updateDistanceCount(final long distanceCovered) {
-        return jedisExecutionService.execute(new JedisOperation<Long>() {
+    public Double updateDistanceCount(final double distanceCovered) {
+        return jedisExecutionService.execute(new JedisOperation<Double>() {
             @Override
-            public Long perform(Jedis jedis) {
-                return jedis.incrBy(DISTANCE_COUNTER, distanceCovered);
+            public Double perform(Jedis jedis) {
+                return jedis.incrByFloat(DISTANCE_COUNTER, distanceCovered);
             }
         });
     }
 
-    public Long getDistanceCount() {
-        return jedisExecutionService.execute(new JedisOperation<Long>() {
+    public Double getDistanceCount() {
+        return jedisExecutionService.execute(new JedisOperation<Double>() {
             @Override
-            public Long perform(Jedis jedis) {
+            public Double perform(Jedis jedis) {
                 String counter = jedis.get(DISTANCE_COUNTER);
-                return counter == null ? Long.valueOf(0) : Long.valueOf(counter);
+                return counter == null ? Double.valueOf(0) : Double.valueOf(counter);
             }
         });
     }

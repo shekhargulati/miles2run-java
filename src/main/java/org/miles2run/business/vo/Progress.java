@@ -9,21 +9,20 @@ import org.miles2run.business.domain.GoalUnit;
 public class Progress {
     private GoalUnit goalUnit;
     private long goal;
-    private long totalDistanceCovered;
-    private long percentage;
+    private double totalDistanceCovered;
+    private double percentage;
     private long activityCount;
     private long totalDurationInSecs;
     private long totalDurationInMins;
     private double averagePace;
 
-    public Progress(long goal, GoalUnit goalUnit, long totalDistanceCovered, long activityCount, long totalDurationInSecs) {
+    public Progress(long goal, GoalUnit goalUnit, double totalDistanceCovered, long activityCount, long totalDurationInSecs) {
         this.goalUnit = goalUnit;
         this.goal = goal / this.goalUnit.getConversion();
         this.totalDistanceCovered = totalDistanceCovered / this.goalUnit.getConversion();
         this.activityCount = activityCount;
         if (goal != 0) {
-            double percentageInDouble = ((double) (totalDistanceCovered * 100) / goal);
-            this.percentage = Double.valueOf(percentageInDouble).longValue();
+            this.percentage = ((double) (totalDistanceCovered * 100) / goal);
             this.percentage = this.percentage > 100 ? 100 : this.percentage;
         }
         this.totalDurationInSecs = totalDurationInSecs;
@@ -57,7 +56,7 @@ public class Progress {
         this.goal = goal;
     }
 
-    public long getTotalDistanceCovered() {
+    public double getTotalDistanceCovered() {
         return totalDistanceCovered;
     }
 
@@ -73,11 +72,11 @@ public class Progress {
         this.goalUnit = goalUnit;
     }
 
-    public long getPercentage() {
+    public double getPercentage() {
         return percentage;
     }
 
-    public void setPercentage(long percentage) {
+    public void setPercentage(double percentage) {
         this.percentage = percentage;
     }
 

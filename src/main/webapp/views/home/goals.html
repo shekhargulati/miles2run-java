@@ -45,9 +45,9 @@
                                 <td>
                                     <a ng-href="{{appContext}}goals/{{goal.id}}">{{goal.purpose}}</a>
                                 </td>
-                                <td>{{goal.distance + ' ' + goal.goalUnit|lowercase}}</td>
+                                <td>{{(goal.distance |number:2) + ' ' + goal.goalUnit|lowercase}}</td>
                                 <td>{{goal.targetDate | date:'MMddyyyy HH mm ss'|momentDaysBetween}}</td>
-                                <td>{{goal.percentageCompleted}}% Complete</td>
+                                <td>{{goal.percentageCompleted |number:2}}% Complete</td>
                                 <td>
                                     <div class="btn-group pull-right">
                                         <button type="button" class="btn btn-default btn-xs dropdown-toggle"

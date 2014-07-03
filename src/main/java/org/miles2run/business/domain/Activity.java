@@ -34,7 +34,7 @@ public class Activity {
     private GoalUnit goalUnit;
 
     @NotNull
-    private long distanceCovered;
+    private double distanceCovered;
 
     @Column(updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
@@ -59,26 +59,26 @@ public class Activity {
     }
 
 
-    public Activity(String status, long distanceCovered, Profile postedBy) {
+    public Activity(String status, double distanceCovered, Profile postedBy) {
         this.status = status;
         this.distanceCovered = distanceCovered;
         this.postedBy = postedBy;
     }
 
-    public Activity(Long id, String status, long distanceCovered) {
+    public Activity(Long id, String status, double distanceCovered) {
         this.id = id;
         this.status = status;
         this.distanceCovered = distanceCovered;
     }
 
-    public Activity(Long id, String status, long distanceCovered, Date postedAt) {
+    public Activity(Long id, String status, double distanceCovered, Date postedAt) {
         this.id = id;
         this.status = status;
         this.distanceCovered = distanceCovered;
         this.postedAt = postedAt;
     }
 
-    public Activity(Date activityDate, long distanceCovered, GoalUnit goalUnit) {
+    public Activity(Date activityDate, double distanceCovered, GoalUnit goalUnit) {
         this.activityDate = activityDate;
         this.distanceCovered = distanceCovered;
         this.goalUnit = goalUnit;
@@ -108,11 +108,11 @@ public class Activity {
         this.status = status;
     }
 
-    public long getDistanceCovered() {
+    public double getDistanceCovered() {
         return distanceCovered;
     }
 
-    public void setDistanceCovered(long distanceCovered) {
+    public void setDistanceCovered(double distanceCovered) {
         this.distanceCovered = distanceCovered;
     }
 

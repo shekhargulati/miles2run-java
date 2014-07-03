@@ -35,7 +35,7 @@
                         <div class="timeline-panel">
                             <div class="timeline-heading clearfix ">
                                 <h4 class="timeline-title">@<a ng-href="{{appContext()}}profiles/{{activity.username}}">{{activity.username}}</a>
-                                    ran {{activity.distanceCovered}} {{activity.goalUnit | lowercase}}</h4>
+                                    ran {{activity.distanceCovered | number:2}} {{activity.goalUnit | lowercase}}</h4>
                                 <span class="pull-right text-muted small"><i class="fa fa-calendar fa-fw"></i><em>{{activity.activityDate
                                     | date:'MMM dd, yyyy'}}</em></span>
                             </div>

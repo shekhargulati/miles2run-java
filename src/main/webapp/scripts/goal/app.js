@@ -100,16 +100,16 @@ function ProgressCtrl($scope, ProgressService, activeProfile, $rootScope, active
     ProgressService.progress(activeGoal.id).success(function (data, status, headers, config) {
         $scope.error = null;
         $scope.status = status;
-        $scope.data = data;
-        $scope.style = "width:" + data.percentage + "%";
+        $scope.percentage = Math.ceil(data.percentage);
+        $scope.style = "width:" + Math.ceil(data.percentage) + "%";
     });
 
     $rootScope.$on('update.progress', function (event, value) {
         ProgressService.progress(activeGoal.id).success(function (data, status, headers, config) {
             $scope.error = null;
             $scope.status = status;
-            $scope.data = data;
-            $scope.style = "width:" + data.percentage + "%";
+            $scope.percentage = Math.ceil(data.percentage);
+            $scope.style = "width:" + Math.ceil(data.percentage) + "%";
         });
     });
 }

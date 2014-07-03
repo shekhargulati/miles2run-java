@@ -79,7 +79,7 @@ public class DashboardResource {
             return Response.status(Response.Status.NOT_FOUND).entity("No goal exists with id " + goalId).build();
         }
         nMonths = nMonths == 0 || nMonths > 12 ? 3 : nMonths;
-        Map<String, Long> data = chartService.getActivitiesPerformedInLastNMonthsForGoal(profile.getUsername(), goal, nMonths);
+        Map<String, Double> data = chartService.getActivitiesPerformedInLastNMonthsForGoal(profile.getUsername(), goal, nMonths);
         return Response.status(Response.Status.OK).entity(data).build();
     }
 }

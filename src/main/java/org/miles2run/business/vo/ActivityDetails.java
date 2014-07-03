@@ -15,7 +15,7 @@ public class ActivityDetails {
 
     private String status;
 
-    private long distanceCovered;
+    private double distanceCovered;
 
     private GoalUnit goalUnit;
 
@@ -39,7 +39,7 @@ public class ActivityDetails {
 
     }
 
-    public ActivityDetails(Long id, String status, long distanceCovered, GoalUnit goalUnit, Date activityDate, Share share, String fullname, long duration, String username, String profilePic, Date postedAt) {
+    public ActivityDetails(Long id, String status, double distanceCovered, GoalUnit goalUnit, Date activityDate, Share share, String fullname, long duration, String username, String profilePic, Date postedAt) {
         this.id = id;
         this.status = status;
         this.goalUnit = goalUnit;
@@ -96,7 +96,7 @@ public class ActivityDetails {
         this.username = hash.get("username");
         this.activityDate = new Date(Long.valueOf(hash.get("posted")));
         this.goalUnit = GoalUnit.fromStringToGoalUnit(hash.get("goalUnit"));
-        this.distanceCovered = Long.valueOf(hash.get("distanceCovered")) / this.goalUnit.getConversion();
+        this.distanceCovered = Double.valueOf(hash.get("distanceCovered")) / this.goalUnit.getConversion();
         this.fullname = hash.get("fullname");
         this.profilePic = hash.get("profilePic");
         this.status = hash.get("status");
@@ -112,7 +112,7 @@ public class ActivityDetails {
         return status;
     }
 
-    public long getDistanceCovered() {
+    public double getDistanceCovered() {
         return distanceCovered;
     }
 

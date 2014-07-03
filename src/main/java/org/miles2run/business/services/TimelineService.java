@@ -386,7 +386,7 @@ public class TimelineService {
                 calendar.add(Calendar.MONTH, -nMonths);
                 Date nMonthsBack = calendar.getTime();
                 Set<Tuple> activityIdsInNDaysWithScores = jedis.zrangeByScoreWithScores(String.format(RedisKeyNames.PROFILE_S_GOAL_S_TIMELINE, profile.getUsername(), goal.getId()), nMonthsBack.getTime(), today.getTime());
-                Map<String, Long> monthDistanceHash = new HashMap<>();
+                Map<String, Double> monthDistanceHash = new HashMap<>();
                 Map<String, Double> monthPaceHash = new HashMap<>();
                 for (Tuple activityIdTuple : activityIdsInNDaysWithScores) {
                     String activityId = activityIdTuple.getElement();
@@ -396,14 +396,15 @@ public class TimelineService {
                     logger.info(String.format("Activity Date : %s", activityDate));
                     String key = formatDateToYearAndMonth(activityDate);
                     logger.info(String.format("DateToYearAndMonth : %s", key));
-                    long distance = Long.valueOf(values.get(0)) / goal.getGoalUnit().getConversion();
+                    double distance = Double.valueOf(values.get(0)) / goal.getGoalUnit().getConversion();
                     if (monthDistanceHash.containsKey(key)) {
-                        Long value = monthDistanceHash.get(key);
+                        Double value = monthDistanceHash.get(key);
                         monthDistanceHash.put(key, value + distance);
                         Double durationInSeconds = Double.valueOf(Long.valueOf(values.get(1)));
                         double durationInMinutes = durationInSeconds / 60;
                         double pace = durationInMinutes / distance;
-                        monthPaceHash.put(key, (value + pace) / 2);
+                        Double currentAvgPace = monthPaceHash.get(key);
+                        monthPaceHash.put(key, (currentAvgPace + pace) / 2);
                     } else {
                         monthDistanceHash.put(key, distance);
                         Double durationInSeconds = Double.valueOf(Long.valueOf(values.get(1)));
@@ -413,8 +414,8 @@ public class TimelineService {
                     }
                 }
                 List<Object[]> chartData = new ArrayList<>();
-                Set<Map.Entry<String, Long>> entries = monthDistanceHash.entrySet();
-                for (Map.Entry<String, Long> entry : entries) {
+                Set<Map.Entry<String, Double>> entries = monthDistanceHash.entrySet();
+                for (Map.Entry<String, Double> entry : entries) {
                     chartData.add(new Object[]{entry.getKey(), entry.getValue(), monthPaceHash.get(entry.getKey())});
                 }
                 Collections.reverse(chartData);
@@ -432,7 +433,7 @@ public class TimelineService {
                 calendar.add(Calendar.MONTH, -months);
                 Date nMonthsBack = calendar.getTime();
                 Set<Tuple> activityIdsInNDaysWithScores = jedis.zrangeByScoreWithScores(String.format(RedisKeyNames.PROFILE_S_GOAL_S_TIMELINE, profile.getUsername(), goal.getId()), nMonthsBack.getTime(), today.getTime());
-                Map<String, Long> monthDistanceHash = new HashMap<>();
+                Map<String, Double> monthDistanceHash = new HashMap<>();
                 Map<String, Long> monthActivityCountHash = new HashMap<>();
                 for (Tuple activityIdTuple : activityIdsInNDaysWithScores) {
                     String activityId = activityIdTuple.getElement();
@@ -442,9 +443,9 @@ public class TimelineService {
                     logger.info(String.format("Activity Date : %s", activityDate));
                     String key = formatDateToYearAndMonth(activityDate);
                     logger.info(String.format("DateToYearAndMonth : %s", key));
-                    long distance = Long.valueOf(values.get(0)) / goal.getGoalUnit().getConversion();
+                    double distance = Double.valueOf(values.get(0)) / goal.getGoalUnit().getConversion();
                     if (monthDistanceHash.containsKey(key)) {
-                        Long distanceTillNow = monthDistanceHash.get(key);
+                        Double distanceTillNow = monthDistanceHash.get(key);
                         monthDistanceHash.put(key, distanceTillNow + distance);
                         Long activityCountTillNow = monthActivityCountHash.get(key);
                         monthActivityCountHash.put(key, activityCountTillNow + 1L);
@@ -454,8 +455,8 @@ public class TimelineService {
                     }
                 }
                 List<Object[]> chartData = new ArrayList<>();
-                Set<Map.Entry<String, Long>> entries = monthDistanceHash.entrySet();
-                for (Map.Entry<String, Long> entry : entries) {
+                Set<Map.Entry<String, Double>> entries = monthDistanceHash.entrySet();
+                for (Map.Entry<String, Double> entry : entries) {
                     chartData.add(new Object[]{entry.getKey(), entry.getValue(), monthActivityCountHash.get(entry.getKey())});
                 }
                 Collections.sort(chartData, new Comparator<Object[]>() {

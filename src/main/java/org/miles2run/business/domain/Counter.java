@@ -7,11 +7,11 @@ public class Counter {
 
     private final long runners;
     private final long countries;
-    private final long distance;
+    private final double distance;
     private final long cities;
     private final long seconds;
 
-    public Counter(long runners, long countries, long distance, long cities, long seconds) {
+    public Counter(long runners, long countries, double distance, long cities, long seconds) {
         this.runners = runners;
         this.countries = countries;
         this.distance = distance;
@@ -27,7 +27,7 @@ public class Counter {
         return countries;
     }
 
-    public long getDistance() {
+    public double getDistance() {
         return distance;
     }
 
