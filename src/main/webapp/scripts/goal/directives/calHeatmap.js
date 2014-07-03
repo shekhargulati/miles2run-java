@@ -22,6 +22,7 @@ angular.module('milestogo')
                     itemName: config.itemName ? config.itemName : "item",
                     previousSelector: "#previous",
                     displayLegend: false,
+                    domainLabelFormat: config.domainLabelFormat ? config.domainLabelFormat : "%B-%Y",
                     nextSelector: "#next",
                     onMinDomainReached: function (hit) {
                         if (hit) {

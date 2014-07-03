@@ -222,7 +222,7 @@ angular.module('milestogo')
 
         $scope.calendarConfig = {
             start: new Date(),
-            minDate: nMonthsBack(5),
+            minDate: nMonthsBack(12),
             maxDate: new Date(),
             range: 1,
             data: ConfigService.getBaseUrl() + "goal_aggregate/" + activeGoal.id + "/activity_calendar",
