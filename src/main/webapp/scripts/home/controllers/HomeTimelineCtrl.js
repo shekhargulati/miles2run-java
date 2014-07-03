@@ -7,7 +7,7 @@ angular.module('miles2run-home')
         if (!angular.isDefined($scope.currentPage)) {
             $scope.currentPage = 1;
         }
-        $http.get(ConfigService.getBaseUrl() + 'activities/home_timeline').success(function (data, status, headers, config) {
+        $scope.homeTimelinePromise =  $http.get(ConfigService.getBaseUrl() + 'activities/home_timeline').success(function (data, status, headers, config) {
             $scope.activities = data.timeline;
             $scope.totalItems = data.totalItems;
         }).error(function (data, status, headers, config) {

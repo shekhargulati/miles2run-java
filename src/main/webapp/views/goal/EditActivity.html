@@ -43,7 +43,12 @@
                                        placeholder="Distance ran" class="form-control"
                                        ng-model="activity.distanceCovered" min="1" step="1"
                                        title="Distance ran" required>
-                                <span class="input-group-addon">{{activity.goalUnit | lowercase}}</span>
+                                <span class="input-group-addon">
+                                    <select name="goalUnit" ng-model="activity.goalUnit">
+                                        <option value="KM" ng-selected="activity.goalUnit == 'KM'">km</option>
+                                        <option value="MI" ng-selected="activity.goalUnit == 'MI'">mi</option>
+                                    </select>
+                                </span>
                             </div>
                                 <span class="help-block col-md-offset-2"
                                       ng-if="activityForm.distanceCovered.$error.required && submitted">Distance is required.</span>
