@@ -128,4 +128,12 @@ public class Goal {
                 ", archived=" + archived +
                 '}';
     }
+
+    public static Goal of(Long id, long distance, GoalUnit goalUnit) {
+        Goal goal = new Goal();
+        goal.id = id;
+        goal.distance = distance;
+        goal.goalUnit = goalUnit;
+        return goal;
+    }
 }

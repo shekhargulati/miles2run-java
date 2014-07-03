@@ -64,7 +64,7 @@ angular.module('milestogo')
             $("#distance-pace-chart").empty();
             $scope.distancePaceChartPerDayActive = true;
             $scope.distancePaceChartPerMonthActive = false;
-            $http.get(ConfigService.getBaseUrl() + "goals/" + activeGoal.id + "/dashboard/chart_distance_pace").success(function (data, status, headers, config) {
+            $http.get(ConfigService.getBaseUrl() + "goal_aggregate/" + activeGoal.id + "/distance_and_pace").success(function (data, status, headers, config) {
                 $scope.showNoDistancePaceChartMessage = true;
                 if (data && data.length) {
                     $scope.showNoDistancePaceChartMessage = false;
@@ -83,7 +83,7 @@ angular.module('milestogo')
             $("#distance-pace-chart").empty();
             $scope.distancePaceChartPerDayActive = false;
             $scope.distancePaceChartPerMonthActive = true;
-            $http.get(ConfigService.getBaseUrl() + "goals/" + activeGoal.id + "/dashboard/chart_distance_pace?interval=month").success(function (data, status, headers, config) {
+            $http.get(ConfigService.getBaseUrl() + "goal_aggregate/" + activeGoal.id + "/distance_and_pace?interval=month").success(function (data, status, headers, config) {
                 $scope.showNoDistancePaceChartMessage = true;
                 if (data && data.length) {
                     $scope.showNoDistancePaceChartMessage = false;
@@ -225,7 +225,7 @@ angular.module('milestogo')
             minDate: nMonthsBack(5),
             maxDate: new Date(),
             range: 1,
-            data: ConfigService.getBaseUrl() + "goals/" + activeGoal.id + "/activities/calendar",
+            data: ConfigService.getBaseUrl() + "goal_aggregate/" + activeGoal.id + "/activity_calendar",
             itemName: [activeGoal.goalUnit.$name.toLowerCase(), activeGoal.goalUnit.$name.toLowerCase()]
         };
 
@@ -306,7 +306,7 @@ angular.module('milestogo')
         }
 
         var distanceActivityCountChart = function () {
-            $http.get(ConfigService.getBaseUrl() + "goals/" + activeGoal.id + "/dashboard/chart_distance_activity").success(function (data, status, headers, config) {
+            $http.get(ConfigService.getBaseUrl() + "goal_aggregate/" + activeGoal.id + "/distance_and_activity").success(function (data, status, headers, config) {
                 if (data && data.length) {
                     renderAcivityCountChart(data);
                 } else {

@@ -24,10 +24,6 @@ import java.util.logging.Logger;
 public class TimelineService {
 
     private static final long HOME_TIMELINE_SIZE = 1000;
-    public static final String PROFILE_S_TIMELINE = "profile:%s:timeline";
-    public static final String HOME_S_TIMELINE = "home:%s:timeline";
-    public static final String PROFILE_S_GOAL_S_TIMELINE = "profile:%s:goal:%s:timeline";
-    public static final String PROFILE_S_TIMELINE_LATEST = "profile:%s:timeline:latest";
 
     @Inject
     private JedisExecutionService jedisExecutionService;
@@ -40,7 +36,7 @@ public class TimelineService {
         return jedisExecutionService.execute(new JedisOperation<List<ActivityDetails>>() {
             @Override
             public List<ActivityDetails> perform(Jedis jedis) {
-                String key = String.format("home:%s:timeline", username);
+                String key = String.format(RedisKeyNames.HOME_S_TIMELINE, username);
                 Set<String> activityIds = jedis.zrevrange(key, (page - 1) * count, page * (count - 1));
                 Pipeline pipeline = jedis.pipelined();
                 List<Response<Map<String, String>>> result = new ArrayList<>();
@@ -85,11 +81,11 @@ public class TimelineService {
             @Override
             public <T> T perform(Jedis jedis) {
                 Pipeline pipeline = jedis.pipelined();
-                pipeline.zadd(String.format(PROFILE_S_TIMELINE, username), posted, activityId);
-                pipeline.zadd(String.format(HOME_S_TIMELINE, username), posted, activityId);
-                pipeline.zadd(String.format(PROFILE_S_GOAL_S_TIMELINE, username, goal.getId()), posted, activityId);
-                pipeline.zadd(String.format(PROFILE_S_TIMELINE_LATEST, username), activity.getPostedAt().getTime(), activityId);
-                pipeline.zremrangeByRank(String.format(PROFILE_S_TIMELINE_LATEST, username), 0, -2);
+                pipeline.zadd(String.format(RedisKeyNames.PROFILE_S_TIMELINE, username), posted, activityId);
+                pipeline.zadd(String.format(RedisKeyNames.HOME_S_TIMELINE, username), posted, activityId);
+                pipeline.zadd(String.format(RedisKeyNames.PROFILE_S_GOAL_S_TIMELINE, username, goal.getId()), posted, activityId);
+                pipeline.zadd(String.format(RedisKeyNames.PROFILE_S_TIMELINE_LATEST, username), activity.getPostedAt().getTime(), activityId);
+                pipeline.zremrangeByRank(String.format(RedisKeyNames.PROFILE_S_TIMELINE_LATEST, username), 0, -2);
                 pipeline.sync();
                 return null;
             }
@@ -206,12 +202,12 @@ public class TimelineService {
                 }
                 Pipeline pipeline = jedis.pipelined();
                 pipeline.del(key);
-                String homeTimelineKey = String.format(HOME_S_TIMELINE, username);
-                String profileTimelineKey = String.format(PROFILE_S_TIMELINE, username);
+                String homeTimelineKey = String.format(RedisKeyNames.HOME_S_TIMELINE, username);
+                String profileTimelineKey = String.format(RedisKeyNames.PROFILE_S_TIMELINE, username);
                 pipeline.zrem(homeTimelineKey, String.valueOf(activityId));
                 pipeline.zrem(profileTimelineKey, String.valueOf(activityId));
-                pipeline.zrem(String.format(PROFILE_S_GOAL_S_TIMELINE, username, goal.getId()), String.valueOf(activityId));
-                pipeline.zrem(String.format(PROFILE_S_TIMELINE_LATEST, username), String.valueOf(activityId));
+                pipeline.zrem(String.format(RedisKeyNames.PROFILE_S_GOAL_S_TIMELINE, username, goal.getId()), String.valueOf(activityId));
+                pipeline.zrem(String.format(RedisKeyNames.PROFILE_S_TIMELINE_LATEST, username), String.valueOf(activityId));
                 UserProfile userProfile = profileMongoService.findProfile(username);
                 logger.info("Deleting activity from all the followers timeline");
                 final List<String> followers = userProfile.getFollowers();
@@ -257,7 +253,7 @@ public class TimelineService {
                 Calendar calendar = Calendar.getInstance();
                 calendar.add(Calendar.MONTH, -nMonths);
                 Date nMonthsBack = calendar.getTime();
-                Set<Tuple> activityIdsInNDaysWithScores = jedis.zrangeByScoreWithScores(String.format(PROFILE_S_GOAL_S_TIMELINE, profile.getUsername(), goal.getId()), nMonthsBack.getTime(), today.getTime());
+                Set<Tuple> activityIdsInNDaysWithScores = jedis.zrangeByScoreWithScores(String.format(RedisKeyNames.PROFILE_S_GOAL_S_TIMELINE, profile.getUsername(), goal.getId()), nMonthsBack.getTime(), today.getTime());
                 Map<String, Long> monthDistanceHash = new HashMap<>();
                 Map<String, Double> monthPaceHash = new HashMap<>();
                 for (Tuple activityIdTuple : activityIdsInNDaysWithScores) {
@@ -306,7 +302,7 @@ public class TimelineService {
                 DateTime dateTime = new DateTime(today);
                 dateTime = dateTime.minusDays(n);
                 Date nDaysBack = dateTime.toDate();
-                Set<Tuple> activityIdsInNDaysWithScores = jedis.zrangeByScoreWithScores(String.format(PROFILE_S_GOAL_S_TIMELINE, profile.getUsername(), goal.getId()), nDaysBack.getTime(), today.getTime());
+                Set<Tuple> activityIdsInNDaysWithScores = jedis.zrangeByScoreWithScores(String.format(RedisKeyNames.PROFILE_S_GOAL_S_TIMELINE, profile.getUsername(), goal.getId()), nDaysBack.getTime(), today.getTime());
                 List<Response<Map<String, String>>> result = new ArrayList<>();
                 List<Map<String, Object>> chartData = new ArrayList<>();
                 for (Tuple activityIdTuple : activityIdsInNDaysWithScores) {
@@ -328,31 +324,7 @@ public class TimelineService {
         });
     }
 
-    public List<Object[]> distanceAndPaceOverNDays(final Profile profile, final Goal goal, final String interval, final int n) {
-        return jedisExecutionService.execute(new JedisOperation<List<Object[]>>() {
-            @Override
-            public List<Object[]> perform(Jedis jedis) {
-                Date today = new Date();
-                DateTime dateTime = new DateTime(today);
-                dateTime = dateTime.minusDays(n);
-                Date nDaysBack = dateTime.toDate();
-                Set<Tuple> activityIdsInNDaysWithScores = jedis.zrangeByScoreWithScores(String.format(PROFILE_S_GOAL_S_TIMELINE, profile.getUsername(), goal.getId()), nDaysBack.getTime(), today.getTime());
-                List<Object[]> chartData = new ArrayList<>();
-                for (Tuple activityIdTuple : activityIdsInNDaysWithScores) {
-                    String activityId = activityIdTuple.getElement();
-                    double activityDate = activityIdTuple.getScore();
-                    List<String> values = jedis.hmget(String.format("activity:%s", activityId), "distanceCovered", "duration");
-                    Map<String, Object> data = new HashMap<>();
-                    long distance = Long.valueOf(values.get(0)) / goal.getGoalUnit().getConversion();
-                    Double durationInSeconds = Double.valueOf(Long.valueOf(values.get(1)));
-                    double durationInMinutes = durationInSeconds / 60;
-                    double pace = durationInMinutes / distance;
-                    chartData.add(new Object[]{Double.valueOf(activityDate).longValue(), distance, pace});
-                }
-                return chartData;
-            }
-        });
-    }
+
 
 
     private String formatDate(Date activityDate) {
@@ -369,30 +341,7 @@ public class TimelineService {
         return jedisExecutionService.execute(new JedisOperation<Long>() {
             @Override
             public Long perform(Jedis jedis) {
-                return jedis.zcard(String.format(HOME_S_TIMELINE, loggedInUser));
-            }
-        });
-    }
-
-    public Map<String, Long> getActivityCalendarForNMonths(final Profile profile, final Goal goal, final int nMonths) {
-        return jedisExecutionService.execute(new JedisOperation<Map<String, Long>>() {
-            @Override
-            public Map<String, Long> perform(Jedis jedis) {
-                Date today = new Date();
-                Calendar calendar = Calendar.getInstance();
-                calendar.add(Calendar.MONTH, -nMonths);
-                Date nMonthsBack = calendar.getTime();
-                Set<Tuple> activityIdsInNMonthWithScores = jedis.zrangeByScoreWithScores(String.format(PROFILE_S_GOAL_S_TIMELINE, profile.getUsername(), goal.getId()), nMonthsBack.getTime(), today.getTime());
-                Map<String, Long> data = new LinkedHashMap<>();
-                for (Tuple tuple : activityIdsInNMonthWithScores) {
-                    String activityId = tuple.getElement();
-                    double score = tuple.getScore();
-                    String distanceCovered = jedis.hget(String.format("activity:%s", activityId), "distanceCovered");
-                    long timestamp = (Double.valueOf(score).longValue()) / 1000;
-                    long distanceCoveredInRequiredUnits = Long.valueOf(distanceCovered) / (goal.getGoalUnit().getConversion());
-                    data.put(String.valueOf(timestamp), distanceCoveredInRequiredUnits);
-                }
-                return data;
+                return jedis.zcard(String.format(RedisKeyNames.HOME_S_TIMELINE, loggedInUser));
             }
         });
     }
@@ -401,7 +350,7 @@ public class TimelineService {
         return jedisExecutionService.execute(new JedisOperation<List<ActivityDetails>>() {
             @Override
             public List<ActivityDetails> perform(Jedis jedis) {
-                Set<String> activityIds = jedis.zrevrange(String.format(PROFILE_S_GOAL_S_TIMELINE, loggedInUser, goal.getId()), (page - 1) * count, page * (count - 1));
+                Set<String> activityIds = jedis.zrevrange(String.format(RedisKeyNames.PROFILE_S_GOAL_S_TIMELINE, loggedInUser, goal.getId()), (page - 1) * count, page * (count - 1));
                 Pipeline pipeline = jedis.pipelined();
                 List<Response<Map<String, String>>> result = new ArrayList<>();
                 for (String activityId : activityIds) {
@@ -423,7 +372,7 @@ public class TimelineService {
         return jedisExecutionService.execute(new JedisOperation<Long>() {
             @Override
             public Long perform(Jedis jedis) {
-                return jedis.zcard(String.format(PROFILE_S_GOAL_S_TIMELINE, loggedInUser, goal.getId()));
+                return jedis.zcard(String.format(RedisKeyNames.PROFILE_S_GOAL_S_TIMELINE, loggedInUser, goal.getId()));
             }
         });
     }
@@ -436,7 +385,7 @@ public class TimelineService {
                 Calendar calendar = Calendar.getInstance();
                 calendar.add(Calendar.MONTH, -nMonths);
                 Date nMonthsBack = calendar.getTime();
-                Set<Tuple> activityIdsInNDaysWithScores = jedis.zrangeByScoreWithScores(String.format(PROFILE_S_GOAL_S_TIMELINE, profile.getUsername(), goal.getId()), nMonthsBack.getTime(), today.getTime());
+                Set<Tuple> activityIdsInNDaysWithScores = jedis.zrangeByScoreWithScores(String.format(RedisKeyNames.PROFILE_S_GOAL_S_TIMELINE, profile.getUsername(), goal.getId()), nMonthsBack.getTime(), today.getTime());
                 Map<String, Long> monthDistanceHash = new HashMap<>();
                 Map<String, Double> monthPaceHash = new HashMap<>();
                 for (Tuple activityIdTuple : activityIdsInNDaysWithScores) {
@@ -482,7 +431,7 @@ public class TimelineService {
                 Calendar calendar = Calendar.getInstance();
                 calendar.add(Calendar.MONTH, -months);
                 Date nMonthsBack = calendar.getTime();
-                Set<Tuple> activityIdsInNDaysWithScores = jedis.zrangeByScoreWithScores(String.format(PROFILE_S_GOAL_S_TIMELINE, profile.getUsername(), goal.getId()), nMonthsBack.getTime(), today.getTime());
+                Set<Tuple> activityIdsInNDaysWithScores = jedis.zrangeByScoreWithScores(String.format(RedisKeyNames.PROFILE_S_GOAL_S_TIMELINE, profile.getUsername(), goal.getId()), nMonthsBack.getTime(), today.getTime());
                 Map<String, Long> monthDistanceHash = new HashMap<>();
                 Map<String, Long> monthActivityCountHash = new HashMap<>();
                 for (Tuple activityIdTuple : activityIdsInNDaysWithScores) {

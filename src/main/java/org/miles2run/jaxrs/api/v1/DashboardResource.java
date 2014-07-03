@@ -3,6 +3,7 @@ package org.miles2run.jaxrs.api.v1;
 import org.jug.filters.LoggedIn;
 import org.miles2run.business.domain.Goal;
 import org.miles2run.business.domain.Profile;
+import org.miles2run.business.services.ChartService;
 import org.miles2run.business.services.GoalService;
 import org.miles2run.business.services.ProfileService;
 import org.miles2run.business.services.TimelineService;
@@ -10,6 +11,7 @@ import org.miles2run.business.services.TimelineService;
 import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import java.util.List;
 import java.util.Map;
@@ -17,7 +19,7 @@ import java.util.Map;
 /**
  * Created by shekhargulati on 06/06/14.
  */
-@Path("/api/v1/goals/{goalId}/dashboard")
+@Path("/api/v1/goal_aggregate/{goalId}")
 public class DashboardResource {
 
     @Context
@@ -28,32 +30,13 @@ public class DashboardResource {
     private ProfileService profileService;
     @Inject
     private GoalService goalService;
-
-
-    @GET
-    @LoggedIn
-    @Produces("application/json")
-    @Path("/charts/distance")
-    public List<Map<String, Object>> getDataForDistanceCovered(@PathParam("goalId") Long goalId, @QueryParam("interval") String interval, @QueryParam("days") int days, @QueryParam("months") int months) {
-        String loggedInUser = securityContext.getUserPrincipal().getName();
-        Profile profile = profileService.findProfile(loggedInUser);
-        Goal goal = goalService.findGoal(profile, goalId);
-        days = days == 0 || days > 60 ? 30 : days;
-        months = months == 0 || months > 12 ? 6 : months;
-        switch (interval) {
-            case "day":
-                return timelineService.distanceAndPaceOverLastNDays(profile, goal, interval, days);
-            case "month":
-                return timelineService.distanceAndPaceOverLastNMonths(profile, goal, interval, months);
-            default:
-                return timelineService.distanceAndPaceOverLastNDays(profile, goal, interval, days);
-        }
-    }
+    @Inject
+    private ChartService chartService;
 
     @GET
     @LoggedIn
     @Produces("application/json")
-    @Path("/chart_distance_pace")
+    @Path("/distance_and_pace")
     public List<Object[]> getDistanceAndPaceOverTime(@PathParam("goalId") Long goalId, @QueryParam("interval") String interval, @QueryParam("days") int days, @QueryParam("months") int months) {
         String loggedInUser = securityContext.getUserPrincipal().getName();
         Profile profile = profileService.findProfile(loggedInUser);
@@ -63,11 +46,11 @@ public class DashboardResource {
         interval = interval == null ? "day" : interval;
         switch (interval) {
             case "day":
-                return timelineService.distanceAndPaceOverNDays(profile, goal, interval, days);
+                return chartService.distanceAndPaceOverNDays(profile.getUsername(), goal, days);
             case "month":
                 return timelineService.distanceAndPaceOverNMonths(profile, goal, interval, months);
             default:
-                return timelineService.distanceAndPaceOverNDays(profile, goal, interval, days);
+                return chartService.distanceAndPaceOverNDays(profile.getUsername(), goal, days);
         }
     }
 
@@ -75,12 +58,28 @@ public class DashboardResource {
     @GET
     @LoggedIn
     @Produces("application/json")
-    @Path("/chart_distance_activity")
+    @Path("/distance_and_activity")
     public List<Object[]> getDistanceAndActivityCountOverTime(@PathParam("goalId") Long goalId, @QueryParam("months") int months) {
         String loggedInUser = securityContext.getUserPrincipal().getName();
         Profile profile = profileService.findProfile(loggedInUser);
         Goal goal = goalService.findGoal(profile, goalId);
         months = months == 0 || months > 12 ? 6 : months;
         return timelineService.distanceAndActivityCountOverNMonths(profile, goal, months);
+    }
+
+    @Path("/activity_calendar")
+    @GET
+    @Produces("application/json")
+    @LoggedIn
+    public Response activityCalendar(@PathParam("goalId") Long goalId, @QueryParam("months") int nMonths) {
+        String loggedInUser = securityContext.getUserPrincipal().getName();
+        Profile profile = profileService.findProfile(loggedInUser);
+        Goal goal = goalService.findGoal(profile, goalId);
+        if (goal == null) {
+            return Response.status(Response.Status.NOT_FOUND).entity("No goal exists with id " + goalId).build();
+        }
+        nMonths = nMonths == 0 || nMonths > 12 ? 3 : nMonths;
+        Map<String, Long> data = chartService.getActivitiesPerformedInLastNMonthsForGoal(profile.getUsername(), goal, nMonths);
+        return Response.status(Response.Status.OK).entity(data).build();
     }
 }

@@ -116,7 +116,7 @@ public class GoalService {
         return jedisExecutionService.execute(new JedisOperation<Long>() {
             @Override
             public Long perform(Jedis jedis) {
-                Set<String> activities = jedis.zrevrange(String.format(TimelineService.PROFILE_S_TIMELINE_LATEST, username), 0, -1);
+                Set<String> activities = jedis.zrevrange(String.format(RedisKeyNames.PROFILE_S_TIMELINE_LATEST, username), 0, -1);
                 if (activities != null && !activities.isEmpty()) {
                     String latestActivityId = activities.iterator().next();
                     String goalId = jedis.hget(String.format("activity:%s", latestActivityId), "goalId");

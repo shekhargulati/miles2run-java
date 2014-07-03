@@ -16,6 +16,8 @@ public class JedisExecutionService {
     @Inject
     JedisPool jedisPool;
 
+
+
     public <T> T execute(JedisOperation<T> operation) {
         Jedis jedis = jedisPool.getResource();
         try {

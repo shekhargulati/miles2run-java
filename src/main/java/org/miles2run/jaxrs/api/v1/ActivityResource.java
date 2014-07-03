@@ -155,22 +155,6 @@ public class ActivityResource {
         return Response.ok().build();
     }
 
-    @Path("/calendar")
-    @GET
-    @Produces("application/json")
-    @LoggedIn
-    public Response activityCalendar(@PathParam("goalId") Long goalId, @QueryParam("months") int nMonths) {
-        String loggedInUser = securityContext.getUserPrincipal().getName();
-        Profile profile = profileService.findProfile(loggedInUser);
-        Goal goal = goalService.findGoal(profile, goalId);
-        if (goal == null) {
-            return Response.status(Response.Status.NOT_FOUND).entity("No goal exists with id " + goalId).build();
-        }
-        nMonths = nMonths == 0 || nMonths > 12 ? 3 : nMonths;
-        Map<String, Long> data = timelineService.getActivityCalendarForNMonths(profile, goal, nMonths);
-        return Response.status(Response.Status.OK).entity(data).build();
-    }
-
     private String toActivityMessage(Activity activity, Profile profile) {
         String activityUrl = UrlUtils.absoluteUrlForResourceUri(request, "/activities/{activityId}", profile.getUsername(), activity.getId());
         return new StringBuilder(profile.getFullname()).append(" ran ").append(activity.getDistanceCovered() / activity.getGoalUnit().getConversion()).append(" " + activity.getGoalUnit().toString()).append(" via @miles2runorg.").append(" Read full status here ").append(activityUrl).toString();
