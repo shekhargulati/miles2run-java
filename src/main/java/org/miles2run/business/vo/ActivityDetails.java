@@ -101,6 +101,7 @@ public class ActivityDetails {
         this.profilePic = hash.get("profilePic");
         this.status = hash.get("status");
         this.goalId = Long.valueOf(hash.get("goalId"));
+        this.duration = Long.valueOf(hash.get("duration"));
     }
 
 

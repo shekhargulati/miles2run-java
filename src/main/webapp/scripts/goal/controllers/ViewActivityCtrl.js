@@ -1,10 +1,10 @@
 'use strict';
 
 angular.module('milestogo')
-    .controller('ViewActivityCtrl', function ($scope, $routeParams, ActivityService, $location, $modal) {
+    .controller('ViewActivityCtrl', function ($scope, $routeParams, ActivityService, $location, $modal, TimelineService, activeGoal,ConfigService) {
         var activityId = $routeParams.activityId;
 
-        ActivityService.get(activityId).success(function (data) {
+        ActivityService.get(activityId, activeGoal.id).success(function (data) {
             $scope.activity = data;
         }).error(function (data) {
             toastr.error("Unable to fetch activity with id: " + activityId);
@@ -24,6 +24,14 @@ angular.module('milestogo')
             })
 
         };
+
+        TimelineService.goalTimeline(activeGoal.id, 1).success(function (data, status, headers, config) {
+            $scope.activities = data.timeline;
+        }).error(function (data, status, headers, config) {
+            toastr.error("Unable to fetch activities. Please try after sometime.");
+        });
+
+        $scope.appContext = ConfigService.appContext();
 
     });
 
