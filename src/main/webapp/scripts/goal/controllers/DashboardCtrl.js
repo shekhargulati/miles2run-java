@@ -36,17 +36,11 @@ angular.module('milestogo')
                     colors: {
                         'completed': 'green',
                         'remaining': 'red'
-                    }
-                },
-                donut: {
-                    label: {
-                        format: function (value, ratio) {
-                            return value + " " + data.goalUnit.toLowerCase();
-                        },
-                        units: data.goalUnit
                     },
-                    title: "Goal " + data.goal + " " + data.goalUnit.toLowerCase()
-
+                    labels: false
+                },
+                legend: {
+                    show:false
                 },
                 tooltip: {
                     format: {
