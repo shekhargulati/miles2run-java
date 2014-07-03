@@ -85,7 +85,7 @@
                 </ul>
                 <!-- /#side-menu -->
                 <div class="radial-progress-block" ng-controller="ProgressCtrl">
-                    <div class="radial-progress" data-progress="{{data.percentage}}">
+                    <div class="radial-progress" data-progress="{{percentage}}">
                         <div class="circle">
                             <div class="mask full">
                                 <div class="fill"></div>
@@ -142,21 +142,21 @@
                                     <h5>Active Goal</h5>
 
                                     <div th:inline="text">
-                                        [[${activeGoal.distance} + ' ' + ${activeGoal.goalUnit.upperCase()}]]
+                                        [[${#numbers.formatDecimal(activeGoal.distance,1,2)} + ' ' + ${activeGoal.goalUnit.upperCase()}]]
                                     </div>
                                 </div>
                                 <div class="col-lg-3 col-sm-3 text-center">
                                     <h5>Distance Covered</h5>
 
                                     <div th:inline="text">
-                                        [[${progress.totalDistanceCovered} + ' ' + ${activeGoal.goalUnit.upperCase()}]]
+                                        [[${#numbers.formatDecimal(progress.totalDistanceCovered,1,2)} + ' ' + ${activeGoal.goalUnit.upperCase()}]]
                                     </div>
                                 </div>
                                 <div class="col-lg-3 col-sm-3 text-center">
                                     <h5>Average Pace</h5>
 
                                     <div th:inline="text">
-                                        [[${#numbers.formatDecimal(progress.averagePace,1,2)} + ' MINS/' + ${activeGoal.goalUnit.upperCase()}]]
+                                        [[${#numbers.formatDecimal(progress.averagePace,1,2)} + ' mins/' + ${activeGoal.goalUnit.upperCase()}]]
                                     </div>
                                 </div>
                                 <div class="col-lg-3 col-sm-3 text-center">

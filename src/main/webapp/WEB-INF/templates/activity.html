@@ -93,7 +93,7 @@
                                     </span>
 
                                     <div class="box-info">
-                                        <p class="size-h2" th:text="${activity.distanceCovered}"></p>
+                                        <p class="size-h2" th:text="${#numbers.formatDecimal(activity.distanceCovered,1,2)}"></p>
                                         <p class="text-muted"><span data-i18n="Goal" th:inline="text">[['Distance Ran (' + ${activity.goalUnit} + ')']]</span>
                                         </p>
                                     </div>
@@ -106,7 +106,7 @@
                                     </span>
                                     <div class="box-info">
                                         <p class="size-h2" th:inline="text" th:with="pace=((${activity.duration}/60) / ${activity.distanceCovered})">
-                                            [[${#numbers.formatDecimal(pace,2,2)}]]
+                                            [[${#numbers.formatDecimal(pace,1,2)}]]
                                         </p>
 
                                         <p class="text-muted">

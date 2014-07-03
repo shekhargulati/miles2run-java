@@ -39,6 +39,6 @@ public class ActivityView {
         if (activityDetails == null) {
             throw new ViewResourceNotFoundException(String.format("User %s has not posted any activity with id %d", username, activityId), templateEngine);
         }
-        return View.of("/activity", templateEngine).withModel("activity", activityDetails);
+        return View.of("/activity", templateEngine).withModel("activity", ActivityDetails.toHumanReadable(activityDetails));
     }
 }
