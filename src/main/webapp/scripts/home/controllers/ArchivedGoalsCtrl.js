@@ -2,7 +2,8 @@
 
 angular.module('miles2run-home')
     .controller('ArchivedGoalsCtrl', function ($scope, $http, $window, activeProfile, ConfigService, $modal) {
-        $http.get(ConfigService.getBaseUrl() + "goals/", {params: {"archived": true}}).success(function (data) {
+
+        $scope.archivedGoalsPromise =  $http.get(ConfigService.getBaseUrl() + "goals/", {params: {"archived": true}}).success(function (data) {
             $scope.goals = data;
         }).error(function (data, status) {
             toastr.error("Unable to fetch goals. Please try after sometime.");

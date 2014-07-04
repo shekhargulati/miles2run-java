@@ -5,7 +5,9 @@ var app = angular.module('milestogo', [
         'ngResource',
         'ngSanitize',
         'ngRoute',
-        'ui.bootstrap'
+        'ui.bootstrap',
+        'ngAnimate',
+        'cgBusy'
     ])
     .config(function ($routeProvider) {
         $routeProvider

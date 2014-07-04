@@ -3,6 +3,8 @@
 angular.module('miles2run-home')
     .controller('EditGoalCtrl', function ($scope, $http, ConfigService, $routeParams, $location) {
 
+        $scope.buttonText = "Update";
+
         $http.get(ConfigService.getBaseUrl() + "goals/" + $routeParams.goalId).success(function (data) {
             $scope.goal = data;
             $scope.today();
@@ -15,6 +17,8 @@ angular.module('miles2run-home')
         $scope.editGoal = function () {
             $scope.submitted = true;
             if ($scope.goalForm.$valid) {
+                $scope.successfulSubmission = true;
+                $scope.buttonText = "Updating Goal..";
                 var goal = {
                     id: $scope.goal.id,
                     purpose: $scope.goal.purpose,
@@ -23,7 +27,7 @@ angular.module('miles2run-home')
                     goalUnit: $scope.goal.goalUnit,
                     archived: $scope.goal.archived
                 }
-                $http.put(ConfigService.getBaseUrl() + "goals/" + $scope.goal.id, goal).success(function (data) {
+                $scope.editGoalPromise =  $http.put(ConfigService.getBaseUrl() + "goals/" + $scope.goal.id, goal).success(function (data) {
                     toastr.success("Updated goal");
                     $location.path("/");
                 }).error(function (data, status) {

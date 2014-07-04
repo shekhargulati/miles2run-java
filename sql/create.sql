@@ -1,11 +1,14 @@
-create table Activity (id bigint not null, activityDate date, distanceCovered bigint not null, duration bigint not null, goalUnit varchar(255) not null, postedAt datetime, status varchar(140), postedBy_id bigint, share_id bigint, primary key (id));
-create table Profile (id bigint not null, bio varchar(200) not null, city varchar(255) not null, country varchar(255) not null, email varchar(255) not null, fullname varchar(50) not null, gender varchar(255), goal bigint not null, goalUnit varchar(255) not null, profilePic varchar(255), registeredOn date not null, role varchar(255) not null, username varchar(20) not null, primary key (id));
-create table Share (id bigint not null, facebook TINYINT(1) not null, googlePlus TINYINT(1) not null, twitter TINYINT(1) not null, primary key (id));
-create table SocialConnection (id bigint not null, accessSecret varchar(255), accessToken varchar(255) not null, connectedOn datetime, connectionId varchar(255) not null, handle varchar(255) not null, provider varchar(255) not null, profile_id bigint, primary key (id));
-alter table Profile add constraint UK_1wpe1j4lyc9m4yny8kjfv7y0s  unique (username);
-alter table Profile add constraint UK_e521n65fpj809whmjdr1s1sdb  unique (email);
-alter table Activity add constraint FK_gvmlodlf4nppv8rv72uv30c0x foreign key (postedBy_id) references Profile (id);
-alter table Activity add constraint FK_f7apr5s9xrv25p4tq2tyevhqw foreign key (share_id) references Share (id);
-alter table SocialConnection add constraint FK_shlweto6or6fd0fuasapasmnn foreign key (profile_id) references Profile (id);
-create table hibernate_sequence ( next_val bigint );
-insert into hibernate_sequence values ( 1 );
+create table Activity (id bigint not null, activityDate datetime not null, distanceCovered double precision not null, duration bigint not null, goalUnit varchar(255) not null, postedAt datetime, status varchar(1000), goal_id bigint, postedBy_id bigint, share_id bigint, primary key (id))
+create table Goal (id bigint not null, archived bit not null, createdAt datetime, distance bigint not null, goalUnit varchar(255) not null, purpose varchar(255) not null, targetDate datetime not null, profile_id bigint, primary key (id))
+create table Profile (id bigint not null, bio varchar(500), city varchar(255) not null, country varchar(255) not null, email varchar(255) not null, fullname varchar(50) not null, gender varchar(255), profilePic varchar(255), registeredOn date not null, role varchar(255) not null, username varchar(20) not null, primary key (id))
+create table Share (id bigint not null, facebook TINYINT(1) not null, googlePlus TINYINT(1) not null, twitter TINYINT(1) not null, primary key (id))
+create table SocialConnection (id bigint not null, accessSecret varchar(255), accessToken varchar(255) not null, connectedOn datetime, connectionId varchar(255) not null, handle varchar(255), provider varchar(255) not null, profile_id bigint, primary key (id))
+alter table Profile add constraint UK_1wpe1j4lyc9m4yny8kjfv7y0s  unique (username)
+alter table Profile add constraint UK_e521n65fpj809whmjdr1s1sdb  unique (email)
+alter table Activity add constraint FK_qycl77kjdrp0he46kb3b5s11r foreign key (goal_id) references Goal (id)
+alter table Activity add constraint FK_gvmlodlf4nppv8rv72uv30c0x foreign key (postedBy_id) references Profile (id)
+alter table Activity add constraint FK_f7apr5s9xrv25p4tq2tyevhqw foreign key (share_id) references Share (id)
+alter table Goal add constraint FK_1yn5gab01pm9j0ecdpo7if45h foreign key (profile_id) references Profile (id)
+alter table SocialConnection add constraint FK_shlweto6or6fd0fuasapasmnn foreign key (profile_id) references Profile (id)
+create table hibernate_sequence ( next_val bigint )
+insert into hibernate_sequence values ( 1 )

@@ -5,7 +5,7 @@ angular.module('miles2run-home')
         var goalId = $routeParams.goalId;
         var activityId = $routeParams.activityId;
 
-        $http.get(ConfigService.getBaseUrl() + "goals/" + goalId + "/activities/" + activityId).success(function (data) {
+        $scope.viewActivityPromise =  $http.get(ConfigService.getBaseUrl() + "goals/" + goalId + "/activities/" + activityId).success(function (data) {
             $scope.activity = data;
         }).error(function (data) {
             toastr.error("Unable to fetch activity with id: " + activityId);

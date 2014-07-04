@@ -7,7 +7,7 @@ angular.module('milestogo')
         if (!angular.isDefined($scope.currentPage)) {
             $scope.currentPage = 1;
         }
-        TimelineService.goalTimeline(activeGoal.id, 1).success(function (data, status, headers, config) {
+        $scope.goalTimelinePromise =  TimelineService.goalTimeline(activeGoal.id, 1).success(function (data, status, headers, config) {
             $scope.activities = data.timeline;
             $scope.totalItems = data.totalItems;
         }).error(function (data, status, headers, config) {

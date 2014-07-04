@@ -8,10 +8,14 @@ function CreateGoalCtrl($scope, $location, activeProfile, $http, ConfigService, 
         goalUnit: 'MI'
     };
 
+    $scope.buttonText = "Create";
+
     $scope.createGoal = function () {
         $scope.submitted = true;
         if ($scope.goalForm.$valid) {
-            $http.post(ConfigService.getBaseUrl() + "goals", $scope.goal).success(function (data) {
+            $scope.successfulSubmission = true;
+            $scope.buttonText = "Creating Goal..";
+            $scope.createGoalPromise =  $http.post(ConfigService.getBaseUrl() + "goals", $scope.goal).success(function (data) {
                 toastr.success("Created new goal");
                 $window.location.href = ConfigService.appContext() + 'goals/' + data.id;
             }).error(function (data, status) {

@@ -4,6 +4,9 @@ function PostActivityCtrl($scope, ActivityService, $location, ProfileService, ac
 
     $scope.currentUser = activeProfile;
     $scope.activeGoal = activeGoal;
+
+    $scope.buttonText = "Log your Run";
+
     $scope.activity = {
         goalUnit: $scope.activeGoal.goalUnit.$name,
         share: {}
@@ -32,6 +35,8 @@ function PostActivityCtrl($scope, ActivityService, $location, ProfileService, ac
         $scope.submitted = true;
         $scope.validateDuration($scope.duration);
         if ($scope.activityForm.$valid && !$scope.activityForm.durationHours.$invalid) {
+            $scope.successfulSubmission = true;
+            $scope.buttonText = "Logging your run..";
             $scope.activity.duration = toAppSeconds($scope.duration);
             ActivityService.postActivity($scope.activity, activeGoal.id).success(function (data, status, headers, config) {
                 $rootScope.$broadcast('update.progress', 'true');

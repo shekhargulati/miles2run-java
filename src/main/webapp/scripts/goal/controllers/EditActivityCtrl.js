@@ -3,6 +3,9 @@
 angular.module('milestogo')
     .controller('EditActivityCtrl', function ($scope, $routeParams, ActivityService, $location, $rootScope, activeGoal) {
         var activityId = $routeParams.activityId;
+
+        $scope.buttonText = "Update your Run";
+
         ActivityService.get(activityId, activeGoal.id).success(function (data) {
             $scope.activity = data;
             $scope.activity.activityDate = new Date(data.activityDate);
@@ -36,6 +39,9 @@ angular.module('milestogo')
             $scope.submitted = true;
             $scope.validateDuration($scope.duration);
             if ($scope.activityForm.$valid && !$scope.activityForm.durationHours.$invalid) {
+                $scope.successfulSubmission = true;
+                $scope.buttonText = "Updating your run..";
+
                 var activity = {
                     id: $scope.activity.id,
                     status: $scope.activity.status,

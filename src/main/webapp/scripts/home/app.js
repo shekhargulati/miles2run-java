@@ -102,7 +102,6 @@ app.config(['$provide', function ($provide) {
     $provide.constant('activeProfile', profile);
 }]);
 
-
 function HeaderCtrl($scope, $location) {
 
     $scope.isActive = function (viewLocation) {
