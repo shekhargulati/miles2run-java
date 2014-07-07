@@ -1,4 +1,4 @@
-package org.miles2run.business.domain;
+package org.miles2run.business.domain.jpa;
 
 /**
  * Created by shekhargulati on 07/03/14.

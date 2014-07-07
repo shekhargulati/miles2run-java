@@ -2,11 +2,10 @@ package org.miles2run.jaxrs.views;
 
 import org.jug.filters.EnableSession;
 import org.jug.view.View;
-import org.miles2run.business.domain.Goal;
+import org.miles2run.business.domain.jpa.Goal;
 import org.miles2run.business.services.CounterService;
 import org.miles2run.business.services.GoalService;
 import org.miles2run.jaxrs.filters.InjectProfile;
-import org.miles2run.business.domain.Counter;
 import org.thymeleaf.TemplateEngine;
 
 import javax.inject.Inject;

@@ -1,6 +1,6 @@
 package org.miles2run.jaxrs.vo;
 
-import org.miles2run.business.domain.GoalUnit;
+import org.miles2run.business.domain.jpa.GoalUnit;
 import org.miles2run.jaxrs.forms.ProfileForm;
 
 /**

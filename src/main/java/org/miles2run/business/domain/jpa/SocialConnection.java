@@ -1,4 +1,4 @@
-package org.miles2run.business.domain;
+package org.miles2run.business.domain.jpa;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -12,10 +12,13 @@ import java.util.Date;
 @NamedQueries({
         @NamedQuery(name = "SocialConnection.findByConnectionId",query = "SELECT s from SocialConnection s WHERE s.connectionId =:connectionId")
 })
+@Access(AccessType.FIELD)
+@Table(name="social_connection")
 public class SocialConnection implements Serializable{
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @TableGenerator(name = "sc_generator", table = "id_gen", allocationSize = 100)
+    @GeneratedValue(generator = "sc_generator")
     private Long id;
 
     @NotNull

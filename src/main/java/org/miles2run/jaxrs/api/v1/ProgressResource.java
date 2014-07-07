@@ -1,7 +1,6 @@
 package org.miles2run.jaxrs.api.v1;
 
-import org.jug.filters.LoggedIn;
-import org.miles2run.business.domain.Profile;
+import org.miles2run.business.domain.jpa.Profile;
 import org.miles2run.business.services.ActivityService;
 import org.miles2run.business.services.ProfileService;
 import org.miles2run.business.vo.Progress;

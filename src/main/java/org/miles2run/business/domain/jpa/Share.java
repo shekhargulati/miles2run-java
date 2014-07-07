@@ -1,4 +1,4 @@
-package org.miles2run.business.domain;
+package org.miles2run.business.domain.jpa;
 
 import javax.persistence.*;
 
@@ -6,10 +6,13 @@ import javax.persistence.*;
  * Created by shekhargulati on 13/03/14.
  */
 @Entity
+@Table(name = "share")
+@Access(AccessType.FIELD)
 public class Share {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @TableGenerator(name = "share_generator", table = "id_gen", allocationSize = 100)
+    @GeneratedValue(generator = "share_generator")
     private Long id;
 
     @Column(nullable = false, columnDefinition = "TINYINT(1)")

@@ -1,4 +1,4 @@
-package org.miles2run.business.domain;
+package org.miles2run.business.domain.jpa;
 
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
@@ -23,14 +23,16 @@ import java.util.List;
         @NamedQuery(name = "Profile.findProfileWithSocialNetworks", query = "select p.id,p.username, s.provider from Profile p JOIN p.socialConnections s where p.username =:username"),
         @NamedQuery(name = "Profile.findFullProfileByUsername", query = "select new Profile(p) from Profile p where p.username =:username")
 })
-@Table(indexes = {
+@Table(name = "profile", indexes = {
         @Index(unique = true, columnList = "username"),
         @Index(unique = true, columnList = "email")
 })
+@Access(AccessType.FIELD)
 public class Profile implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @TableGenerator(name = "profile_generator", table = "id_gen", allocationSize = 100)
+    @GeneratedValue(generator = "profile_generator")
     private Long id;
 
     @NotBlank

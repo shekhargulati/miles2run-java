@@ -1,7 +1,7 @@
 package org.miles2run.business.services;
 
-import org.miles2run.business.domain.Goal;
-import org.miles2run.business.domain.Profile;
+import org.miles2run.business.domain.jpa.Goal;
+import org.miles2run.business.domain.jpa.Profile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import redis.clients.jedis.Jedis;

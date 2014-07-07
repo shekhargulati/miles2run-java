@@ -1,4 +1,4 @@
-package org.miles2run.business.domain;
+package org.miles2run.business.domain.jpa;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -15,10 +15,13 @@ import java.util.Date;
                 @NamedQuery(name = "Goal.findLastedCreatedGoal", query = "SELECT new Goal(g.id,g.purpose,g.targetDate,g.distance, g.goalUnit, g.archived) from Goal g where g.profile =:profile order by g.createdAt desc")
         }
 )
+@Access(AccessType.FIELD)
+@Table(name = "goal")
 public class Goal {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @TableGenerator(name = "goal_generator", table = "id_gen", allocationSize = 100)
+    @GeneratedValue(generator = "goal_generator")
     private Long id;
 
     @NotNull

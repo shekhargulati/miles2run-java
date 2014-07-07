@@ -1,4 +1,4 @@
-package org.miles2run.business.domain;
+package org.miles2run.business.domain.mongo;
 
 /**
  * Created by shekhargulati on 26/03/14.

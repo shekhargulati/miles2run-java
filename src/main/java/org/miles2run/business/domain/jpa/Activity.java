@@ -1,4 +1,4 @@
-package org.miles2run.business.domain;
+package org.miles2run.business.domain.jpa;
 
 import org.miles2run.business.vo.ActivityDetails;
 
@@ -20,10 +20,13 @@ import java.util.Date;
         @NamedQuery(name = "Activity.findByUsernameAndId", query = "SELECT new org.miles2run.business.vo.ActivityDetails(a.id,a.status,a.distanceCovered,a.goalUnit,a.activityDate,a.share,a.postedBy.fullname,a.duration,a.postedBy.username,a.postedBy.profilePic,a.postedAt) from Activity a where a.id =:activityId and a.postedBy =:profile")
 
 })
+@Access(AccessType.FIELD)
+@Table(name = "activity")
 public class Activity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @TableGenerator(name = "activity_generator", table = "id_gen", allocationSize = 100)
+    @GeneratedValue(generator = "activity_generator")
     private Long id;
 
     @Size(max = 1000)

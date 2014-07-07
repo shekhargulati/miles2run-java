@@ -1,20 +1,17 @@
 package org.miles2run.business.services;
 
-import org.miles2run.business.domain.GoalUnit;
-import org.miles2run.business.domain.Profile;
-import org.miles2run.business.domain.SocialProvider;
+import org.miles2run.business.domain.jpa.Profile;
+import org.miles2run.business.domain.jpa.SocialProvider;
 import org.miles2run.business.vo.ProfileDetails;
 import org.miles2run.business.vo.ProfileSocialConnectionDetails;
 import org.miles2run.jaxrs.forms.UpdateProfileForm;
 
 import javax.ejb.Stateless;
-import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
-import javax.transaction.Transactional;
 import java.util.List;
 import java.util.logging.Logger;
 

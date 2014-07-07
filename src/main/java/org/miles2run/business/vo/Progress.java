@@ -1,7 +1,7 @@
 package org.miles2run.business.vo;
 
-import org.miles2run.business.domain.Goal;
-import org.miles2run.business.domain.GoalUnit;
+import org.miles2run.business.domain.jpa.Goal;
+import org.miles2run.business.domain.jpa.GoalUnit;
 
 /**
  * Created by shekhargulati on 06/03/14.

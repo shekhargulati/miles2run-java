@@ -2,7 +2,7 @@ package org.miles2run.jaxrs.api.v1;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jug.filters.LoggedIn;
-import org.miles2run.business.domain.*;
+import org.miles2run.business.domain.jpa.*;
 import org.miles2run.business.services.*;
 import org.miles2run.business.utils.UrlUtils;
 import org.miles2run.business.vo.ActivityDetails;
@@ -16,7 +16,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
-import java.util.Map;
 import java.util.logging.Logger;
 
 /**

@@ -1,9 +1,9 @@
 package org.miles2run.business.services;
 
 import org.joda.time.DateTime;
-import org.miles2run.business.domain.Goal;
-import org.miles2run.business.domain.Profile;
-import org.miles2run.business.domain.UserProfile;
+import org.miles2run.business.domain.jpa.Goal;
+import org.miles2run.business.domain.jpa.Profile;
+import org.miles2run.business.domain.mongo.UserProfile;
 import org.miles2run.business.vo.ActivityDetails;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Pipeline;

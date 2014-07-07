@@ -2,14 +2,12 @@ package org.miles2run.jaxrs.api.v1;
 
 import org.hibernate.validator.constraints.NotBlank;
 import org.jug.filters.LoggedIn;
-import org.miles2run.business.domain.Profile;
-import org.miles2run.business.services.ActivityService;
+import org.miles2run.business.domain.jpa.Profile;
 import org.miles2run.business.services.ProfileService;
 import org.miles2run.business.services.TimelineService;
 import org.miles2run.business.vo.ActivityDetails;
 
 import javax.inject.Inject;
-import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.SecurityContext;

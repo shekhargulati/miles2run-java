@@ -1,6 +1,7 @@
-package org.miles2run.business.domain;
+package org.miles2run.business.domain.redis;
 
 import com.google.gson.Gson;
+import org.miles2run.business.domain.mongo.Action;
 
 /**
  * Created by shekhargulati on 26/03/14.

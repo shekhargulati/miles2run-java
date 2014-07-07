@@ -1,8 +1,8 @@
 package org.miles2run.jaxrs.forms;
 
 import org.hibernate.validator.constraints.NotBlank;
-import org.miles2run.business.domain.Gender;
-import org.miles2run.business.domain.GoalUnit;
+import org.miles2run.business.domain.jpa.Gender;
+import org.miles2run.business.domain.jpa.GoalUnit;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;

@@ -2,7 +2,7 @@ package org.miles2run.jaxrs.views;
 
 import org.jug.filters.LoggedIn;
 import org.jug.view.View;
-import org.miles2run.business.domain.Goal;
+import org.miles2run.business.domain.jpa.Goal;
 import org.miles2run.business.services.GoalService;
 import org.miles2run.business.services.ProfileService;
 import org.miles2run.jaxrs.filters.InjectProfile;

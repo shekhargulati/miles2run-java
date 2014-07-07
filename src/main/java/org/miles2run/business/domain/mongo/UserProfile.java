@@ -1,4 +1,4 @@
-package org.miles2run.business.domain;
+package org.miles2run.business.domain.mongo;
 
 import java.util.ArrayList;
 import java.util.List;

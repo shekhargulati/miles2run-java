@@ -1,7 +1,7 @@
 package org.miles2run.business.services;
 
-import org.miles2run.business.domain.Profile;
-import org.miles2run.business.domain.SocialConnection;
+import org.miles2run.business.domain.jpa.Profile;
+import org.miles2run.business.domain.jpa.SocialConnection;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
