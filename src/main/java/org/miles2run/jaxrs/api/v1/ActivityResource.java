@@ -6,6 +6,8 @@ import org.miles2run.business.domain.jpa.*;
 import org.miles2run.business.services.*;
 import org.miles2run.business.utils.UrlUtils;
 import org.miles2run.business.vo.ActivityDetails;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -16,7 +18,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
-import java.util.logging.Logger;
 
 /**
  * Created by shekhargulati on 15/03/14.
@@ -24,8 +25,7 @@ import java.util.logging.Logger;
 @Path("/api/v1/goals/{goalId}/activities")
 public class ActivityResource {
 
-    @Inject
-    private Logger logger;
+    private Logger logger = LoggerFactory.getLogger(ActivityResource.class);
 
     @Inject
     private ActivityService activityService;
@@ -56,12 +56,12 @@ public class ActivityResource {
         String loggedInUser = securityContext.getUserPrincipal().getName();
         Profile profile = profileService.findProfile(loggedInUser);
         Goal goal = goalService.findGoal(profile, goalId);
+        logger.debug("Found goal {}", goal);
         if (goal == null) {
             return Response.status(Response.Status.NOT_FOUND).entity("No goal exists with id " + goalId).build();
         }
         double distanceCovered = activity.getDistanceCovered() * activity.getGoalUnit().getConversion();
         activity.setDistanceCovered(distanceCovered);
-        logger.info("Activity Date stored in database " + activity.getActivityDate());
         activity.setPostedBy(profile);
         activity.setGoal(goal);
         ActivityDetails savedActivity = activityService.save(activity);

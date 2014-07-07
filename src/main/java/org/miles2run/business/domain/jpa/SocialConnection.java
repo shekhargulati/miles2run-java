@@ -2,8 +2,6 @@ package org.miles2run.business.domain.jpa;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.io.Serializable;
-import java.util.Date;
 
 /**
  * Created by shekhargulati on 04/03/14.
@@ -14,12 +12,7 @@ import java.util.Date;
 })
 @Access(AccessType.FIELD)
 @Table(name="social_connection")
-public class SocialConnection implements Serializable{
-
-    @Id
-    @TableGenerator(name = "sc_generator", table = "id_gen", allocationSize = 100)
-    @GeneratedValue(generator = "sc_generator")
-    private Long id;
+public class SocialConnection extends BaseEntity{
 
     @NotNull
     private String accessToken;
@@ -34,10 +27,6 @@ public class SocialConnection implements Serializable{
 
     @NotNull
     private String connectionId;
-
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(updatable = false)
-    private final Date connectedOn = new Date();
 
     @ManyToOne
     private Profile profile;
@@ -54,52 +43,24 @@ public class SocialConnection implements Serializable{
         this.connectionId = connectionId;
     }
 
-    public Long getId() {
-        return id;
-    }
-
     public String getAccessToken() {
         return accessToken;
-    }
-
-    public void setAccessToken(String accessToken) {
-        this.accessToken = accessToken;
     }
 
     public String getAccessSecret() {
         return accessSecret;
     }
 
-    public void setAccessSecret(String accessSecret) {
-        this.accessSecret = accessSecret;
-    }
-
     public SocialProvider getProvider() {
         return provider;
-    }
-
-    public void setProvider(SocialProvider provider) {
-        this.provider = provider;
     }
 
     public String getHandle() {
         return handle;
     }
 
-    public void setHandle(String handle) {
-        this.handle = handle;
-    }
-
     public String getConnectionId() {
         return connectionId;
-    }
-
-    public void setConnectionId(String connectionId) {
-        this.connectionId = connectionId;
-    }
-
-    public Date getConnectedOn() {
-        return connectedOn;
     }
 
     public Profile getProfile() {
@@ -119,7 +80,7 @@ public class SocialConnection implements Serializable{
                 ", provider=" + provider +
                 ", handle='" + handle + '\'' +
                 ", connectionId='" + connectionId + '\'' +
-                ", connectedOn=" + connectedOn +
+                ", createdAt=" + createdAt +
                 ", profile=" + profile +
                 '}';
     }

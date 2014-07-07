@@ -8,12 +8,7 @@ import javax.persistence.*;
 @Entity
 @Table(name = "share")
 @Access(AccessType.FIELD)
-public class Share {
-
-    @Id
-    @TableGenerator(name = "share_generator", table = "id_gen", allocationSize = 100)
-    @GeneratedValue(generator = "share_generator")
-    private Long id;
+public class Share extends BaseEntity{
 
     @Column(nullable = false, columnDefinition = "TINYINT(1)")
     private boolean twitter = false;
@@ -23,14 +18,6 @@ public class Share {
 
     @Column(nullable = false, columnDefinition = "TINYINT(1)")
     private  boolean googlePlus = false;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public boolean isTwitter() {
         return twitter;

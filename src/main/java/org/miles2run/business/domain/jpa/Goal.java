@@ -10,19 +10,14 @@ import java.util.Date;
 @Entity
 @NamedQueries(
         {
-                @NamedQuery(name = "Goal.findAllWithProfileAndArchive", query = "SELECT new Goal(g.id,g.purpose,g.targetDate,g.distance, g.goalUnit, g.archived) FROM Goal g where g.profile =:profile and g.archived =:archived"),
-                @NamedQuery(name = "Goal.findGoalWithIdAndProfile", query = "SELECT new Goal(g.id,g.purpose,g.targetDate,g.distance, g.goalUnit, g.archived) FROM Goal g where g.profile =:profile and g.id =:goalId"),
-                @NamedQuery(name = "Goal.findLastedCreatedGoal", query = "SELECT new Goal(g.id,g.purpose,g.targetDate,g.distance, g.goalUnit, g.archived) from Goal g where g.profile =:profile order by g.createdAt desc")
+                @NamedQuery(name = "Goal.findAllWithProfileAndArchive", query = "SELECT new Goal(g.id,g.version, g.purpose,g.targetDate,g.distance, g.goalUnit, g.archived) FROM Goal g where g.profile =:profile and g.archived =:archived"),
+                @NamedQuery(name = "Goal.findGoalWithIdAndProfile", query = "SELECT new Goal(g.id,g.version,g.purpose,g.targetDate,g.distance, g.goalUnit, g.archived) FROM Goal g where g.profile =:profile and g.id =:goalId"),
+                @NamedQuery(name = "Goal.findLastedCreatedGoal", query = "SELECT new Goal(g.id,g.version,g.purpose,g.targetDate,g.distance, g.goalUnit, g.archived) from Goal g where g.profile =:profile order by g.createdAt desc")
         }
 )
 @Access(AccessType.FIELD)
 @Table(name = "goal")
-public class Goal {
-
-    @Id
-    @TableGenerator(name = "goal_generator", table = "id_gen", allocationSize = 100)
-    @GeneratedValue(generator = "goal_generator")
-    private Long id;
+public class Goal extends BaseEntity {
 
     @NotNull
     private String purpose;
@@ -30,10 +25,6 @@ public class Goal {
     @Temporal(TemporalType.TIMESTAMP)
     @NotNull
     private Date targetDate;
-
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(updatable = false)
-    private final Date createdAt = new Date();
 
     @ManyToOne
     private Profile profile;
@@ -50,8 +41,9 @@ public class Goal {
     public Goal() {
     }
 
-    public Goal(Long id, String purpose, Date targetDate, long distance, GoalUnit goalUnit, boolean archived) {
+    public Goal(Long id, Long version, String purpose, Date targetDate, long distance, GoalUnit goalUnit, boolean archived) {
         this.id = id;
+        this.version = version;
         this.purpose = purpose;
         this.targetDate = targetDate;
         this.goalUnit = goalUnit;
@@ -59,60 +51,48 @@ public class Goal {
         this.archived = archived;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public String getPurpose() {
         return purpose;
-    }
-
-    public void setPurpose(String purpose) {
-        this.purpose = purpose;
     }
 
     public Date getTargetDate() {
         return targetDate;
     }
 
-    public void setTargetDate(Date targetDate) {
-        this.targetDate = targetDate;
-    }
-
-    public Date getCreatedAt() {
-        return createdAt;
-    }
-
     public Profile getProfile() {
         return profile;
-    }
-
-    public void setProfile(Profile profile) {
-        this.profile = profile;
     }
 
     public long getDistance() {
         return distance;
     }
 
-    public void setDistance(long goal) {
-        this.distance = goal;
-    }
-
     public GoalUnit getGoalUnit() {
         return goalUnit;
     }
 
-    public void setGoalUnit(GoalUnit goalUnit) {
-        this.goalUnit = goalUnit;
-    }
-
     public boolean isArchived() {
         return archived;
+    }
+
+    public void setPurpose(String purpose) {
+        this.purpose = purpose;
+    }
+
+    public void setTargetDate(Date targetDate) {
+        this.targetDate = targetDate;
+    }
+
+    public void setProfile(Profile profile) {
+        this.profile = profile;
+    }
+
+    public void setDistance(long distance) {
+        this.distance = distance;
+    }
+
+    public void setGoalUnit(GoalUnit goalUnit) {
+        this.goalUnit = goalUnit;
     }
 
     public void setArchived(boolean archived) {
@@ -126,7 +106,7 @@ public class Goal {
                 ", purpose='" + purpose + '\'' +
                 ", targetDate=" + targetDate +
                 ", createdAt=" + createdAt +
-                ", goal=" + distance +
+                ", distance=" + distance +
                 ", goalUnit=" + goalUnit +
                 ", archived=" + archived +
                 '}';
