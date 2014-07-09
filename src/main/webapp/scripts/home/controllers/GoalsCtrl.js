@@ -2,13 +2,23 @@
 
 angular.module('miles2run-home')
     .controller('GoalsCtrl', function ($scope, $http, $window, activeProfile, ConfigService, $modal) {
-        $scope.goalsPromise =  $http.get(ConfigService.getBaseUrl() + "goals").success(function (data) {
-            $scope.goals = data;
+        $scope.goalsPromise = $http.get(ConfigService.getBaseUrl() + "goals").success(function (data) {
+            if(isEmpty(data)){
+                $scope.goalExists = false;
+            }else{
+                $scope.goalExists = true;
+                $scope.distanceGoals = data['DISTANCE_GOAL'];
+                $scope.durationGoals = data['DURATION_GOAL'];
+            }
         }).error(function (data, status) {
             toastr.error("Unable to fetch goals. Please try after sometime.");
             console.log("Error " + data);
             console.log("Status " + status)
         });
+
+        var isEmpty = function(obj){
+            return  Boolean(obj && typeof obj == 'object') && !Object.keys(obj).length;
+        }
 
         $scope.appContext = ConfigService.appContext();
 

@@ -6,35 +6,27 @@ import org.miles2run.business.domain.jpa.GoalUnit;
 import java.util.Date;
 
 /**
- * Created by shekhargulati on 16/06/14.
+ * Created by shekhargulati on 09/07/14.
  */
-public class GoalDetails {
+public class DistanceGoalDetails {
 
     private final Long id;
     private final String purpose;
-    private final Date endDate;
     private final long distance;
     private final GoalUnit goalUnit;
     private final boolean archived;
-    private double percentageCompleted;
+    private final double percentageCompleted;
+    private final Date endDate;
 
-    public GoalDetails(Goal goal, double percentageCompleted) {
+    public DistanceGoalDetails(Goal goal, double percentageCompleted) {
         this.id = goal.getId();
         this.purpose = goal.getPurpose();
-        this.endDate = goal.getEndDate();
         this.distance = goal.getDistance() / goal.getGoalUnit().getConversion();
         this.goalUnit = goal.getGoalUnit();
         this.archived = goal.isArchived();
+        this.endDate = goal.getEndDate();
         this.percentageCompleted = percentageCompleted;
-    }
 
-    public GoalDetails(Goal goal) {
-        this.id = goal.getId();
-        this.purpose = goal.getPurpose();
-        this.endDate = goal.getEndDate();
-        this.distance = goal.getDistance() / goal.getGoalUnit().getConversion();
-        this.goalUnit = goal.getGoalUnit();
-        this.archived = goal.isArchived();
     }
 
     public Long getId() {
@@ -43,10 +35,6 @@ public class GoalDetails {
 
     public String getPurpose() {
         return purpose;
-    }
-
-    public Date getEndDate() {
-        return endDate;
     }
 
     public long getDistance() {
@@ -63,5 +51,9 @@ public class GoalDetails {
 
     public double getPercentageCompleted() {
         return percentageCompleted;
+    }
+
+    public Date getEndDate() {
+        return endDate;
     }
 }

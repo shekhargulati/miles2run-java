@@ -22,7 +22,8 @@ angular.module('miles2run-home')
                 var goal = {
                     id: $scope.goal.id,
                     purpose: $scope.goal.purpose,
-                    targetDate: $scope.goal.targetDate,
+                    startDate: $scope.goal.startDate,
+                    endDate: $scope.goal.endDate,
                     distance: $scope.goal.distance,
                     goalUnit: $scope.goal.goalUnit,
                     archived: $scope.goal.archived

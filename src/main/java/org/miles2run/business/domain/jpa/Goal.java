@@ -10,9 +10,9 @@ import java.util.Date;
 @Entity
 @NamedQueries(
         {
-                @NamedQuery(name = "Goal.findAllWithProfileAndArchive", query = "SELECT new Goal(g.id,g.version, g.purpose,g.targetDate,g.distance, g.goalUnit, g.archived) FROM Goal g where g.profile =:profile and g.archived =:archived"),
-                @NamedQuery(name = "Goal.findGoalWithIdAndProfile", query = "SELECT new Goal(g.id,g.version,g.purpose,g.targetDate,g.distance, g.goalUnit, g.archived) FROM Goal g where g.profile =:profile and g.id =:goalId"),
-                @NamedQuery(name = "Goal.findLastedCreatedGoal", query = "SELECT new Goal(g.id,g.version,g.purpose,g.targetDate,g.distance, g.goalUnit, g.archived) from Goal g where g.profile =:profile order by g.createdAt desc")
+                @NamedQuery(name = "Goal.findAllWithProfileAndArchive", query = "SELECT new Goal(g.id,g.version, g.purpose,g.startDate,g.endDate,g.distance, g.goalUnit, g.archived,g.goalType) FROM Goal g where g.profile =:profile and g.archived =:archived"),
+                @NamedQuery(name = "Goal.findGoalWithIdAndProfile", query = "SELECT new Goal(g.id,g.version,g.purpose,g.startDate,g.endDate,g.distance, g.goalUnit, g.archived,g.goalType) FROM Goal g where g.profile =:profile and g.id =:goalId"),
+                @NamedQuery(name = "Goal.findLastedCreatedGoal", query = "SELECT new Goal(g.id,g.version,g.purpose,g.startDate,g.endDate,g.distance, g.goalUnit, g.archived,g.goalType) from Goal g where g.profile =:profile order by g.createdAt desc")
         }
 )
 @Access(AccessType.FIELD)
@@ -23,40 +23,49 @@ public class Goal extends BaseEntity {
     private String purpose;
 
     @Temporal(TemporalType.TIMESTAMP)
-    @NotNull
-    private Date targetDate;
+    private Date startDate;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date endDate;
 
     @ManyToOne
     private Profile profile;
 
-    @NotNull
+    @ManyToOne
+    private Race race;
+
     private long distance = 0;
 
-    @NotNull
     @Enumerated(EnumType.STRING)
     private GoalUnit goalUnit = GoalUnit.KM;
+
+    @Enumerated(EnumType.STRING)
+    @NotNull
+    private GoalType goalType;
 
     private boolean archived = false;
 
     public Goal() {
     }
 
-    public Goal(Long id, Long version, String purpose, Date targetDate, long distance, GoalUnit goalUnit, boolean archived) {
+    public Goal(Long id, Long version, String purpose, Date startDate, Date endDate, long distance, GoalUnit goalUnit, boolean archived, GoalType goalType) {
         this.id = id;
         this.version = version;
         this.purpose = purpose;
-        this.targetDate = targetDate;
+        this.startDate = startDate;
+        this.endDate = endDate;
         this.goalUnit = goalUnit;
         this.distance = distance;
         this.archived = archived;
+        this.goalType = goalType;
     }
 
     public String getPurpose() {
         return purpose;
     }
 
-    public Date getTargetDate() {
-        return targetDate;
+    public Date getEndDate() {
+        return endDate;
     }
 
     public Profile getProfile() {
@@ -79,8 +88,8 @@ public class Goal extends BaseEntity {
         this.purpose = purpose;
     }
 
-    public void setTargetDate(Date targetDate) {
-        this.targetDate = targetDate;
+    public void setEndDate(Date targetDate) {
+        this.endDate = targetDate;
     }
 
     public void setProfile(Profile profile) {
@@ -99,12 +108,36 @@ public class Goal extends BaseEntity {
         this.archived = archived;
     }
 
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
+    }
+
+    public Race getRace() {
+        return race;
+    }
+
+    public void setRace(Race race) {
+        this.race = race;
+    }
+
+    public GoalType getGoalType() {
+        return goalType;
+    }
+
+    public void setGoalType(GoalType goalType) {
+        this.goalType = goalType;
+    }
+
     @Override
     public String toString() {
         return "Goal{" +
                 "id=" + id +
                 ", purpose='" + purpose + '\'' +
-                ", targetDate=" + targetDate +
+                ", targetDate=" + endDate +
                 ", createdAt=" + createdAt +
                 ", distance=" + distance +
                 ", goalUnit=" + goalUnit +

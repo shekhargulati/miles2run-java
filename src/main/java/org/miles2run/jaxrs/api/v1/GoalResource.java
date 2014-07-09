@@ -3,11 +3,14 @@ package org.miles2run.jaxrs.api.v1;
 import org.apache.commons.lang3.StringUtils;
 import org.jug.filters.LoggedIn;
 import org.miles2run.business.domain.jpa.Goal;
+import org.miles2run.business.domain.jpa.GoalType;
 import org.miles2run.business.domain.jpa.Profile;
 import org.miles2run.business.services.ActivityService;
 import org.miles2run.business.services.GoalService;
 import org.miles2run.business.services.ProfileService;
 import org.miles2run.business.vo.Progress;
+import org.miles2run.jaxrs.vo.DistanceGoalDetails;
+import org.miles2run.jaxrs.vo.DurationGoalDetails;
 import org.miles2run.jaxrs.vo.GoalDetails;
 
 import javax.inject.Inject;
@@ -17,7 +20,9 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 /**
@@ -41,16 +46,41 @@ public class GoalResource {
     @GET
     @Produces("application/json")
     @LoggedIn
-    public List<GoalDetails> allGoal(@QueryParam("archived") boolean archived) {
+    public Map<GoalType, List<Object>> allGoal(@QueryParam("archived") boolean archived) {
         String loggedInUser = securityContext.getUserPrincipal().getName();
         List<Goal> goals = goalService.findAllGoals(loggedInUser, archived);
-
-        List<GoalDetails> goalsDetails = new ArrayList<>();
+        Map<GoalType, List<Object>> allGoalsPerType = new HashMap<>();
         for (Goal goal : goals) {
-            double percentageCompleted = percentageGoalCompleted(goal);
-            goalsDetails.add(new GoalDetails(goal, percentageCompleted));
+            GoalType goalType = goal.getGoalType();
+            Object specificGoal = toGoalType(goal);
+            if (allGoalsPerType.containsKey(goalType)) {
+                List<Object> goalsForType = allGoalsPerType.get(goalType);
+                goalsForType.add(specificGoal);
+            } else {
+                List<Object> goalsForType = new ArrayList<>();
+                goalsForType.add(specificGoal);
+                allGoalsPerType.put(goalType, goalsForType);
+            }
         }
-        return goalsDetails;
+        return allGoalsPerType;
+    }
+
+    private Object toGoalType(Goal goal) {
+        if (goal.getGoalType() == GoalType.DISTANCE_GOAL) {
+            return toDistanceGoal(goal);
+        } else if (goal.getGoalType() == GoalType.DURATION_GOAL) {
+            return toDurationGoal(goal);
+        }
+        return null;
+    }
+
+    private DurationGoalDetails toDurationGoal(Goal goal) {
+        return new DurationGoalDetails(goal);
+    }
+
+    private DistanceGoalDetails toDistanceGoal(Goal goal) {
+        double percentageCompleted = percentageGoalCompleted(goal);
+        return new DistanceGoalDetails(goal, percentageCompleted);
     }
 
     @Path("{goalId}")

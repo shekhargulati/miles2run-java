@@ -27,6 +27,18 @@ var app = angular.module('miles2run-home', [
                 templateUrl: 'views/home/create.html',
                 controller: 'CreateGoalCtrl'
             })
+            .when('/goals/create_distance_goal', {
+                templateUrl: 'views/home/create_distance_goal.html',
+                controller: 'CreateGoalCtrl'
+            })
+            .when('/goals/create_duration_goal', {
+                templateUrl: 'views/home/create_duration_goal.html',
+                controller: 'CreateGoalCtrl'
+            })
+            .when('/goals/create_race_goal', {
+                templateUrl: 'views/home/create_duration_goal.html',
+                controller: 'CreateGoalCtrl'
+            })
             .when('/friends', {
                 templateUrl: 'views/home/friends.html',
                 controller: 'FriendsCtrl'
@@ -56,6 +68,9 @@ app.filter('moment', function () {
 
 app.filter('momentDaysBetween', function () {
     return function (text) {
+        if(!text){
+            return "No End Date"
+        }
         var currentMoment = moment(new Date());
         var targetMoment = moment(text, "MMDDYYYY HH mm ss");
         var daysDiff = targetMoment.diff(currentMoment, 'days');
@@ -105,6 +120,13 @@ app.config(['$provide', function ($provide) {
 function HeaderCtrl($scope, $location) {
 
     $scope.isActive = function (viewLocation) {
+        if (viewLocation instanceof Array) {
+            for (var i = 0; i < viewLocation.length; i++) {
+                if (viewLocation[i] === $location.path()) {
+                    return true;
+                }
+            }
+        }
         return viewLocation === $location.path();
     };
 }

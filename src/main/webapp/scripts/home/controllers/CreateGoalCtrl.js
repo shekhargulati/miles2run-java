@@ -10,12 +10,33 @@ function CreateGoalCtrl($scope, $location, activeProfile, $http, ConfigService, 
 
     $scope.buttonText = "Create";
 
-    $scope.createGoal = function () {
+    $scope.renderNextView = function () {
+        console.log($scope.goalType);
+        if ($scope.goalType === 'distance_goal') {
+            $location.path("/goals/create_distance_goal");
+        } else if ($scope.goalType === 'duration_goal') {
+            $location.path("/goals/create_duration_goal");
+        } else {
+            $location.path("/goals/create_distance_goal");
+        }
+
+    }
+
+    $scope.createDistanceGoal = function(){
+        createGoal('DISTANCE_GOAL');
+    }
+
+    $scope.createDurationGoal = function(){
+        createGoal('DURATION_GOAL');
+    }
+
+    var createGoal = function (goalType) {
         $scope.submitted = true;
         if ($scope.goalForm.$valid) {
             $scope.successfulSubmission = true;
             $scope.buttonText = "Creating Goal..";
-            $scope.createGoalPromise =  $http.post(ConfigService.getBaseUrl() + "goals", $scope.goal).success(function (data) {
+            $scope.goal.goalType =  goalType;
+            $scope.createGoalPromise = $http.post(ConfigService.getBaseUrl() + "goals", $scope.goal).success(function (data) {
                 toastr.success("Created new goal");
                 $window.location.href = ConfigService.appContext() + 'goals/' + data.id;
             }).error(function (data, status) {
@@ -52,11 +73,18 @@ function CreateGoalCtrl($scope, $location, activeProfile, $http, ConfigService, 
     };
     $scope.toggleMin();
 
-    $scope.open = function ($event) {
+    $scope.openStartDate = function ($event) {
         $event.preventDefault();
         $event.stopPropagation();
 
-        $scope.opened = true;
+        $scope.openedStartDate = true;
+    };
+
+    $scope.openEndDate = function ($event) {
+        $event.preventDefault();
+        $event.stopPropagation();
+
+        $scope.openedEndDate = true;
     };
 
     $scope.dateOptions = {
