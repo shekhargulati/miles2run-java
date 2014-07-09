@@ -22,20 +22,31 @@ function CreateGoalCtrl($scope, $location, activeProfile, $http, ConfigService, 
 
     }
 
-    $scope.createDistanceGoal = function(){
+    $scope.createDistanceGoal = function () {
+        $scope.submitted = true;
         createGoal('DISTANCE_GOAL');
     }
 
-    $scope.createDurationGoal = function(){
+    $scope.validateDateRange = function (startDate, endDate) {
+        if (startDate && endDate) {
+            if (startDate.getTime() < endDate.getTime()) {
+                $scope.goalForm.startDate.$invalid = false;
+            } else {
+                $scope.goalForm.startDate.$invalid = true;
+            }
+        }
+    }
+    $scope.createDurationGoal = function () {
+        $scope.submitted = true;
+        $scope.validateDateRange($scope.goal.startDate, $scope.goal.endDate);
         createGoal('DURATION_GOAL');
     }
 
     var createGoal = function (goalType) {
-        $scope.submitted = true;
-        if ($scope.goalForm.$valid) {
+        if ($scope.goalForm.$valid && !$scope.goalForm.startDate.$invalid) {
             $scope.successfulSubmission = true;
             $scope.buttonText = "Creating Goal..";
-            $scope.goal.goalType =  goalType;
+            $scope.goal.goalType = goalType;
             $scope.createGoalPromise = $http.post(ConfigService.getBaseUrl() + "goals", $scope.goal).success(function (data) {
                 toastr.success("Created new goal");
                 $window.location.href = ConfigService.appContext() + 'goals/' + data.id;

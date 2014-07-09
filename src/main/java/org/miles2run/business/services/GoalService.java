@@ -73,6 +73,7 @@ public class GoalService {
     public void update(Goal goal, Long goalId) {
         Goal existingGoal = this.find(goalId);
         existingGoal.setDistance(goal.getDistance());
+        existingGoal.setStartDate(goal.getStartDate());
         existingGoal.setEndDate(goal.getEndDate());
         existingGoal.setArchived(goal.isArchived());
         existingGoal.setGoalUnit(goal.getGoalUnit());

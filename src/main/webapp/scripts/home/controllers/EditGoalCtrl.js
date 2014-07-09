@@ -14,9 +14,29 @@ angular.module('miles2run-home')
             console.log("Status " + status)
         });
 
-        $scope.editGoal = function () {
+        $scope.editDistanceGoal = function () {
             $scope.submitted = true;
-            if ($scope.goalForm.$valid) {
+            editGoal('DISTANCE_GOAL');
+        }
+
+        $scope.validateDateRange = function (startDate, endDate) {
+            if (startDate && endDate) {
+                if (startDate.getTime() < endDate.getTime()) {
+                    $scope.goalForm.startDate.$invalid = false;
+                } else {
+                    $scope.goalForm.startDate.$invalid = true;
+                }
+            }
+        }
+
+        $scope.editDurationGoal = function () {
+            $scope.submitted = true;
+            $scope.validateDateRange($scope.goal.startDate, $scope.goal.endDate);
+            editGoal('DISTANCE_GOAL');
+        }
+
+        var editGoal = function (goalType) {
+            if ($scope.goalForm.$valid && !$scope.goalForm.startDate.$invalid) {
                 $scope.successfulSubmission = true;
                 $scope.buttonText = "Updating Goal..";
                 var goal = {
@@ -26,9 +46,10 @@ angular.module('miles2run-home')
                     endDate: $scope.goal.endDate,
                     distance: $scope.goal.distance,
                     goalUnit: $scope.goal.goalUnit,
-                    archived: $scope.goal.archived
+                    archived: $scope.goal.archived,
+                    goalType: goalType
                 }
-                $scope.editGoalPromise =  $http.put(ConfigService.getBaseUrl() + "goals/" + $scope.goal.id, goal).success(function (data) {
+                $scope.editGoalPromise = $http.put(ConfigService.getBaseUrl() + "goals/" + $scope.goal.id, goal).success(function (data) {
                     toastr.success("Updated goal");
                     $location.path("/");
                 }).error(function (data, status) {
@@ -42,7 +63,8 @@ angular.module('miles2run-home')
         };
 
         $scope.today = function () {
-            $scope.goal.targetDate = new Date($scope.goal.targetDate);
+            $scope.goal.startDate = $scope.goal.startDate ? new Date($scope.goal.startDate) : null;
+            $scope.goal.endDate = $scope.goal.endDate ? new Date($scope.goal.endDate) : null;
         };
 
         $scope.showWeeks = true;
@@ -51,7 +73,8 @@ angular.module('miles2run-home')
         };
 
         $scope.clear = function () {
-            $scope.goal.targetDate = null;
+            $scope.goal.startDate = null;
+            $scope.goal.endDate = null;
         };
 
         // Disable weekend selection

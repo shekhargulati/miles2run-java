@@ -13,7 +13,7 @@
             </div>
             <!-- /.panel-heading -->
             <div class="panel-body">
-                <form name="goalForm" class="form-horizontal" ng-submit="editGoal()" novalidate>
+                <form name="goalForm" class="form-horizontal" ng-submit="editDurationGoal()" novalidate>
                     <fieldset>
                         <div class="form-group" ng-class="{'has-error': ((goalForm.startDate.$invalid || goalForm.$error['date-disabled']) && submitted)}">
                             <label class="col-md-2 control-label" for="startDate">Start Date</label>
@@ -22,7 +22,6 @@
                                 <input type="text" id="startDate" name="startDate" class="form-control"
                                        datepicker-popup="dd-MMM-yyyy" ng-model="goal.startDate"
                                        is-open="openedStartDate"
-                                       min-date="minDate"
                                        datepicker-options="dateOptions" close-text="Close"
                                        placeholder="dd-MMM-YYYY eg. 02-Aug-2014"
                                        title="Start date"
@@ -33,12 +32,11 @@
                                         </button>
                                     </span>
                             </div>
+                                <span class="help-block col-md-offset-2" ng-if="goalForm.startDate.$invalid && submitted">Start Date should be before End Date.</span>
                                 <span class="help-block col-md-offset-2"
                                       ng-if="goalForm.startDate.$error.required && submitted">Start Date is required.</span>
                                 <span class="help-block col-md-offset-2"
                                       ng-if="goalForm.startDate.$error.date && submitted">Start Date is invalid.</span>
-                                <span class="help-block col-md-offset-2"
-                                      ng-if="goalForm.$error['date-disabled'] && submitted">Start Date should be in future.</span>
                         </div>
 
                         <div class="form-group" ng-class="{'has-error': ((goalForm.endDate.$invalid || goalForm.$error['date-disabled']) && submitted)}">
@@ -48,7 +46,7 @@
                                 <input type="text" id="endDate" name="endDate" class="form-control"
                                        datepicker-popup="dd-MMM-yyyy" ng-model="goal.endDate"
                                        is-open="openedEndDate"
-                                       min-date="minDate"
+                                       min-date="goal.startDate"
                                        datepicker-options="dateOptions" close-text="Close"
                                        placeholder="dd-MMM-YYYY eg. 02-Aug-2014"
                                        title="End date"
@@ -64,7 +62,7 @@
                                 <span class="help-block col-md-offset-2"
                                       ng-if="goalForm.endDate.$error.date && submitted">End Date is invalid.</span>
                                 <span class="help-block col-md-offset-2"
-                                      ng-if="goalForm.$error['date-disabled'] && submitted">End Date should be in future.</span>
+                                      ng-if="goalForm.$error['date-disabled'] && submitted">End Date should be future date after Start Date/</span>
                         </div>
 
                         <div class="form-group" ng-class="{'has-error': (goalForm.purpose.$invalid && submitted)}">

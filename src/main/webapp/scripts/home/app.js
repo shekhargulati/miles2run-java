@@ -71,15 +71,16 @@ app.filter('moment', function () {
 });
 
 app.filter('momentDaysBetween', function () {
-    return function (text) {
-        if(!text){
-            return "No End Date"
+    return function (text, startDate) {
+        if (!text) {
+            return "-";
         }
-        var currentMoment = moment(new Date());
+        startDate = startDate ? new Date(startDate) : new Date();
+        var currentMoment = moment(startDate);
         var targetMoment = moment(text, "MMDDYYYY HH mm ss");
         var daysDiff = targetMoment.diff(currentMoment, 'days');
         if (daysDiff > 0) {
-            return 'in ' + daysDiff + ' day(s)';
+            return daysDiff + ' day(s)';
         } else if (daysDiff === 0) {
             return 'Today';
         } else {

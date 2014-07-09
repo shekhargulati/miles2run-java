@@ -46,7 +46,7 @@
                                 <th>#</th>
                                 <th>Purpose</th>
                                 <th>Distance</th>
-                                <th>End Date</th>
+                                <th>Days Remaining</th>
                                 <th>% Completed</th>
                                 <th>Actions</th>
                             </tr>
@@ -118,7 +118,7 @@
                                 </td>
                                 <td>{{goal.startDate | date:'MMMM dd, yyyy'}}</td>
                                 <td>{{goal.endDate | date:'MMMM dd, yyyy'}}</td>
-                                <td>{{goal.endDate | date:'MMddyyyy HH mm ss'|momentDaysBetween}}</td>
+                                <td>{{goal.endDate | date:'MMddyyyy HH mm ss'|momentDaysBetween:goal.startDate}}</td>
                                 <td>
                                     <div class="btn-group pull-right">
                                         <button type="button" class="btn btn-default btn-xs dropdown-toggle"
