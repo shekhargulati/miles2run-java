@@ -1,6 +1,7 @@
 package org.miles2run.business.vo;
 
 import org.miles2run.business.domain.jpa.Goal;
+import org.miles2run.business.domain.jpa.GoalType;
 import org.miles2run.business.domain.jpa.GoalUnit;
 
 /**
@@ -15,12 +16,14 @@ public class Progress {
     private long totalDurationInSecs;
     private long totalDurationInMins;
     private double averagePace;
+    private GoalType goalType;
 
-    public Progress(long goal, GoalUnit goalUnit, double totalDistanceCovered, long activityCount, long totalDurationInSecs) {
+    public Progress(long goal, GoalUnit goalUnit, double totalDistanceCovered, long activityCount, long totalDurationInSecs, GoalType goalType) {
         this.goalUnit = goalUnit;
         this.goal = goal / this.goalUnit.getConversion();
         this.totalDistanceCovered = totalDistanceCovered / this.goalUnit.getConversion();
         this.activityCount = activityCount;
+        this.goalType = goalType;
         if (goal != 0) {
             this.percentage = ((double) (totalDistanceCovered * 100) / goal);
             this.percentage = this.percentage > 100 ? 100 : this.percentage;
@@ -92,8 +95,8 @@ public class Progress {
         return this.averagePace;
     }
 
-    public static Progress format(Progress progress, Goal goal) {
-        return null;
+    public GoalType getGoalType() {
+        return goalType;
     }
 }
 

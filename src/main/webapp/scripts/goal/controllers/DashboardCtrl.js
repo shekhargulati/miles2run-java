@@ -6,13 +6,23 @@ angular.module('milestogo')
         $scope.error = null;
         $scope.data = {};
 
+        if (activeGoal.goalType.$name === 'DISTANCE_GOAL') {
+            $scope.firstTemplate = '../views/goal/partials/goal_distance_first.html';
+        } else {
+            $scope.firstTemplate = '../views/goal/partials/goal_duration_first.html';
+        }
+
         var goalUnit = activeGoal.goalUnit.$name.toLowerCase();
         var paceUnit = 'mins/' + goalUnit;
 
         ProgressService.progress(activeGoal.id).success(function (data, status, headers, config) {
             $scope.error = null;
+            $scope.goalType = data.goalType;
             $scope.data = data;
-            generateProgressChart(data);
+            if ($scope.goalType === 'DISTANCE_GOAL') {
+                generateProgressChart(data);
+            }
+
         }).error(function (data, status, headers, config) {
             toastr.error("Unable to fetch your progress. Please try later.");
             $scope.error = {message: "Unable to fetch your progress. Please try later."};

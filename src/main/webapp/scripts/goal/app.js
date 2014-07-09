@@ -12,7 +12,14 @@ var app = angular.module('milestogo', [
     .config(function ($routeProvider) {
         $routeProvider
             .when('/', {
-                templateUrl: '../views/goal/dashboard.html',
+                templateUrl: function () {
+                    var activeGoal = angular.copy(window.activeGoal);
+                    if (activeGoal.goalType.$name === 'DISTANCE_GOAL') {
+                        return  '../views/goal/goal_distance_dashboard.html';
+                    } else {
+                        return '../views/goal/goal_duration_dashboard.html';
+                    }
+                },
                 controller: 'DashboardCtrl'
             })
             .when('/timeline', {
@@ -89,7 +96,6 @@ app.config(['$provide', function ($provide) {
 
 
 function HeaderCtrl($scope, $location) {
-
     $scope.isActive = function (viewLocation) {
         return viewLocation === $location.path();
     };
