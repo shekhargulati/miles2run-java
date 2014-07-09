@@ -24,7 +24,9 @@ function CreateGoalCtrl($scope, $location, activeProfile, $http, ConfigService, 
 
     $scope.createDistanceGoal = function () {
         $scope.submitted = true;
-        createGoal('DISTANCE_GOAL');
+        if ($scope.goalForm.$valid) {
+            createGoal('DISTANCE_GOAL');
+        }
     }
 
     $scope.validateDateRange = function (startDate, endDate) {
@@ -39,24 +41,24 @@ function CreateGoalCtrl($scope, $location, activeProfile, $http, ConfigService, 
     $scope.createDurationGoal = function () {
         $scope.submitted = true;
         $scope.validateDateRange($scope.goal.startDate, $scope.goal.endDate);
-        createGoal('DURATION_GOAL');
+        if ($scope.goalForm.$valid && !$scope.goalForm.startDate.$invalid) {
+            createGoal('DURATION_GOAL');
+        }
     }
 
     var createGoal = function (goalType) {
-        if ($scope.goalForm.$valid && !$scope.goalForm.startDate.$invalid) {
-            $scope.successfulSubmission = true;
-            $scope.buttonText = "Creating Goal..";
-            $scope.goal.goalType = goalType;
-            $scope.createGoalPromise = $http.post(ConfigService.getBaseUrl() + "goals", $scope.goal).success(function (data) {
-                toastr.success("Created new goal");
-                $window.location.href = ConfigService.appContext() + 'goals/' + data.id;
-            }).error(function (data, status) {
-                toastr.error("Unable to create goal. Please try after sometime.");
-                console.log("Error " + data);
-                console.log("Status " + status)
-                $location.path("/");
-            });
-        }
+        $scope.successfulSubmission = true;
+        $scope.buttonText = "Creating Goal..";
+        $scope.goal.goalType = goalType;
+        $scope.createGoalPromise = $http.post(ConfigService.getBaseUrl() + "goals", $scope.goal).success(function (data) {
+            toastr.success("Created new goal");
+            $window.location.href = ConfigService.appContext() + 'goals/' + data.id;
+        }).error(function (data, status) {
+            toastr.error("Unable to create goal. Please try after sometime.");
+            console.log("Error " + data);
+            console.log("Status " + status)
+            $location.path("/");
+        });
 
     };
 
