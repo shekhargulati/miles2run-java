@@ -87,11 +87,10 @@ public class GoalResource {
     @GET
     @Produces("application/json")
     @LoggedIn
-    public GoalDetails goal(@PathParam("goalId") Long goalId) {
+    public Object goal(@PathParam("goalId") Long goalId) {
         String loggedInUser = securityContext.getUserPrincipal().getName();
         Goal goal = goalService.findGoal(loggedInUser, goalId);
-        double percentageCompleted = percentageGoalCompleted(goal);
-        return new GoalDetails(goal, percentageCompleted);
+        return toGoalType(goal);
     }
 
 

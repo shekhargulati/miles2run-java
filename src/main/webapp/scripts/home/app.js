@@ -43,8 +43,12 @@ var app = angular.module('miles2run-home', [
                 templateUrl: 'views/home/friends.html',
                 controller: 'FriendsCtrl'
             })
-            .when('/goals/edit/:goalId', {
-                templateUrl: 'views/home/edit.html',
+            .when('/goals/edit_distance_goal/:goalId', {
+                templateUrl: 'views/home/edit_distance_goal.html',
+                controller: 'EditGoalCtrl'
+            })
+            .when('/goals/edit_duration_goal/:goalId', {
+                templateUrl: 'views/home/edit_duration_goal.html',
                 controller: 'EditGoalCtrl'
             })
             .when('/goals/:goalId/activity/:activityId', {

@@ -64,10 +64,16 @@ angular.module('miles2run-home')
         };
         $scope.toggleMin();
 
-        $scope.open = function ($event) {
+        $scope.openStartDate = function ($event) {
             $event.preventDefault();
             $event.stopPropagation();
-            $scope.opened = true;
+            $scope.openedStartDate = true;
+        };
+
+        $scope.openEndDate = function ($event) {
+            $event.preventDefault();
+            $event.stopPropagation();
+            $scope.openedEndDate = true;
         };
 
         $scope.dateOptions = {
@@ -75,6 +81,4 @@ angular.module('miles2run-home')
             'starting-day': 1
         };
 
-        $scope.formats = ['dd-MMMM-yyyy', 'yyyy/MM/dd', 'shortDate'];
-        $scope.format = $scope.formats[0];
     });

@@ -15,54 +15,56 @@
             <div class="panel-body">
                 <form name="goalForm" class="form-horizontal" ng-submit="editGoal()" novalidate>
                     <fieldset>
-                        <div class="form-group" ng-class="{'has-error': (goalForm.distance.$invalid && submitted)}">
-                            <label class="col-md-2 control-label" for="distance">Distance</label>
+                        <div class="form-group" ng-class="{'has-error': ((goalForm.startDate.$invalid || goalForm.$error['date-disabled']) && submitted)}">
+                            <label class="col-md-2 control-label" for="startDate">Start Date</label>
 
                             <div class="col-md-6 input-group">
-                                <input id="distance" name="distance" type="number"
-                                       placeholder="Distance to run"
-                                       class="form-control" ng-model="goal.distance" min="1" step="1"
-                                       title="Please enter valid value of distance greater than 0"
-                                       required>
-                                    <span class="input-group-addon">
-                                        <select name="goalUnit" ng-model="goal.goalUnit">
-                                            <option value="KM" ng-selected="goal.goalUnit.$name == 'KM'">km</option>
-                                            <option value="MI" ng-selected="goal.goalUnit.$name == 'MI'">mi</option>
-                                        </select>
-                                    </span>
-                            </div>
-                                <span class="help-block col-md-offset-2"
-                                      ng-if="goalForm.distance.$error.required && submitted">Distance is required.</span>
-                                <span class="help-block col-md-offset-2"
-                                      ng-if="goalForm.distance.$error.min && submitted">Distance should be greater than 0.</span>
-                                <span class="help-block col-md-offset-2"
-                                      ng-if="goalForm.distance.$error.number && submitted">Distance should be a number greater than 0.</span>
-                        </div>
-
-                        <div class="form-group" ng-class="{'has-error': ((goalForm.targetDate.$invalid || goalForm.$error['date-disabled']) && submitted)}">
-                            <label class="col-md-2 control-label" for="targetDate">Target Date</label>
-
-                            <div class="col-md-6 input-group">
-                                <input type="text" id="targetDate" name="targetDate" class="form-control"
-                                       datepicker-popup="dd-MMM-yyyy" ng-model="goal.targetDate"
-                                       is-open="opened"
+                                <input type="text" id="startDate" name="startDate" class="form-control"
+                                       datepicker-popup="dd-MMM-yyyy" ng-model="goal.startDate"
+                                       is-open="openedStartDate"
                                        min-date="minDate"
                                        datepicker-options="dateOptions" close-text="Close"
                                        placeholder="dd-MMM-YYYY eg. 02-Aug-2014"
-                                       title="Target date"
+                                       title="Start date"
                                        required>
                                     <span class="input-group-btn">
-                                        <button class="btn btn-info" ng-click="open($event)"><i
+                                        <button class="btn btn-info" ng-click="openStartDate($event)"><i
                                                 class="fa fa-calendar fa-fw"></i>
                                         </button>
                                     </span>
                             </div>
                                 <span class="help-block col-md-offset-2"
-                                      ng-if="goalForm.targetDate.$error.required && submitted">Target Date is required.</span>
+                                      ng-if="goalForm.startDate.$error.required && submitted">Start Date is required.</span>
                                 <span class="help-block col-md-offset-2"
-                                      ng-if="goalForm.targetDate.$error.date && submitted">Target Date is invalid.</span>
+                                      ng-if="goalForm.startDate.$error.date && submitted">Start Date is invalid.</span>
                                 <span class="help-block col-md-offset-2"
-                                      ng-if="goalForm.$error['date-disabled'] && submitted">Target Date should be in future.</span>
+                                      ng-if="goalForm.$error['date-disabled'] && submitted">Start Date should be in future.</span>
+                        </div>
+
+                        <div class="form-group" ng-class="{'has-error': ((goalForm.endDate.$invalid || goalForm.$error['date-disabled']) && submitted)}">
+                            <label class="col-md-2 control-label" for="endDate">End Date</label>
+
+                            <div class="col-md-6 input-group">
+                                <input type="text" id="endDate" name="endDate" class="form-control"
+                                       datepicker-popup="dd-MMM-yyyy" ng-model="goal.endDate"
+                                       is-open="openedEndDate"
+                                       min-date="minDate"
+                                       datepicker-options="dateOptions" close-text="Close"
+                                       placeholder="dd-MMM-YYYY eg. 02-Aug-2014"
+                                       title="End date"
+                                       required>
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-info" ng-click="openEndDate($event)"><i
+                                                class="fa fa-calendar fa-fw"></i>
+                                        </button>
+                                    </span>
+                            </div>
+                                <span class="help-block col-md-offset-2"
+                                      ng-if="goalForm.endDate.$error.required && submitted">End Date is required.</span>
+                                <span class="help-block col-md-offset-2"
+                                      ng-if="goalForm.endDate.$error.date && submitted">End Date is invalid.</span>
+                                <span class="help-block col-md-offset-2"
+                                      ng-if="goalForm.$error['date-disabled'] && submitted">End Date should be in future.</span>
                         </div>
 
                         <div class="form-group" ng-class="{'has-error': (goalForm.purpose.$invalid && submitted)}">
@@ -82,6 +84,7 @@
                                 <span class="help-block col-md-offset-2"
                                       ng-if="goalForm.purpose.$error.maxlength && submitted">Purpose should be less than 100 characters.</span>
                         </div>
+
                         <div class="form-group">
                             <div class="col-md-offset-2 col-md-4 pull-left">
                                 <button class="btn btn-primary btn-block" type="submit" ng-disabled="successfulSubmission">
