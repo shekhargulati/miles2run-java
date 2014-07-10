@@ -12,11 +12,15 @@ var app = angular.module('miles2run-home', [
     ])
     .config(function ($routeProvider) {
         $routeProvider
-            .when('/', {
+            .when('/goals', {
                 templateUrl: 'views/home/goals.html',
                 controller: 'GoalsCtrl'
             })
-            .when('/timeline', {
+            .when('/goals/active', {
+                templateUrl: 'views/home/goals.html',
+                controller: 'GoalsCtrl'
+            })
+            .when('/', {
                 templateUrl: 'views/home/timeline.html',
                 controller: 'HomeTimelineCtrl'
             })
@@ -127,7 +131,7 @@ app.config(['$provide', function ($provide) {
     $provide.constant('activeProfile', profile);
 }]);
 
-function HeaderCtrl($scope, $location) {
+function HeaderCtrl($scope, $location, ConfigService) {
 
     $scope.isActive = function (viewLocation) {
         if (viewLocation instanceof Array) {
@@ -139,6 +143,9 @@ function HeaderCtrl($scope, $location) {
         }
         return viewLocation === $location.path();
     };
+    $scope.appContext = function () {
+        return ConfigService.appContext();
+    }
 }
 
 function NotificationCtrl($scope, $http, activeProfile, ConfigService) {
