@@ -7,7 +7,8 @@ var app = angular.module('miles2run-home', [
         'ngRoute',
         'ui.bootstrap',
         'ngAnimate',
-        'cgBusy'
+        'cgBusy',
+        'ngTagsInput'
     ])
     .config(function ($routeProvider) {
         $routeProvider
@@ -18,6 +19,10 @@ var app = angular.module('miles2run-home', [
             .when('/timeline', {
                 templateUrl: 'views/home/timeline.html',
                 controller: 'HomeTimelineCtrl'
+            })
+            .when('/community_run', {
+                templateUrl: 'views/home/community_run.html',
+                controller: 'CommunityRunCtrl'
             })
             .when('/goals/archive', {
                 templateUrl: 'views/home/archived.html',

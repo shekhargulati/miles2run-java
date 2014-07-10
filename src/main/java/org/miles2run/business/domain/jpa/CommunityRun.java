@@ -1,0 +1,117 @@
+package org.miles2run.business.domain.jpa;
+
+import org.hibernate.validator.constraints.URL;
+
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+/**
+ * Created by shekhargulati on 08/07/14.
+ */
+@Entity
+@Access(AccessType.FIELD)
+@Table(name = "community_run")
+@NamedQueries({
+        @NamedQuery(name = "CommunityRun.findAllActiveRaces",query = "SELECT r from CommunityRun r where r.active IS TRUE")
+})
+public class CommunityRun extends BaseEntity {
+
+    @NotNull
+    private String name;
+
+    @NotNull
+    @Size(max = 4000)
+    private String description;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @NotNull
+    private Date startDate;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @NotNull
+    private Date endDate;
+
+    @URL
+    private String website;
+
+    @NotNull
+    private String twitterHandle;
+
+    @NotNull
+    @Size(max = 10)
+    @ElementCollection(fetch = FetchType.EAGER)
+    @JoinTable(name = "communityrun_hashtags",joinColumns = {
+            @JoinColumn(name="communityRun_Id")
+    })
+    private final Set<String> hashtags = new HashSet<>();
+
+
+
+    private boolean active = true;
+
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
+    }
+
+    public Date getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
+    }
+
+    public String getWebsite() {
+        return website;
+    }
+
+    public void setWebsite(String website) {
+        this.website = website;
+    }
+
+    public Set<String> getHashtags() {
+        return hashtags;
+    }
+
+    public String getTwitterHandle() {
+        return twitterHandle;
+    }
+
+    public void setTwitterHandle(String twitterHandle) {
+        this.twitterHandle = twitterHandle;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+}

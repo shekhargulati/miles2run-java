@@ -32,7 +32,8 @@ public class Goal extends BaseEntity {
     private Profile profile;
 
     @ManyToOne
-    private Race race;
+    @JoinColumn(name = "communityRun_Id")
+    private CommunityRun communityRun;
 
     private long distance = 0;
 
@@ -116,12 +117,12 @@ public class Goal extends BaseEntity {
         this.startDate = startDate;
     }
 
-    public Race getRace() {
-        return race;
+    public CommunityRun getCommunityRun() {
+        return communityRun;
     }
 
-    public void setRace(Race race) {
-        this.race = race;
+    public void setCommunityRun(CommunityRun communityRun) {
+        this.communityRun = communityRun;
     }
 
     public GoalType getGoalType() {

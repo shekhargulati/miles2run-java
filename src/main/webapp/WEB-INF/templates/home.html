@@ -26,6 +26,7 @@
     <link href="/css/plugins/morris/morris-0.4.3.min.css" th:href="@{/css/plugins/morris/morris-0.4.3.min.css}"
           rel="stylesheet"/>
     <link href="/css/angular-busy.css" th:href="@{/css/angular-busy.css}" rel="stylesheet"/>
+    <link href="/css/ng-tags-input.css" th:href="@{/css/ng-tags-input.css}" rel="stylesheet"/>
 
 </head>
 
@@ -111,6 +112,9 @@
                     <li ng-class="{ active: isActive('/timeline')}">
                         <a href="#timeline"><i class="fa fa-clock-o fa-fw"></i> Timeline</a>
                     </li>
+                    <li ng-class="{ active: isActive('/community_run')}">
+                        <a href="#community_run"><i class="fa fa-group fa-fw"></i> Create Community Run</a>
+                    </li>
                     <li ng-class="{ active: isActive('/friends')}">
                         <a href="#friends"><i class="fa fa-users fa-fw"></i> Friends</a>
                     </li>
@@ -162,6 +166,7 @@
 <script src="/js/libs/angular-route.js" th:src="@{/js/libs/angular-route.js}"></script>
 <script src="/js/libs/angular-animate.js" th:src="@{/js/libs/angular-animate.js}"></script>
 <script src="/js/libs/angular-busy.js" th:src="@{/js/libs/angular-busy.js}"></script>
+<script src="/js/libs/ng-tags-input.js" th:src="@{/js/libs/ng-tags-input.js}"></script>
 
 <script src="/js/libs/ui-bootstrap-tpls-0.11.0.js" th:src="@{/js/libs/ui-bootstrap-tpls-0.11.0.js}"></script>
 <script src="/js/libs/toastr.js" th:src="@{/js/libs/toastr.js}"></script>
@@ -177,6 +182,7 @@
 <script src="/scripts/home/controllers/EditGoalCtrl.js" th:src="@{/scripts/home/controllers/EditGoalCtrl.js}"></script>
 <script src="/scripts/home/controllers/ArchivedGoalsCtrl.js" th:src="@{/scripts/home/controllers/ArchivedGoalsCtrl.js}"></script>
 <script src="/scripts/home/controllers/NotificationsCtrl.js" th:src="@{/scripts/home/controllers/NotificationsCtrl.js}"></script>
+<script src="/scripts/home/controllers/CommunityRunCtrl.js" th:src="@{/scripts/home/controllers/CommunityRunCtrl.js}"></script>
 </body>
 
 </html>

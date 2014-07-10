@@ -95,6 +95,7 @@ public class GoalResource {
 
 
     @POST
+    @Consumes("application/json")
     @Produces("application/json")
     @LoggedIn
     public Response createGoal(@Valid Goal goal) {
