@@ -6,12 +6,6 @@ angular.module('milestogo')
         $scope.error = null;
         $scope.data = {};
 
-        if (activeGoal.goalType.$name === 'DISTANCE_GOAL') {
-            $scope.firstTemplate = '../views/goal/partials/goal_distance_first.html';
-        } else {
-            $scope.firstTemplate = '../views/goal/partials/goal_duration_first.html';
-        }
-
         var goalUnit = activeGoal.goalUnit.$name.toLowerCase();
         var paceUnit = 'mins/' + goalUnit;
 

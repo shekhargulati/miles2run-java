@@ -49,6 +49,7 @@ public class Progress {
         this.averagePace = 0;
         this.activityCount = 0;
         this.goalUnit = goal.getGoalUnit();
+        this.goalType = goal.getGoalType();
     }
 
     public long getGoal() {
