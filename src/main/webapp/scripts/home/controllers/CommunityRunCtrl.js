@@ -31,7 +31,7 @@ function CommunityRunCtrl($scope, $location, activeProfile, $http, ConfigService
             $scope.communityRun.hashtags = hashtags;
             $http.post(ConfigService.getBaseUrl() + "community_runs",$scope.communityRun).success(function (data) {
                 toastr.success("Created new Community run");
-                $location.path("/");
+                $window.location.href = ConfigService.appContext() + 'community_runs';
             }).error(function (data, status) {
                 toastr.error("Unable to Community run. Please try after sometime.");
                 console.log("Error " + data);

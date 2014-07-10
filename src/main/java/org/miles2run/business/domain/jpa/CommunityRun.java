@@ -1,6 +1,7 @@
 package org.miles2run.business.domain.jpa;
 
 import org.hibernate.validator.constraints.URL;
+import org.miles2run.business.bean_validation.ImageUrl;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -27,6 +28,10 @@ public class CommunityRun extends BaseEntity {
 
     @NotNull
     private String name;
+
+    @NotNull
+    @ImageUrl
+    private String bannerImg;
 
     private String slug;
 
@@ -118,6 +123,14 @@ public class CommunityRun extends BaseEntity {
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public String getBannerImg() {
+        return bannerImg;
+    }
+
+    public void setBannerImg(String bannerImg) {
+        this.bannerImg = bannerImg;
     }
 
     public String getSlug() {

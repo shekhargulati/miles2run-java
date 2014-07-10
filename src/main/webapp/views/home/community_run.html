@@ -34,6 +34,20 @@
                                       ng-if="communityRunForm.name.$error.maxlength && submitted">Name should be less than 100 characters.</span>
                         </div>
 
+                        <div class="form-group" ng-class="{'has-error': (communityRunForm.bannerImg.$invalid && submitted)}">
+                            <label class="col-md-2 control-label" for="bannerImg">Banner Image</label>
+
+                            <div class="col-md-6 input-group">
+                                <input id="bannerImg" name="bannerImg" type="url"
+                                       placeholder="Banner Image"
+                                       class="form-control" ng-model="communityRun.bannerImg"
+                                       title="Please provide bannerImg for the event"
+                                       autocomplete="off">
+                            </div>
+                                <span class="help-block col-md-offset-2"
+                                      ng-if="communityRunForm.bannerImg.$error.required && submitted">Banner Image is required.</span>
+                        </div>
+
                         <div class="form-group" ng-class="{'has-error': (communityRunForm.description.$invalid && submitted)}">
                             <label class="col-md-2 control-label" for="description">Description</label>
                             <div class="col-md-6 input-group">

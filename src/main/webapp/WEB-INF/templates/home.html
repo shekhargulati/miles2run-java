@@ -46,8 +46,15 @@
         </div>
         <!-- /.navbar-header -->
 
-        <ul class="nav navbar-top-links navbar-right" th:if="${profile != null}">
-            <!-- /.dropdown -->
+        <ul class="nav navbar-top-links navbar-right">
+            <li class="dropdown">
+                <a href="/community_runs" th:href="@{/community_runs}">
+                    <div>
+                        <i class="fa fa-group fa-fw"></i> Community Runs
+                    </div>
+                </a>
+            </li>
+
             <li class="dropdown">
                 <a href="/" th:href="@{/}">
                     <div>

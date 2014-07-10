@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="miles2run-profile" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+
+    <title>Community Runs | Miles2Run</title>
+
+    <!-- Core CSS - Include with every page -->
+    <link href="/css/bootstrap.css" th:href="@{/css/bootstrap.css}" rel="stylesheet"/>
+    <link href="/css/sb-admin.css" th:href="@{/css/sb-admin.css}" rel="stylesheet"/>
+    <link href='http://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic' rel='stylesheet' type='text/css'/>
+
+    <!-- Page-Level Plugin CSS -->
+    <!--<link href="/css/plugins/timeline/timeline.css" th:href="@{/css/plugins/timeline/timeline.css}" rel="stylesheet"/>-->
+    <link href="/css/plugins/social-buttons/social-buttons.css" th:href="@{/css/plugins/social-buttons/social-buttons.css}" rel="stylesheet"/>
+
+    <!-- Miles2Run Overrides -->
+    <link href="/css/miles2run.css" th:href="@{/css/miles2run.css}" rel="stylesheet"/>
+
+    <link href="/css/community_runs.css" th:href="@{/css/community_runs.css}" rel="stylesheet"/>
+
+</head>
+
+<body id="home">
+<div class="wrap">
+    <nav class="navbar navbar-default" role="navigation">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".sidebar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/" th:href="@{/}">Miles2Run</a>
+        </div>
+        <!-- /.navbar-header -->
+
+        <ul class="nav navbar-top-links navbar-right"  th:if="${profile != null}">
+            <!-- /.dropdown -->
+            <li class="dropdown">
+                <a href="/" th:href="@{/}">
+                    <div>
+                        <i class="fa fa-home fa-fw"></i> Home
+                    </div>
+                </a>
+            </li>
+            <!-- /.dropdown -->
+            <!-- /.dropdown -->
+            <li class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                    <i class="fa fa-user fa-fw"></i> <i class="fa fa-caret-down"></i>
+                </a>
+                <ul class="dropdown-menu dropdown-user">
+                    <li>
+                        <a th:href="@{'/profiles/' + ${profile.username}} + '#/'" th:inline="text">
+                            <img width="25" height="25" th:src="${profile.profilePic}"/> [[${profile.fullname}]]
+                        </a>
+                    </li>
+                    <li class="divider"></li>
+                    <li><a href="/logout" th:href="@{/logout}"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
+                    </li>
+                </ul>
+                <!-- /.dropdown-user -->
+            </li>
+            <!-- /.dropdown -->
+        </ul>
+    </nav>
+
+
+    <section id="first">
+        <div class="container clearfix">
+            <div class="col-lg-12">
+                <div class="text-center push-1q-top link-silent">
+                    <h1 class="extralarge-prose prose-type"><a th:href="@{/community_runs}">Community Runs</a></h1>
+                    <h3>Discover community runs around the world</h3>
+                    <div class="centered">
+                        <ul class="nav">
+                            <form class="form-inline" role="form" th:action="@{/community_runs/search}" method="get">
+                                <div class="col-md-4 col-md-offset-4 col-sm-6 col-sm-offset-3 col-xs-10 col-xs-offset-1 space-1-top space-1q-bottom">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" id="q" name="q" placeholder="Search for a Community Run"/>
+                                        <label class="sr-only" for="q">Search</label>
+                                        <span class="input-group-btn">
+                                          <button class="btn btn-blue" type="submit"><i class="fa fa-search"></i></button>
+                                        </span>
+                                    </div>
+                                </div>
+                            </form>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <!-- /.col-lg-12 -->
+        </div>
+    </section>
+
+    <section id="second">
+        <div class="container clearfix">
+            <div class="row">
+                <ul class="list-silent nopad-ul link-silent">
+                    <li class="col-lg-4 col-md-4 col-sm-6 col-xs-12 space-2-bottom" th:each="run : ${runs}">
+                        <div class="event-box block contain-width centered">
+                            <div class="event-box-body" style="background-image:url('');height:200px;">
+                                <div class="event-content-box">
+                                    <div class="card-logo-container">
+                                        <a class="flushleft pad-3q push-3q" th:href="@{'/community_runs/' + ${run.slug}}">
+                                            <img th:src="${run.bannerImg}" width="70" height="70"/>
+                                        </a>
+                                    </div>
+                                    <div class="card-info-container">
+                                        <a th:href="@{'/community_runs/' + ${run.slug}}" class="white">
+                                            <h2 class="normal box-title push-1q-top" th:text="${run.name}"></h2>
+                                        </a>
+                                        <a th:href="@{'/community_runs/' + ${run.slug}}" class="white">
+                                            <h4 class="normal prose-type regular" th:inline="text">[[${#dates.format(run.startDate,'dd MMMM yyyy')} + ' - ' + ${#dates.format(run.endDate,'dd MMMM yyyy')}]]</h4>
+                                        </a>
+                                        <ul class="nav tags">
+                                            <li th:each="hashtag : ${run.hashtags}">
+                                                <a href="#" th:text="${hashtag}"></a>
+                                            </li>
+                                        </ul>
+
+                                    </div>
+                                    <ul class="number-box-list secondary-prose nopad-ul thin" style="position:absolute;bottom:0;">
+                                        <li class="number-box-display">
+                                            <a href="/#" class="red-black number-box white">
+                                                <div class="semibold">10</div>Runners
+                                            </a>
+                                        </li>
+                                        <li class="number-box-display">
+                                            <a href="#" class="red-black number-box white">
+                                                <div class="semibold">50</div>Miles
+                                            </a>
+                                        </li>
+                                        <li class="number-box-display">
+                                            <a href="#" class="red-black number-box white">
+                                            <div class="semibold">10</div>Hours</a></li>
+
+                                        <li class="number-box-display">
+                                            <a href="#" class="red-black number-box white">
+                                                <div class="semibold">10</div>Cities
+                                            </a>
+                                        </li>
+                                        <li class="number-box-display">
+                                            <a href="#" class="red-black number-box white">
+                                                <div class="semibold">5</div>Countries
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="event-box-footer"></div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+</div>
+<!-- /.wrap -->
+
+<footer>
+    <div class="container clearfix">
+        <div class="col-lg-6 links">
+            <a href="/about" th:href="@{/about}">About</a>
+            <a href="/contact" th:href="@{/contact}">Contact</a>
+        </div>
+        <!-- /.col-lg-6 -->
+        <div class="col-lg-6 text-right">
+            <a class="btn btn-social-icon btn-facebook" href="https://facebook.com/miles2run" target="_blank"><i class="fa fa-facebook"></i></a>
+            <a class="btn btn-social-icon btn-google-plus" href="https://plus.google.com/u/0/+Miles2Run" target="_blank"><i class="fa fa-google-plus"></i></a>
+            <a class="btn btn-social-icon btn-twitter" href="https://twitter.com/miles2runorg" target="_blank"><i class="fa fa-twitter"></i></a>
+        </div>
+        <!-- /.col-lg-6 -->
+    </div>
+</footer>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    var activeUserProfile = [[${profile}]];
+    /*]]>*/
+</script>
+
+<!-- Core Scripts - Include with every page -->
+<script src="/js/libs/jquery.js" th:src="@{/js/libs/jquery.js}"></script>
+<script src="/js/bootstrap.min.js" th:src="@{/js/bootstrap.min.js}"></script>
+<script src="/js/plugins/metisMenu/jquery.metisMenu.js" th:src="@{/js/plugins/metisMenu/jquery.metisMenu.js}"></script>
+
+<!-- Page-Level Plugin Scripts -->
+
+<!-- SB Admin Scripts - Include with every page -->
+<script src="/js/sb-admin.js" th:src="@{/js/sb-admin.js}"></script>
+
+<script>
+    (function (i, s, o, g, r, a, m) {
+        i['GoogleAnalyticsObject'] = r;
+        i[r] = i[r] || function () {
+            (i[r].q = i[r].q || []).push(arguments)
+        }, i[r].l = 1 * new Date();
+        a = s.createElement(o),
+                m = s.getElementsByTagName(o)[0];
+        a.async = 1;
+        a.src = g;
+        m.parentNode.insertBefore(a, m)
+    })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+
+    ga('create', 'UA-49243977-1', 'miles2run.org');
+    ga('send', 'pageview');
+
+</script>
+
+</body>
+
+</html>

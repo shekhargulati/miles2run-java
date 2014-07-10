@@ -1,0 +1,188 @@
+.list-silent {
+    list-style-type: none;
+}
+
+.link-silent.a, .link-silent a {
+    text-decoration: none;
+}
+
+.nopad-ul {
+    padding-left: 0;
+}
+.space-2, .space-2-bottom {
+    margin-bottom: 2em;
+}
+
+.event-box-body {
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    background-position: center;
+    height: 180px;
+    overflow: hidden;
+    background-repeat: no-repeat;
+    position: relative;
+    background-color: #40537c;
+}
+.event-box-body i {
+    display: block;
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    padding-bottom: 10px;
+    padding-left: 10px;
+}
+.event-box-body .large-prose {
+    line-height: 1.2em;
+    margin-bottom: 0.15em;
+    margin-top: 0.15em;
+}
+.event-box-body .box-title {
+    font-size: 1.35em;
+    padding-top: 0.6em;
+    padding-bottom: 0.1em;
+}
+
+.event-box, .event-box-embed {
+    -webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+    -moz-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+    margin-bottom: 20px;
+    float: left !important;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.event-box-embed {
+    width: 356px;
+}
+
+.card-logo-container {
+    width: 90px;
+    height: 150px;
+    float: left;
+    display: block;
+}
+
+.card-info-container {
+    width: 260px;
+    height: 150px;
+    float: left;
+    display: block;
+}
+
+@media (min-width: 992px) and (max-width: 1200px) {
+    .card-info-container {
+        width: 195px;
+    }
+}
+@media (min-width: 768px) and (max-width: 991px) {
+    .card-info-container {
+        width: 245px;
+    }
+}
+
+.prose-type {
+    font-family: "Gotham Rounded SSm A", "Gotham Rounded SSm B", "Lato", sans-serif;
+}
+
+.regular {
+    font-size: 1em;
+    line-height: 1.45em !important;
+}
+.tags {
+    height: 44px;
+    overflow: hidden;
+}
+.tags > li {
+    display: inline-block;
+}
+.tags > li > a {
+    background: rgba(0, 0, 0, 0.02);
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    -ms-border-radius: 4px;
+    -o-border-radius: 4px;
+    border-radius: 4px;
+    border: 1px solid rgba(204, 204, 204, 0.71);
+    color: #cccccc;
+    line-height: 1;
+    margin: 0 2px 2px 0;
+    padding: 2px 5px;
+    font-size: 12px;
+}
+.tags > li > a:hover {
+    background: rgba(0, 0, 0, 0.05);
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    -ms-border-radius: 4px;
+    -o-border-radius: 4px;
+    border-radius: 4px;
+    border: 1px solid #dddddd;
+    color: #cccccc;
+    display: inline-block;
+    line-height: 1;
+    margin: 0 2px 2px 0;
+    padding: 2px 5px;
+    font-size: 12px;
+}
+
+.number-box-list {
+    background: -moz-linear-gradient(top, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.16) 25%, rgba(0, 0, 0, 0.65) 100%);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, rgba(0, 0, 0, 0)), color-stop(25%, rgba(0, 0, 0, 0.16)), color-stop(100%, rgba(0, 0, 0, 0.65)));
+    background: -webkit-linear-gradient(top, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.16) 25%, rgba(0, 0, 0, 0.65) 100%);
+    background: -o-linear-gradient(top, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.16) 25%, rgba(0, 0, 0, 0.65) 100%);
+    background: -ms-linear-gradient(top, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.16) 25%, rgba(0, 0, 0, 0.65) 100%);
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.16) 25%, rgba(0, 0, 0, 0.65) 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#00000000', endColorstr='#a6000000',GradientType=0 );
+    width: 100%;
+}
+
+.number-box {
+    padding: 0.65em 0.9em;
+    float: left;
+    border-right: 1px solid rgba(0, 0, 0, 0.1);
+    color: white;
+}
+
+.number-box-display:last-child > .number-box {
+    border-right: none;
+}
+
+.number-box-display {
+    display: inline;
+}
+
+.secondary-prose {
+    font-size: 0.845em;
+    line-height: 1.45em !important;
+}
+
+.thin {
+    font-weight: 300 !important;
+}
+.push-1q, .push-1q-top {
+    padding-top: 0.25em;
+}
+
+.white {
+    color: white;
+}
+
+.flushleft {
+    float: left;
+}
+.pad-3q, .pad-3q-left {
+    padding-left: 0.75em;
+}
+.push-3q, .push-3q-top {
+    padding-top: 0.75em;
+}
+
+.push-3q, .push-3q-bottom {
+    padding-bottom: 0.75em;
+}
+
+
+
