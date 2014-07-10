@@ -15,14 +15,20 @@ import java.util.Set;
  */
 @Entity
 @Access(AccessType.FIELD)
-@Table(name = "community_run")
+@Table(name = "community_run", indexes = {
+        @Index(columnList = "name", unique = true),
+        @Index(columnList = "slug", unique = true)
+})
 @NamedQueries({
-        @NamedQuery(name = "CommunityRun.findAllActiveRaces",query = "SELECT r from CommunityRun r where r.active IS TRUE")
+        @NamedQuery(name = "CommunityRun.findAllActiveRaces", query = "SELECT r FROM CommunityRun r WHERE r.active IS TRUE"),
+        @NamedQuery(name = "CommunityRun.findBySlug", query = "SELECT r FROM CommunityRun r WHERE r.slug =:slug")
 })
 public class CommunityRun extends BaseEntity {
 
     @NotNull
     private String name;
+
+    private String slug;
 
     @NotNull
     @Size(max = 4000)
@@ -45,11 +51,10 @@ public class CommunityRun extends BaseEntity {
     @NotNull
     @Size(max = 10)
     @ElementCollection(fetch = FetchType.EAGER)
-    @JoinTable(name = "communityrun_hashtags",joinColumns = {
-            @JoinColumn(name="communityRun_Id")
+    @JoinTable(name = "communityrun_hashtags", joinColumns = {
+            @JoinColumn(name = "communityRun_Id")
     })
     private final Set<String> hashtags = new HashSet<>();
-
 
 
     private boolean active = true;
@@ -113,5 +118,13 @@ public class CommunityRun extends BaseEntity {
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public String getSlug() {
+        return slug;
+    }
+
+    public void setSlug(String slug) {
+        this.slug = slug;
     }
 }

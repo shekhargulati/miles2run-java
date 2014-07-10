@@ -26,9 +26,18 @@ public class CommunityRunService {
         return communityRun.getId();
     }
 
-    public List<CommunityRun> findAllActiveRaces(){
+    public List<CommunityRun> findAllActiveRaces() {
         TypedQuery<CommunityRun> query = entityManager.createNamedQuery("CommunityRun.findAllActiveRaces", CommunityRun.class);
         return query.getResultList();
     }
 
+    public CommunityRun findBySlug(String slug) {
+        TypedQuery<CommunityRun> query = entityManager.createNamedQuery("CommunityRun.findBySlug", CommunityRun.class);
+        query.setParameter("slug", slug);
+        try {
+            return query.getSingleResult();
+        } catch (Exception e) {
+            return null;
+        }
+    }
 }
