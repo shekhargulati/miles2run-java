@@ -22,7 +22,7 @@ import java.util.Date;
 })
 @Access(AccessType.FIELD)
 @Table(name = "activity")
-public class Activity extends BaseEntity{
+public class Activity extends BaseEntity {
 
     @Size(max = 1000)
     private String status;

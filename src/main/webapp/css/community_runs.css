@@ -185,4 +185,54 @@
 }
 
 
+.page-title {
+    font-size: 2.4em !important;
+    line-height: 1.5em;
+}
 
+.extralarge {
+    font-size: 3.8em !important;
+    line-height: 1em;
+}
+
+.extralarge-prose {
+    font-size: 2em !important;
+    line-height: 1.6em;
+}
+
+.large {
+    font-size: 1.4em !important;
+    line-height: 1em;
+}
+
+.large-prose {
+    font-size: 1.6em !important;
+    line-height: 1.55em;
+}
+
+.legible {
+    font-size: 1.3em !important;
+    line-height: 1.6em;
+}
+
+.legible-prose {
+    font-size: 1.155em !important;
+    line-height: 1.45em;
+}
+
+
+body#home section#first_cr {
+    padding: 50px 0 60px 0;
+    background-color: #fafbfc;
+}
+
+body#home section#first_cr h2 {
+    font-family: "Gotham SSm A", "Gotham SSm B", "Lato", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+}
+
+body#home section#first_cr h2 span {
+    color: #ff6600;
+    display: block;
+}

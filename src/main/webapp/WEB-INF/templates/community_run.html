@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
 
-    <title th:text="${userProfile.fullname +' ('+ userProfile.username +')'} + ' on Miles2Run'"></title>
+    <title th:text="${run.name} + ' | Community Run'"></title>
 
     <!-- Core CSS - Include with every page -->
     <link href="/css/bootstrap.css" th:href="@{/css/bootstrap.css}" rel="stylesheet"/>
@@ -16,16 +16,16 @@
           type='text/css'/>
 
     <!-- Page-Level Plugin CSS -->
-    <link rel="stylesheet" href="/css/toastr.css" th:href="@{/css/toastr.css}"/>
-    <link href="/css/plugins/timeline/timeline.css" th:href="@{/css/plugins/timeline/timeline.css}" rel="stylesheet"/>
     <link href="/css/plugins/social-buttons/social-buttons.css" th:href="@{/css/plugins/social-buttons/social-buttons.css}" rel="stylesheet"/>
 
     <!-- Miles2Run Overrides -->
     <link href="/css/miles2run.css" th:href="@{/css/miles2run.css}" rel="stylesheet"/>
 
+    <link href="/css/community_runs.css" th:href="@{/css/community_runs.css}" rel="stylesheet"/>
+
 </head>
 
-<body>
+<body id="home">
 
 <div id="wrapper">
 
@@ -70,140 +70,48 @@
             <!-- /.dropdown -->
         </ul>
         <!-- /.navbar-top-links -->
-        <div class="navbar-default navbar-static-side" role="navigation" ng-controller="HeaderCtrl">
-            <div class="sidebar-collapse">
-                <ul class="nav" id="side-menu">
-                    <li ng-class="{ active: isActive('/')}">
-                        <a href="#/"><i class="fa fa-clock-o fa-fw"></i> Timeline</a>
-                    </li>
-                    <li ng-class="{ active: isActive('/followers')}">
-                        <a href="#followers"><i class="fa fa-users fa-fw"></i> Followers</a>
-                    </li>
-                    <li ng-class="{ active: isActive('/following')}">
-                        <a href="#following"><i class="fa fa-users fa-fw"></i> Following</a>
-                    </li>
-                </ul>
-                <!-- /#side-menu -->
-                <div class="radial-progress-block" ng-controller="ProgressCtrl">
-                    <div class="radial-progress" data-progress="{{percentage}}">
-                        <div class="circle">
-                            <div class="mask full">
-                                <div class="fill"></div>
-                            </div>
-                            <div class="mask half">
-                                <div class="fill"></div>
-                                <div class="fill fix"></div>
-                            </div>
-                        </div>
-                        <div class="inset">
-                            <div class="percentage">
-                                <div class="numbers">
-                                    <span>-</span><span>0%</span><span>1%</span><span>2%</span><span>3%</span><span>4%</span><span>5%</span><span>6%</span><span>7%</span><span>8%</span><span>9%</span><span>10%</span><span>11%</span><span>12%</span><span>13%</span><span>14%</span><span>15%</span><span>16%</span><span>17%</span><span>18%</span><span>19%</span><span>20%</span><span>21%</span><span>22%</span><span>23%</span><span>24%</span><span>25%</span><span>26%</span><span>27%</span><span>28%</span><span>29%</span><span>30%</span><span>31%</span><span>32%</span><span>33%</span><span>34%</span><span>35%</span><span>36%</span><span>37%</span><span>38%</span><span>39%</span><span>40%</span><span>41%</span><span>42%</span><span>43%</span><span>44%</span><span>45%</span><span>46%</span><span>47%</span><span>48%</span><span>49%</span><span>50%</span><span>51%</span><span>52%</span><span>53%</span><span>54%</span><span>55%</span><span>56%</span><span>57%</span><span>58%</span><span>59%</span><span>60%</span><span>61%</span><span>62%</span><span>63%</span><span>64%</span><span>65%</span><span>66%</span><span>67%</span><span>68%</span><span>69%</span><span>70%</span><span>71%</span><span>72%</span><span>73%</span><span>74%</span><span>75%</span><span>76%</span><span>77%</span><span>78%</span><span>79%</span><span>80%</span><span>81%</span><span>82%</span><span>83%</span><span>84%</span><span>85%</span><span>86%</span><span>87%</span><span>88%</span><span>89%</span><span>90%</span><span>91%</span><span>92%</span><span>93%</span><span>94%</span><span>95%</span><span>96%</span><span>97%</span><span>98%</span><span>99%</span><span>100%</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <h6>Progress completed</h6>
-                </div>
-                <!-- /.radial-progress-chart -->
-            </div>
-            <!-- /.sidebar-collapse -->
-        </div>
-
-
     </nav>
 
-    <div id="page-wrapper">
+    <section id="first_cr">
+        <div class="container clearfix">
+            <div class="row well-lg">
 
-        <div class="row">
-            <div class="col-lg-12">
-                <h1 class="page-header">Profile</h1>
-            </div>
-            <!-- /.col-lg-12 -->
-        </div>
-        <!-- /.row -->
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <span class="avatar pull-left"><img th:src="${userProfile.biggerProfilePic}"/></span> <h3 th:text="${userProfile.fullname}"></h3>
-                    </div>
-                    <!-- /.panel-heading -->
-                    <div class="panel-body">
-                        <h4 th:text="'@' + ${userProfile.username}"></h4>
-                        <p th:text="${userProfile.bio}"></p>
-                        <p th:inline="text"><i class="fa fa-map-marker fa-fw"></i> [[${userProfile.city} + ', '+ ${userProfile.country}]]</p>
-                        <p th:inline="text"><i class="fa fa-clock-o fa-fw"></i> [['Joined ' + ${#dates.format(userProfile.registeredOn,'MMMM yyyy')}]]</p>
-                    </div>
-                    <div class="panel-footer">
-                        <div class="row">
-                            <div class="col-lg-10 col-sm-10" th:if="${activeGoal != null}">
-                                <div class="col-lg-3 col-sm-3 text-center">
-                                    <h5>Active Goal</h5>
+                <div class="col-lg-2 col-md-2 col-sm-3 col-xs-3">
+                    <a th:href="@{'/community_runs/' + ${run.slug}}" class="thumbnail-logo">
+                        <img width="160" height="160" th:src="${run.bannerImg}" alt=""/>
+                    </a>
+                </div>
 
-                                    <div th:inline="text">
-                                        [[${#numbers.formatDecimal(activeGoal.distance,1,2)} + ' ' + ${activeGoal.goalUnit.upperCase()}]]
-                                    </div>
-                                </div>
-                                <div class="col-lg-3 col-sm-3 text-center">
-                                    <h5>Distance Covered</h5>
-
-                                    <div th:inline="text">
-                                        [[${#numbers.formatDecimal(progress.totalDistanceCovered,1,2)} + ' ' + ${activeGoal.goalUnit.upperCase()}]]
-                                    </div>
-                                </div>
-                                <div class="col-lg-3 col-sm-3 text-center">
-                                    <h5>Average Pace</h5>
-
-                                    <div th:inline="text">
-                                        [[${#numbers.formatDecimal(progress.averagePace,1,2)} + ' mins/' + ${activeGoal.goalUnit.upperCase()}]]
-                                    </div>
-                                </div>
-                                <div class="col-lg-3 col-sm-3 text-center">
-                                    <h5>Total Activities</h5>
-
-                                    <div th:text="${progress.activityCount}">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-2 col-sm-2 text-center pull-right" th:if="${profile != null}" ng-controller="FriendsCtrl">
-                                <h4></h4>
-                                <a th:href="@{/profiles/edit}" class="btn btn-default" th:if="${isMyProfile} == true">Edit
-                                    Profile</a>
-                                <a href="#unfollow" class="btn btn-info" th:if="${isFollowing} == true" ng-click="unfollowUser()">Following</a>
-                                <a href="#follow" class="btn btn-default" th:if="${isFollowing} == false" ng-click="followUser()"><span
-                                        class="glyphicon glyphicon-user"></span> Follow</a>
+                <div class="col-lg-10 col-md-10 col-sm-9 col-xs-9">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <h2 class="large body-type" itemprop="name" th:text="${run.name}"></h2>
+                            <div>
+                                <h4 class="bold all-caps body-type legible-prose lightblue" th:inline="text">[[${#dates.format(run.startDate,'dd MMMM yyyy')} + ' - ' + ${#dates.format(run.endDate,'dd MMMM yyyy')}]]</h4>
                             </div>
                         </div>
+                        <div class="col-md-4 push-3q-top push-1q-bottom">
+                            <a th:href="@{/community_runs/join}" class="btn btn-success btn-round pad-2 push-half flushright">Join This Run</a>
+                        </div>
+                    </div>
+                    <p class="normal legible-prose push-half" th:text="${run.description}"></p>
 
+                    <div class="legible-prose prose-type push-1-bottom lightblue">
+
+                        Official website: <a th:href="${run.website}" target="_blank" th:text="${run.website}"></a><br/>
+
+                        Twitter: <a th:href="@{'http://twitter.com/'+ ${run.twitterHandle}}" target="_blank" th:text="${run.twitterHandle}"></a>
 
                     </div>
-                    <!-- /.panel-body -->
                 </div>
-                <!-- /.panel -->
-
-            </div>
-            <div ng-view="">
 
             </div>
             <!-- /.col-lg-12 -->
         </div>
-        <!-- /.row -->
-    </div>
-    <!-- /#page-wrapper -->
+    </section>
+
 
 </div>
-<!-- /#wrapper -->
-
-<script th:inline="javascript">
-    /*<![CDATA[*/
-
-    var activeUserProfile = [[${profile}]];
-    var userProfile = [[${userProfile}]];
-    var activeGoal = [[${activeGoal}]];
-
-    /*]]>*/
-</script>
 
 <!-- Core Scripts - Include with every page -->
 <script src="/js/libs/jquery.js" th:src="@{/js/libs/jquery.js}"></script>
@@ -213,26 +121,6 @@
 
 <!-- SB Admin Scripts - Include with every page -->
 <script src="/js/sb-admin.js" th:src="@{/js/sb-admin.js}"></script>
-
-<script src="/js/libs/angular.js" th:src="@{/js/libs/angular.js}"></script>
-<script src="/js/libs/angular-resource.js" th:src="@{/js/libs/angular-resource.js}"></script>
-<script src="/js/libs/angular-cookies.js" th:src="@{/js/libs/angular-cookies.js}"></script>
-<script src="/js/libs/angular-sanitize.js" th:src="@{/js/libs/angular-sanitize.js}"></script>
-<script src="/js/libs/angular-route.js" th:src="@{/js/libs/angular-route.js}"></script>
-<script src="/js/libs/ui-bootstrap-tpls-0.11.0.js" th:src="@{/js/libs/ui-bootstrap-tpls-0.11.0.js}"></script>
-<script src="/js/libs/toastr.js" th:src="@{/js/libs/toastr.js}"></script>
-<script src="/js/libs/moment.js" th:src="@{/js/libs/moment.js}"></script>
-
-<script src="/scripts/profile/app.js" th:src="@{/scripts/profile/app.js}"></script>
-<script src="/scripts/profile/services/TimelineService.js" th:src="@{/scripts/profile/services/TimelineService.js}"></script>
-<script src="/scripts/profile/services/ConfigService.js" th:src="@{/scripts/profile/services/ConfigService.js}"></script>
-<script src="/scripts/profile/services/FriendsService.js" th:src="@{/scripts/profile/services/FriendsService.js}"></script>
-<script src="/scripts/profile/controllers/UserTimelineCtrl.js" th:src="@{/scripts/profile/controllers/UserTimelineCtrl.js}"></script>
-<script src="/scripts/profile/controllers/FollowersCtrl.js" th:src="@{/scripts/profile/controllers/FollowersCtrl.js}"></script>
-<script src="/scripts/profile/controllers/FollowingCtrl.js" th:src="@{/scripts/profile/controllers/FollowingCtrl.js}"></script>
-<script src="/scripts/profile/controllers/FriendsCtrl.js" th:src="@{/scripts/profile/controllers/FriendsCtrl.js}"></script>
-
-
 
 </body>
 
