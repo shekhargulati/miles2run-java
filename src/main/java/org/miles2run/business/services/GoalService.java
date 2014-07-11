@@ -43,6 +43,13 @@ public class GoalService {
         return findGoal(profile, goal.getId());
     }
 
+    public Long save(Goal goal, String loggedInUser) {
+        Profile profile = profileService.findProfile(loggedInUser);
+        goal.setProfile(profile);
+        entityManager.persist(goal);
+        return goal.getId();
+    }
+
     public Goal findGoal(String loggedInuser, Long goalId) {
         try {
             Profile profile = profileService.findProfile(loggedInuser);

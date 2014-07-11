@@ -153,4 +153,14 @@ public class Goal extends BaseEntity {
         goal.goalUnit = goalUnit;
         return goal;
     }
+
+    public static Goal newCommunityRunGoal(CommunityRun run) {
+        Goal goal = new Goal();
+        goal.purpose = run.getName() + " Community Run";
+        goal.startDate = new Date();
+        goal.endDate = run.getEndDate();
+        goal.goalType = GoalType.COMMUNITY_RUN_GOAL;
+        goal.setCommunityRun(run);
+        return goal;
+    }
 }

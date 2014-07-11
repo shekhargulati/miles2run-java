@@ -5,5 +5,5 @@ package org.miles2run.business.domain.jpa;
  */
 public enum GoalType {
 
-    DISTANCE_GOAL, DURATION_GOAL
+    DISTANCE_GOAL, DURATION_GOAL, COMMUNITY_RUN_GOAL
 }

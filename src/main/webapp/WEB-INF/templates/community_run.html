@@ -91,7 +91,9 @@
                             </div>
                         </div>
                         <div class="col-md-4 push-3q-top push-1q-bottom">
-                            <a th:href="@{/community_runs/join}" class="btn btn-success btn-round pad-2 push-half flushright">Join This Run</a>
+                            <form th:action="@{'/community_runs/' + ${run.slug}+'/join'}" method="POST">
+                                <button class="btn btn-success btn-lg">Join This Run</button>
+                            </form>
                         </div>
                     </div>
                     <p class="normal legible-prose push-half" th:text="${run.description}"></p>
