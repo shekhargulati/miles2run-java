@@ -6,9 +6,12 @@ import org.jug.view.View;
 import org.jug.view.ViewResourceNotFoundException;
 import org.miles2run.business.domain.jpa.CommunityRun;
 import org.miles2run.business.domain.jpa.Goal;
+import org.miles2run.business.domain.jpa.Profile;
 import org.miles2run.business.services.CommunityRunService;
 import org.miles2run.business.services.GoalService;
+import org.miles2run.business.services.ProfileService;
 import org.miles2run.jaxrs.filters.InjectProfile;
+import org.miles2run.jaxrs.vo.CommunityRunDetails;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.TemplateEngine;
@@ -18,6 +21,7 @@ import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.SecurityContext;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -40,11 +44,18 @@ public class CommunityRunView {
     @Inject
     private GoalService goalService;
 
+    @Inject
+    private ProfileService profileService;
+
     @GET
     @Produces("text/html")
     @InjectProfile
     public View allCommunityRuns() {
-        List<CommunityRun> runs = communityRunService.findAllActiveRaces();
+        List<CommunityRun> communityRuns = communityRunService.findAllActiveRaces();
+        List<CommunityRunDetails> runs = new ArrayList<>();
+        for (CommunityRun communityRun : communityRuns) {
+            runs.add(new CommunityRunDetails(communityRun, communityRunService.currentStats(communityRun)));
+        }
         return View.of("/community_runs", templateEngine).withModel("runs", runs);
     }
 
@@ -73,6 +84,7 @@ public class CommunityRunView {
     @LoggedIn
     public View joinCommunityRun(@NotNull @PathParam("slug") String slug) {
         String principal = securityContext.getUserPrincipal().getName();
+        Profile profile = profileService.findProfile(principal);
         CommunityRun run = communityRunService.findBySlug(slug);
         if (run == null) {
             return View.of("/community_runs", true);
@@ -83,7 +95,7 @@ public class CommunityRunView {
         Goal goal = Goal.newCommunityRunGoal(run);
         Long goalId = goalService.save(goal, principal);
         communityRunService.addGoalToCommunityRun(slug, goalId);
-        communityRunService.addRunnerToCommunityRun(slug, principal);
+        communityRunService.addRunnerToCommunityRun(slug, profile);
         return View.of("/goals/" + goalId, true);
     }
 }

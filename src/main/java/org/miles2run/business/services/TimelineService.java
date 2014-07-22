@@ -1,6 +1,7 @@
 package org.miles2run.business.services;
 
 import org.joda.time.DateTime;
+import org.miles2run.business.domain.jpa.CommunityRun;
 import org.miles2run.business.domain.jpa.Goal;
 import org.miles2run.business.domain.jpa.Profile;
 import org.miles2run.business.domain.mongo.UserProfile;
@@ -83,6 +84,10 @@ public class TimelineService {
                 Pipeline pipeline = jedis.pipelined();
                 pipeline.zadd(String.format(RedisKeyNames.PROFILE_S_TIMELINE, username), posted, activityId);
                 pipeline.zadd(String.format(RedisKeyNames.HOME_S_TIMELINE, username), posted, activityId);
+                CommunityRun communityRun = goal.getCommunityRun();
+                if (communityRun != null) {
+                    pipeline.zadd(String.format(RedisKeyNames.COMMUNITY_RUN_TIMELINE, communityRun.getSlug()), posted, activityId);
+                }
                 pipeline.zadd(String.format(RedisKeyNames.PROFILE_S_GOAL_S_TIMELINE, username, goal.getId()), posted, activityId);
                 pipeline.zadd(String.format(RedisKeyNames.PROFILE_S_TIMELINE_LATEST, username), activity.getPostedAt().getTime(), activityId);
                 pipeline.zremrangeByRank(String.format(RedisKeyNames.PROFILE_S_TIMELINE_LATEST, username), 0, -2);
@@ -323,8 +328,6 @@ public class TimelineService {
             }
         });
     }
-
-
 
 
     private String formatDate(Date activityDate) {

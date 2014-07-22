@@ -47,6 +47,8 @@ public class ActivityResource {
     private SecurityContext securityContext;
     @Inject
     private GoalService goalService;
+    @Inject
+    private CommunityRunService communityRunService;
 
     @POST
     @Consumes("application/json")
@@ -69,6 +71,9 @@ public class ActivityResource {
         counterService.updateActivitySecondsCount(activity.getDuration());
         goalService.updateTotalDistanceCoveredForAGoal(goal.getId(), savedActivity.getDistanceCovered());
         timelineService.postActivityToTimeline(savedActivity, profile, goal);
+        if (goal.getGoalType() == GoalType.COMMUNITY_RUN_GOAL) {
+            communityRunService.updateCommunityRunStats(loggedInUser, goal, activity);
+        }
         Share share = activity.getShare();
         String message = toActivityMessage(activity, profile);
         shareActivity(message, profile, share);
@@ -109,10 +114,17 @@ public class ActivityResource {
         ActivityDetails updatedActivity = activityService.update(existingActivity, activity);
         double activityPreviousDistanceCovered = existingActivity.getDistanceCovered();
         double updatedDistanceCovered = distanceCovered - activityPreviousDistanceCovered;
+
         timelineService.updateActivity(updatedActivity, profile, goal);
         counterService.updateDistanceCount(updatedDistanceCovered);
-        counterService.updateActivitySecondsCount(activity.getDuration());
+        long duration = activity.getDuration();
+        long existingActivityDuration = existingActivity.getDuration();
+        long updatedDuration = duration - existingActivityDuration;
+        counterService.updateActivitySecondsCount(updatedDuration);
         goalService.updateTotalDistanceCoveredForAGoal(goalId, updatedDistanceCovered);
+        if (goal.getGoalType() == GoalType.COMMUNITY_RUN_GOAL) {
+            communityRunService.updateCommunityRunDistanceAndDurationStats(goal.getCommunityRun().getSlug(), updatedDistanceCovered, updatedDuration);
+        }
         return Response.status(Response.Status.OK).entity(ActivityDetails.toHumanReadable(updatedActivity)).build();
     }
 

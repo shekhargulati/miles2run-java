@@ -39,9 +39,18 @@
         </div>
         <!-- /.navbar-header -->
 
-        <ul class="nav navbar-top-links navbar-right"  th:if="${profile != null}">
-            <!-- /.dropdown -->
+        <ul class="nav navbar-top-links navbar-right">
+
             <li class="dropdown">
+                <a href="/community_runs" th:href="@{/community_runs}">
+                    <div>
+                        <i class="fa fa-group fa-fw"></i> Community Runs
+                    </div>
+                </a>
+            </li>
+
+            <!-- /.dropdown -->
+            <li class="dropdown" th:if="${profile != null}">
                 <a href="/" th:href="@{/}">
                     <div>
                         <i class="fa fa-home fa-fw"></i> Home
@@ -50,7 +59,7 @@
             </li>
             <!-- /.dropdown -->
             <!-- /.dropdown -->
-            <li class="dropdown">
+            <li class="dropdown" th:if="${profile != null}">
                 <a class="dropdown-toggle" data-toggle="dropdown" href="#">
                     <i class="fa fa-user fa-fw"></i> <i class="fa fa-caret-down"></i>
                 </a>
@@ -102,24 +111,24 @@
         <div class="container clearfix">
             <div class="row">
                 <ul class="list-silent nopad-ul link-silent">
-                    <li class="col-lg-4 col-md-4 col-sm-6 col-xs-12 space-2-bottom" th:each="run : ${runs}">
+                    <li class="col-lg-4 col-md-4 col-sm-6 col-xs-12 space-2-bottom" th:each="runDetails : ${runs}">
                         <div class="event-box block contain-width centered">
                             <div class="event-box-body" style="background-image:url('');height:200px;">
                                 <div class="event-content-box">
                                     <div class="card-logo-container">
-                                        <a class="flushleft pad-3q push-3q" th:href="@{'/community_runs/' + ${run.slug}}">
-                                            <img th:src="${run.bannerImg}" width="70" height="70"/>
+                                        <a class="flushleft pad-3q push-3q" th:href="@{'/community_runs/' + ${runDetails.communityRun.slug}}">
+                                            <img th:src="${runDetails.communityRun.bannerImg}" width="70" height="70"/>
                                         </a>
                                     </div>
                                     <div class="card-info-container">
-                                        <a th:href="@{'/community_runs/' + ${run.slug}}" class="white">
-                                            <h2 class="normal box-title push-1q-top" th:text="${run.name}"></h2>
+                                        <a th:href="@{'/community_runs/' + ${runDetails.communityRun.slug}}" class="white">
+                                            <h2 class="normal box-title push-1q-top" th:text="${runDetails.communityRun.name}"></h2>
                                         </a>
-                                        <a th:href="@{'/community_runs/' + ${run.slug}}" class="white">
-                                            <h4 class="normal prose-type regular" th:inline="text">[[${#dates.format(run.startDate,'dd MMMM yyyy')} + ' - ' + ${#dates.format(run.endDate,'dd MMMM yyyy')}]]</h4>
+                                        <a th:href="@{'/community_runs/' + ${runDetails.communityRun.slug}}" class="white">
+                                            <h4 class="normal prose-type regular" th:inline="text">[[${#dates.format(runDetails.communityRun.startDate,'dd MMMM yyyy')} + ' - ' + ${#dates.format(runDetails.communityRun.endDate,'dd MMMM yyyy')}]]</h4>
                                         </a>
                                         <ul class="nav tags">
-                                            <li th:each="hashtag : ${run.hashtags}">
+                                            <li th:each="hashtag : ${runDetails.communityRun.hashtags}">
                                                 <a href="#" th:text="${hashtag}"></a>
                                             </li>
                                         </ul>
@@ -128,26 +137,26 @@
                                     <ul class="number-box-list secondary-prose nopad-ul thin" style="position:absolute;bottom:0;">
                                         <li class="number-box-display">
                                             <a href="/#" class="red-black number-box white">
-                                                <div class="semibold">10</div>Runners
+                                                <div class="semibold" th:text="${runDetails.communityRunCounter.runners}"></div>Runners
                                             </a>
                                         </li>
                                         <li class="number-box-display">
                                             <a href="#" class="red-black number-box white">
-                                                <div class="semibold">50</div>Miles
+                                                <div class="semibold" th:with="totalDistance=(${runDetails.communityRunCounter.totalDistance}/1609)" th:inline="text">[[${#numbers.formatDecimal(totalDistance,1,2)}]]</div>Miles
                                             </a>
                                         </li>
                                         <li class="number-box-display">
                                             <a href="#" class="red-black number-box white">
-                                            <div class="semibold">10</div>Hours</a></li>
+                                            <div class="semibold" th:with="totalDuration=(${runDetails.communityRunCounter.totalDuration}/3600)" th:inline="text">[[${#numbers.formatDecimal(totalDuration,1,2)}]]</div>Hours</a></li>
 
                                         <li class="number-box-display">
                                             <a href="#" class="red-black number-box white">
-                                                <div class="semibold">10</div>Cities
+                                                <div class="semibold" th:text="${runDetails.communityRunCounter.cities}"></div>Cities
                                             </a>
                                         </li>
                                         <li class="number-box-display">
                                             <a href="#" class="red-black number-box white">
-                                                <div class="semibold">5</div>Countries
+                                                <div class="semibold" th:text="${runDetails.communityRunCounter.countries}">5</div>Countries
                                             </a>
                                         </li>
                                     </ul>

@@ -11,7 +11,7 @@ import java.util.Date;
 @NamedQueries(
         {
                 @NamedQuery(name = "Goal.findAllWithProfileAndArchive", query = "SELECT new Goal(g.id,g.version, g.purpose,g.startDate,g.endDate,g.distance, g.goalUnit, g.archived,g.goalType) FROM Goal g where g.profile =:profile and g.archived =:archived"),
-                @NamedQuery(name = "Goal.findGoalWithIdAndProfile", query = "SELECT new Goal(g.id,g.version,g.purpose,g.startDate,g.endDate,g.distance, g.goalUnit, g.archived,g.goalType) FROM Goal g where g.profile =:profile and g.id =:goalId"),
+                @NamedQuery(name = "Goal.findGoalWithIdAndProfile", query = "SELECT new Goal(g.id,g.version,g.purpose,g.startDate,g.endDate,g.distance, g.goalUnit, g.archived,g.goalType,g.communityRun) FROM Goal g where g.profile =:profile and g.id =:goalId"),
                 @NamedQuery(name = "Goal.findLastedCreatedGoal", query = "SELECT new Goal(g.id,g.version,g.purpose,g.startDate,g.endDate,g.distance, g.goalUnit, g.archived,g.goalType) from Goal g where g.profile =:profile order by g.createdAt desc")
         }
 )
@@ -47,6 +47,19 @@ public class Goal extends BaseEntity {
     private boolean archived = false;
 
     public Goal() {
+    }
+
+    public Goal(Long id, Long version, String purpose, Date startDate, Date endDate, long distance, GoalUnit goalUnit, boolean archived, GoalType goalType, CommunityRun communityRun) {
+        this.id = id;
+        this.version = version;
+        this.purpose = purpose;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.goalUnit = goalUnit;
+        this.distance = distance;
+        this.archived = archived;
+        this.goalType = goalType;
+        this.communityRun = communityRun;
     }
 
     public Goal(Long id, Long version, String purpose, Date startDate, Date endDate, long distance, GoalUnit goalUnit, boolean archived, GoalType goalType) {
