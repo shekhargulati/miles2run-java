@@ -10,6 +10,7 @@ angular.module('miles2run-home')
                 $scope.goalExists = true;
                 $scope.distanceGoals = data['DISTANCE_GOAL'];
                 $scope.durationGoals = data['DURATION_GOAL'];
+                $scope.communityRunGoals = data['COMMUNITY_RUN_GOAL'];
             }
         }).error(function (data, status) {
             toastr.error("Unable to fetch goals. Please try after sometime.");
@@ -35,6 +36,9 @@ angular.module('miles2run-home')
                         } else if (goalType === 'DURATION_GOAL') {
                             var goalToArchive = $scope.durationGoals[idx];
                             return goalToArchive;
+                        } else if (goalType === 'COMMUNITY_RUN_GOAL') {
+                            var goalToArchive = $scope.communityRunGoals[idx];
+                            return goalToArchive;
                         } else {
                             return null;
                         }
@@ -48,7 +52,9 @@ angular.module('miles2run-home')
                             return $scope.distanceGoals;
                         } else if (goalType === 'DURATION_GOAL') {
                             return $scope.durationGoals;
-                        } else {
+                        } else if (goalType === 'COMMUNITY_RUN_GOAL') {
+                            return $scope.communityRunGoals;
+                        }else {
                             return null;
                         }
                     }

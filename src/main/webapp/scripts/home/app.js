@@ -85,13 +85,14 @@ app.filter('momentDaysBetween', function () {
             return "-";
         }
         startDate = startDate ? new Date(startDate) : new Date();
-        var currentMoment = moment(startDate);
-        var targetMoment = moment(text, "MMDDYYYY HH mm ss");
+        var currentMoment = moment(moment(startDate).format("MMDDYYYY"),"MMDDYYYY");
+        var targetMoment = moment(text, "MMDDYYYY");
         var daysDiff = targetMoment.diff(currentMoment, 'days');
         if (daysDiff > 0) {
+            daysDiff += 1; // added one because moment does not consider today's date. The number of days between 23rd July and 24th July should be 2 not 1.
             return daysDiff + ' day(s)';
         } else if (daysDiff === 0) {
-            return 'Today';
+            return 'Ends Today'
         } else {
             return moment(text, "MMDDYYYY").fromNow();
         }

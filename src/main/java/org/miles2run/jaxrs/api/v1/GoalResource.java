@@ -9,6 +9,7 @@ import org.miles2run.business.services.ActivityService;
 import org.miles2run.business.services.GoalService;
 import org.miles2run.business.services.ProfileService;
 import org.miles2run.business.vo.Progress;
+import org.miles2run.jaxrs.vo.CommunityRunGoalDetails;
 import org.miles2run.jaxrs.vo.DistanceGoalDetails;
 import org.miles2run.jaxrs.vo.DurationGoalDetails;
 import org.miles2run.jaxrs.vo.GoalDetails;
@@ -49,29 +50,37 @@ public class GoalResource {
     public Map<GoalType, List<Object>> allGoal(@QueryParam("archived") boolean archived) {
         String loggedInUser = securityContext.getUserPrincipal().getName();
         List<Goal> goals = goalService.findAllGoals(loggedInUser, archived);
-        Map<GoalType, List<Object>> allGoalsPerType = new HashMap<>();
+        Map<GoalType, List<Object>> goalsByType = new HashMap<>();
         for (Goal goal : goals) {
             GoalType goalType = goal.getGoalType();
             Object specificGoal = toGoalType(goal);
-            if (allGoalsPerType.containsKey(goalType)) {
-                List<Object> goalsForType = allGoalsPerType.get(goalType);
+            if (goalsByType.containsKey(goalType)) {
+                List<Object> goalsForType = goalsByType.get(goalType);
                 goalsForType.add(specificGoal);
             } else {
                 List<Object> goalsForType = new ArrayList<>();
                 goalsForType.add(specificGoal);
-                allGoalsPerType.put(goalType, goalsForType);
+                goalsByType.put(goalType, goalsForType);
             }
         }
-        return allGoalsPerType;
+        return goalsByType;
     }
 
     private Object toGoalType(Goal goal) {
-        if (goal.getGoalType() == GoalType.DISTANCE_GOAL) {
-            return toDistanceGoal(goal);
-        } else if (goal.getGoalType() == GoalType.DURATION_GOAL) {
-            return toDurationGoal(goal);
+        switch (goal.getGoalType()) {
+            case DURATION_GOAL:
+                return toDurationGoal(goal);
+            case DISTANCE_GOAL:
+                return toDistanceGoal(goal);
+            case COMMUNITY_RUN_GOAL:
+                return toCommunityRunGoal(goal);
+            default:
+                return null;
         }
-        return null;
+    }
+
+    private CommunityRunGoalDetails toCommunityRunGoal(Goal goal) {
+        return new CommunityRunGoalDetails(goal);
     }
 
     private DurationGoalDetails toDurationGoal(Goal goal) {
