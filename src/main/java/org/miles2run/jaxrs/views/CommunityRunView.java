@@ -1,7 +1,9 @@
 package org.miles2run.jaxrs.views;
 
+import org.jug.filters.InjectPrincipal;
 import org.jug.filters.LoggedIn;
 import org.jug.view.View;
+import org.jug.view.ViewResourceNotFoundException;
 import org.miles2run.business.domain.jpa.CommunityRun;
 import org.miles2run.business.domain.jpa.Goal;
 import org.miles2run.business.services.CommunityRunService;
@@ -50,9 +52,19 @@ public class CommunityRunView {
     @GET
     @Produces("text/html")
     @InjectProfile
-    public View findCommunityRun(@NotNull @PathParam("slug") String slug) {
+    @InjectPrincipal
+    public View viewCommunityRun(@NotNull @PathParam("slug") String slug) {
         CommunityRun run = communityRunService.findBySlug(slug);
-        return View.of("/community_run", templateEngine).withModel("run", run);
+        if (run == null) {
+            throw new ViewResourceNotFoundException(String.format("No community run exists with name %s", slug), templateEngine);
+        }
+        if (securityContext.getUserPrincipal() != null) {
+            String principal = securityContext.getUserPrincipal().getName();
+            if (communityRunService.isUserAlreadyPartOfRun(slug, principal)) {
+                return View.of("/community_run", templateEngine).withModel("run", run).withModel("userAlreadyJoined", true);
+            }
+        }
+        return View.of("/community_run", templateEngine).withModel("run", run).withModel("userAlreadyJoined", false);
     }
 
     @Path("/{slug}/join")

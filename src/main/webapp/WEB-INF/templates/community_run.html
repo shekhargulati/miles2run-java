@@ -90,7 +90,7 @@
                                 <h4 class="bold all-caps body-type legible-prose lightblue" th:inline="text">[[${#dates.format(run.startDate,'dd MMMM yyyy')} + ' - ' + ${#dates.format(run.endDate,'dd MMMM yyyy')}]]</h4>
                             </div>
                         </div>
-                        <div class="col-md-4 push-3q-top push-1q-bottom">
+                        <div class="col-md-4 push-3q-top push-1q-bottom" th:if="${userAlreadyJoined == false}">
                             <form th:action="@{'/community_runs/' + ${run.slug}+'/join'}" method="POST">
                                 <button class="btn btn-success btn-lg">Join This Run</button>
                             </form>
