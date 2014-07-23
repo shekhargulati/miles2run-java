@@ -5,7 +5,10 @@ function CreateGoalCtrl($scope, $location, activeProfile, $http, ConfigService, 
     $scope.currentUser = activeProfile;
 
     $scope.goal = {
-        goalUnit: 'MI'
+        goalUnit: 'MI',
+        numberOfDays: 10,
+        startDate: new Date(),
+        purpose: 'Run for 10 days'
     };
 
     $scope.buttonText = "Create";
@@ -50,6 +53,7 @@ function CreateGoalCtrl($scope, $location, activeProfile, $http, ConfigService, 
         $scope.successfulSubmission = true;
         $scope.buttonText = "Creating Goal..";
         $scope.goal.goalType = goalType;
+        delete $scope.goal.numberOfDays;
         $scope.createGoalPromise = $http.post(ConfigService.getBaseUrl() + "goals", $scope.goal).success(function (data) {
             toastr.success("Created new goal");
             $window.location.href = ConfigService.appContext() + 'goals/' + data.id;
@@ -104,6 +108,33 @@ function CreateGoalCtrl($scope, $location, activeProfile, $http, ConfigService, 
         'year-format': "'yy'",
         'starting-day': 1
     };
+
+    $scope.goal.endDate = addDays($scope.goal.startDate, $scope.goal.numberOfDays)
+
+    $scope.numberOfDaysUpdated = function () {
+        if ($scope.goal.numberOfDays) {
+            $scope.goal.endDate = addDays($scope.goal.startDate, $scope.goal.numberOfDays);
+        }
+    }
+
+    $scope.startDateUpdated = function () {
+        $scope.goal.numberOfDays = moment($scope.goal.endDate).diff($scope.goal.startDate, 'days') + 1;
+    }
+
+    $scope.endDateUpdated = function () {
+        $scope.goal.numberOfDays = moment($scope.goal.endDate).diff($scope.goal.startDate, 'days') + 1;
+    }
+
+    function addDays(date, days) {
+        var result = new Date(date);
+        result.setDate(date.getDate() + (days - 1));
+        return result;
+    }
+
+    $scope.minStartDate = $scope.minStartDate ? null : new Date();
+    $scope.minEndDate = $scope.minEndDate ? null : $scope.minStartDate;
+
+
 }
 
 angular.module('miles2run-home')

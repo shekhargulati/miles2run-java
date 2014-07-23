@@ -13,72 +13,47 @@
             </div>
             <!-- /.panel-heading -->
             <div class="panel-body">
-                <form name="goalForm" class="form-horizontal" ng-submit="createDurationGoal()" novalidate>
+                <form name="goalForm" ng-submit="createDurationGoal()" novalidate>
                     <fieldset>
-                        <div class="form-group" ng-class="{'has-error': ((goalForm.startDate.$invalid || goalForm.$error['date-disabled']) && submitted)}">
-                            <label class="col-md-2 control-label" for="startDate">Start Date</label>
 
-                            <div class="col-md-6 input-group">
-                                <input type="text" id="startDate" name="startDate" class="form-control"
-                                       datepicker-popup="dd-MMM-yyyy" ng-model="goal.startDate"
-                                       is-open="openedStartDate"
-                                       datepicker-options="dateOptions" close-text="Close"
-                                       placeholder="dd-MMM-YYYY eg. 02-Aug-2014"
-                                       title="Start date"
-                                       required>
-                                    <span class="input-group-btn">
-                                        <button class="btn btn-info" ng-click="openStartDate($event)"><i
-                                                class="fa fa-calendar fa-fw"></i>
-                                        </button>
-                                    </span>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label for="numberOfDays">Number of Days you want to run</label>
+                                    <input id="numberOfDays" name="numberOfDays" type="number"
+                                           class="form-control" ng-model="goal.numberOfDays" min="1" step="1"
+                                           ng-change="numberOfDaysUpdated()" required>
+                                </div>
                             </div>
-                                <span class="help-block col-md-offset-2" ng-if="goalForm.startDate.$invalid && submitted">Start Date should be before End Date.</span>
-                                <span class="help-block col-md-offset-2" ng-if="goalForm.startDate.$error.required && submitted">Start Date is required.</span>
-                                <span class="help-block col-md-offset-2" ng-if="goalForm.startDate.$error.date && submitted">Start Date is invalid.</span>
                         </div>
 
-                        <div class="form-group" ng-class="{'has-error': ((goalForm.endDate.$invalid || goalForm.$error['date-disabled']) && submitted)}">
-                            <label class="col-md-2 control-label" for="endDate">End Date</label>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label for="startDate">Start Date</label>
+                                    <datepicker id="startDate" name="startDate" ng-model="goal.startDate" min-date="minStartDate" show-weeks="true" class="well well-sm" ng-change="startDateUpdated()"></datepicker>
+                                </div>
 
-                            <div class="col-md-6 input-group">
-                                <input type="text" id="endDate" name="endDate" class="form-control"
-                                       datepicker-popup="dd-MMM-yyyy" ng-model="goal.endDate"
-                                       is-open="openedEndDate"
-                                       min-date="goal.startDate"
-                                       datepicker-options="dateOptions" close-text="Close"
-                                       placeholder="dd-MMM-YYYY eg. 02-Aug-2014"
-                                       title="End date"
-                                       required>
-                                    <span class="input-group-btn">
-                                        <button class="btn btn-info" ng-click="openEndDate($event)"><i
-                                                class="fa fa-calendar fa-fw"></i>
-                                        </button>
-                                    </span>
+                                <div class="col-md-6">
+                                    <label for="endDate">End Date</label>
+                                    <datepicker id="endDate" name="endDate" ng-model="goal.endDate" show-weeks="true" min-date="minEndDate"  class="well well-sm" ng-change="endDateUpdated()"></datepicker>
+                                </div>
                             </div>
-                                <span class="help-block col-md-offset-2"
-                                      ng-if="goalForm.endDate.$error.required && submitted">End Date is required.</span>
-                                <span class="help-block col-md-offset-2"
-                                      ng-if="goalForm.endDate.$error.date && submitted">End Date is invalid.</span>
-                                <span class="help-block col-md-offset-2"
-                                      ng-if="goalForm.$error['date-disabled'] && submitted">End Date should be in future.</span>
                         </div>
 
-                        <div class="form-group" ng-class="{'has-error': (goalForm.purpose.$invalid && submitted)}">
-                            <label class="col-md-2 control-label" for="purpose">Purpose</label>
-
-                            <div class="col-md-6 input-group">
-                                <input id="purpose" name="purpose" type="text"
-                                       placeholder="Why are you creating this goal? eg. loose 10 lbs."
-                                       class="form-control" ng-model="goal.purpose"
-                                       title="Please provide purpose of this goal"
-                                       required
-                                       ng-maxlength="100"
-                                       autocomplete="off">
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label for="purpose">Purpose</label>
+                                    <input id="purpose" name="purpose" type="text"
+                                           placeholder="Why are you creating this goal? eg. loose 10 lbs."
+                                           class="form-control" ng-model="goal.purpose"
+                                           title="Please provide purpose of this goal"
+                                           required
+                                           ng-maxlength="100"
+                                           autocomplete="off">
+                                </div>
                             </div>
-                                <span class="help-block col-md-offset-2"
-                                      ng-if="goalForm.purpose.$error.required && submitted">Purpose is required.</span>
-                                <span class="help-block col-md-offset-2"
-                                      ng-if="goalForm.purpose.$error.maxlength && submitted">Purpose should be less than 100 characters.</span>
                         </div>
 
                         <div class="form-group">
