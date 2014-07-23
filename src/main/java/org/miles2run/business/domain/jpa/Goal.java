@@ -38,7 +38,7 @@ public class Goal extends BaseEntity {
     private long distance = 0;
 
     @Enumerated(EnumType.STRING)
-    private GoalUnit goalUnit = GoalUnit.KM;
+    private GoalUnit goalUnit = GoalUnit.MI;
 
     @Enumerated(EnumType.STRING)
     @NotNull

@@ -5,6 +5,7 @@ import org.miles2run.business.domain.jpa.CommunityRun;
 import org.miles2run.business.domain.jpa.Goal;
 import org.miles2run.business.domain.jpa.Profile;
 import org.miles2run.business.domain.redis.CommunityRunCounter;
+import org.miles2run.business.vo.ProfileDetails;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import redis.clients.jedis.Jedis;
@@ -135,5 +136,9 @@ public class CommunityRunService {
                 return new CommunityRunCounter(runnersCountResponse.get(), countriesCountResponse.get(), citiesCountResponse.get(), totalDistance, totalDuration);
             }
         });
+    }
+
+    public List<CommunityRun> findAllActiveRacesWithNameLike(String name) {
+        return entityManager.createNamedQuery("CommunityRun.findAllActivieRunsByNameLike", CommunityRun.class).setParameter("name", "%" + name + "%").getResultList();
     }
 }

@@ -21,8 +21,9 @@ import java.util.Set;
         @Index(columnList = "slug", unique = true)
 })
 @NamedQueries({
-        @NamedQuery(name = "CommunityRun.findAllActiveRaces", query = "SELECT r FROM CommunityRun r WHERE r.active IS TRUE"),
-        @NamedQuery(name = "CommunityRun.findBySlug", query = "SELECT r FROM CommunityRun r WHERE r.slug =:slug")
+        @NamedQuery(name = "CommunityRun.findAllActiveRaces", query = "SELECT cr FROM CommunityRun cr WHERE cr.active IS TRUE"),
+        @NamedQuery(name = "CommunityRun.findBySlug", query = "SELECT cr FROM CommunityRun cr WHERE cr.slug =:slug"),
+        @NamedQuery(name = "CommunityRun.findAllActivieRunsByNameLike", query = "SELECT cr from CommunityRun cr WHERE cr.name LIKE :name and cr.active IS TRUE")
 })
 public class CommunityRun extends BaseEntity {
 

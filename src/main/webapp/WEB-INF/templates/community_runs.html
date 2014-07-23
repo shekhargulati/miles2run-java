@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" ng-app="miles2run-profile" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" ng-app="miles2run-crs" xmlns:th="http://www.thymeleaf.org">
 
 <head>
 
@@ -80,7 +80,7 @@
     </nav>
 
 
-    <section id="first">
+    <section id="first" ng-controller="CommunityRunsSearchCtrl">
         <div class="container clearfix">
             <div class="col-lg-12">
                 <div class="text-center push-1q-top link-silent">
@@ -88,13 +88,19 @@
                     <h3>Discover community runs around the world</h3>
                     <div class="centered">
                         <ul class="nav">
-                            <form class="form-inline" role="form" th:action="@{/community_runs/search}" method="get">
+                            <form class="form-inline" ng-submit="fetchCommunityRun()">
                                 <div class="col-md-4 col-md-offset-4 col-sm-6 col-sm-offset-3 col-xs-10 col-xs-offset-1 space-1-top space-1q-bottom">
                                     <div class="input-group">
-                                        <input type="text" class="form-control" id="q" name="q" placeholder="Search for a Community Run"/>
-                                        <label class="sr-only" for="q">Search</label>
+
+                                        <input type="text" ng-model="communityRun" placeholder="Type name of event"
+                                               typeahead="communityRun as communityRun.name for communityRun in getCommunityRuns($viewValue) | filter:$viewValue"
+                                               typeahead-template-url="communityRun.html" typeahead-editable="false"
+                                               class="form-control"/>
+
                                         <span class="input-group-btn">
-                                          <button class="btn btn-blue" type="submit"><i class="fa fa-search"></i></button>
+                                            <button class="btn btn-blue" type="submit" ng-submit="fetchCommunityRun()">
+                                                <i class="fa fa-search"></i>
+                                            </button>
                                         </span>
                                     </div>
                                 </div>
@@ -195,6 +201,13 @@
     /*]]>*/
 </script>
 
+<script type="text/ng-template" id="communityRun.html">
+    <a ng-href="community_runs/{{match.model.slug}}">
+        <img ng-src="{{match.model.bannerImg}}" width="18"/>
+        <span bind-html-unsafe="match.label | typeaheadHighlight:query"></span>
+    </a>
+</script>
+
 <!-- Core Scripts - Include with every page -->
 <script src="/js/libs/jquery.js" th:src="@{/js/libs/jquery.js}"></script>
 <script src="/js/bootstrap.min.js" th:src="@{/js/bootstrap.min.js}"></script>
@@ -222,6 +235,12 @@
     ga('send', 'pageview');
 
 </script>
+
+
+<script src="/js/libs/angular.js" th:src="@{/js/libs/angular.js}"></script>
+<script src="/js/libs/ui-bootstrap-tpls-0.11.0.js" th:src="@{/js/libs/ui-bootstrap-tpls-0.11.0.js}"></script>
+<script src="/js/community_runs.js" th:src="@{/js/community_runs.js}"></script>
+
 
 </body>
 

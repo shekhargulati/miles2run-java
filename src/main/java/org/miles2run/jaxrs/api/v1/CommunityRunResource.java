@@ -1,5 +1,6 @@
 package org.miles2run.jaxrs.api.v1;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jug.filters.LoggedIn;
 import org.miles2run.business.domain.jpa.CommunityRun;
 import org.miles2run.business.domain.jpa.Profile;
@@ -55,7 +56,10 @@ public class CommunityRunResource {
 
     @GET
     @Produces("application/json")
-    public List<CommunityRun> allCommunityRuns() {
+    public List<CommunityRun> allCommunityRuns(@QueryParam("name") String name) {
+        if(StringUtils.isNotBlank(name)){
+            return communityRunService.findAllActiveRacesWithNameLike(name);
+        }
         return communityRunService.findAllActiveRaces();
     }
 
