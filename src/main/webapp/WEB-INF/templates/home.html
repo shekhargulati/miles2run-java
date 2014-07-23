@@ -126,7 +126,7 @@
                         </ul>
                         <!-- /.nav-second-level -->
                     </li>
-                    <li ng-class="{ active: isActive('/community_run')}">
+                    <li ng-class="{ active: isActive('/community_run')}" th:if="${(profile.role.toString() == 'ORGANIZER') or (profile.role.toString() == 'ADMIN')}">
                         <a href="#community_run"><i class="fa fa-group fa-fw"></i> Create Community Run</a>
                     </li>
                     <li ng-class="{ active: isActive('/friends')}">

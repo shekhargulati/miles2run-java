@@ -86,6 +86,7 @@ public class Profile extends BaseEntity{
         this.gender = p.gender;
         Timestamp createdAtTimestamp = (Timestamp) (p.createdAt);
         this.createdAt = new Date(createdAtTimestamp.getTime());
+        this.role = p.role;
     }
 
     public Profile(ProfileForm profileForm) {
