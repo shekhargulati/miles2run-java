@@ -57,7 +57,8 @@
                                       ng-if="goalForm.purpose.$error.maxlength && submitted">Purpose should be less than 100 characters.</span>
                         </div>
 
-                        <div class="form-group" ng-class="{'has-error': ((goalForm.endDate.$invalid || goalForm.$error['date-disabled']) && submitted)}">
+                        <div class="form-group"
+                             ng-class="{'has-error': ((goalForm.endDate.$invalid || goalForm.$error['date-disabled']) && submitted)}">
                             <label class="col-md-2 control-label" for="endDate">End Date</label>
 
                             <div class="col-md-6 input-group">
@@ -81,7 +82,8 @@
                         </div>
                         <div class="form-group">
                             <div class="col-md-offset-2 col-md-4 pull-left">
-                                <button class="btn btn-primary btn-block" type="submit" ng-disabled="successfulSubmission">
+                                <button class="btn btn-primary btn-block" type="submit"
+                                        ng-disabled="successfulSubmission">
                                     {{buttonText}}
                                 </button>
                             </div>

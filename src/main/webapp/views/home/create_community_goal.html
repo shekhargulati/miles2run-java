@@ -1,0 +1,39 @@
+<script type="text/ng-template" id="communityRun.html">
+    <a ng-href="community_runs/{{match.model.slug}}">
+        <img ng-src="{{match.model.bannerImg}}" width="18"/>
+        <span bind-html-unsafe="match.label | typeaheadHighlight:query"></span>
+    </a>
+</script>
+
+
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-header">Goals</h1>
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+<!-- /.row -->
+<div class="row">
+    <div class="col-lg-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <i class="fa fa-clock-o fa-fw"></i> Join a Community Run
+            </div>
+            <!-- /.panel-heading -->
+            <div class="panel-body">
+                <form ng-submit="fetchCommunityRun()">
+                    <div class="form-group input-group">
+                        <input type="text" ng-model="communityRun" placeholder="Type name of Community Run"
+                               typeahead="cr as cr.name for cr in getCommunityRuns($viewValue) | filter:$viewValue"
+                               typeahead-template-url="communityRun.html" typeahead-editable=false class="form-control">
+                        <span class="input-group-btn">
+                                <button class="btn btn-default" type="button" ng-submit="fetchCommunityRun()">
+                                    <i class="fa fa-search"></i>
+                                </button>
+                        </span>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

@@ -7,7 +7,10 @@ function CreateGoalCtrl($scope, $location) {
             $location.path("/goals/create_duration_goal");
         } else if ($scope.goalType === 'distance_goal') {
             $location.path("/goals/create_distance_goal");
-        } else {
+        } else if ($scope.goalType === 'community_goal') {
+            $location.path("/goals/create_community_goal");
+        }
+        else {
             $location.path("/goals/create_distance_goal");
         }
 

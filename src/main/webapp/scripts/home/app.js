@@ -44,9 +44,9 @@ var app = angular.module('miles2run-home', [
                 templateUrl: 'views/home/create_duration_goal.html',
                 controller: 'CreateDurationGoalCtrl'
             })
-            .when('/goals/create_race_goal', {
-                templateUrl: 'views/home/create_duration_goal.html',
-                controller: 'CreateGoalCtrl'
+            .when('/goals/create_community_goal', {
+                templateUrl: 'views/home/create_community_goal.html',
+                controller: 'CreateCommunityGoalCtrl'
             })
             .when('/friends', {
                 templateUrl: 'views/home/friends.html',
