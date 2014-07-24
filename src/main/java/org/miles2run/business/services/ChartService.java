@@ -1,6 +1,8 @@
 package org.miles2run.business.services;
 
+import org.joda.time.Days;
 import org.joda.time.Interval;
+import org.joda.time.LocalDate;
 import org.miles2run.business.domain.jpa.Goal;
 import org.miles2run.business.utils.DateUtils;
 import org.slf4j.Logger;

@@ -22,7 +22,8 @@
                                 <input type="text" id="activityDate" name="activityDate" class="form-control"
                                        datepicker-popup="dd-MMM-yyyy" ng-model="activity.activityDate"
                                        is-open="opened"
-                                       max-date="minDate"
+                                       min-date="minDate"
+                                       max-date="maxDate"
                                        datepicker-options="dateOptions" close-text="Close"
                                        placeholder="dd-MMM-YYYY eg. 02-Aug-2014"
                                        title="Run Date" required>

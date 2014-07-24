@@ -85,14 +85,18 @@ public class ActivityService {
 
     }
 
-    public Progress calculateUserProgressForGoal(Profile profile, Long goalId) {
-        Goal goal = goalService.find(goalId);
+    public Progress calculateUserProgressForGoal(Profile profile, Goal goal) {
         long count = entityManager.createNamedQuery("Activity.countByProfileAndGoal", Long.class).setParameter("profile", profile).setParameter("goal", goal).getSingleResult();
         if (count == 0) {
             return new Progress(goal);
         }
         TypedQuery<Progress> query = entityManager.createNamedQuery("Activity.userGoalProgress", Progress.class).setParameter("postedBy", profile).setParameter("goal", goal);
         return query.getSingleResult();
+    }
+
+    public Progress calculateUserProgressForGoal(Profile profile, Long goalId) {
+        Goal goal = goalService.find(goalId);
+        return calculateUserProgressForGoal(profile, goal);
     }
 
     public Progress calculateUserProgressForGoal(String loggedInUser, Long goalId) {
@@ -122,4 +126,5 @@ public class ActivityService {
             return null;
         }
     }
+
 }

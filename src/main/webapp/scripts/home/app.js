@@ -38,11 +38,11 @@ var app = angular.module('miles2run-home', [
             })
             .when('/goals/create_distance_goal', {
                 templateUrl: 'views/home/create_distance_goal.html',
-                controller: 'CreateGoalCtrl'
+                controller: 'CreateDistanceGoalCtrl'
             })
             .when('/goals/create_duration_goal', {
                 templateUrl: 'views/home/create_duration_goal.html',
-                controller: 'CreateGoalCtrl'
+                controller: 'CreateDurationGoalCtrl'
             })
             .when('/goals/create_race_goal', {
                 templateUrl: 'views/home/create_duration_goal.html',

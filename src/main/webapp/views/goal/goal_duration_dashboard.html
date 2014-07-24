@@ -8,55 +8,86 @@
 </div>
 <!-- /.row -->
 <div class="row">
-    <div class="col-lg-12">
+    <div class="col-lg-5">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-lg-12 col-sm-12">
+                        <div id="progressChart">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /.panel-body -->
+        </div>
+        <!-- /.panel -->
+    </div>
+
+    <div class="col-lg-7">
         <div class="row">
-            <div class="col-lg-4">
+            <div class="col-lg-6">
                 <div class="panel mini-box">
                         <span class="box-icon rounded bg-info">
-                            <i class="fa fa-road"></i>
+                            <i class="fa fa-clock-o"></i>
                         </span>
 
                     <div class="box-info">
-                        <p class="size-h2">{{data.totalDistanceCovered | number:2}}
+                        <p class="size-h2">{{data.totalDays}}
                         </p>
 
-                        <p class="text-muted"><span data-i18n="Distance Covered">Distance ({{data.goalUnit | lowercase}})</span>
-                        </p>
+                        <p class="text-muted"><span data-i18n="TotalDays">Total</span></p>
                     </div>
                 </div>
             </div>
-            <div class="col-lg-4">
+            <div class="col-lg-6">
                 <div class="panel mini-box">
-                        <span class="box-icon rounded bg-warning">
-                            <i class="fa fa-bolt"></i>
+                        <span class="box-icon rounded bg-success">
+                            <i class="fa fa-clock-o"></i>
                         </span>
 
                     <div class="box-info">
-                        <p class="size-h2">{{data.averagePace | number:2}}
-                        </p>
+                        <p class="size-h2">{{data.performedDays}}</p>
 
-                        <p class="text-muted"><span data-i18n="Pace">Pace (mins/{{data.goalUnit | lowercase}})</span>
-                        </p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-4">
-                <div class="panel mini-box">
-                        <span class="box-icon rounded bg-danger">
-                            <i class="fa fa-comment-o"></i>
-                        </span>
-
-                    <div class="box-info">
-                        <p class="size-h2">{{data.activityCount}}</p>
-
-                        <p class="text-muted"><span data-i18n="Activities">Activities</span></p>
+                        <p class="text-muted"><span data-i18n="CompletedDays">Completed</span></p>
                     </div>
                 </div>
             </div>
         </div>
 
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="panel mini-box">
+                        <span class="box-icon rounded bg-warning">
+                            <i class="fa fa-clock-o"></i>
+                        </span>
+
+                    <div class="box-info">
+                        <p class="size-h2">{{data.remainingDays}}
+                        </p>
+
+                        <p class="text-muted"><span data-i18n="RemainingDays">Remaining</span></p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="panel mini-box">
+                        <span class="box-icon rounded bg-danger">
+                            <i class="fa fa-clock-o"></i>
+                        </span>
+
+                    <div class="box-info">
+                        <p class="size-h2">{{data.missedDays}}</p>
+
+                        <p class="text-muted"><span data-i18n="MissedDays">Missed</span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    <!-- /.panel -->
+
+</div>
+<!-- /.panel -->
 </div>
 <!-- /.col-lg-12 -->
 </div>
