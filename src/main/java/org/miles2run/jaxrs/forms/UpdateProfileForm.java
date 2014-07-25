@@ -1,6 +1,6 @@
 package org.miles2run.jaxrs.forms;
 
-import org.miles2run.business.domain.Gender;
+import org.miles2run.business.domain.jpa.Gender;
 
 import javax.ws.rs.FormParam;
 

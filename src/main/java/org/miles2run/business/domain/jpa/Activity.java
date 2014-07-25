@@ -1,4 +1,4 @@
-package org.miles2run.business.domain;
+package org.miles2run.business.domain.jpa;
 
 import org.miles2run.business.vo.ActivityDetails;
 
@@ -12,19 +12,17 @@ import java.util.Date;
  */
 @Entity
 @NamedQueries({
-        @NamedQuery(name = "Activity.findAll", query = "SELECT NEW org.miles2run.business.vo.ActivityDetails(a.id,a.status,a.distanceCovered,a.goalUnit,a.activityDate,a.share,a.postedBy.fullname,a.duration,a.postedBy.username,a.postedBy.profilePic,a.postedAt) FROM Activity a WHERE a.postedBy =:postedBy ORDER BY a.activityDate DESC"),
-        @NamedQuery(name = "Activity.findById", query = "SELECT new org.miles2run.business.vo.ActivityDetails(a.id,a.status,a.distanceCovered,a.goalUnit,a.activityDate,a.share,a.postedBy.fullname,a.duration,a.postedBy.username,a.postedBy.profilePic,a.postedAt) from Activity a where a.id =:id"),
+        @NamedQuery(name = "Activity.findAll", query = "SELECT NEW org.miles2run.business.vo.ActivityDetails(a.id,a.status,a.distanceCovered,a.goalUnit,a.activityDate,a.share,a.postedBy.fullname,a.duration,a.postedBy.username,a.postedBy.profilePic,a.createdAt) FROM Activity a WHERE a.postedBy =:postedBy ORDER BY a.activityDate DESC"),
+        @NamedQuery(name = "Activity.findById", query = "SELECT new org.miles2run.business.vo.ActivityDetails(a.id,a.status,a.distanceCovered,a.goalUnit,a.activityDate,a.share,a.postedBy.fullname,a.duration,a.postedBy.username,a.postedBy.profilePic,a.createdAt) from Activity a where a.id =:id"),
         @NamedQuery(name = "Activity.countByProfile", query = "SELECT COUNT(a) FROM Activity a WHERE a.postedBy =:profile"),
         @NamedQuery(name = "Activity.countByProfileAndGoal", query = "SELECT COUNT(a) FROM Activity a WHERE a.postedBy =:profile and a.goal =:goal"),
-        @NamedQuery(name = "Activity.userGoalProgress", query = "SELECT new org.miles2run.business.vo.Progress(a.goal.distance,a.goal.goalUnit,SUM(a.distanceCovered),COUNT(a), SUM(a.duration) ) from Activity a WHERE a.postedBy =:postedBy and a.goal =:goal"),
-        @NamedQuery(name = "Activity.findByUsernameAndId", query = "SELECT new org.miles2run.business.vo.ActivityDetails(a.id,a.status,a.distanceCovered,a.goalUnit,a.activityDate,a.share,a.postedBy.fullname,a.duration,a.postedBy.username,a.postedBy.profilePic,a.postedAt) from Activity a where a.id =:activityId and a.postedBy =:profile")
+        @NamedQuery(name = "Activity.userGoalProgress", query = "SELECT new org.miles2run.business.vo.Progress(a.goal.distance,a.goal.goalUnit,SUM(a.distanceCovered),COUNT(a), SUM(a.duration) ,a.goal.goalType) from Activity a WHERE a.postedBy =:postedBy and a.goal =:goal"),
+        @NamedQuery(name = "Activity.findByUsernameAndId", query = "SELECT new org.miles2run.business.vo.ActivityDetails(a.id,a.status,a.distanceCovered,a.goalUnit,a.activityDate,a.share,a.postedBy.fullname,a.duration,a.postedBy.username,a.postedBy.profilePic,a.createdAt) from Activity a where a.id =:activityId and a.postedBy =:profile")
 
 })
-public class Activity {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+@Access(AccessType.FIELD)
+@Table(name = "activity")
+public class Activity extends BaseEntity {
 
     @Size(max = 1000)
     private String status;
@@ -35,10 +33,6 @@ public class Activity {
 
     @NotNull
     private double distanceCovered;
-
-    @Column(updatable = false)
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date postedAt = new Date();
 
     @Temporal(TemporalType.TIMESTAMP)
     @NotNull
@@ -75,7 +69,7 @@ public class Activity {
         this.id = id;
         this.status = status;
         this.distanceCovered = distanceCovered;
-        this.postedAt = postedAt;
+        this.createdAt = postedAt;
     }
 
     public Activity(Date activityDate, double distanceCovered, GoalUnit goalUnit) {
@@ -92,80 +86,64 @@ public class Activity {
         this.duration = activityDetails.getDuration();
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public String getStatus() {
         return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public double getDistanceCovered() {
-        return distanceCovered;
-    }
-
-    public void setDistanceCovered(double distanceCovered) {
-        this.distanceCovered = distanceCovered;
     }
 
     public GoalUnit getGoalUnit() {
         return goalUnit;
     }
 
-    public void setGoalUnit(GoalUnit goalUnit) {
-        this.goalUnit = goalUnit;
-    }
-
-    public Date getPostedAt() {
-        return postedAt;
-    }
-
-    public void setPostedAt(Date postedAt) {
-        this.postedAt = postedAt;
+    public double getDistanceCovered() {
+        return distanceCovered;
     }
 
     public Date getActivityDate() {
         return activityDate;
     }
 
-    public void setActivityDate(Date activityDate) {
-        this.activityDate = activityDate;
-    }
-
     public Profile getPostedBy() {
         return postedBy;
-    }
-
-    public void setPostedBy(Profile postedBy) {
-        this.postedBy = postedBy;
     }
 
     public Share getShare() {
         return share;
     }
 
-    public void setShare(Share share) {
-        this.share = share;
-    }
-
     public long getDuration() {
         return duration;
     }
 
-    public void setDuration(long duration) {
-        this.duration = duration;
-    }
-
     public Goal getGoal() {
         return goal;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public void setGoalUnit(GoalUnit goalUnit) {
+        this.goalUnit = goalUnit;
+    }
+
+    public void setDistanceCovered(double distanceCovered) {
+        this.distanceCovered = distanceCovered;
+    }
+
+    public void setActivityDate(Date activityDate) {
+        this.activityDate = activityDate;
+    }
+
+    public void setPostedBy(Profile postedBy) {
+        this.postedBy = postedBy;
+    }
+
+    public void setShare(Share share) {
+        this.share = share;
+    }
+
+    public void setDuration(long duration) {
+        this.duration = duration;
     }
 
     public void setGoal(Goal goal) {

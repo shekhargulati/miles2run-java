@@ -12,7 +12,7 @@ import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson.JacksonFactory;
 import com.google.gson.Gson;
-import org.miles2run.business.domain.SocialConnection;
+import org.miles2run.business.domain.jpa.SocialConnection;
 import org.miles2run.business.vo.Google;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 @ApplicationScoped
 public class GoogleService {

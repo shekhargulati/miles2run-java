@@ -1,0 +1,97 @@
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-header">Goals</h1>
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+<!-- /.row -->
+<div class="row">
+    <div class="col-lg-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <i class="fa fa-trophy fa-fw"></i> Create New Goal(Distance Based)
+            </div>
+            <!-- /.panel-heading -->
+            <div class="panel-body">
+                <form name="goalForm" class="form-horizontal" ng-submit="createDistanceGoal()" novalidate>
+                    <fieldset>
+                        <div class="form-group" ng-class="{'has-error': (goalForm.distance.$invalid && submitted)}">
+                            <label class="col-md-2 control-label" for="distance">Distance</label>
+
+                            <div class="col-md-6 input-group">
+                                <input id="distance" name="distance" type="number"
+                                       placeholder="Distance to run"
+                                       class="form-control" ng-model="goal.distance" min="1" step="1"
+                                       title="Please enter valid value of distance greater than 0"
+                                       required>
+                                    <span class="input-group-addon">
+                                        <select name="goalUnit" ng-model="goal.goalUnit">
+                                            <option value="KM" ng-selected="goal.goalUnit == 'KM'">km</option>
+                                            <option value="MI" ng-selected="goal.goalUnit == 'MI'">mi</option>
+                                        </select>
+                                    </span>
+                            </div>
+                                <span class="help-block col-md-offset-2"
+                                      ng-if="goalForm.distance.$error.required && submitted">Distance is required.</span>
+                                <span class="help-block col-md-offset-2"
+                                      ng-if="goalForm.distance.$error.min && submitted">Distance should be greater than 0.</span>
+                                <span class="help-block col-md-offset-2"
+                                      ng-if="goalForm.distance.$error.number && submitted">Distance should be a number greater than 0.</span>
+                        </div>
+
+                        <div class="form-group" ng-class="{'has-error': (goalForm.purpose.$invalid && submitted)}">
+                            <label class="col-md-2 control-label" for="purpose">Purpose</label>
+
+                            <div class="col-md-6 input-group">
+                                <input id="purpose" name="purpose" type="text"
+                                       placeholder="Why are you creating this goal? eg. loose 10 lbs."
+                                       class="form-control" ng-model="goal.purpose"
+                                       title="Please provide purpose of this goal"
+                                       required
+                                       ng-maxlength="100"
+                                       autocomplete="off">
+                            </div>
+                                <span class="help-block col-md-offset-2"
+                                      ng-if="goalForm.purpose.$error.required && submitted">Purpose is required.</span>
+                                <span class="help-block col-md-offset-2"
+                                      ng-if="goalForm.purpose.$error.maxlength && submitted">Purpose should be less than 100 characters.</span>
+                        </div>
+
+                        <div class="form-group"
+                             ng-class="{'has-error': ((goalForm.endDate.$invalid || goalForm.$error['date-disabled']) && submitted)}">
+                            <label class="col-md-2 control-label" for="endDate">End Date</label>
+
+                            <div class="col-md-6 input-group">
+                                <input type="text" id="endDate" name="endDate" class="form-control"
+                                       datepicker-popup="dd-MMM-yyyy" ng-model="goal.endDate"
+                                       is-open="openedEndDate"
+                                       min-date="minDate"
+                                       datepicker-options="dateOptions" close-text="Close"
+                                       placeholder="dd-MMM-YYYY eg. 02-Aug-2014"
+                                       title="End date">
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-info" ng-click="openEndDate($event)">
+                                            <i class="fa fa-calendar fa-fw"></i>
+                                        </button>
+                                    </span>
+                            </div>
+                                <span class="help-block col-md-offset-2"
+                                      ng-if="goalForm.endDate.$error.date && submitted">End Date is invalid.</span>
+                                <span class="help-block col-md-offset-2"
+                                      ng-if="goalForm.$error['date-disabled'] && submitted">End Date should be in future.</span>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-md-offset-2 col-md-4 pull-left">
+                                <button class="btn btn-primary btn-block" type="submit"
+                                        ng-disabled="successfulSubmission">
+                                    {{buttonText}}
+                                </button>
+                            </div>
+                        </div>
+
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

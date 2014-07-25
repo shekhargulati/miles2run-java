@@ -1,13 +1,19 @@
 package org.miles2run.jaxrs.api.v1;
 
 import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
+import org.joda.time.Interval;
 import org.jug.filters.LoggedIn;
-import org.miles2run.business.domain.Goal;
-import org.miles2run.business.domain.Profile;
+import org.miles2run.business.domain.jpa.Goal;
+import org.miles2run.business.domain.jpa.GoalType;
+import org.miles2run.business.domain.jpa.Profile;
 import org.miles2run.business.services.ActivityService;
 import org.miles2run.business.services.GoalService;
 import org.miles2run.business.services.ProfileService;
 import org.miles2run.business.vo.Progress;
+import org.miles2run.jaxrs.vo.CommunityRunGoalDetails;
+import org.miles2run.jaxrs.vo.DistanceGoalDetails;
+import org.miles2run.jaxrs.vo.DurationGoalDetails;
 import org.miles2run.jaxrs.vo.GoalDetails;
 
 import javax.inject.Inject;
@@ -16,8 +22,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Logger;
 
 /**
@@ -41,31 +46,64 @@ public class GoalResource {
     @GET
     @Produces("application/json")
     @LoggedIn
-    public List<GoalDetails> allGoal(@QueryParam("archived") boolean archived) {
+    public Map<GoalType, List<Object>> allGoal(@QueryParam("archived") boolean archived) {
         String loggedInUser = securityContext.getUserPrincipal().getName();
         List<Goal> goals = goalService.findAllGoals(loggedInUser, archived);
-
-        List<GoalDetails> goalsDetails = new ArrayList<>();
+        Map<GoalType, List<Object>> goalsByType = new HashMap<>();
         for (Goal goal : goals) {
-            double percentageCompleted = percentageGoalCompleted(goal);
-            goalsDetails.add(new GoalDetails(goal, percentageCompleted));
+            GoalType goalType = goal.getGoalType();
+            Object specificGoal = toGoalType(goal);
+            if (goalsByType.containsKey(goalType)) {
+                List<Object> goalsForType = goalsByType.get(goalType);
+                goalsForType.add(specificGoal);
+            } else {
+                List<Object> goalsForType = new ArrayList<>();
+                goalsForType.add(specificGoal);
+                goalsByType.put(goalType, goalsForType);
+            }
         }
-        return goalsDetails;
+        return goalsByType;
+    }
+
+    private Object toGoalType(Goal goal) {
+        switch (goal.getGoalType()) {
+            case DURATION_GOAL:
+                return toDurationGoal(goal);
+            case DISTANCE_GOAL:
+                return toDistanceGoal(goal);
+            case COMMUNITY_RUN_GOAL:
+                return toCommunityRunGoal(goal);
+            default:
+                return null;
+        }
+    }
+
+    private CommunityRunGoalDetails toCommunityRunGoal(Goal goal) {
+        return new CommunityRunGoalDetails(goal);
+    }
+
+    private DurationGoalDetails toDurationGoal(Goal goal) {
+        return new DurationGoalDetails(goal);
+    }
+
+    private DistanceGoalDetails toDistanceGoal(Goal goal) {
+        double percentageCompleted = percentageGoalCompleted(goal);
+        return new DistanceGoalDetails(goal, percentageCompleted);
     }
 
     @Path("{goalId}")
     @GET
     @Produces("application/json")
     @LoggedIn
-    public GoalDetails goal(@PathParam("goalId") Long goalId) {
+    public Object goal(@PathParam("goalId") Long goalId) {
         String loggedInUser = securityContext.getUserPrincipal().getName();
         Goal goal = goalService.findGoal(loggedInUser, goalId);
-        double percentageCompleted = percentageGoalCompleted(goal);
-        return new GoalDetails(goal, percentageCompleted);
+        return toGoalType(goal);
     }
 
 
     @POST
+    @Consumes("application/json")
     @Produces("application/json")
     @LoggedIn
     public Response createGoal(@Valid Goal goal) {
@@ -123,7 +161,15 @@ public class GoalResource {
     public Response progress(@PathParam("goalId") Long goalId) {
         String username = securityContext.getUserPrincipal().getName();
         Profile loggedInUser = profileService.findProfile(username);
-        Progress progress = activityService.calculateUserProgressForGoal(loggedInUser, goalId);
+        Goal goal = goalService.find(goalId);
+        if (goal == null) {
+            return Response.status(Response.Status.NOT_FOUND).entity("No goal exists with id " + goalId).build();
+        }
+        if (goal.getGoalType() == GoalType.DISTANCE_GOAL) {
+            Progress progress = activityService.calculateUserProgressForGoal(loggedInUser, goal);
+            return Response.status(Response.Status.OK).entity(progress).build();
+        }
+        Map<String, Object> progress = goalService.getDurationGoalProgress(username, goalId, new Interval(goal.getStartDate().getTime(), goal.getEndDate().getTime()));
         return Response.status(Response.Status.OK).entity(progress).build();
     }
 

@@ -5,46 +5,59 @@
         <button class="btn btn-default" ng-click="cancel()">Cancel</button>
     </div>
 </script>
+
 <div class="row">
     <div class="col-lg-12">
-        <h1 class="page-header">Goals</h1>
+        <h1 class="page-header">Archived Goals</h1>
     </div>
-    <!-- /.col-lg-12 -->
     <div class="row">
+        <div class="col-lg-12">
+            <div cg-busy="archivedGoalsPromise"></div>
+        </div>
+    </div>
+
+    <div class="row" ng-if="!goalExists" ng-cloak>
+        <div class="col-lg-12">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div class="well">
+                        <h2>You don't have any archived goals!!</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- /.col-lg-12 -->
+    <div class="row" ng-if="distanceGoals.length" ng-cloak>
         <div class="col-lg-12">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    Archived Goals
+                    Your Archived Distance Goals
                 </div>
                 <!-- /.panel-heading -->
                 <div class="panel-body">
-                    <div cg-busy="archivedGoalsPromise"></div>
-
-                    <div class="well" ng-if="goals.length == 0" ng-cloak>
-                        <h2>You don't have any archived goals!!</h2>
-                    </div>
-
-                    <div class="table-responsive" ng-if="goals.length">
-                        <table class="table table-striped table-bordered table-hover" id="goals-table">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-bordered table-hover" id="distance-goals-table">
                             <thead>
                             <tr>
                                 <th>#</th>
                                 <th>Purpose</th>
-                                <th>Goal</th>
-                                <th>Target Date</th>
+                                <th>Distance</th>
+                                <th>End Date</th>
                                 <th>% Completed</th>
                                 <th>Actions</th>
                             </tr>
                             </thead>
                             <tbody>
-                            <tr class="odd gradeX" ng-repeat="goal in goals">
+                            <tr class="odd gradeX" ng-repeat="goal in distanceGoals">
                                 <td>{{$index+1}}</td>
                                 <td>
                                     <a ng-href="{{appContext}}goals/{{goal.id}}">{{goal.purpose}}</a>
                                 </td>
-                                <td>{{goal.goal + ' ' + goal.goalUnit}}</td>
-                                <td>{{goal.targetDate | date:'MMddyyyy HH mm ss'|moment}}</td>
-                                <td>{{goal.percentageCompleted | number:0}}% Complete</td>
+                                <td>{{(goal.distance |number:2) + ' ' + goal.goalUnit|lowercase}}</td>
+                                <td>{{goal.endDate | date:'MMddyyyy HH mm ss'|momentDaysBetween}}</td>
+                                <td>{{goal.percentageCompleted |number:2}}% Complete</td>
                                 <td>
                                     <div class="btn-group pull-right">
                                         <button type="button" class="btn btn-default btn-xs dropdown-toggle"
@@ -54,7 +67,7 @@
                                         </button>
                                         <ul class="dropdown-menu" role="menu">
                                             <li>
-                                                <a ng-click="unarchive($index)"
+                                                <a ng-click="unarchive($index,'DISTANCE_GOAL')"
                                                    title="unarchive goal">UnArchive</a>
                                             </li>
                                         </ul>
@@ -64,6 +77,119 @@
                             </tbody>
                         </table>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row" ng-if="durationGoals.length" ng-cloak>
+        <div class="col-lg-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    Your Archived Duration Goals
+                </div>
+                <!-- /.panel-heading -->
+                <div class="panel-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-bordered table-hover" id="duration-goals-table">
+                            <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Purpose</th>
+                                <th>Start Date</th>
+                                <th>End Date</th>
+                                <th>Total Days</th>
+                                <th>Days Remaining</th>
+                                <th>Actions</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr class="odd gradeX" ng-repeat="goal in durationGoals">
+                                <td>{{$index+1}}</td>
+                                <td>
+                                    <a ng-href="{{appContext}}goals/{{goal.id}}">{{goal.purpose}}</a>
+                                </td>
+                                <td>{{goal.startDate | date:'MMMM dd, yyyy'}}</td>
+                                <td>{{goal.endDate | date:'MMMM dd, yyyy'}}</td>
+                                <td>{{goal.endDate | date:'MMddyyyy HH mm ss'|momentDaysBetween:goal.startDate}}</td>
+                                <td>{{goal.endDate | date:'MMddyyyy HH mm ss'|momentDaysBetween}}</td>
+                                <td>
+                                    <div class="btn-group pull-right">
+                                        <button type="button" class="btn btn-default btn-xs dropdown-toggle"
+                                                data-toggle="dropdown">
+                                            <i class="fa fa-cog"></i>
+                                            <span class="caret"></span>
+                                        </button>
+                                        <ul class="dropdown-menu" role="menu">
+                                            <li>
+                                                <a ng-click="unarchive($index,'DURATION_GOAL')"
+                                                   title="unarchive goal">UnArchive</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row" ng-if="communityRunGoals.length" ng-cloak>
+        <div class="col-lg-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    Your Community Run Goals
+                </div>
+                <!-- /.panel-heading -->
+                <div class="panel-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-bordered table-hover" id="commmunity-run-goals-table">
+                            <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Purpose</th>
+                                <th>Start Date</th>
+                                <th>End Date</th>
+                                <th>Total Days</th>
+                                <th>Days Remaining</th>
+                                <th>Actions</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr class="odd gradeX" ng-repeat="goal in communityRunGoals">
+                                <td>{{$index+1}}</td>
+                                <td>
+                                    <a ng-href="{{appContext}}goals/{{goal.id}}">{{goal.purpose}}</a>
+                                </td>
+                                <td>{{goal.startDate | date:'MMMM dd, yyyy'}}</td>
+                                <td>{{goal.endDate | date:'MMMM dd, yyyy'}}</td>
+                                <td>{{goal.endDate | date:'MMddyyyy HH mm ss'|momentDaysBetween:goal.startDate}}</td>
+                                <td>{{goal.endDate | date:'MMddyyyy HH mm ss'|momentDaysBetween}}</td>
+                                <td>
+                                    <div class="btn-group pull-right">
+                                        <button type="button" class="btn btn-default btn-xs dropdown-toggle"
+                                                data-toggle="dropdown">
+                                            <i class="fa fa-cog"></i>
+                                            <span class="caret"></span>
+                                        </button>
+                                        <ul class="dropdown-menu" role="menu">
+                                            <li>
+                                                <a ng-click="unarchive($index,'COMMUNITY_RUN_GOAL')"
+                                                   title="unarchive goal">UnArchive</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
                 </div>
             </div>
         </div>

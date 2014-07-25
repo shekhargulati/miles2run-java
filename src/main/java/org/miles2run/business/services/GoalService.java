@@ -1,17 +1,21 @@
 package org.miles2run.business.services;
 
-import org.miles2run.business.domain.Goal;
-import org.miles2run.business.domain.Profile;
+import org.joda.time.DateTime;
+import org.joda.time.Days;
+import org.joda.time.Interval;
+import org.joda.time.LocalDate;
+import org.miles2run.business.domain.jpa.Goal;
+import org.miles2run.business.domain.jpa.Profile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.Tuple;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by shekhargulati on 11/06/14.
@@ -41,6 +45,13 @@ public class GoalService {
         goal.setProfile(profile);
         entityManager.persist(goal);
         return findGoal(profile, goal.getId());
+    }
+
+    public Long save(Goal goal, String loggedInUser) {
+        Profile profile = profileService.findProfile(loggedInUser);
+        goal.setProfile(profile);
+        entityManager.persist(goal);
+        return goal.getId();
     }
 
     public Goal findGoal(String loggedInuser, Long goalId) {
@@ -73,7 +84,8 @@ public class GoalService {
     public void update(Goal goal, Long goalId) {
         Goal existingGoal = this.find(goalId);
         existingGoal.setDistance(goal.getDistance());
-        existingGoal.setTargetDate(goal.getTargetDate());
+        existingGoal.setStartDate(goal.getStartDate());
+        existingGoal.setEndDate(goal.getEndDate());
         existingGoal.setArchived(goal.isArchived());
         existingGoal.setGoalUnit(goal.getGoalUnit());
         existingGoal.setPurpose(goal.getPurpose());
@@ -108,7 +120,7 @@ public class GoalService {
             public Double perform(Jedis jedis) {
                 String key = String.format("goal:%s:progress", goalId);
                 String value = jedis.get(key);
-                return value == null ? Double.valueOf(0) :Double.valueOf(value);
+                return value == null ? Double.valueOf(0) : Double.valueOf(value);
             }
         });
     }
@@ -135,5 +147,42 @@ public class GoalService {
         query.setMaxResults(1);
         List<Goal> goals = query.getResultList();
         return goals.isEmpty() ? null : goals.get(0);
+    }
+
+    public Map<String, Object> getDurationGoalProgress(final String username, final Long goalId, final Interval interval) {
+        return jedisExecutionService.execute(new JedisOperation<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> perform(Jedis jedis) {
+                String key = String.format(RedisKeyNames.PROFILE_S_GOAL_S_TIMELINE, username, goalId);
+                DateTime dateTime = new DateTime(interval.getStartMillis()).minusDays(1);
+                Set<Tuple> activityIdsInNMonthWithScores = jedis.zrangeByScoreWithScores(key, dateTime.getMillis(), interval.getEndMillis());
+                Set<LocalDate> activityDates = new HashSet<>();
+                for (Tuple activityIdsInNMonthWithScore : activityIdsInNMonthWithScores) {
+                    activityDates.add(new LocalDate(Double.valueOf(activityIdsInNMonthWithScore.getScore()).longValue()));
+                }
+                int totalDays = Days.daysBetween(new LocalDate(interval.getStartMillis()), new LocalDate(interval.getEndMillis())).getDays() + 1;
+                int performedDays = activityDates.size();
+                int remainingDays = Days.daysBetween(new LocalDate(), new LocalDate(interval.getEndMillis())).getDays() + 1;
+                List<LocalDate> dates = new ArrayList<>();
+                int daysTillToday = Days.daysIn(new Interval(interval.getStartMillis(), new DateTime().getMillis())).getDays();
+                for (int i = 0; i < daysTillToday; i++) {
+                    dates.add(interval.getStart().toLocalDate().plusDays(i));
+                }
+                int missedDays = 0;
+                for (LocalDate date : dates) {
+                    if (!activityDates.contains(date)) {
+                        missedDays += 1;
+                    }
+                }
+                Map<String, Object> data = new HashMap<>();
+                data.put("totalDays", totalDays);
+                data.put("performedDays", performedDays);
+                data.put("missedDays", missedDays);
+                data.put("remainingDays", remainingDays);
+                double percentage = (Double.valueOf(performedDays) * 100) / totalDays;
+                data.put("percentage", percentage);
+                return data;
+            }
+        });
     }
 }

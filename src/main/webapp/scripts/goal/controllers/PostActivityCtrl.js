@@ -16,12 +16,12 @@ function PostActivityCtrl($scope, ActivityService, $location, ProfileService, ac
         var durationVal = toAppSeconds(duration)
         if (durationVal > 0) {
             $scope.activityForm.durationHours.$invalid = false;
-        }else{
+        } else {
             $scope.activityForm.durationHours.$invalid = true;
         }
     }
 
-    var toAppSeconds = function(duration){
+    var toAppSeconds = function (duration) {
         if (duration) {
             var hours = duration.hours && duration.hours !== '00' ? duration.hours : 0;
             var minutes = duration.minutes && duration.minutes !== '00' ? duration.minutes : 0;
@@ -72,7 +72,10 @@ function PostActivityCtrl($scope, ActivityService, $location, ProfileService, ac
     };
 
     $scope.toggleMin = function () {
-        $scope.minDate = ( $scope.minDate ) ? null : new Date();
+        $scope.minDate = $scope.activeGoal.startDate ? new Date($scope.activeGoal.startDate.time) : null;
+        var current = new Date();
+        $scope.maxDate = $scope.activeGoal.endDate ? (new Date($scope.activeGoal.endDate.time) > current ? current : new Date($scope.activeGoal.endDate.time)) : current;
+
     };
     $scope.toggleMin();
 

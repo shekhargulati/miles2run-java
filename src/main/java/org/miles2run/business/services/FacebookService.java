@@ -4,7 +4,7 @@ import facebook4j.Facebook;
 import facebook4j.FacebookException;
 import facebook4j.FacebookFactory;
 import facebook4j.auth.AccessToken;
-import org.miles2run.business.domain.SocialConnection;
+import org.miles2run.business.domain.jpa.SocialConnection;
 
 import javax.ejb.Asynchronous;
 import javax.ejb.Stateless;

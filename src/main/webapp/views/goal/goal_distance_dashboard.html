@@ -1,0 +1,155 @@
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-header">Dashboard <a class="btn btn-info pull-right" ng-href="#activity/post">Post New
+            Activity</a></h1>
+
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+<!-- /.row -->
+<div class="row">
+
+    <div class="col-lg-5">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-lg-12 col-sm-12">
+                        <div id="progressChart">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /.panel-body -->
+        </div>
+        <!-- /.panel -->
+    </div>
+
+    <div class="col-lg-7">
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="panel mini-box">
+                        <span class="box-icon rounded bg-success">
+                            <i class="fa fa-bullhorn"></i>
+                        </span>
+
+                    <div class="box-info">
+                        <p class="size-h2">{{data.goal | number:2}} </p>
+
+                        <p class="text-muted"><span data-i18n="Goal">Goal ({{data.goalUnit | lowercase}})</span></p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="panel mini-box">
+                        <span class="box-icon rounded bg-info">
+                            <i class="fa fa-road"></i>
+                        </span>
+
+                    <div class="box-info">
+                        <p class="size-h2">{{data.totalDistanceCovered | number:2}}
+                        </p>
+
+                        <p class="text-muted"><span data-i18n="Distance Covered">Distance ({{data.goalUnit | lowercase}})</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="panel mini-box">
+                        <span class="box-icon rounded bg-warning">
+                            <i class="fa fa-bolt"></i>
+                        </span>
+
+                    <div class="box-info">
+                        <p class="size-h2">{{data.averagePace | number:2}}
+                        </p>
+
+                        <p class="text-muted"><span data-i18n="Pace">Pace (mins/{{data.goalUnit | lowercase}})</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="panel mini-box">
+                        <span class="box-icon rounded bg-danger">
+                            <i class="fa fa-comment-o"></i>
+                        </span>
+
+                    <div class="box-info">
+                        <p class="size-h2">{{data.activityCount}}</p>
+
+                        <p class="text-muted"><span data-i18n="Activities">Activities</span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- /.panel-body -->
+    </div>
+    <!-- /.panel -->
+</div>
+<!-- /.col-lg-12 -->
+</div>
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <div class="btn-group pull-right" ng-if="!showNoDistancePaceChartMessage" ng-cloak>
+                    <button type="button" class="btn btn-default" ng-click="distancePaceChart('day')" ng-class="{'active' : distancePaceChartPerDayActive}">Day</button>
+                    <button type="button" class="btn btn-default" ng-click="distancePaceChart('month')" ng-class="{'active' : distancePaceChartPerMonthActive}">Month</button>
+                </div>
+                Distance vs Pace
+            </div>
+            <div class="panel-body" ng-if="showNoDistancePaceChartMessage" ng-cloak>
+                <h2>You haven't tracked any activities yet!!</h2>
+
+                <p class="lead">But don't worry! It's really easy to get started. Just click on the button below to
+                    enter your first activity:</p>
+                <a class="btn btn-success" ng-href="#activity/post">Post New Activity</a>
+            </div>
+
+            <div class="panel-body">
+                <div id="distance-pace-chart"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="row" ng-if="!showNoDistancePaceChartMessage" ng-cloak>
+
+    <div class="col-lg-4">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <i class="fa fa-calendar fa-fw"></i> Activity Calendar
+            </div>
+            <!-- /.panel-heading -->
+            <div class="panel-body center-block">
+                <button id="previous" class="btn btn-info btn-sm" style="margin-bottom: 10px;" title="previous month"><i
+                        class="glyphicon glyphicon-chevron-left"></i></button>
+                <button id="next" class="btn btn-info btn-sm" style="margin-bottom: 10px;" title="next month"><i
+                        class="glyphicon glyphicon-chevron-right"></i></button>
+                <cal-heatmap config="calendarConfig"></cal-heatmap>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-8">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <div class="btn-group pull-right">
+                    <button type="button" class="btn btn-default" ng-click="distanceAcivityCountChart()" ng-class="{'active' : distanceActityCountBarChartActive}">Bar chart</button>
+                    <button type="button" class="btn btn-default" ng-click="distanceAcivityCountChartAsLine()" ng-class="{'active' : distanceActityCountLineChartActive}">Line chart</button>
+                </div>
+                Total Distance vs Activity Count
+            </div>
+            <div class="panel-body">
+                <div id="distance-activitycount-chart"></div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,34 +1,37 @@
 package org.miles2run.business.vo;
 
-import org.miles2run.business.domain.Goal;
-import org.miles2run.business.domain.GoalUnit;
+import org.miles2run.business.domain.jpa.Goal;
+import org.miles2run.business.domain.jpa.GoalType;
+import org.miles2run.business.domain.jpa.GoalUnit;
+
+import java.util.Date;
 
 /**
  * Created by shekhargulati on 06/03/14.
  */
 public class Progress {
+
     private GoalUnit goalUnit;
     private long goal;
     private double totalDistanceCovered;
     private double percentage;
     private long activityCount;
-    private long totalDurationInSecs;
-    private long totalDurationInMins;
     private double averagePace;
+    private GoalType goalType;
 
-    public Progress(long goal, GoalUnit goalUnit, double totalDistanceCovered, long activityCount, long totalDurationInSecs) {
+    public Progress(long goal, GoalUnit goalUnit, double totalDistanceCovered, long activityCount, long totalDurationInSecs, GoalType goalType) {
         this.goalUnit = goalUnit;
         this.goal = goal / this.goalUnit.getConversion();
         this.totalDistanceCovered = totalDistanceCovered / this.goalUnit.getConversion();
         this.activityCount = activityCount;
+        this.goalType = goalType;
         if (goal != 0) {
-            this.percentage = ((double) (totalDistanceCovered * 100) / goal);
+            this.percentage = (totalDistanceCovered * 100) / goal;
             this.percentage = this.percentage > 100 ? 100 : this.percentage;
         }
-        this.totalDurationInSecs = totalDurationInSecs;
-        this.totalDurationInMins = this.totalDurationInSecs / 60;
+        double totalDurationInMins = Double.valueOf(totalDurationInSecs) / 60;
         if (this.totalDistanceCovered != 0) {
-            this.averagePace = Double.valueOf(this.totalDurationInMins) / this.totalDistanceCovered;
+            this.averagePace = totalDurationInMins / this.totalDistanceCovered;
         }
     }
 
@@ -46,6 +49,7 @@ public class Progress {
         this.averagePace = 0;
         this.activityCount = 0;
         this.goalUnit = goal.getGoalUnit();
+        this.goalType = goal.getGoalType();
     }
 
     public long getGoal() {
@@ -92,8 +96,9 @@ public class Progress {
         return this.averagePace;
     }
 
-    public static Progress format(Progress progress, Goal goal) {
-        return null;
+    public GoalType getGoalType() {
+        return goalType;
     }
+
 }
 

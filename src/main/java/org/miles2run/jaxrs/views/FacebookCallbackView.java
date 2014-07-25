@@ -4,8 +4,8 @@ import facebook4j.Facebook;
 import facebook4j.FacebookFactory;
 import facebook4j.auth.AccessToken;
 import org.jug.view.View;
-import org.miles2run.business.domain.SocialConnection;
-import org.miles2run.business.domain.SocialProvider;
+import org.miles2run.business.domain.jpa.SocialConnection;
+import org.miles2run.business.domain.jpa.SocialProvider;
 import org.miles2run.business.services.SocialConnectionService;
 import org.miles2run.business.utils.UrlUtils;
 

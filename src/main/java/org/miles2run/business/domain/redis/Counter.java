@@ -1,4 +1,4 @@
-package org.miles2run.business.domain;
+package org.miles2run.business.domain.redis;
 
 /**
  * Created by shekhargulati on 07/05/14.

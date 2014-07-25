@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('milestogo')
-    .controller('DashboardCtrl', function ($scope, ProgressService, ConfigService, activeProfile, $http, $timeout, $filter, activeGoal) {
+    .controller('DashboardCtrl', function ($scope, ProgressService, ConfigService, activeProfile, $http, $filter, activeGoal) {
         $scope.currentUser = activeProfile;
         $scope.error = null;
         $scope.data = {};
@@ -11,8 +11,15 @@ angular.module('milestogo')
 
         ProgressService.progress(activeGoal.id).success(function (data, status, headers, config) {
             $scope.error = null;
+            $scope.goalType = activeGoal.goalType.$name;
             $scope.data = data;
-            generateProgressChart(data);
+            if ($scope.goalType === 'DISTANCE_GOAL') {
+                generateProgressChartForDistanceGoal(data);
+            } else {
+                generateProgressChart(data);
+            }
+
+
         }).error(function (data, status, headers, config) {
             toastr.error("Unable to fetch your progress. Please try later.");
             $scope.error = {message: "Unable to fetch your progress. Please try later."};
@@ -29,13 +36,47 @@ angular.module('milestogo')
                 },
                 data: {
                     columns: [
+                        ['completed', data.performedDays],
+                        ['remaining', data.remainingDays],
+                        ['missed', data.missedDays]
+                    ],
+                    type: 'donut',
+                    colors: {
+                        'completed': 'green',
+                        'remaining': 'orange',
+                        'missed': 'red'
+                    },
+                    labels: false
+                },
+                legend: {
+                    show: false
+                },
+                tooltip: {
+                    format: {
+                        value: function (value) {
+                            return value + " Days";
+                        }
+                    },
+                    grouped: false
+                }
+            });
+        };
+
+        var generateProgressChartForDistanceGoal = function (data) {
+            var chart = c3.generate({
+                bindto: "#progressChart",
+                size: {
+                    height: 300
+                },
+                data: {
+                    columns: [
                         ['completed', $filter('number')(data.totalDistanceCovered > data.goal ? data.goal : data.totalDistanceCovered, 2)],
                         ['remaining', $filter('number')(data.totalDistanceCovered > data.goal ? 0 : data.goal - data.totalDistanceCovered, 2)]
                     ],
                     type: 'donut',
                     colors: {
                         'completed': 'green',
-                        'remaining': 'red'
+                        'remaining': 'orange'
                     },
                     labels: false
                 },
@@ -216,8 +257,8 @@ angular.module('milestogo')
 
         $scope.calendarConfig = {
             start: new Date(),
-            minDate: nMonthsBack(12),
-            maxDate: new Date(),
+            minDate: activeGoal.startDate ? new Date(activeGoal.startDate.time) : nMonthsBack(12),
+            maxDate: activeGoal.endDate ? new Date(activeGoal.endDate.time) : new Date(),
             range: 1,
             data: ConfigService.getBaseUrl() + "goal_aggregate/" + activeGoal.id + "/activity_calendar",
             itemName: [activeGoal.goalUnit.$name.toLowerCase(), activeGoal.goalUnit.$name.toLowerCase()]

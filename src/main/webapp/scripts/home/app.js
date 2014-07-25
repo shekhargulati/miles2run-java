@@ -7,17 +7,26 @@ var app = angular.module('miles2run-home', [
         'ngRoute',
         'ui.bootstrap',
         'ngAnimate',
-        'cgBusy'
+        'cgBusy',
+        'ngTagsInput'
     ])
     .config(function ($routeProvider) {
         $routeProvider
-            .when('/', {
+            .when('/goals', {
                 templateUrl: 'views/home/goals.html',
                 controller: 'GoalsCtrl'
             })
-            .when('/timeline', {
+            .when('/goals/active', {
+                templateUrl: 'views/home/goals.html',
+                controller: 'GoalsCtrl'
+            })
+            .when('/', {
                 templateUrl: 'views/home/timeline.html',
                 controller: 'HomeTimelineCtrl'
+            })
+            .when('/community_run', {
+                templateUrl: 'views/home/community_run.html',
+                controller: 'CommunityRunCtrl'
             })
             .when('/goals/archive', {
                 templateUrl: 'views/home/archived.html',
@@ -27,12 +36,28 @@ var app = angular.module('miles2run-home', [
                 templateUrl: 'views/home/create.html',
                 controller: 'CreateGoalCtrl'
             })
+            .when('/goals/create_distance_goal', {
+                templateUrl: 'views/home/create_distance_goal.html',
+                controller: 'CreateDistanceGoalCtrl'
+            })
+            .when('/goals/create_duration_goal', {
+                templateUrl: 'views/home/create_duration_goal.html',
+                controller: 'CreateDurationGoalCtrl'
+            })
+            .when('/goals/create_community_goal', {
+                templateUrl: 'views/home/create_community_goal.html',
+                controller: 'CreateCommunityGoalCtrl'
+            })
             .when('/friends', {
                 templateUrl: 'views/home/friends.html',
                 controller: 'FriendsCtrl'
             })
-            .when('/goals/edit/:goalId', {
-                templateUrl: 'views/home/edit.html',
+            .when('/goals/edit_distance_goal/:goalId', {
+                templateUrl: 'views/home/edit_distance_goal.html',
+                controller: 'EditGoalCtrl'
+            })
+            .when('/goals/edit_duration_goal/:goalId', {
+                templateUrl: 'views/home/edit_duration_goal.html',
                 controller: 'EditGoalCtrl'
             })
             .when('/goals/:goalId/activity/:activityId', {
@@ -55,14 +80,19 @@ app.filter('moment', function () {
 });
 
 app.filter('momentDaysBetween', function () {
-    return function (text) {
-        var currentMoment = moment(new Date());
-        var targetMoment = moment(text, "MMDDYYYY HH mm ss");
+    return function (text, startDate) {
+        if (!text) {
+            return "-";
+        }
+        startDate = startDate ? new Date(startDate) : new Date();
+        var currentMoment = moment(moment(startDate).format("MMDDYYYY"),"MMDDYYYY");
+        var targetMoment = moment(text, "MMDDYYYY");
         var daysDiff = targetMoment.diff(currentMoment, 'days');
         if (daysDiff > 0) {
-            return 'in ' + daysDiff + ' day(s)';
+            daysDiff += 1; // added one because moment does not consider today's date. The number of days between 23rd July and 24th July should be 2 not 1.
+            return daysDiff + ' day(s)';
         } else if (daysDiff === 0) {
-            return 'Today';
+            return 'Ends Today'
         } else {
             return moment(text, "MMDDYYYY").fromNow();
         }
@@ -102,11 +132,21 @@ app.config(['$provide', function ($provide) {
     $provide.constant('activeProfile', profile);
 }]);
 
-function HeaderCtrl($scope, $location) {
+function HeaderCtrl($scope, $location, ConfigService) {
 
     $scope.isActive = function (viewLocation) {
+        if (viewLocation instanceof Array) {
+            for (var i = 0; i < viewLocation.length; i++) {
+                if (viewLocation[i] === $location.path()) {
+                    return true;
+                }
+            }
+        }
         return viewLocation === $location.path();
     };
+    $scope.appContext = function () {
+        return ConfigService.appContext();
+    }
 }
 
 function NotificationCtrl($scope, $http, activeProfile, ConfigService) {

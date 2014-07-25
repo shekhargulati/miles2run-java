@@ -1,4 +1,4 @@
-package org.miles2run.business.domain;
+package org.miles2run.business.domain.jpa;
 
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
@@ -9,6 +9,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -23,15 +24,12 @@ import java.util.List;
         @NamedQuery(name = "Profile.findProfileWithSocialNetworks", query = "select p.id,p.username, s.provider from Profile p JOIN p.socialConnections s where p.username =:username"),
         @NamedQuery(name = "Profile.findFullProfileByUsername", query = "select new Profile(p) from Profile p where p.username =:username")
 })
-@Table(indexes = {
+@Table(name = "profile", indexes = {
         @Index(unique = true, columnList = "username"),
         @Index(unique = true, columnList = "email")
 })
-public class Profile implements Serializable {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+@Access(AccessType.FIELD)
+public class Profile extends BaseEntity{
 
     @NotBlank
     @Column(unique = true)
@@ -62,11 +60,6 @@ public class Profile implements Serializable {
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "profile")
     private final List<SocialConnection> socialConnections = new ArrayList<>();
 
-    @Temporal(TemporalType.DATE)
-    @NotNull
-    @Column(updatable = false)
-    private Date registeredOn = new Date();
-
     @ImageUrl
     private String profilePic;
 
@@ -91,7 +84,9 @@ public class Profile implements Serializable {
         this.fullname = p.fullname;
         this.profilePic = p.profilePic;
         this.gender = p.gender;
-        this.registeredOn = new Date(((java.sql.Date) p.registeredOn).getTime());
+        Timestamp createdAtTimestamp = (Timestamp) (p.createdAt);
+        this.createdAt = new Date(createdAtTimestamp.getTime());
+        this.role = p.role;
     }
 
     public Profile(ProfileForm profileForm) {
@@ -105,16 +100,9 @@ public class Profile implements Serializable {
         this.profilePic = profileForm.getProfilePic();
     }
 
-    public Long getId() {
-        return id;
-    }
 
     public String getEmail() {
         return email;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
     }
 
     public String getUsername() {
@@ -125,49 +113,32 @@ public class Profile implements Serializable {
         return fullname;
     }
 
-    public void setFullname(String fullName) {
-        this.fullname = fullName;
-    }
-
     public String getBio() {
         return bio;
-    }
-
-    public void setBio(String bio) {
-        this.bio = bio;
     }
 
     public String getCity() {
         return city;
     }
 
-    public void setCity(String city) {
-        this.city = city;
-    }
-
     public String getCountry() {
         return country;
     }
 
-    public void setCountry(String country) {
-        this.country = country;
+    public Gender getGender() {
+        return gender;
     }
-
 
     public List<SocialConnection> getSocialConnections() {
         return socialConnections;
-    }
-
-    public Date getRegisteredOn() {
-        return registeredOn;
     }
 
     public String getProfilePic() {
         return profilePic;
     }
 
-    public void setProfilePic(String profilePic) {
-        this.profilePic = profilePic;
+    public Role getRole() {
+        return role;
     }
 
     public String getMiniProfilePic() {
@@ -176,19 +147,6 @@ public class Profile implements Serializable {
 
     public String getBiggerProfilePic() {
         return getImageWithSize("bigger");
-    }
-
-    public Gender getGender() {
-        return gender;
-    }
-
-    public void setGender(Gender gender) {
-        this.gender = gender;
-    }
-
-
-    public Role getRole() {
-        return role;
     }
 
     private String getImageWithSize(String size) {
@@ -212,7 +170,7 @@ public class Profile implements Serializable {
                 ", city='" + city + '\'' +
                 ", country='" + country + '\'' +
                 ", profilePic='" + profilePic + '\'' +
-                ", registeredOn=" + registeredOn +
+                ", createdAt=" + createdAt +
                 '}';
     }
 }

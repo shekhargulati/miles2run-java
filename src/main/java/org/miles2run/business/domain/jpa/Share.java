@@ -1,4 +1,4 @@
-package org.miles2run.business.domain;
+package org.miles2run.business.domain.jpa;
 
 import javax.persistence.*;
 
@@ -6,11 +6,9 @@ import javax.persistence.*;
  * Created by shekhargulati on 13/03/14.
  */
 @Entity
-public class Share {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+@Table(name = "share")
+@Access(AccessType.FIELD)
+public class Share extends BaseEntity{
 
     @Column(nullable = false, columnDefinition = "TINYINT(1)")
     private boolean twitter = false;
@@ -20,14 +18,6 @@ public class Share {
 
     @Column(nullable = false, columnDefinition = "TINYINT(1)")
     private  boolean googlePlus = false;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public boolean isTwitter() {
         return twitter;

@@ -4,7 +4,7 @@ import org.jug.filters.LoggedIn;
 import org.jug.view.View;
 import org.jug.view.ViewException;
 import org.jug.view.ViewResourceNotFoundException;
-import org.miles2run.business.domain.Goal;
+import org.miles2run.business.domain.jpa.Goal;
 import org.miles2run.business.services.GoalService;
 import org.miles2run.business.services.ProfileService;
 import org.miles2run.business.vo.ProfileSocialConnectionDetails;
@@ -47,13 +47,16 @@ public class GoalView {
         try {
             String username = securityContext.getUserPrincipal().getName();
             logger.info(String.format("Rendering home page for user %s ", username));
-            ProfileSocialConnectionDetails activeProfileWithSocialConnections = profileService.findProfileWithSocialConnections(username);
             Goal goal = goalService.findGoal(username, goalId);
             if (goal == null) {
                 throw new ViewResourceNotFoundException("There is no goal with id : " + goalId, templateEngine);
             }
+            ProfileSocialConnectionDetails activeProfileWithSocialConnections = profileService.findProfileWithSocialConnections(username);
             return View.of("/goal", templateEngine).withModel("activeProfile", activeProfileWithSocialConnections).withModel("goal", goal);
         } catch (Exception e) {
+            if (e instanceof ViewResourceNotFoundException) {
+                throw e;
+            }
             logger.log(Level.SEVERE, "Unable to load home page.", e);
             throw new ViewException(e.getMessage(), e, templateEngine);
         }

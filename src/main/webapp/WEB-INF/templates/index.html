@@ -39,18 +39,23 @@
         </div>
         <!-- /.navbar-header -->
 
-        <ul class="nav navbar-top-links navbar-right"  th:if="${profile != null}">
-            <!-- /.dropdown -->
+        <ul class="nav navbar-top-links navbar-right">
             <li class="dropdown">
+                <a href="/community_runs" th:href="@{/community_runs}">
+                    <div>
+                        <i class="fa fa-group fa-fw"></i> Community Runs
+                    </div>
+                </a>
+            </li>
+
+            <li class="dropdown" th:if="${profile != null}">
                 <a href="/" th:href="@{/}">
                     <div>
                         <i class="fa fa-home fa-fw"></i> Home
                     </div>
                 </a>
             </li>
-            <!-- /.dropdown -->
-            <!-- /.dropdown -->
-            <li class="dropdown">
+            <li class="dropdown" th:if="${profile != null}">
                 <a class="dropdown-toggle" data-toggle="dropdown" href="#">
                     <i class="fa fa-user fa-fw"></i> <i class="fa fa-caret-down"></i>
                 </a>
@@ -64,9 +69,7 @@
                     <li><a href="/logout" th:href="@{/logout}"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
                     </li>
                 </ul>
-                <!-- /.dropdown-user -->
             </li>
-            <!-- /.dropdown -->
         </ul>
     </nav>
 

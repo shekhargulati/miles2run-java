@@ -41,9 +41,18 @@
         </div>
         <!-- /.navbar-header -->
 
-        <ul class="nav navbar-top-links navbar-right"  th:if="${profile != null}">
-            <!-- /.dropdown -->
+        <ul class="nav navbar-top-links navbar-right">
+
             <li class="dropdown">
+                <a href="/community_runs" th:href="@{/community_runs}">
+                    <div>
+                        <i class="fa fa-group fa-fw"></i> Community Runs
+                    </div>
+                </a>
+            </li>
+
+            <!-- /.dropdown -->
+            <li class="dropdown" th:if="${profile != null}">
                 <a href="/" th:href="@{/}">
                     <div>
                         <i class="fa fa-home fa-fw"></i> Home
@@ -51,7 +60,7 @@
                 </a>
             </li>
             <!-- /.dropdown -->
-            <li class="dropdown">
+            <li class="dropdown" th:if="${profile != null}">
                 <a class="dropdown-toggle" data-toggle="dropdown" href="#">
                     <i class="fa fa-user fa-fw"></i> <i class="fa fa-caret-down"></i>
                 </a>
@@ -133,7 +142,7 @@
                         <h4 th:text="'@' + ${userProfile.username}"></h4>
                         <p th:text="${userProfile.bio}"></p>
                         <p th:inline="text"><i class="fa fa-map-marker fa-fw"></i> [[${userProfile.city} + ', '+ ${userProfile.country}]]</p>
-                        <p th:inline="text"><i class="fa fa-clock-o fa-fw"></i> [['Joined ' + ${#dates.format(userProfile.registeredOn,'MMMM yyyy')}]]</p>
+                        <p th:inline="text"><i class="fa fa-clock-o fa-fw"></i> [['Joined ' + ${#dates.format(userProfile.createdAt,'MMMM yyyy')}]]</p>
                     </div>
                     <div class="panel-footer">
                         <div class="row">

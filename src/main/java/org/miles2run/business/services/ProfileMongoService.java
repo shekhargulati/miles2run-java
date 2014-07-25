@@ -1,8 +1,8 @@
 package org.miles2run.business.services;
 
 import com.mongodb.*;
-import org.miles2run.business.domain.Profile;
-import org.miles2run.business.domain.UserProfile;
+import org.miles2run.business.domain.jpa.Profile;
+import org.miles2run.business.domain.mongo.UserProfile;
 
 import javax.enterprise.context.ApplicationScoped;
 

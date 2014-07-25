@@ -2,10 +2,12 @@ package org.miles2run.jaxrs.api.v1;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jug.filters.LoggedIn;
-import org.miles2run.business.domain.*;
+import org.miles2run.business.domain.jpa.*;
 import org.miles2run.business.services.*;
 import org.miles2run.business.utils.UrlUtils;
 import org.miles2run.business.vo.ActivityDetails;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -16,8 +18,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
-import java.util.Map;
-import java.util.logging.Logger;
 
 /**
  * Created by shekhargulati on 15/03/14.
@@ -25,8 +25,7 @@ import java.util.logging.Logger;
 @Path("/api/v1/goals/{goalId}/activities")
 public class ActivityResource {
 
-    @Inject
-    private Logger logger;
+    private Logger logger = LoggerFactory.getLogger(ActivityResource.class);
 
     @Inject
     private ActivityService activityService;
@@ -48,6 +47,8 @@ public class ActivityResource {
     private SecurityContext securityContext;
     @Inject
     private GoalService goalService;
+    @Inject
+    private CommunityRunService communityRunService;
 
     @POST
     @Consumes("application/json")
@@ -57,12 +58,12 @@ public class ActivityResource {
         String loggedInUser = securityContext.getUserPrincipal().getName();
         Profile profile = profileService.findProfile(loggedInUser);
         Goal goal = goalService.findGoal(profile, goalId);
+        logger.debug("Found goal {}", goal);
         if (goal == null) {
             return Response.status(Response.Status.NOT_FOUND).entity("No goal exists with id " + goalId).build();
         }
         double distanceCovered = activity.getDistanceCovered() * activity.getGoalUnit().getConversion();
         activity.setDistanceCovered(distanceCovered);
-        logger.info("Activity Date stored in database " + activity.getActivityDate());
         activity.setPostedBy(profile);
         activity.setGoal(goal);
         ActivityDetails savedActivity = activityService.save(activity);
@@ -70,6 +71,9 @@ public class ActivityResource {
         counterService.updateActivitySecondsCount(activity.getDuration());
         goalService.updateTotalDistanceCoveredForAGoal(goal.getId(), savedActivity.getDistanceCovered());
         timelineService.postActivityToTimeline(savedActivity, profile, goal);
+        if (goal.getGoalType() == GoalType.COMMUNITY_RUN_GOAL) {
+            communityRunService.updateCommunityRunStats(loggedInUser, goal, activity);
+        }
         Share share = activity.getShare();
         String message = toActivityMessage(activity, profile);
         shareActivity(message, profile, share);
@@ -110,10 +114,17 @@ public class ActivityResource {
         ActivityDetails updatedActivity = activityService.update(existingActivity, activity);
         double activityPreviousDistanceCovered = existingActivity.getDistanceCovered();
         double updatedDistanceCovered = distanceCovered - activityPreviousDistanceCovered;
+
         timelineService.updateActivity(updatedActivity, profile, goal);
         counterService.updateDistanceCount(updatedDistanceCovered);
-        counterService.updateActivitySecondsCount(activity.getDuration());
+        long duration = activity.getDuration();
+        long existingActivityDuration = existingActivity.getDuration();
+        long updatedDuration = duration - existingActivityDuration;
+        counterService.updateActivitySecondsCount(updatedDuration);
         goalService.updateTotalDistanceCoveredForAGoal(goalId, updatedDistanceCovered);
+        if (goal.getGoalType() == GoalType.COMMUNITY_RUN_GOAL) {
+            communityRunService.updateCommunityRunDistanceAndDurationStats(goal.getCommunityRun().getSlug(), updatedDistanceCovered, updatedDuration);
+        }
         return Response.status(Response.Status.OK).entity(ActivityDetails.toHumanReadable(updatedActivity)).build();
     }
 
