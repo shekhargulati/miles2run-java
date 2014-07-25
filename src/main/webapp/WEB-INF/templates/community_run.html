@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
 
-    <title th:text="${run.name} + ' | Community Run'"></title>
+    <title th:text="${run.communityRun.name} + ' | Community Run'"></title>
 
     <!-- Core CSS - Include with every page -->
     <link href="/css/bootstrap.css" th:href="@{/css/bootstrap.css}" rel="stylesheet"/>
@@ -16,7 +16,10 @@
           type='text/css'/>
 
     <!-- Page-Level Plugin CSS -->
-    <link href="/css/plugins/social-buttons/social-buttons.css" th:href="@{/css/plugins/social-buttons/social-buttons.css}" rel="stylesheet"/>
+    <link href="/css/plugins/social-buttons/social-buttons.css"
+          th:href="@{/css/plugins/social-buttons/social-buttons.css}" rel="stylesheet"/>
+
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.5.1/leaflet.css"/>
 
     <!-- Miles2Run Overrides -->
     <link href="/css/miles2run.css" th:href="@{/css/miles2run.css}" rel="stylesheet"/>
@@ -51,7 +54,7 @@
             </li>
 
             <!-- /.dropdown -->
-            <li class="dropdown"  th:if="${profile != null}">
+            <li class="dropdown" th:if="${profile != null}">
                 <a href="/" th:href="@{/}">
                     <div>
                         <i class="fa fa-home fa-fw"></i> Home
@@ -59,7 +62,7 @@
                 </a>
             </li>
             <!-- /.dropdown -->
-            <li class="dropdown"  th:if="${profile != null}">
+            <li class="dropdown" th:if="${profile != null}">
                 <a class="dropdown-toggle" data-toggle="dropdown" href="#">
                     <i class="fa fa-user fa-fw"></i> <i class="fa fa-caret-down"></i>
                 </a>
@@ -85,32 +88,37 @@
             <div class="row well-lg">
 
                 <div class="col-lg-2 col-md-2 col-sm-3 col-xs-3">
-                    <a th:href="@{'/community_runs/' + ${run.slug}}" class="thumbnail-logo">
-                        <img width="160" height="160" th:src="${run.bannerImg}" alt=""/>
+                    <a th:href="@{'/community_runs/' + ${run.communityRun.slug}}" class="thumbnail-logo">
+                        <img width="160" height="160" th:src="${run.communityRun.bannerImg}" alt=""/>
                     </a>
                 </div>
 
                 <div class="col-lg-10 col-md-10 col-sm-9 col-xs-9">
                     <div class="row">
                         <div class="col-md-8">
-                            <h2 class="large body-type" itemprop="name" th:text="${run.name}"></h2>
+                            <h2 class="large body-type" itemprop="name" th:text="${run.communityRun.name}"></h2>
+
                             <div>
-                                <h4 class="bold all-caps body-type legible-prose lightblue" th:inline="text">[[${#dates.format(run.startDate,'dd MMMM yyyy')} + ' - ' + ${#dates.format(run.endDate,'dd MMMM yyyy')}]]</h4>
+                                <h4 class="bold all-caps body-type legible-prose lightblue" th:inline="text">
+                                    [[${#dates.format(run.communityRun.startDate,'dd MMMM yyyy')} + ' - ' +
+                                    ${#dates.format(run.communityRun.endDate,'dd MMMM yyyy')}]]</h4>
                             </div>
                         </div>
                         <div class="col-md-4 push-3q-top push-1q-bottom" th:if="${userAlreadyJoined == false}">
-                            <form th:action="@{'/community_runs/' + ${run.slug}+'/join'}" method="POST">
+                            <form th:action="@{'/community_runs/' + ${run.communityRun.slug}+'/join'}" method="POST">
                                 <button class="btn btn-success btn-lg">Join This Run</button>
                             </form>
                         </div>
                     </div>
-                    <p class="normal legible-prose push-half" th:text="${run.description}"></p>
+                    <p class="normal legible-prose push-half" th:text="${run.communityRun.description}"></p>
 
                     <div class="legible-prose prose-type push-1-bottom lightblue">
 
-                        Official website: <a th:href="${run.website}" target="_blank" th:text="${run.website}"></a><br/>
+                        Official website: <a th:href="${run.communityRun.website}" target="_blank"
+                                             th:text="${run.communityRun.website}"></a><br/>
 
-                        Twitter: <a th:href="@{'http://twitter.com/'+ ${run.twitterHandle}}" target="_blank" th:text="${run.twitterHandle}"></a>
+                        Twitter: <a th:href="@{'http://twitter.com/'+ ${run.communityRun.twitterHandle}}"
+                                    target="_blank" th:text="${run.communityRun.twitterHandle}"></a>
 
                     </div>
                 </div>
@@ -118,6 +126,52 @@
             </div>
             <!-- /.col-lg-12 -->
         </div>
+    </section>
+    <hr/>
+    <section id="first">
+        <div class="container clearfix">
+            <div class="col-lg-12">
+                <div class="row">
+                    <div class="col-lg-2 col-md-2 col-sm-2 col-lg-offset-1 col-md-offset-1 col-sm-offset-1 text-center">
+                        <h2>
+                            <span th:text="${run.communityRunCounter.runners}"></span> RUNNERS
+                        </h2>
+                    </div>
+                    <div class="col-lg-2 col-md-2 col-sm-2 text-center">
+                        <h2>
+                            <span th:with="totalDistance=(${run.communityRunCounter.totalDistance}/1609)"
+                                  th:inline="text">[[${#numbers.formatDecimal(totalDistance,1,2)}]]</span> MILES
+                        </h2>
+                    </div>
+
+                    <div class="col-lg-2 col-md-2 col-sm-2 text-center">
+                        <h2>
+                            <span th:with="totalDuration=(${run.communityRunCounter.totalDuration}/3600)"
+                                  th:inline="text">[[${#numbers.formatDecimal(totalDuration,1,2)}]]</span> HOURS
+                        </h2>
+                    </div>
+
+                    <div class="col-lg-2 col-md-2 col-sm-2 text-center">
+                        <h2>
+                            <span th:text="${run.communityRunCounter.cities}"></span> CITIES
+                        </h2>
+                    </div>
+                    <div class="col-lg-2 col-md-2 col-sm-2 text-center">
+                        <h2>
+                            <span th:text="${run.communityRunCounter.countries}"></span> COUNTRIES
+                        </h2>
+                    </div>
+                </div>
+            </div>
+            <!-- /.col-lg-12 -->
+        </div>
+    </section>
+    <hr/>
+
+    <section id="second_cr">
+        <div class="container clearfix" id="map" style="height: 500px;">
+        </div>
+
     </section>
 
 
@@ -131,6 +185,10 @@
 
 <!-- SB Admin Scripts - Include with every page -->
 <script src="/js/sb-admin.js" th:src="@{/js/sb-admin.js}"></script>
+
+<script src="http://cdn.leafletjs.com/leaflet-0.5.1/leaflet.js"></script>
+<script src="/js/map.js" th:src="@{/js/map.js}">
+</script>
 
 </body>
 

@@ -232,7 +232,23 @@ body#home section#first_cr h2 {
     font-style: normal;
 }
 
-body#home section#first_cr h2 span {
+body#home section#second_cr h2 span {
+    color: #0097cf;
+    display: block;
+}
+
+body#home section#second_cr {
+    padding: 50px 0 60px 0;
+    background-color: #fafbfc;
+}
+
+body#home section#second_cr h2 {
+    font-weight: 300;
+    font-style: italic;
+}
+
+body#home section#second_cr h2 span {
     color: #ff6600;
     display: block;
 }
+

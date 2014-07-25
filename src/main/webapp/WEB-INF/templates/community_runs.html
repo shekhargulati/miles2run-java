@@ -143,26 +143,17 @@
                                     <ul class="number-box-list secondary-prose nopad-ul thin" style="position:absolute;bottom:0;">
                                         <li class="number-box-display">
                                             <a href="/#" class="red-black number-box white">
-                                                <div class="semibold" th:text="${runDetails.communityRunCounter.runners}"></div>Runners
+                                                <div class="semibold" th:text="${runDetails.communityRunCounter.runners}"></div>RUNNERS
                                             </a>
                                         </li>
                                         <li class="number-box-display">
                                             <a href="#" class="red-black number-box white">
-                                                <div class="semibold" th:with="totalDistance=(${runDetails.communityRunCounter.totalDistance}/1609)" th:inline="text">[[${#numbers.formatDecimal(totalDistance,1,2)}]]</div>Miles
+                                                <div class="semibold" th:text="${runDetails.communityRunCounter.cities}"></div>CITIES
                                             </a>
                                         </li>
                                         <li class="number-box-display">
                                             <a href="#" class="red-black number-box white">
-                                            <div class="semibold" th:with="totalDuration=(${runDetails.communityRunCounter.totalDuration}/3600)" th:inline="text">[[${#numbers.formatDecimal(totalDuration,1,2)}]]</div>Hours</a></li>
-
-                                        <li class="number-box-display">
-                                            <a href="#" class="red-black number-box white">
-                                                <div class="semibold" th:text="${runDetails.communityRunCounter.cities}"></div>Cities
-                                            </a>
-                                        </li>
-                                        <li class="number-box-display">
-                                            <a href="#" class="red-black number-box white">
-                                                <div class="semibold" th:text="${runDetails.communityRunCounter.countries}">5</div>Countries
+                                                <div class="semibold" th:text="${runDetails.communityRunCounter.countries}"></div>COUNTRIES
                                             </a>
                                         </li>
                                     </ul>

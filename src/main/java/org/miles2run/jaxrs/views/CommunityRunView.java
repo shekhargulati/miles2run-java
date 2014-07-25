@@ -65,17 +65,18 @@ public class CommunityRunView {
     @InjectProfile
     @InjectPrincipal
     public View viewCommunityRun(@NotNull @PathParam("slug") String slug) {
-        CommunityRun run = communityRunService.findBySlug(slug);
-        if (run == null) {
+        CommunityRun communityRun = communityRunService.findBySlug(slug);
+        if (communityRun == null) {
             throw new ViewResourceNotFoundException(String.format("No community run exists with name %s", slug), templateEngine);
         }
+        CommunityRunDetails communityRunDetails = new CommunityRunDetails(communityRun, communityRunService.currentStats(communityRun));
         if (securityContext.getUserPrincipal() != null) {
             String principal = securityContext.getUserPrincipal().getName();
             if (communityRunService.isUserAlreadyPartOfRun(slug, principal)) {
-                return View.of("/community_run", templateEngine).withModel("run", run).withModel("userAlreadyJoined", true);
+                return View.of("/community_run", templateEngine).withModel("run", communityRunDetails).withModel("userAlreadyJoined", true);
             }
         }
-        return View.of("/community_run", templateEngine).withModel("run", run).withModel("userAlreadyJoined", false);
+        return View.of("/community_run", templateEngine).withModel("run", communityRunDetails).withModel("userAlreadyJoined", false);
     }
 
     @Path("/{slug}/join")
