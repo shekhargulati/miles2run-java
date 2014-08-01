@@ -1,11 +1,12 @@
-package org.miles2run.business.services;
+package org.miles2run.business.services.redis;
 
 import org.miles2run.business.domain.jpa.Activity;
 import org.miles2run.business.domain.jpa.CommunityRun;
 import org.miles2run.business.domain.jpa.Goal;
 import org.miles2run.business.domain.jpa.Profile;
 import org.miles2run.business.domain.redis.CommunityRunCounter;
-import org.miles2run.business.vo.ProfileDetails;
+import org.miles2run.business.services.JedisExecutionService;
+import org.miles2run.business.services.JedisOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import redis.clients.jedis.Jedis;
@@ -14,43 +15,18 @@ import redis.clients.jedis.Response;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
-import java.util.List;
 
 /**
  * Created by shekhargulati on 10/07/14.
  */
 @Stateless
-public class CommunityRunService {
+public class CommunityRunRedisService {
 
-    private Logger logger = LoggerFactory.getLogger(CommunityRunService.class);
-
-    @Inject
-    private EntityManager entityManager;
+    private Logger logger = LoggerFactory.getLogger(CommunityRunRedisService.class);
 
     @Inject
     JedisExecutionService jedisExecutionService;
 
-    public Long save(CommunityRun communityRun) {
-        entityManager.persist(communityRun);
-        return communityRun.getId();
-    }
-
-    public List<CommunityRun> findAllActiveRaces() {
-        TypedQuery<CommunityRun> query = entityManager.createNamedQuery("CommunityRun.findAllActiveRaces", CommunityRun.class);
-        return query.getResultList();
-    }
-
-    public CommunityRun findBySlug(String slug) {
-        TypedQuery<CommunityRun> query = entityManager.createNamedQuery("CommunityRun.findBySlug", CommunityRun.class);
-        query.setParameter("slug", slug);
-        try {
-            return query.getSingleResult();
-        } catch (Exception e) {
-            return null;
-        }
-    }
 
     public void addGoalToCommunityRun(final String slug, final Long goalId) {
         jedisExecutionService.execute(new JedisOperation<Void>() {
@@ -136,9 +112,5 @@ public class CommunityRunService {
                 return new CommunityRunCounter(runnersCountResponse.get(), countriesCountResponse.get(), citiesCountResponse.get(), totalDistance, totalDuration);
             }
         });
-    }
-
-    public List<CommunityRun> findAllActiveRacesWithNameLike(String name) {
-        return entityManager.createNamedQuery("CommunityRun.findAllActivieRunsByNameLike", CommunityRun.class).setParameter("name", "%" + name + "%").getResultList();
     }
 }

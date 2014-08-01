@@ -5,7 +5,8 @@ import org.jug.filters.LoggedIn;
 import org.miles2run.business.domain.jpa.CommunityRun;
 import org.miles2run.business.domain.jpa.Profile;
 import org.miles2run.business.domain.jpa.Role;
-import org.miles2run.business.services.CommunityRunService;
+import org.miles2run.business.services.jpa.CommunityRunJPAService;
+import org.miles2run.business.services.redis.CommunityRunRedisService;
 import org.miles2run.business.services.ProfileService;
 import org.miles2run.business.utils.SlugUtils;
 import org.slf4j.Logger;
@@ -29,7 +30,9 @@ public class CommunityRunResource {
     private Logger logger = LoggerFactory.getLogger(CommunityRunResource.class);
 
     @Inject
-    private CommunityRunService communityRunService;
+    private CommunityRunRedisService communityRunRedisService;
+    @Inject
+    private CommunityRunJPAService communityRunJPAService;
     @Context
     private SecurityContext securityContext;
     @Inject
@@ -45,7 +48,7 @@ public class CommunityRunResource {
         Profile profile = profileService.findProfileByUsername(loggedInUser);
         if (profile.getRole() == Role.ADMIN || profile.getRole() == Role.ORGANIZER) {
             communityRun.setSlug(SlugUtils.toSlug(communityRun.getName()));
-            Long id = communityRunService.save(communityRun);
+            Long id = communityRunJPAService.save(communityRun);
             return Response.status(Response.Status.CREATED).entity(id).build();
         }
 
@@ -58,16 +61,16 @@ public class CommunityRunResource {
     @Produces("application/json")
     public List<CommunityRun> allCommunityRuns(@QueryParam("name") String name) {
         if(StringUtils.isNotBlank(name)){
-            return communityRunService.findAllActiveRacesWithNameLike(name);
+            return communityRunJPAService.findAllActiveRacesWithNameLike(name);
         }
-        return communityRunService.findAllActiveRaces();
+        return communityRunJPAService.findAllActiveRaces();
     }
 
     @Path("/{slug}")
     @GET
     @Produces("application/json")
     public CommunityRun findCommunityRun(@NotNull @PathParam("slug") String slug) {
-        return communityRunService.findBySlug(slug);
+        return communityRunJPAService.findBySlug(slug);
     }
 
 

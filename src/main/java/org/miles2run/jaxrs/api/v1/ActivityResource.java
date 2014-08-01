@@ -4,6 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.jug.filters.LoggedIn;
 import org.miles2run.business.domain.jpa.*;
 import org.miles2run.business.services.*;
+import org.miles2run.business.services.redis.CommunityRunRedisService;
 import org.miles2run.business.utils.UrlUtils;
 import org.miles2run.business.vo.ActivityDetails;
 import org.slf4j.Logger;
@@ -48,7 +49,7 @@ public class ActivityResource {
     @Inject
     private GoalService goalService;
     @Inject
-    private CommunityRunService communityRunService;
+    private CommunityRunRedisService communityRunRedisService;
 
     @POST
     @Consumes("application/json")
@@ -72,7 +73,7 @@ public class ActivityResource {
         goalService.updateTotalDistanceCoveredForAGoal(goal.getId(), savedActivity.getDistanceCovered());
         timelineService.postActivityToTimeline(savedActivity, profile, goal);
         if (goal.getGoalType() == GoalType.COMMUNITY_RUN_GOAL) {
-            communityRunService.updateCommunityRunStats(loggedInUser, goal, activity);
+            communityRunRedisService.updateCommunityRunStats(loggedInUser, goal, activity);
         }
         Share share = activity.getShare();
         String message = toActivityMessage(activity, profile);
@@ -123,7 +124,7 @@ public class ActivityResource {
         counterService.updateActivitySecondsCount(updatedDuration);
         goalService.updateTotalDistanceCoveredForAGoal(goalId, updatedDistanceCovered);
         if (goal.getGoalType() == GoalType.COMMUNITY_RUN_GOAL) {
-            communityRunService.updateCommunityRunDistanceAndDurationStats(goal.getCommunityRun().getSlug(), updatedDistanceCovered, updatedDuration);
+            communityRunRedisService.updateCommunityRunDistanceAndDurationStats(goal.getCommunityRun().getSlug(), updatedDistanceCovered, updatedDuration);
         }
         return Response.status(Response.Status.OK).entity(ActivityDetails.toHumanReadable(updatedActivity)).build();
     }

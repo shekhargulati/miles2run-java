@@ -1,6 +1,7 @@
 package org.miles2run.business.domain.jpa;
 
 import org.hibernate.validator.constraints.URL;
+import org.miles2run.business.bean_validation.CommunityRunDateRange;
 import org.miles2run.business.bean_validation.ImageUrl;
 
 import javax.persistence.*;
@@ -23,8 +24,9 @@ import java.util.Set;
 @NamedQueries({
         @NamedQuery(name = "CommunityRun.findAllActiveRaces", query = "SELECT cr FROM CommunityRun cr WHERE cr.active IS TRUE"),
         @NamedQuery(name = "CommunityRun.findBySlug", query = "SELECT cr FROM CommunityRun cr WHERE cr.slug =:slug"),
-        @NamedQuery(name = "CommunityRun.findAllActivieRunsByNameLike", query = "SELECT cr from CommunityRun cr WHERE cr.name LIKE :name and cr.active IS TRUE")
+        @NamedQuery(name = "CommunityRun.findAllActivieRunsByNameLike", query = "SELECT cr from CommunityRun cr WHERE LOWER(cr.name) LIKE :name and cr.active IS TRUE")
 })
+@CommunityRunDateRange
 public class CommunityRun extends BaseEntity {
 
     @NotNull
@@ -65,6 +67,8 @@ public class CommunityRun extends BaseEntity {
 
     private boolean active = true;
 
+    public CommunityRun() {
+    }
 
     public String getName() {
         return name;
@@ -140,5 +144,16 @@ public class CommunityRun extends BaseEntity {
 
     public void setSlug(String slug) {
         this.slug = slug;
+    }
+
+    public CommunityRun(String name, String bannerImg, String slug, String description, Date startDate, Date endDate, String website, String twitterHandle) {
+        this.name = name;
+        this.bannerImg = bannerImg;
+        this.slug = slug;
+        this.description = description;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.website = website;
+        this.twitterHandle = twitterHandle;
     }
 }

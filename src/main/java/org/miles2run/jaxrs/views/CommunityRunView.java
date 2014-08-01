@@ -7,7 +7,8 @@ import org.jug.view.ViewResourceNotFoundException;
 import org.miles2run.business.domain.jpa.CommunityRun;
 import org.miles2run.business.domain.jpa.Goal;
 import org.miles2run.business.domain.jpa.Profile;
-import org.miles2run.business.services.CommunityRunService;
+import org.miles2run.business.services.jpa.CommunityRunJPAService;
+import org.miles2run.business.services.redis.CommunityRunRedisService;
 import org.miles2run.business.services.GoalService;
 import org.miles2run.business.services.ProfileService;
 import org.miles2run.jaxrs.filters.InjectProfile;
@@ -33,7 +34,9 @@ public class CommunityRunView {
     private Logger logger = LoggerFactory.getLogger(CommunityRunView.class);
 
     @Inject
-    private CommunityRunService communityRunService;
+    private CommunityRunRedisService communityRunRedisService;
+    @Inject
+    private CommunityRunJPAService communityRunJPAService;
 
     @Inject
     private TemplateEngine templateEngine;
@@ -51,10 +54,10 @@ public class CommunityRunView {
     @Produces("text/html")
     @InjectProfile
     public View allCommunityRuns() {
-        List<CommunityRun> communityRuns = communityRunService.findAllActiveRaces();
+        List<CommunityRun> communityRuns = communityRunJPAService.findAllActiveRaces();
         List<CommunityRunDetails> runs = new ArrayList<>();
         for (CommunityRun communityRun : communityRuns) {
-            runs.add(new CommunityRunDetails(communityRun, communityRunService.currentStats(communityRun)));
+            runs.add(new CommunityRunDetails(communityRun, communityRunRedisService.currentStats(communityRun)));
         }
         return View.of("/community_runs", templateEngine).withModel("runs", runs);
     }
@@ -65,14 +68,14 @@ public class CommunityRunView {
     @InjectProfile
     @InjectPrincipal
     public View viewCommunityRun(@NotNull @PathParam("slug") String slug) {
-        CommunityRun communityRun = communityRunService.findBySlug(slug);
+        CommunityRun communityRun = communityRunJPAService.findBySlug(slug);
         if (communityRun == null) {
             throw new ViewResourceNotFoundException(String.format("No community run exists with name %s", slug), templateEngine);
         }
-        CommunityRunDetails communityRunDetails = new CommunityRunDetails(communityRun, communityRunService.currentStats(communityRun));
+        CommunityRunDetails communityRunDetails = new CommunityRunDetails(communityRun, communityRunRedisService.currentStats(communityRun));
         if (securityContext.getUserPrincipal() != null) {
             String principal = securityContext.getUserPrincipal().getName();
-            if (communityRunService.isUserAlreadyPartOfRun(slug, principal)) {
+            if (communityRunRedisService.isUserAlreadyPartOfRun(slug, principal)) {
                 return View.of("/community_run", templateEngine).withModel("run", communityRunDetails).withModel("userAlreadyJoined", true);
             }
         }
@@ -86,17 +89,17 @@ public class CommunityRunView {
     public View joinCommunityRun(@NotNull @PathParam("slug") String slug) {
         String principal = securityContext.getUserPrincipal().getName();
         Profile profile = profileService.findProfile(principal);
-        CommunityRun run = communityRunService.findBySlug(slug);
+        CommunityRun run = communityRunJPAService.findBySlug(slug);
         if (run == null) {
             return View.of("/community_runs", true);
         }
-        if (communityRunService.isUserAlreadyPartOfRun(slug, principal)) {
+        if (communityRunRedisService.isUserAlreadyPartOfRun(slug, principal)) {
             return View.of("/community_runs/" + slug, true);
         }
         Goal goal = Goal.newCommunityRunGoal(run);
         Long goalId = goalService.save(goal, principal);
-        communityRunService.addGoalToCommunityRun(slug, goalId);
-        communityRunService.addRunnerToCommunityRun(slug, profile);
+        communityRunRedisService.addGoalToCommunityRun(slug, goalId);
+        communityRunRedisService.addRunnerToCommunityRun(slug, profile);
         return View.of("/goals/" + goalId, true);
     }
 }

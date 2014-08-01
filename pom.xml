@@ -15,7 +15,20 @@
         <maven.compiler.source>1.7</maven.compiler.source>
         <maven.compiler.target>1.7</maven.compiler.target>
         <failOnMissingWebXml>false</failOnMissingWebXml>
+        <org.jboss.arquillian.version>1.1.1.Final</org.jboss.arquillian.version>
     </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.jboss.arquillian</groupId>
+                <artifactId>arquillian-bom</artifactId>
+                <version>${org.jboss.arquillian.version}</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <dependencies>
         <dependency>
@@ -132,11 +145,47 @@
             <scope>test</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.jboss.arquillian.junit</groupId>
+            <artifactId>arquillian-junit-container</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.wildfly</groupId>
+            <artifactId>wildfly-arquillian-container-embedded</artifactId>
+            <version>8.1.0.Final</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jboss.shrinkwrap.resolver</groupId>
+            <artifactId>shrinkwrap-resolver-impl-maven</artifactId>
+            <scope>test</scope>
+        </dependency>
 
     </dependencies>
 
     <build>
         <finalName>miles2run</finalName>
+
+        <plugins>
+
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <argLine>-Xms800m -Xmx1024m -XX:MaxPermSize=500m</argLine>
+                    <systemPropertyVariables>
+                        <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
+                    </systemPropertyVariables>
+                    <environmentVariables>
+                        <JBOSS_HOME>/Users/shekhargulati/tools/wildfly/wildfly-8.1.0.Final</JBOSS_HOME>
+                    </environmentVariables>
+                </configuration>
+                <version>2.16</version>
+            </plugin>
+
+        </plugins>
     </build>
 
     <profiles>
