@@ -60,7 +60,9 @@ public class Goal extends BaseEntity {
         this.distance = goal.distance;
         this.archived = goal.archived;
         this.goalType = goal.goalType;
-        this.communityRun = new CommunityRun(goal.communityRun);
+        if (goal.communityRun != null) {
+            this.communityRun = new CommunityRun(goal.communityRun);
+        }
     }
 
     public Goal(Long id, Long version, String purpose, Date startDate, Date endDate, long distance, GoalUnit goalUnit, boolean archived, GoalType goalType) {
