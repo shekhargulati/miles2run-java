@@ -4,8 +4,10 @@ import org.joda.time.DateTime;
 import org.joda.time.Days;
 import org.joda.time.Interval;
 import org.joda.time.LocalDate;
+import org.miles2run.business.domain.jpa.CommunityRun;
 import org.miles2run.business.domain.jpa.Goal;
 import org.miles2run.business.domain.jpa.Profile;
+import org.miles2run.business.services.jpa.CommunityRunJPAService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import redis.clients.jedis.Jedis;
@@ -31,6 +33,8 @@ public class GoalService {
     private ProfileService profileService;
     @Inject
     private JedisExecutionService jedisExecutionService;
+    @Inject
+    private CommunityRunJPAService communityRunJPAService;
 
     public List<Goal> findAllGoals(String loggedInuser, boolean archived) {
         Profile profile = profileService.findProfile(loggedInuser);
@@ -184,5 +188,14 @@ public class GoalService {
                 return data;
             }
         });
+    }
+
+    public Long findGoalIdWithCommunityRunAndProfile(String slug, Profile profile) {
+        CommunityRun communityRun = communityRunJPAService.find(slug);
+        List<Long> list = entityManager.createQuery("SELECT g.id FROM Goal g where g.communityRun =:communityRun  and g.profile =:profile", Long.class).setParameter("communityRun", communityRun).setParameter("profile", profile).getResultList();
+        if (list.isEmpty()) {
+            return null;
+        }
+        return list.get(0);
     }
 }

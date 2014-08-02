@@ -109,6 +109,28 @@
                                 <button class="btn btn-success btn-lg">Join This Run</button>
                             </form>
                         </div>
+
+                        <div class="col-md-4" th:if="${userAlreadyJoined == true}">
+
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <p class="lead text-success">You have already joined this run.</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <p>
+                                        <a class="btn btn-success" th:href="@{'/goals/' + ${goalId}}">Go to Goal Dashboard</a>
+                                    </p>
+                                    <p>
+                                        <a class="btn btn-success" th:href="@{'/goals/' +${goalId} + '#/activity/post'}">Log a New Activity</a>
+                                    </p>
+
+                                </div>
+                            </div>
+
+                        </div>
+
                     </div>
                     <p class="normal legible-prose push-half" th:text="${run.communityRun.description}"></p>
 
@@ -190,7 +212,8 @@
 
 <script src="/js/libs/leaflet.js" th:src="@{/js/libs/leaflet.js}"></script>
 <script src="/js/libs/angular.js" th:src="@{/js/libs/angular.js}"></script>
-<script type="text/javascript" src="/js/libs/angular-leaflet-directive.js" th:src="@{/js/libs/angular-leaflet-directive.js}"></script>
+<script type="text/javascript" src="/js/libs/angular-leaflet-directive.js"
+        th:src="@{/js/libs/angular-leaflet-directive.js}"></script>
 <script src="/js/map.js" th:src="@{/js/map.js}">
 </script>
 
