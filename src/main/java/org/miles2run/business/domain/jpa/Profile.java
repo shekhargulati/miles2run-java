@@ -100,6 +100,30 @@ public class Profile extends BaseEntity{
         this.profilePic = profileForm.getProfilePic();
     }
 
+    private Profile(String email, String username, String fullname, String city, String country, Gender gender) {
+        this.email = email;
+        this.username = username;
+        this.fullname = fullname;
+        this.city = city;
+        this.country = country;
+        this.gender = gender;
+    }
+
+    public static Profile createProfile(String email, String username, String fullname, String city, String country, Gender gender) {
+        return new Profile(email, username, fullname, city, country, gender);
+    }
+
+    private Profile(String fullname, String bio, String city, String country, Gender gender) {
+        this.fullname = fullname;
+        this.bio = bio;
+        this.city = city;
+        this.country = country;
+        this.gender = gender;
+    }
+
+    public static Profile createProfileForUpdate(String fullname, String bio, String city, String country, Gender gender) {
+        return new Profile(fullname, bio, city, country, gender);
+    }
 
     public String getEmail() {
         return email;
@@ -173,4 +197,5 @@ public class Profile extends BaseEntity{
                 ", createdAt=" + createdAt +
                 '}';
     }
+
 }

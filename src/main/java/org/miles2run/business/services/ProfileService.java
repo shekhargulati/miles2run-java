@@ -4,7 +4,8 @@ import org.miles2run.business.domain.jpa.Profile;
 import org.miles2run.business.domain.jpa.SocialProvider;
 import org.miles2run.business.vo.ProfileDetails;
 import org.miles2run.business.vo.ProfileSocialConnectionDetails;
-import org.miles2run.jaxrs.forms.UpdateProfileForm;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -13,7 +14,6 @@ import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import java.util.List;
-import java.util.logging.Logger;
 
 /**
  * Created by shekhargulati on 04/03/14.
@@ -21,10 +21,10 @@ import java.util.logging.Logger;
 @Stateless
 public class ProfileService {
 
+    Logger logger = LoggerFactory.getLogger(ProfileService.class);
+
     @Inject
     EntityManager entityManager;
-    @Inject
-    Logger logger;
 
     public Profile save(Profile profile) {
         entityManager.persist(profile);
@@ -35,7 +35,7 @@ public class ProfileService {
         try {
             return entityManager.createQuery("select p from Profile p where p.username =:username", Profile.class).setParameter("username", username).getSingleResult();
         } catch (NoResultException e) {
-            logger.fine(String.format("No user found with username: %s", username));
+            logger.debug("No user found with username: {}", username);
             return null;
         }
     }
@@ -46,7 +46,7 @@ public class ProfileService {
         try {
             return query.getSingleResult();
         } catch (NoResultException e) {
-            logger.fine(String.format("No user found with username: %s", username));
+            logger.debug("No user found with username: {}", username);
             return null;
         }
     }
@@ -57,7 +57,7 @@ public class ProfileService {
         try {
             return query.getSingleResult();
         } catch (NoResultException e) {
-            logger.fine(String.format("No user found with email: %s", email));
+            logger.debug("No user found with email: {}", email);
             return null;
         }
     }
@@ -86,7 +86,7 @@ public class ProfileService {
         try {
             return query.getSingleResult();
         } catch (NoResultException e) {
-            logger.fine(String.format("No user found with username: %s", username));
+            logger.debug("No user found with username: {}", username);
             return null;
         }
     }
@@ -99,7 +99,7 @@ public class ProfileService {
         return entityManager.createQuery("SELECT new org.miles2run.business.vo.ProfileDetails(p.username,p.fullname,p.profilePic, p.city, p.country) from Profile p WHERE p.fullname LIKE :name", ProfileDetails.class).setParameter("name", "%" + name + "%").getResultList();
     }
 
-    public void update(String username, UpdateProfileForm profileForm) {
+    public void update(String username, Profile profileForm) {
         Query updateQuery = entityManager.createQuery("UPDATE Profile p SET p.fullname =:fullname, p.bio =:bio,p.city =:city, p.country =:country, p.gender =:gender WHERE p.username =:username");
         updateQuery.setParameter("fullname", profileForm.getFullname());
         updateQuery.setParameter("bio", profileForm.getBio());

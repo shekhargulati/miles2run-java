@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" ng-app="miles2run-profile" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" ng-app="miles2run-cr" xmlns:th="http://www.thymeleaf.org">
 
 <head>
 
@@ -19,7 +19,7 @@
     <link href="/css/plugins/social-buttons/social-buttons.css"
           th:href="@{/css/plugins/social-buttons/social-buttons.css}" rel="stylesheet"/>
 
-    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.5.1/leaflet.css"/>
+    <link rel="stylesheet" type="text/css" href="/css/leaflet.css" th:href="@{/css/leaflet.css}"/>
 
     <!-- Miles2Run Overrides -->
     <link href="/css/miles2run.css" th:href="@{/css/miles2run.css}" rel="stylesheet"/>
@@ -168,14 +168,16 @@
     </section>
     <hr/>
 
-    <section id="second_cr">
-        <div class="container clearfix" id="map" style="height: 500px;">
-        </div>
-
+    <section id="second_cr" ng-controller="CommunityRunCtrl">
+        <leaflet height="500px" markers="markers" defaults="defaults"></leaflet>
     </section>
-
-
 </div>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    var communityRun = [[${run.communityRun}]];
+    /*]]>*/
+</script>
 
 <!-- Core Scripts - Include with every page -->
 <script src="/js/libs/jquery.js" th:src="@{/js/libs/jquery.js}"></script>
@@ -186,7 +188,9 @@
 <!-- SB Admin Scripts - Include with every page -->
 <script src="/js/sb-admin.js" th:src="@{/js/sb-admin.js}"></script>
 
-<script src="http://cdn.leafletjs.com/leaflet-0.5.1/leaflet.js"></script>
+<script src="/js/libs/leaflet.js" th:src="@{/js/libs/leaflet.js}"></script>
+<script src="/js/libs/angular.js" th:src="@{/js/libs/angular.js}"></script>
+<script type="text/javascript" src="/js/libs/angular-leaflet-directive.js" th:src="@{/js/libs/angular-leaflet-directive.js}"></script>
 <script src="/js/map.js" th:src="@{/js/map.js}">
 </script>
 

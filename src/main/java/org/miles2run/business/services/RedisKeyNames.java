@@ -11,4 +11,5 @@ public interface RedisKeyNames {
     public static final String PROFILE_S_TIMELINE_LATEST = "profile:%s:timeline:latest";
     public static final String ACTIVITY_S = "activity:%s";
     public static final String COMMUNITY_RUN_TIMELINE = "community_run:%s:timeline";
+    public static final String COMMUNITY_RUNS = "community_runs";
 }

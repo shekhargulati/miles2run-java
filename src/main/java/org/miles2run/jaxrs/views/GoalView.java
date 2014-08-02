@@ -46,7 +46,7 @@ public class GoalView {
     public View viewGoal(@PathParam("goalId") Long goalId) {
         try {
             String username = securityContext.getUserPrincipal().getName();
-            logger.info(String.format("Rendering home page for user %s ", username));
+            logger.info(String.format("Rendering Goal page for user %s ", username));
             Goal goal = goalService.findGoal(username, goalId);
             if (goal == null) {
                 throw new ViewResourceNotFoundException("There is no goal with id : " + goalId, templateEngine);

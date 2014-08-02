@@ -1,5 +1,6 @@
 package org.miles2run.business.domain.jpa;
 
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
@@ -59,7 +60,7 @@ public class Goal extends BaseEntity {
         this.distance = goal.distance;
         this.archived = goal.archived;
         this.goalType = goal.goalType;
-        this.communityRun = goal.communityRun;
+        this.communityRun = new CommunityRun(goal.communityRun);
     }
 
     public Goal(Long id, Long version, String purpose, Date startDate, Date endDate, long distance, GoalUnit goalUnit, boolean archived, GoalType goalType) {
@@ -167,13 +168,13 @@ public class Goal extends BaseEntity {
         return goal;
     }
 
-    public static Goal newCommunityRunGoal(CommunityRun run) {
+    public static Goal newCommunityRunGoal(CommunityRun communityRun) {
         Goal goal = new Goal();
-        goal.purpose = run.getName() + " Community Run";
+        goal.purpose = communityRun.getName() + " Community Run";
         goal.startDate = new Date();
-        goal.endDate = run.getEndDate();
+        goal.endDate = communityRun.getEndDate();
         goal.goalType = GoalType.COMMUNITY_RUN_GOAL;
-        goal.setCommunityRun(run);
+        goal.communityRun = communityRun;
         return goal;
     }
 }

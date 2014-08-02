@@ -13,11 +13,14 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.miles2run.business.domain.jpa.BaseEntity;
-import org.miles2run.business.domain.jpa.CommunityRun;
-import org.miles2run.business.domain.jpa.CommunityRunBuilder;
+import org.miles2run.business.domain.jpa.*;
 import org.miles2run.business.producers.EntityManagerProducer;
+import org.miles2run.business.services.ProfileService;
 import org.miles2run.business.services.jpa.CommunityRunJPAService;
+import org.miles2run.business.vo.ProfileDetails;
+import org.miles2run.business.vo.ProfileGroupDetails;
+import org.miles2run.business.vo.ProfileSocialConnectionDetails;
+import org.miles2run.jaxrs.forms.ProfileForm;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -36,6 +39,16 @@ public class CommunityRunJPAServiceTest {
         WebArchive webArchive = ShrinkWrap.create(WebArchive.class).
                 addClass(CommunityRun.class).
                 addClass(BaseEntity.class).
+                addClass(Profile.class).
+                addClass(SocialConnection.class).
+                addClass(ProfileService.class).
+                addClass(ProfileDetails.class).
+                addClass(ProfileSocialConnectionDetails.class).
+                addClass(SocialProvider.class).
+                addClass(Role.class).
+                addClass(Gender.class).
+                addClass(ProfileForm.class).
+                addClass(ProfileGroupDetails.class).
                 addClass(CommunityRunBuilder.class).
                 addClass(CommunityRunJPAService.class).
                 addClass(EntityManagerProducer.class).
@@ -53,6 +66,8 @@ public class CommunityRunJPAServiceTest {
     private EntityManager entityManager;
     @Inject
     private UserTransaction userTransaction;
+    @Inject
+    private ProfileService profileService;
 
     @Before
     public void setUp() throws Exception {
@@ -164,8 +179,9 @@ public class CommunityRunJPAServiceTest {
         } catch (Exception e) {
             Assert.assertEquals("javax.validation.ConstraintViolationException", e.getCause().getClass().getName());
         }
-
     }
+
+
 
     private void createCommunityRuns(int n) {
         for (int i = 0; i < n; i++) {

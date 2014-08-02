@@ -86,20 +86,25 @@ public class CommunityRunView {
     @POST
     @Produces("text/html")
     @LoggedIn
-    public View joinCommunityRun(@NotNull @PathParam("slug") String slug) {
+    public View joinCommunityRun(@NotNull @PathParam("slug") final String slug) {
         String principal = securityContext.getUserPrincipal().getName();
-        Profile profile = profileService.findProfile(principal);
-        CommunityRun run = communityRunJPAService.findBySlug(slug);
-        if (run == null) {
-            return View.of("/community_runs", true);
-        }
         if (communityRunRedisService.isUserAlreadyPartOfRun(slug, principal)) {
             return View.of("/community_runs/" + slug, true);
         }
-        Goal goal = Goal.newCommunityRunGoal(run);
-        Long goalId = goalService.save(goal, principal);
-        communityRunRedisService.addGoalToCommunityRun(slug, goalId);
+        if (!communityRunRedisService.communityRunExists(slug)) {
+            return View.of("/community_runs", true);
+        }
+        Profile profile = profileService.findProfile(principal);
+        logger.info("Adding profile {} to community run ", principal, slug);
+        CommunityRun communityRun = communityRunJPAService.addRunnerToCommunityRun(slug, profile);
+
+        Goal goal = Goal.newCommunityRunGoal(communityRun);
+        logger.info("Creating a CommunityRun goal for profile {}", principal);
+        Goal savedGoal = goalService.save(goal, profile);
+        logger.info("Created a new goal with id {}", savedGoal.getId());
+
+        communityRunRedisService.addGoalToCommunityRun(slug, savedGoal.getId());
         communityRunRedisService.addRunnerToCommunityRun(slug, profile);
-        return View.of("/goals/" + goalId, true);
+        return View.of("/goals/" + savedGoal.getId(), true);
     }
 }

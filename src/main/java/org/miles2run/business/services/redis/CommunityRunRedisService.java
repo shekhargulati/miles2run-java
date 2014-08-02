@@ -7,26 +7,26 @@ import org.miles2run.business.domain.jpa.Profile;
 import org.miles2run.business.domain.redis.CommunityRunCounter;
 import org.miles2run.business.services.JedisExecutionService;
 import org.miles2run.business.services.JedisOperation;
+import org.miles2run.business.services.RedisKeyNames;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Pipeline;
 import redis.clients.jedis.Response;
 
-import javax.ejb.Stateless;
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 /**
  * Created by shekhargulati on 10/07/14.
  */
-@Stateless
+@ApplicationScoped
 public class CommunityRunRedisService {
 
     private Logger logger = LoggerFactory.getLogger(CommunityRunRedisService.class);
 
     @Inject
     JedisExecutionService jedisExecutionService;
-
 
     public void addGoalToCommunityRun(final String slug, final Long goalId) {
         jedisExecutionService.execute(new JedisOperation<Void>() {
@@ -112,5 +112,25 @@ public class CommunityRunRedisService {
                 return new CommunityRunCounter(runnersCountResponse.get(), countriesCountResponse.get(), citiesCountResponse.get(), totalDistance, totalDuration);
             }
         });
+    }
+
+    public void addCommunityRunToSet(final String slug) {
+        jedisExecutionService.execute(new JedisOperation<Void>() {
+            @Override
+            public Void perform(Jedis jedis) {
+                jedis.sadd(RedisKeyNames.COMMUNITY_RUNS, slug);
+                return null;
+            }
+        });
+    }
+
+    public boolean communityRunExists(final String slug) {
+        return jedisExecutionService.execute(new JedisOperation<Boolean>() {
+            @Override
+            public Boolean perform(Jedis jedis) {
+                return jedis.sismember(RedisKeyNames.COMMUNITY_RUNS,slug);
+            }
+        });
+
     }
 }

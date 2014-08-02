@@ -169,7 +169,7 @@ public class ProfileView {
             String username = securityContext.getUserPrincipal().getName();
             List<String> errors = new ArrayList<>();
             try {
-                profileService.update(username, profileForm);
+                profileService.update(username, toProfile(profileForm));
                 profileMongoService.update(username, profileForm.getCity(), profileForm.getCountry());
                 return View.of("/profiles/" + username, true);
             } catch (Exception e) {
@@ -195,6 +195,11 @@ public class ProfileView {
             throw new ViewException(e.getMessage(), e, templateEngine);
         }
     }
+
+    private Profile toProfile(UpdateProfileForm profileForm) {
+       return Profile.createProfileForUpdate(profileForm.getFullname(),profileForm.getBio(),profileForm.getCity(),profileForm.getCountry(),profileForm.getGender());
+    }
+
 
     @GET
     @Path("/{username}")

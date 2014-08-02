@@ -7,10 +7,7 @@ import org.miles2run.business.bean_validation.ImageUrl;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by shekhargulati on 08/07/14.
@@ -22,9 +19,10 @@ import java.util.Set;
         @Index(columnList = "slug", unique = true)
 })
 @NamedQueries({
-        @NamedQuery(name = "CommunityRun.findAllActiveRaces", query = "SELECT cr FROM CommunityRun cr WHERE cr.active IS TRUE"),
-        @NamedQuery(name = "CommunityRun.findBySlug", query = "SELECT cr FROM CommunityRun cr WHERE cr.slug =:slug"),
-        @NamedQuery(name = "CommunityRun.findAllActivieRunsByNameLike", query = "SELECT cr from CommunityRun cr WHERE LOWER(cr.name) LIKE :name and cr.active IS TRUE")
+        @NamedQuery(name = "CommunityRun.findAllActiveRaces", query = "SELECT new CommunityRun(cr) FROM CommunityRun cr WHERE cr.active IS TRUE"),
+        @NamedQuery(name = "CommunityRun.findBySlug", query = "SELECT new CommunityRun(cr) FROM CommunityRun cr WHERE cr.slug =:slug"),
+        @NamedQuery(name = "CommunityRun.findBySlugWithProfiles", query = "SELECT cr FROM CommunityRun cr WHERE cr.slug =:slug"),
+        @NamedQuery(name = "CommunityRun.findAllActivieRunsByNameLike", query = "SELECT new CommunityRun(cr) from CommunityRun cr WHERE LOWER(cr.name) LIKE :name and cr.active IS TRUE")
 })
 @CommunityRunDateRange
 public class CommunityRun extends BaseEntity {
@@ -62,13 +60,29 @@ public class CommunityRun extends BaseEntity {
     @JoinTable(name = "communityrun_hashtags", joinColumns = {
             @JoinColumn(name = "communityRun_Id")
     })
-    private final Set<String> hashtags = new HashSet<>();
+    private Set<String> hashtags = new HashSet<>();
+
+    @OneToMany
+    private List<Profile> profiles = new ArrayList<>();
 
 
     private boolean active = true;
 
     public CommunityRun() {
     }
+
+    public CommunityRun(CommunityRun communityRun) {
+        this.name = communityRun.name;
+        this.bannerImg = communityRun.bannerImg;
+        this.slug = communityRun.slug;
+        this.description = communityRun.description;
+        this.startDate = communityRun.startDate;
+        this.endDate = communityRun.endDate;
+        this.website = communityRun.website;
+        this.twitterHandle = communityRun.twitterHandle;
+        this.hashtags = communityRun.hashtags;
+    }
+
 
     public String getName() {
         return name;
@@ -144,6 +158,10 @@ public class CommunityRun extends BaseEntity {
 
     public void setSlug(String slug) {
         this.slug = slug;
+    }
+
+    public List<Profile> getProfiles() {
+        return profiles;
     }
 
     public CommunityRun(String name, String bannerImg, String slug, String description, Date startDate, Date endDate, String website, String twitterHandle) {

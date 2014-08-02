@@ -3,15 +3,14 @@ package org.miles2run.business.services;
 import com.mongodb.*;
 import org.miles2run.business.domain.jpa.Profile;
 import org.miles2run.business.domain.mongo.UserProfile;
+import org.miles2run.business.utils.GeocoderUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.ApplicationScoped;
-
-import org.miles2run.business.utils.*;
-
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 /**
  * Created by shekhargulati on 20/03/14.
@@ -19,16 +18,42 @@ import java.util.logging.Logger;
 @ApplicationScoped
 public class ProfileMongoService {
 
-    @Inject
-    private DB db;
+    private Logger logger = LoggerFactory.getLogger(ProfileMongoService.class);
 
     @Inject
-    private Logger logger;
+    DB db;
+
 
     public void save(Profile profile) {
         DBCollection profiles = db.getCollection("profiles");
-        double[] lngLat = GeocoderUtils.lngLat(profile.getCity(), profile.getCountry());
+        double[] existingCoordinatesForACity = findLngLatForACity(profile.getCity());
+        double[] lngLat = (existingCoordinatesForACity.length == 0) ? fetchLngLatAndSave(profile.getCity(), profile.getCountry()) : existingCoordinatesForACity;
         profiles.save(new BasicDBObject().append("username", profile.getUsername()).append("lngLat", lngLat));
+    }
+
+    public double[] fetchLngLatAndSave(final String city, final String country) {
+        double[] lngLat = GeocoderUtils.lngLat(city, country);
+        DBCollection cities = db.getCollection("cities");
+        cities.save(new BasicDBObject("city", city).append("country", country).append("lngLat", lngLat));
+        return lngLat;
+    }
+
+    public double[] findLngLatForACity(String city) {
+        DBCollection cities = db.getCollection("cities");
+        BasicDBObject query = new BasicDBObject("city", city);
+        DBObject cityDBObject = cities.findOne(query);
+        if (cityDBObject == null) {
+            return new double[0];
+        }
+        BasicDBObject basicDBObject = (BasicDBObject) cityDBObject;
+        BasicDBList basicDbList = (BasicDBList) basicDBObject.get("lngLat");
+        return basicDbList == null || basicDbList.isEmpty() ? new double[0] : new double[]{(Double) basicDbList.get(0), (Double) basicDbList.get(1)};
+    }
+
+    public double[] findLatLngForACity(String city) {
+        double[] lngLat = findLngLatForACity(city);
+        double[] latLng = lngLat.length == 0 ? new double[0] : new double[]{lngLat[1], lngLat[0]};
+        return latLng;
     }
 
 
@@ -79,9 +104,8 @@ public class ProfileMongoService {
     public boolean isUserFollowing(String currentLoggedInUser, String username) {
         DBCollection profiles = db.getCollection("profiles");
         BasicDBObject query = new BasicDBObject("username", currentLoggedInUser).append("following", username);
-        logger.info("isUserFollowing() " + query.toString());
+        logger.info("isUserFollowing MongoDB query {}", query.toString());
         DBObject exists = profiles.findOne(query);
-        System.out.println("isUserFollowing() " + exists);
         return exists != null ? true : false;
     }
 
