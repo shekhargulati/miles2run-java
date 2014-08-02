@@ -11,6 +11,7 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.validation.constraints.NotNull;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -61,6 +62,9 @@ public class CommunityRunJPAService {
 
     public List<ProfileGroupDetails> groupAllUserInACommunityRunByCity(@NotNull String slug) {
         CommunityRun communityRun = this.find(slug);
+        if(communityRun == null){
+            return Collections.emptyList();
+        }
         List<Profile> runners = communityRun.getProfiles();
         // TODO: Possible Performance Bottleneck
         List<ProfileGroupDetails> profileGroups = entityManager.createQuery("SELECT new org.miles2run.business.vo.ProfileGroupDetails(COUNT(p),p.city,p.country) FROM Profile p where p in :profiles GROUP BY p.city", ProfileGroupDetails.class).setParameter("profiles", runners).getResultList();
