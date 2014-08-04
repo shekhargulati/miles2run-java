@@ -4562,3 +4562,7 @@ body#home section b i {
 .size-h4 {
     font-size: 14px;
 }
+
+.error{
+    color: red;
+}

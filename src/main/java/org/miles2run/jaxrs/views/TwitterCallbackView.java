@@ -1,5 +1,6 @@
 package org.miles2run.jaxrs.views;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jug.view.View;
 import org.miles2run.business.domain.jpa.SocialConnection;
 import org.miles2run.business.domain.jpa.SocialProvider;
@@ -37,7 +38,10 @@ public class TwitterCallbackView {
     @Path("/twitter/callback")
     @GET
     @Produces("text/html")
-    public View callback(@QueryParam("oauth_token") String oauthToken, @QueryParam("oauth_verifier") String oauthVerifier) throws Exception {
+    public View callback(@QueryParam("oauth_token") String oauthToken, @QueryParam("oauth_verifier") String oauthVerifier, @QueryParam("denied") String deniedCode) throws Exception {
+        if(StringUtils.isNotBlank(deniedCode)){
+            return View.of("/", true);
+        }
         RequestToken requestToken = new RequestToken(oauthToken, oauthVerifier);
         Twitter twitter = twitterFactory.getInstance();
         AccessToken oAuthAccessToken = twitter.getOAuthAccessToken(requestToken, oauthVerifier);

@@ -76,7 +76,7 @@
 
     <div class="col-md-6">
         <input id="fullname" name="fullname" type="text" placeholder="Your full name(max 50 characters)"
-               class="form-control input-md" th:value="${profile.fullname}"
+               class="form-control input-md" th:value="${profile.fullname}" maxlength="50"
                title="Please enter 'fullname' less than 50 characters" required=""/>
 
     </div>
@@ -111,7 +111,7 @@
 
     <div class="col-md-6">
         <input id="city" name="city" type="text" placeholder="City you live" class="form-control input-md"
-               th:value="${profile.city}" required=""/>
+               title="Please enter 'city' in which you live" th:value="${profile.city}" required="" maxlength="100"/>
 
     </div>
 </div>
@@ -121,7 +121,7 @@
 <label class="col-md-4 control-label" for="country">Country</label>
 
 <div class="col-md-6">
-<select id="country" name="country" title="Please enter 'country'" class="form-control input-md" required="">
+<select id="country" name="country" class="form-control input-md" required="" title="Please enter 'country' in which you live">
 <option value="">Please select 'country'</option>
 <option value="AF" th:selected="${profile.country == 'AF'}">Afghanistan</option>
 <option value="AL" th:selected="${profile.country == 'AL'}">Albania</option>
