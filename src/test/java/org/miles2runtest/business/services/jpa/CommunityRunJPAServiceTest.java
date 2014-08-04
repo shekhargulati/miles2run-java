@@ -126,7 +126,7 @@ public class CommunityRunJPAServiceTest {
     @Test
     public void shouldFindAllActiveRuns() throws Exception {
         createCommunityRuns(10);
-        List<CommunityRun> allActiveRaces = communityRunJPAService.findAllActiveRaces();
+        List<CommunityRun> allActiveRaces = communityRunJPAService.findAllActiveCommunityRuns();
         Assert.assertEquals(10, allActiveRaces.size());
     }
 
@@ -149,7 +149,7 @@ public class CommunityRunJPAServiceTest {
     @Test
     public void shouldReturn10CommunityRunsWithNameJavaOne() throws Exception {
         createCommunityRuns(10);
-        List<CommunityRun> communityRuns = communityRunJPAService.findAllActiveRacesWithNameLike("JavaOne");
+        List<CommunityRun> communityRuns = communityRunJPAService.findAllActiveCommunityRunsWithNameLike("JavaOne");
         Assert.assertEquals(10, communityRuns.size());
 
     }
@@ -158,7 +158,7 @@ public class CommunityRunJPAServiceTest {
     @Test
     public void shouldReturn10CommunityRunsWhenNameCaseIsDifferent() throws Exception {
         createCommunityRuns(10);
-        List<CommunityRun> communityRuns = communityRunJPAService.findAllActiveRacesWithNameLike("JaVa");
+        List<CommunityRun> communityRuns = communityRunJPAService.findAllActiveCommunityRunsWithNameLike("JaVa");
         Assert.assertEquals(10, communityRuns.size());
 
     }
@@ -166,7 +166,7 @@ public class CommunityRunJPAServiceTest {
     @Test
     public void shouldReturn0CommunityRunsWhenNoNameMatches() throws Exception {
         createCommunityRuns(10);
-        List<CommunityRun> communityRuns = communityRunJPAService.findAllActiveRacesWithNameLike("xxx");
+        List<CommunityRun> communityRuns = communityRunJPAService.findAllActiveCommunityRunsWithNameLike("xxx");
         Assert.assertEquals(0, communityRuns.size());
     }
 
@@ -174,7 +174,7 @@ public class CommunityRunJPAServiceTest {
     public void shouldThrowExceptionWhenFindingWithCommunityRaceNameNull() throws Exception {
         createCommunityRuns(1);
         try {
-            communityRunJPAService.findAllActiveRacesWithNameLike(null);
+            communityRunJPAService.findAllActiveCommunityRunsWithNameLike(null);
             Assert.fail("Should fail when name is null");
         } catch (Exception e) {
             Assert.assertEquals("javax.validation.ConstraintViolationException", e.getCause().getClass().getName());

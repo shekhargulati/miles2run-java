@@ -4,7 +4,7 @@ import org.miles2run.business.domain.jpa.Activity;
 import org.miles2run.business.domain.jpa.CommunityRun;
 import org.miles2run.business.domain.jpa.Goal;
 import org.miles2run.business.domain.jpa.Profile;
-import org.miles2run.business.domain.redis.CommunityRunCounter;
+import org.miles2run.business.domain.redis.CommunityRunStats;
 import org.miles2run.business.services.JedisExecutionService;
 import org.miles2run.business.services.JedisOperation;
 import org.miles2run.business.services.RedisKeyNames;
@@ -95,12 +95,11 @@ public class CommunityRunRedisService {
         });
     }
 
-    public CommunityRunCounter currentStats(final CommunityRun communityRun) {
-        return jedisExecutionService.execute(new JedisOperation<CommunityRunCounter>() {
+    public CommunityRunStats getCurrentStatsForCommunityRun(final String slug) {
+        return jedisExecutionService.execute(new JedisOperation<CommunityRunStats>() {
             @Override
-            public CommunityRunCounter perform(Jedis jedis) {
+            public CommunityRunStats perform(Jedis jedis) {
                 Pipeline pipeline = jedis.pipelined();
-                String slug = communityRun.getSlug();
                 Response<String> totalDistanceCoveredResponse = pipeline.get(String.format("%s-total_distance_covered", slug));
                 Response<String> totalDurationResponse = pipeline.get(String.format("%s-total_duration", slug));
                 Response<Long> countriesCountResponse = pipeline.scard(String.format("%s-countries", slug));
@@ -109,7 +108,7 @@ public class CommunityRunRedisService {
                 pipeline.sync();
                 Long totalDistance = totalDistanceCoveredResponse.get() == null ? Long.valueOf(0L) : Long.valueOf(totalDistanceCoveredResponse.get());
                 Long totalDuration = totalDurationResponse.get() == null ? Long.valueOf(0L) : Long.valueOf(totalDurationResponse.get());
-                return new CommunityRunCounter(runnersCountResponse.get(), countriesCountResponse.get(), citiesCountResponse.get(), totalDistance, totalDuration);
+                return new CommunityRunStats(runnersCountResponse.get(), countriesCountResponse.get(), citiesCountResponse.get(), totalDistance, totalDuration);
             }
         });
     }

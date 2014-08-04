@@ -54,7 +54,7 @@ public class CommunityRunJoinTest {
                 addClass(CommunityRunJPAService.class).
                 addClass(EntityManagerProducer.class).
                 addAsLibraries(Maven.resolver().loadPomFromFile("pom.xml").resolve("joda-time:joda-time").withoutTransitivity().asFile()).
-                addAsResource("META-INF/test_persistence.xml", "META-INF/persistence.xml").
+                addAsResource("META-INF/test_persistence_mysql.xml", "META-INF/persistence.xml").
                 addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
         System.out.printf("WebArchive %s", webArchive.toString(true));
         return webArchive;
@@ -116,6 +116,34 @@ public class CommunityRunJoinTest {
         for (ProfileGroupDetails profileGroupDetails : usersByCity) {
             Assert.assertEquals(200, profileGroupDetails.getCount());
         }
+    }
+
+    @Test
+    public void shouldReturnEmptyListWhenNoOneHasJoinedACommunityRun() throws Exception {
+
+        CommunityRun communityRun = createCommunityRun("JavaOne 2014", "javaone-2014");
+        Long communityRunId = communityRunJPAService.save(communityRun);
+        Assert.assertNotNull(communityRunId);
+
+        // should find 4 groups that are part of this community run
+        List<ProfileGroupDetails> usersByCity = communityRunJPAService.groupAllUserInACommunityRunByCity("javaone-2014");
+        Assert.assertEquals(0, usersByCity.size());
+    }
+
+
+    @Test
+    public void userShouldBeAllowedToJoinMultipleCommunityRuns() throws Exception {
+        Profile profile = createProfiles(1).get(0);
+        CommunityRun communityRun = createCommunityRun("JavaOne 2014", "javaone-2014");
+        Long communityRunId = communityRunJPAService.save(communityRun);
+        communityRun = communityRunJPAService.addRunnerToCommunityRun(communityRun.getSlug(), profile);
+
+
+        CommunityRun anotherCommunityRun = createCommunityRun("JavaOne 2015", "javaone-2015");
+        Long anotherCommunityRunId = communityRunJPAService.save(anotherCommunityRun);
+        anotherCommunityRun = communityRunJPAService.addRunnerToCommunityRun(anotherCommunityRun.getSlug(), profile);
+
+
     }
 
     private List<Profile> createProfiles(int n) {

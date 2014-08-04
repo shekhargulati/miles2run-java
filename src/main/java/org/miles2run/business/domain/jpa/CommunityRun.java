@@ -22,7 +22,7 @@ import java.util.*;
         @NamedQuery(name = "CommunityRun.findAllActiveRaces", query = "SELECT new CommunityRun(cr) FROM CommunityRun cr WHERE cr.active IS TRUE"),
         @NamedQuery(name = "CommunityRun.findBySlug", query = "SELECT new CommunityRun(cr) FROM CommunityRun cr WHERE cr.slug =:slug"),
         @NamedQuery(name = "CommunityRun.findBySlugWithProfiles", query = "SELECT cr FROM CommunityRun cr WHERE cr.slug =:slug"),
-        @NamedQuery(name = "CommunityRun.findAllActivieRunsByNameLike", query = "SELECT new CommunityRun(cr) from CommunityRun cr WHERE LOWER(cr.name) LIKE :name and cr.active IS TRUE")
+        @NamedQuery(name = "CommunityRun.findAllActiviRunsByNameLike", query = "SELECT new CommunityRun(cr) from CommunityRun cr WHERE LOWER(cr.name) LIKE :name and cr.active IS TRUE")
 })
 @CommunityRunDateRange
 public class CommunityRun extends BaseEntity {
@@ -62,7 +62,7 @@ public class CommunityRun extends BaseEntity {
     })
     private Set<String> hashtags = new HashSet<>();
 
-    @OneToMany
+    @ManyToMany
     private List<Profile> profiles = new ArrayList<>();
 
 

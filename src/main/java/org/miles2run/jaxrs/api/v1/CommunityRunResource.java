@@ -1,16 +1,21 @@
 package org.miles2run.jaxrs.api.v1;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jug.filters.InjectPrincipal;
 import org.jug.filters.LoggedIn;
+import org.jug.view.View;
 import org.miles2run.business.domain.jpa.CommunityRun;
+import org.miles2run.business.domain.jpa.Goal;
 import org.miles2run.business.domain.jpa.Profile;
 import org.miles2run.business.domain.jpa.Role;
+import org.miles2run.business.services.GoalService;
 import org.miles2run.business.services.ProfileMongoService;
 import org.miles2run.business.services.jpa.CommunityRunJPAService;
 import org.miles2run.business.services.redis.CommunityRunRedisService;
 import org.miles2run.business.services.ProfileService;
 import org.miles2run.business.utils.SlugUtils;
 import org.miles2run.business.vo.ProfileGroupDetails;
+import org.miles2run.jaxrs.vo.CommunityRunDetails;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,7 +47,8 @@ public class CommunityRunResource {
     private ProfileService profileService;
     @Inject
     private ProfileMongoService profileMongoService;
-
+    @Inject
+    private GoalService goalService;
 
     @POST
     @Consumes("application/json")
@@ -65,11 +71,37 @@ public class CommunityRunResource {
 
     @GET
     @Produces("application/json")
-    public List<CommunityRun> allCommunityRuns(@QueryParam("name") String name) {
+    @InjectPrincipal
+    public List<CommunityRunDetails> allCommunityRuns(@QueryParam("name") String name, @QueryParam("include_stats") boolean includeStats, @QueryParam("include_participation_detail") boolean includeParticipationDetail) {
         if (StringUtils.isNotBlank(name)) {
-            return communityRunJPAService.findAllActiveRacesWithNameLike(name);
+            return toCommunityRunDetailsList(communityRunJPAService.findAllActiveCommunityRunsWithNameLike(name));
         }
-        return communityRunJPAService.findAllActiveRaces();
+        List<CommunityRun> activeCommunityRuns = communityRunJPAService.findAllActiveCommunityRuns();
+        List<CommunityRunDetails> communityRunDetailsList = new ArrayList<>();
+        for (CommunityRun activeCommunityRun : activeCommunityRuns) {
+            String slug = activeCommunityRun.getSlug();
+            CommunityRunDetails communityRunDetails = CommunityRunDetails.fromCommunityRun(activeCommunityRun);
+            if (includeStats) {
+                communityRunDetails.addStats(communityRunRedisService.getCurrentStatsForCommunityRun(slug));
+            }
+            if (includeParticipationDetail && securityContext.getUserPrincipal() != null) {
+                String principal = securityContext.getUserPrincipal().getName();
+                if (communityRunRedisService.isUserAlreadyPartOfRun(slug, principal)) {
+                    boolean participating = true;
+                    communityRunDetails.addParticipationDetails(participating);
+                }
+            }
+            communityRunDetailsList.add(communityRunDetails);
+        }
+        return communityRunDetailsList;
+    }
+
+    private List<CommunityRunDetails> toCommunityRunDetailsList(List<CommunityRun> allActiveCommunityRunsWithNameLike) {
+        List<CommunityRunDetails> communityRunDetailsList = new ArrayList<>();
+        for (CommunityRun communityRun : allActiveCommunityRunsWithNameLike) {
+            communityRunDetailsList.add(CommunityRunDetails.fromCommunityRun(communityRun));
+        }
+        return communityRunDetailsList;
     }
 
     @Path("/{slug}")
@@ -91,4 +123,31 @@ public class CommunityRunResource {
         return profileGroupDetailsListWithLatLng;
     }
 
+
+    // TODO : CODE COPIED FROM CommunityRunView
+    @Path("/{slug}/join")
+    @POST
+    @Produces("text/html")
+    @LoggedIn
+    public Response joinCommunityRun(@NotNull @PathParam("slug") final String slug) {
+        if (!communityRunRedisService.communityRunExists(slug)) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        String principal = securityContext.getUserPrincipal().getName();
+        if (communityRunRedisService.isUserAlreadyPartOfRun(slug, principal)) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("You are already part of this community run").build();
+        }
+        Profile profile = profileService.findProfile(principal);
+        logger.info("Adding profile {} to community run ", principal, slug);
+        CommunityRun communityRun = communityRunJPAService.addRunnerToCommunityRun(slug, profile);
+
+        Goal goal = Goal.newCommunityRunGoal(communityRun);
+        logger.info("Creating a CommunityRun goal for profile {}", principal);
+        Goal savedGoal = goalService.save(goal, profile);
+        logger.info("Created a new goal with id {}", savedGoal.getId());
+
+        communityRunRedisService.addGoalToCommunityRun(slug, savedGoal.getId());
+        communityRunRedisService.addRunnerToCommunityRun(slug, profile);
+        return Response.status(Response.Status.CREATED).entity("Successfully joined community run").build();
+    }
 }

@@ -3,7 +3,7 @@ package org.miles2run.business.domain.redis;
 /**
  * Created by shekhargulati on 23/07/14.
  */
-public class CommunityRunCounter {
+public class CommunityRunStats {
 
     private final Long runners;
     private final Long countries;
@@ -11,7 +11,7 @@ public class CommunityRunCounter {
     private final Long totalDistance;
     private final Long totalDuration;
 
-    public CommunityRunCounter(Long runners, Long countries, Long cities, Long totalDistance, Long totalDuration) {
+    public CommunityRunStats(Long runners, Long countries, Long cities, Long totalDistance, Long totalDuration) {
         this.runners = runners;
         this.countries = countries;
         this.cities = cities;

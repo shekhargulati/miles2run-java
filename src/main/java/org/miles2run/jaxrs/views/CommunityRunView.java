@@ -54,12 +54,12 @@ public class CommunityRunView {
     @Produces("text/html")
     @InjectProfile
     public View allCommunityRuns() {
-        List<CommunityRun> communityRuns = communityRunJPAService.findAllActiveRaces();
+        List<CommunityRun> communityRuns = communityRunJPAService.findAllActiveCommunityRuns();
         List<CommunityRunDetails> runs = new ArrayList<>();
         for (CommunityRun communityRun : communityRuns) {
-            runs.add(new CommunityRunDetails(communityRun, communityRunRedisService.currentStats(communityRun)));
+            runs.add(CommunityRunDetails.fromCommunityRun(communityRun).addStats(communityRunRedisService.getCurrentStatsForCommunityRun(communityRun.getSlug())));
         }
-        return View.of("/community_runs", templateEngine).withModel("runs", runs);
+        return View.of("/community_runs", templateEngine).withModel("communityRuns", runs);
     }
 
     @Path("/{slug}")
@@ -72,15 +72,16 @@ public class CommunityRunView {
         if (communityRun == null) {
             throw new ViewResourceNotFoundException(String.format("No community run exists with name %s", slug), templateEngine);
         }
-        CommunityRunDetails communityRunDetails = new CommunityRunDetails(communityRun, communityRunRedisService.currentStats(communityRun));
+        CommunityRunDetails communityRunDetails = CommunityRunDetails.fromCommunityRun(communityRun).addStats(communityRunRedisService.getCurrentStatsForCommunityRun(communityRun.getSlug()));
         if (securityContext.getUserPrincipal() != null) {
             String principal = securityContext.getUserPrincipal().getName();
             if (communityRunRedisService.isUserAlreadyPartOfRun(slug, principal)) {
                 Long goalId = goalService.findGoalIdWithCommunityRunAndProfile(slug, profileService.findProfile(principal));
-                return View.of("/community_run", templateEngine).withModel("run", communityRunDetails).withModel("userAlreadyJoined", true).withModel("goalId", goalId);
+                communityRunDetails.addParticipationDetails(true);
+                return View.of("/community_run", templateEngine).withModel("communityRun", communityRunDetails).withModel("goalId", goalId);
             }
         }
-        return View.of("/community_run", templateEngine).withModel("run", communityRunDetails).withModel("userAlreadyJoined", false);
+        return View.of("/community_run", templateEngine).withModel("communityRun", communityRunDetails);
     }
 
     @Path("/{slug}/join")
@@ -88,13 +89,14 @@ public class CommunityRunView {
     @Produces("text/html")
     @LoggedIn
     public View joinCommunityRun(@NotNull @PathParam("slug") final String slug) {
+        if (!communityRunRedisService.communityRunExists(slug)) {
+            return View.of("/community_runs", true);
+        }
         String principal = securityContext.getUserPrincipal().getName();
         if (communityRunRedisService.isUserAlreadyPartOfRun(slug, principal)) {
             return View.of("/community_runs/" + slug, true);
         }
-        if (!communityRunRedisService.communityRunExists(slug)) {
-            return View.of("/community_runs", true);
-        }
+
         Profile profile = profileService.findProfile(principal);
         logger.info("Adding profile {} to community run ", principal, slug);
         CommunityRun communityRun = communityRunJPAService.addRunnerToCommunityRun(slug, profile);
