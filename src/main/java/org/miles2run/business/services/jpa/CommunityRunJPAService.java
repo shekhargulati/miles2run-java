@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.persistence.LockModeType;
 import javax.persistence.TypedQuery;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -64,6 +65,19 @@ public class CommunityRunJPAService {
         }
     }
 
+    public List<Profile> findAllRunners(@NotNull String slug) {
+        TypedQuery<CommunityRun> query = entityManager.createNamedQuery("CommunityRun.findBySlugWithProfiles", CommunityRun.class);
+        query.setParameter("slug", slug);
+        try {
+            CommunityRun communityRun = query.getSingleResult();
+            List<Profile> profiles = communityRun.getProfiles();
+            profiles.size();
+            return profiles;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     public List<CommunityRun> findAllActiveCommunityRunsWithNameLike(@NotNull String name, @Max(value = 20) int max, @Min(value = 1) int page) {
         name = name.toLowerCase();
         return entityManager.createNamedQuery("CommunityRun.findAllActiviRunsByNameLike", CommunityRun.class)
@@ -92,8 +106,10 @@ public class CommunityRunJPAService {
         return profileGroups;
     }
 
+    // TODO: IS THIS THE RIGHT  WAY TO HANDLE CONCURRENCY?
     public CommunityRun addRunnerToCommunityRun(String slug, Profile profile) {
         CommunityRun communityRun = this.find(slug);
+        entityManager.refresh(communityRun, LockModeType.PESSIMISTIC_FORCE_INCREMENT);
         communityRun.getProfiles().add(profile);
         return communityRun;
     }

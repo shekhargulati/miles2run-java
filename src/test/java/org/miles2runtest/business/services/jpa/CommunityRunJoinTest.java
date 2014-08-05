@@ -28,6 +28,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by shekhargulati on 02/08/14.
@@ -130,6 +135,14 @@ public class CommunityRunJoinTest {
         Assert.assertEquals(0, usersByCity.size());
     }
 
+    @Test
+    public void shouldAddProfileToACommunityRun() throws Exception {
+        Profile profile = createProfiles(1).get(0);
+        CommunityRun communityRun = createCommunityRun("JavaOne 2014", "javaone-2014");
+        Long communityRunId = communityRunJPAService.save(communityRun);
+        communityRun = communityRunJPAService.addRunnerToCommunityRun(communityRun.getSlug(), profile);
+        Assert.assertEquals(1, communityRun.getProfiles().size());
+    }
 
     @Test
     public void userShouldBeAllowedToJoinMultipleCommunityRuns() throws Exception {
@@ -137,13 +150,36 @@ public class CommunityRunJoinTest {
         CommunityRun communityRun = createCommunityRun("JavaOne 2014", "javaone-2014");
         Long communityRunId = communityRunJPAService.save(communityRun);
         communityRun = communityRunJPAService.addRunnerToCommunityRun(communityRun.getSlug(), profile);
-
+        Assert.assertEquals(1, communityRun.getProfiles().size());
 
         CommunityRun anotherCommunityRun = createCommunityRun("JavaOne 2015", "javaone-2015");
         Long anotherCommunityRunId = communityRunJPAService.save(anotherCommunityRun);
         anotherCommunityRun = communityRunJPAService.addRunnerToCommunityRun(anotherCommunityRun.getSlug(), profile);
+        Assert.assertEquals(1, anotherCommunityRun.getProfiles().size());
 
+    }
 
+    @Test
+    public void usersShouldBeAllowedToConcurrentlyJoinCommunityRun() throws Exception {
+        final AtomicInteger atomicInteger = new AtomicInteger(-1);
+        final List<Profile> profiles = createProfiles(10);
+        final String slug = "javaone-2014";
+        CommunityRun communityRun = createCommunityRun("JavaOne 2014", slug);
+        Long communityRunId = communityRunJPAService.save(communityRun);
+        ExecutorService executorService = Executors.newFixedThreadPool(10);
+        final CountDownLatch latch = new CountDownLatch(10);
+        for (int i = 0; i < 10; i++) {
+            executorService.execute(new Runnable() {
+                @Override
+                public void run() {
+                    communityRunJPAService.addRunnerToCommunityRun(slug, profiles.get(atomicInteger.incrementAndGet()));
+                    latch.countDown();
+                }
+            });
+        }
+        latch.await(30, TimeUnit.SECONDS);
+        List<Profile> runners = communityRunJPAService.findAllRunners(slug);
+        Assert.assertEquals(10, runners.size());
     }
 
     private List<Profile> createProfiles(int n) {
