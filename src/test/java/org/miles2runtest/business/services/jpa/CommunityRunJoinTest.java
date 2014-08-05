@@ -182,6 +182,48 @@ public class CommunityRunJoinTest {
         Assert.assertEquals(10, runners.size());
     }
 
+
+    @Test
+    public void userShouldBeAllowedToLeaveACommunityRun() throws Exception {
+        Profile profile = createProfiles(1).get(0);
+        String slug = "javaone-2014";
+        CommunityRun communityRun = createCommunityRun("JavaOne 2014", slug);
+        Long communityRunId = communityRunJPAService.save(communityRun);
+        communityRun = communityRunJPAService.addRunnerToCommunityRun(communityRun.getSlug(), profile);
+
+        communityRun = communityRunJPAService.leaveCommunityRun(communityRun.getSlug(), profile);
+        List<Profile> runners = communityRunJPAService.findAllRunners(slug);
+        Assert.assertEquals(0, runners.size());
+
+    }
+
+
+    @Test
+    public void usersShouldBeAllowedToConcurrentlyLeaveACommunityRun() throws Exception {
+        final AtomicInteger atomicInteger = new AtomicInteger(-1);
+        final List<Profile> profiles = createProfiles(2);
+        final String slug = "javaone-2014";
+        CommunityRun communityRun = createCommunityRun("JavaOne 2014", slug);
+        communityRun.getProfiles().addAll(profiles);
+        Long communityRunId = communityRunJPAService.save(communityRun);
+        ExecutorService executorService = Executors.newFixedThreadPool(2);
+        final CountDownLatch latch = new CountDownLatch(2);
+        for (int i = 0; i < 2; i++) {
+            executorService.execute(new Runnable() {
+                @Override
+                public void run() {
+                    Profile profile = profiles.get(atomicInteger.incrementAndGet());
+                    System.out.printf("Leaving community run %s", profile.toString());
+                    communityRunJPAService.leaveCommunityRun(slug, profile);
+                    latch.countDown();
+                }
+            });
+        }
+        latch.await(30, TimeUnit.SECONDS);
+        List<Profile> runners = communityRunJPAService.findAllRunners(slug);
+        Assert.assertEquals(0, runners.size());
+    }
+
     private List<Profile> createProfiles(int n) {
         List<Profile> profiles = new ArrayList<>();
         for (int i = 0; i < n; i++) {

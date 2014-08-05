@@ -198,4 +198,23 @@ public class Profile extends BaseEntity{
                 '}';
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Profile)) return false;
+
+        Profile profile = (Profile) o;
+
+        if (!email.equals(profile.email)) return false;
+        if (!username.equals(profile.username)) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = email.hashCode();
+        result = 31 * result + username.hashCode();
+        return result;
+    }
 }

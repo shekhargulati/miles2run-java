@@ -113,4 +113,11 @@ public class CommunityRunJPAService {
         communityRun.getProfiles().add(profile);
         return communityRun;
     }
+
+    public CommunityRun leaveCommunityRun(String slug, Profile profile) {
+        CommunityRun communityRun = this.find(slug);
+        entityManager.refresh(communityRun, LockModeType.PESSIMISTIC_FORCE_INCREMENT);
+        communityRun.getProfiles().remove(profile);
+        return communityRun;
+    }
 }
