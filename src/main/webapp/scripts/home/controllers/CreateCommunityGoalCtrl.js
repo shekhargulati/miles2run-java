@@ -32,13 +32,14 @@ function CreateCommunityGoalCtrl($scope, $location, activeProfile, $http, Config
 
     };
 }
-var CommunityRunJoinCtrl = function ($scope, $http, $modalInstance, communityRunToJoin, idx, communityRuns, ConfigService) {
+var CommunityRunJoinCtrl = function ($scope, $http, $modalInstance, communityRunToJoin, idx, communityRuns, ConfigService, $window) {
 
     $scope.ok = function () {
         $http.post(ConfigService.getBaseUrl() + 'community_runs/' + communityRunToJoin.slug + "/join", {}).success(function (data, status) {
             toastr.success("Joined Community Run");
-            communityRuns.splice(idx, 1);
             $modalInstance.close({});
+            $window.location.href = ConfigService.appContext() + 'goals/' + data.id;
+
         }).error(function (data, status, headers, config) {
             console.log("Status code %s", status);
             toastr.error("Unable to join CommunityRun. Please try later.");

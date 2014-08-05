@@ -25,6 +25,7 @@ import org.miles2run.jaxrs.forms.ProfileForm;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.transaction.UserTransaction;
+import javax.validation.ConstraintViolationException;
 import java.util.Date;
 import java.util.List;
 
@@ -182,6 +183,55 @@ public class CommunityRunJPAServiceTest {
     }
 
 
+    @Test
+    public void shouldRespectContraintsOnFindAllActiveCommunityRuns() throws Exception {
+        createCommunityRuns(1);
+        try {
+            communityRunJPAService.findAllActiveCommunityRuns(100, 0);
+        } catch (Exception e) {
+            Assert.assertEquals("javax.validation.ConstraintViolationException", e.getCause().getClass().getName());
+        }
+    }
+
+    @Test
+    public void shouldRespectContraintsOnFindAllActiveCommunityRunsWithNameLike() throws Exception {
+        createCommunityRuns(1);
+        try {
+            communityRunJPAService.findAllActiveCommunityRunsWithNameLike("javaone", 100, 0);
+        } catch (Exception e) {
+            Assert.assertEquals("javax.validation.ConstraintViolationException", e.getCause().getClass().getName());
+        }
+    }
+
+    @Test
+    public void testFindAllActiveCommunityRuns() throws Exception {
+        int resultSet = 10;
+        int max = 2;
+        int expectedPages = 5;
+        int actualPages = 0;
+        createCommunityRuns(10);
+        for (int page = 1; page <= expectedPages; page++) {
+            List<CommunityRun> communityRuns = communityRunJPAService.findAllActiveCommunityRuns(max, page);
+            Assert.assertEquals(2, communityRuns.size());
+            actualPages++;
+        }
+        Assert.assertEquals(expectedPages, actualPages);
+    }
+
+    @Test
+    public void testFindAllActiveCommunityRunsByNameLike() throws Exception {
+        int resultSet = 10;
+        int max = 2;
+        int expectedPages = 5;
+        int actualPages = 0;
+        createCommunityRuns(10);
+        for (int page = 1; page <= expectedPages; page++) {
+            List<CommunityRun> communityRuns = communityRunJPAService.findAllActiveCommunityRunsWithNameLike("javaone", max, page);
+            Assert.assertEquals(2, communityRuns.size());
+            actualPages++;
+        }
+        Assert.assertEquals(expectedPages, actualPages);
+    }
 
     private void createCommunityRuns(int n) {
         for (int i = 0; i < n; i++) {

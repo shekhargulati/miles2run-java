@@ -10,6 +10,8 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.util.Collections;
 import java.util.List;
@@ -30,9 +32,16 @@ public class CommunityRunJPAService {
         return communityRun.getId();
     }
 
+    public List<CommunityRun> findAllActiveCommunityRuns(@Max(value = 20) int max, @Min(value = 1) int page) {
+        return entityManager.
+                createNamedQuery("CommunityRun.findAllActiveRaces", CommunityRun.class).
+                setMaxResults(max).
+                setFirstResult((page - 1) * max).
+                getResultList();
+    }
+
     public List<CommunityRun> findAllActiveCommunityRuns() {
-        TypedQuery<CommunityRun> query = entityManager.createNamedQuery("CommunityRun.findAllActiveRaces", CommunityRun.class);
-        return query.getResultList();
+        return findAllActiveCommunityRuns(20, 1);
     }
 
     public CommunityRun findBySlug(@NotNull String slug) {
@@ -55,18 +64,26 @@ public class CommunityRunJPAService {
         }
     }
 
-    public List<CommunityRun> findAllActiveCommunityRunsWithNameLike(@NotNull String name) {
+    public List<CommunityRun> findAllActiveCommunityRunsWithNameLike(@NotNull String name, @Max(value = 20) int max, @Min(value = 1) int page) {
         name = name.toLowerCase();
-        return entityManager.createNamedQuery("CommunityRun.findAllActiviRunsByNameLike", CommunityRun.class).setParameter("name", "%" + name + "%").getResultList();
+        return entityManager.createNamedQuery("CommunityRun.findAllActiviRunsByNameLike", CommunityRun.class)
+                .setParameter("name", "%" + name + "%")
+                .setMaxResults(max)
+                .setFirstResult((page - 1) * max)
+                .getResultList();
+    }
+
+    public List<CommunityRun> findAllActiveCommunityRunsWithNameLike(@NotNull String name) {
+        return findAllActiveCommunityRunsWithNameLike(name, 20, 1);
     }
 
     public List<ProfileGroupDetails> groupAllUserInACommunityRunByCity(@NotNull String slug) {
         CommunityRun communityRun = this.find(slug);
-        if(communityRun == null){
+        if (communityRun == null) {
             return Collections.emptyList();
         }
         List<Profile> runners = communityRun.getProfiles();
-        if(runners.isEmpty()){
+        if (runners.isEmpty()) {
             return Collections.emptyList();
         }
         // TODO: Possible Performance Bottleneck

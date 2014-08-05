@@ -72,11 +72,13 @@ public class CommunityRunResource {
     @GET
     @Produces("application/json")
     @InjectPrincipal
-    public List<CommunityRunDetails> allCommunityRuns(@QueryParam("name") String name, @QueryParam("include_stats") boolean includeStats, @QueryParam("include_participation_detail") boolean includeParticipationDetail) {
+    public List<CommunityRunDetails> allCommunityRuns(@QueryParam("name") String name, @QueryParam("include_stats") boolean includeStats, @QueryParam("include_participation_detail") boolean includeParticipationDetail, @QueryParam("max") int max, @QueryParam("page") int page) {
+        max = max > 20 ? 20 : max;
+        page = page == 0 ? 1 : page;
         if (StringUtils.isNotBlank(name)) {
-            return toCommunityRunDetailsList(communityRunJPAService.findAllActiveCommunityRunsWithNameLike(name));
+            return toCommunityRunDetailsList(communityRunJPAService.findAllActiveCommunityRunsWithNameLike(name, max, page));
         }
-        List<CommunityRun> activeCommunityRuns = communityRunJPAService.findAllActiveCommunityRuns();
+        List<CommunityRun> activeCommunityRuns = communityRunJPAService.findAllActiveCommunityRuns(max, page);
         List<CommunityRunDetails> communityRunDetailsList = new ArrayList<>();
         for (CommunityRun activeCommunityRun : activeCommunityRuns) {
             String slug = activeCommunityRun.getSlug();
@@ -127,7 +129,7 @@ public class CommunityRunResource {
     // TODO : CODE COPIED FROM CommunityRunView
     @Path("/{slug}/join")
     @POST
-    @Produces("text/html")
+    @Produces("application/json")
     @LoggedIn
     public Response joinCommunityRun(@NotNull @PathParam("slug") final String slug) {
         if (!communityRunRedisService.communityRunExists(slug)) {
@@ -148,6 +150,6 @@ public class CommunityRunResource {
 
         communityRunRedisService.addGoalToCommunityRun(slug, savedGoal.getId());
         communityRunRedisService.addRunnerToCommunityRun(slug, profile);
-        return Response.status(Response.Status.CREATED).entity("Successfully joined community run").build();
+        return Response.status(Response.Status.CREATED).entity(savedGoal).build();
     }
 }
