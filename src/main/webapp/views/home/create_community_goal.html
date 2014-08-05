@@ -28,6 +28,11 @@
             </div>
             <!-- /.panel-heading -->
             <div class="panel-body">
+                <form>
+                    <div class="form-group">
+                        <input type="text" ng-model="searchText" placeholder="Type name of Community Run to filter the results" class="form-control">
+                    </div>
+                </form>
                 <div class="table-responsive">
                     <table class="table table-striped table-bordered table-hover" id="commmunity-runs-table">
                         <thead>
@@ -41,7 +46,7 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <tr class="odd gradeX" ng-repeat="cr in communityRuns">
+                        <tr class="odd gradeX" ng-repeat="cr in communityRuns | orderBy:'name' |filter:{name: searchText}">
                             <td>{{$index+1}}</td>
                             <td>
                                 <a ng-href="{{appContext}}community_runs/{{cr.slug}}">{{cr.name}}</a>
