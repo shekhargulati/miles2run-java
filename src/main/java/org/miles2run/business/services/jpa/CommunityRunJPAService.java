@@ -107,17 +107,26 @@ public class CommunityRunJPAService {
     }
 
     // TODO: IS THIS THE RIGHT  WAY TO HANDLE CONCURRENCY?
-    public CommunityRun addRunnerToCommunityRun(String slug, Profile profile) {
-        CommunityRun communityRun = this.find(slug);
-        entityManager.refresh(communityRun, LockModeType.PESSIMISTIC_FORCE_INCREMENT);
+    public CommunityRun addRunnerToCommunityRun(final String slug, final Profile profile) {
+        CommunityRun communityRun = this.findBySlugWithPessimisticWriteLock(slug);
         communityRun.getProfiles().add(profile);
+        entityManager.merge(communityRun);
+        entityManager.flush();
         return communityRun;
     }
 
-    public CommunityRun leaveCommunityRun(String slug, Profile profile) {
-        CommunityRun communityRun = this.find(slug);
-        entityManager.refresh(communityRun, LockModeType.PESSIMISTIC_FORCE_INCREMENT);
+    public void leaveCommunityRun(final String slug, final Profile profile) {
+        CommunityRun communityRun = this.findBySlugWithPessimisticWriteLock(slug);
         communityRun.getProfiles().remove(profile);
+        entityManager.merge(communityRun);
+        entityManager.flush();
+    }
+
+    public CommunityRun findBySlugWithPessimisticWriteLock(final String slug) {
+        CommunityRun communityRun = entityManager.createNamedQuery("CommunityRun.findBySlugWithProfiles", CommunityRun.class).
+                setParameter("slug", slug).
+                setLockMode(LockModeType.PESSIMISTIC_WRITE).
+                getSingleResult();
         return communityRun;
     }
 }
