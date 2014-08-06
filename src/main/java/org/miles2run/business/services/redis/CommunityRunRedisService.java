@@ -46,6 +46,7 @@ public class CommunityRunRedisService {
                 String country = profile.getCountry();
                 String city = profile.getCity();
                 Pipeline pipeline = jedis.pipelined();
+                pipeline.sadd(String.format("%s-all-runners", slug), username);
                 pipeline.sadd(String.format("%s-runners", slug), username);
                 pipeline.sadd(String.format("%s-cities", slug), city);
                 pipeline.sadd(String.format("%s-countries", slug), country);
@@ -104,7 +105,7 @@ public class CommunityRunRedisService {
                 Response<String> totalDurationResponse = pipeline.get(String.format("%s-total_duration", slug));
                 Response<Long> countriesCountResponse = pipeline.scard(String.format("%s-countries", slug));
                 Response<Long> citiesCountResponse = pipeline.scard(String.format("%s-cities", slug));
-                Response<Long> runnersCountResponse = pipeline.scard(String.format("%s-runners", slug));
+                Response<Long> runnersCountResponse = pipeline.scard(String.format("%s-all-runners", slug));
                 pipeline.sync();
                 Long totalDistance = totalDistanceCoveredResponse.get() == null ? Long.valueOf(0L) : Long.valueOf(totalDistanceCoveredResponse.get());
                 Long totalDuration = totalDurationResponse.get() == null ? Long.valueOf(0L) : Long.valueOf(totalDurationResponse.get());

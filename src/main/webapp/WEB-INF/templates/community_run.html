@@ -106,7 +106,7 @@
                         </div>
                         <div class="col-md-4 push-3q-top push-1q-bottom" th:if="${communityRun.loggedInUserParticipating == false}">
                             <form th:action="@{'/community_runs/' + ${communityRun.slug}+'/join'}" method="POST">
-                                <button class="btn btn-success btn-lg">Join This Run</button>
+                                <button class="btn btn-success btn-lg">Join Community Run</button>
                             </form>
                         </div>
 
@@ -120,10 +120,15 @@
                             <div class="row">
                                 <div class="col-md-12">
                                     <p>
+                                    <form th:action="@{'/community_runs/' + ${communityRun.slug}+'/leave'}" method="POST">
+                                        <button class="btn btn-danger">Leave Community Run</button>
+                                    </form>
+                                    </p>
+                                    <p>
                                         <a class="btn btn-success" th:href="@{'/goals/' + ${goalId}}">Go to Goal Dashboard</a>
                                     </p>
                                     <p>
-                                        <a class="btn btn-success" th:href="@{'/goals/' +${goalId} + '#/activity/post'}">Log a New Activity</a>
+                                        <a class="btn btn-success" th:href="@{'/goals/' +${goalId} + '#/activity/post'}">Log New Activity</a>
                                     </p>
 
                                 </div>

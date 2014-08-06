@@ -166,7 +166,7 @@ public class CommunityRunResource {
             return Response.status(Response.Status.BAD_REQUEST).entity("You are not part of this community run.").build();
         }
         Profile profile = profileService.findProfile(principal);
-        logger.info("Adding profile {} to community run {}", principal, slug);
+        logger.info("User {} leaving community run {}", principal, slug);
         communityRunJPAService.leaveCommunityRun(slug, profile);
         goalService.archiveGoalWithCommunityRun(communityRunJPAService.find(slug));
         communityRunRedisService.removeRunnerFromCommunityRun(slug, principal);

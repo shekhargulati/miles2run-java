@@ -21,6 +21,7 @@ import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import java.util.ArrayList;
 import java.util.List;
@@ -109,5 +110,25 @@ public class CommunityRunView {
         communityRunRedisService.addGoalToCommunityRun(slug, savedGoal.getId());
         communityRunRedisService.addRunnerToCommunityRun(slug, profile);
         return View.of("/goals/" + savedGoal.getId(), true);
+    }
+
+    @Path("/{slug}/leave")
+    @POST
+    @Produces("text/html")
+    @LoggedIn
+    public View leaveCommunityRun(@NotNull @PathParam("slug") final String slug) {
+        if (!communityRunRedisService.communityRunExists(slug)) {
+            return View.of("/community_runs", true);
+        }
+        String principal = securityContext.getUserPrincipal().getName();
+        if (!communityRunRedisService.isUserAlreadyPartOfRun(slug, principal)) {
+            return View.of("/community_runs/" + slug, true);
+        }
+        Profile profile = profileService.findProfile(principal);
+        logger.info("User {} leaving community run {}", principal, slug);
+        communityRunJPAService.leaveCommunityRun(slug, profile);
+        goalService.archiveGoalWithCommunityRun(communityRunJPAService.find(slug));
+        communityRunRedisService.removeRunnerFromCommunityRun(slug, principal);
+        return View.of("/community_runs/" + slug, true);
     }
 }
