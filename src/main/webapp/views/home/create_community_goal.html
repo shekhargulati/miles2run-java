@@ -65,7 +65,7 @@
                             <td>{{cr.startDate | date:'MMMM dd, yyyy'}}</td>
                             <td>{{cr.endDate | date:'MMMM dd, yyyy'}}</td>
                             <td>
-                                <button ng-mouseover="leaveBtnState = {'text':'Leave','btnClass':'btn btn-danger btn-xs pull-right'}" ng-mouseleave="leaveBtnState = {'text':'Already Joined','btnClass':'btn btn-info btn-xs pull-right'}" ng-init="leaveBtnState = {'text':'Already Joined','btnClass':'btn btn-info btn-xs pull-right'}" ng-class="leaveBtnState.btnClass" ng-if="cr.loggedInUserParticipating" ng-cloak="" ng-click="leaveCommunityRun($index)">{{leaveBtnState.text}}</button>
+                                <button ng-mouseover="leaveBtnState = {'text':'Leave','btnClass':'btn btn-danger btn-sm pull-right'}" ng-mouseleave="leaveBtnState = {'text':'Joined','btnClass':'btn btn-info btn-sm pull-right'}" ng-init="leaveBtnState = {'text':'Joined','btnClass':'btn btn-info btn-sm pull-right'}" ng-class="leaveBtnState.btnClass" ng-if="cr.loggedInUserParticipating" ng-cloak="" ng-click="leaveCommunityRun($index)">{{leaveBtnState.text}}</button>
                                 <button class="btn btn-success btn-sm" ng-if="!cr.loggedInUserParticipating" ng-cloak="" ng-click="joinCommunityRun($index)">Join</button>
                             </td>
                         </tr>
