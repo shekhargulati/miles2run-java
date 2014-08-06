@@ -5,13 +5,23 @@
     </a>
 </script>
 
-<script type="text/ng-template" id="confirm.html">
+<script type="text/ng-template" id="confirm_join.html">
     <div class="modal-footer">
         <p class="pull-left">Are you sure you want to join this Community Run?</p>
         <button class="btn btn-success" ng-click="ok()">Join</button>
         <button class="btn btn-default" ng-click="cancel()">Cancel</button>
     </div>
 </script>
+
+
+<script type="text/ng-template" id="confirm_leave.html">
+    <div class="modal-footer">
+        <p class="pull-left">Are you sure you want to leave this Community Run?</p>
+        <button class="btn btn-danger" ng-click="ok()">Leave</button>
+        <button class="btn btn-default" ng-click="cancel()">Cancel</button>
+    </div>
+</script>
+
 
 <div class="row">
     <div class="col-lg-12">
@@ -55,7 +65,7 @@
                             <td>{{cr.startDate | date:'MMMM dd, yyyy'}}</td>
                             <td>{{cr.endDate | date:'MMMM dd, yyyy'}}</td>
                             <td>
-                                <button class="btn btn-info btn-sm disabled" ng-if="cr.loggedInUserParticipating" ng-cloak="">Already Joined</button>
+                                <button ng-mouseover="leaveBtnState = {'text':'Leave','btnClass':'btn btn-danger btn-xs pull-right'}" ng-mouseleave="leaveBtnState = {'text':'Already Joined','btnClass':'btn btn-info btn-xs pull-right'}" ng-init="leaveBtnState = {'text':'Already Joined','btnClass':'btn btn-info btn-xs pull-right'}" ng-class="leaveBtnState.btnClass" ng-if="cr.loggedInUserParticipating" ng-cloak="" ng-click="leaveCommunityRun($index)">{{leaveBtnState.text}}</button>
                                 <button class="btn btn-success btn-sm" ng-if="!cr.loggedInUserParticipating" ng-cloak="" ng-click="joinCommunityRun($index)">Join</button>
                             </td>
                         </tr>

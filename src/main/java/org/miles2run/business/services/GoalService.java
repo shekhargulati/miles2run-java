@@ -198,4 +198,11 @@ public class GoalService {
         }
         return list.get(0);
     }
+
+    public void archiveGoalWithCommunityRun(CommunityRun communityRun) {
+        Goal goal = entityManager.createQuery("SELECT g from Goal g where g.communityRun =:communityRun", Goal.class).setParameter("communityRun", communityRun).getSingleResult();
+        goal.setArchived(true);
+        entityManager.merge(goal);
+        entityManager.flush();
+    }
 }

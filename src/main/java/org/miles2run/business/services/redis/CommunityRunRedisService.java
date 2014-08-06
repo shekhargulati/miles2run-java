@@ -132,4 +132,17 @@ public class CommunityRunRedisService {
         });
 
     }
+
+    public void removeRunnerFromCommunityRun(final String slug, final String username) {
+        jedisExecutionService.execute(new JedisOperation<Void>() {
+            @Override
+            public Void perform(Jedis jedis) {
+                Pipeline pipeline = jedis.pipelined();
+                pipeline.srem(String.format("%s-runners", slug), username);
+                pipeline.srem(String.format("%s-community_runs", username), slug);
+                pipeline.sync();
+                return null;
+            }
+        });
+    }
 }

@@ -152,4 +152,26 @@ public class CommunityRunResource {
         communityRunRedisService.addRunnerToCommunityRun(slug, profile);
         return Response.status(Response.Status.CREATED).entity(savedGoal).build();
     }
+
+    @Path("/{slug}/leave")
+    @POST
+    @Produces("application/json")
+    @LoggedIn
+    public Response leaveCommunityRun(@NotNull @PathParam("slug") final String slug) {
+        if (!communityRunRedisService.communityRunExists(slug)) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        String principal = securityContext.getUserPrincipal().getName();
+        if (!communityRunRedisService.isUserAlreadyPartOfRun(slug, principal)) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("You are not part of this community run.").build();
+        }
+        Profile profile = profileService.findProfile(principal);
+        logger.info("Adding profile {} to community run {}", principal, slug);
+        communityRunJPAService.leaveCommunityRun(slug, profile);
+        goalService.archiveGoalWithCommunityRun(communityRunJPAService.find(slug));
+        communityRunRedisService.removeRunnerFromCommunityRun(slug, principal);
+        return Response.status(Response.Status.OK).build();
+    }
+
+
 }
