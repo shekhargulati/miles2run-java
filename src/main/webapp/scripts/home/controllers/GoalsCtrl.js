@@ -3,7 +3,7 @@
 angular.module('miles2run-home')
     .controller('GoalsCtrl', function ($scope, $http, $window, activeProfile, ConfigService, $modal) {
         $scope.goalExists = true;
-        $scope.goalsPromise = $http.get(ConfigService.getBaseUrl() + "goals").success(function (data) {
+        $scope.goalsPromise = $http.get(ConfigService.getBaseUrl() + "goals", {params: {"groupByType": true}}).success(function (data) {
             if (isEmpty(data)) {
                 $scope.goalExists = false;
             } else {
@@ -54,7 +54,7 @@ angular.module('miles2run-home')
                             return $scope.durationGoals;
                         } else if (goalType === 'COMMUNITY_RUN_GOAL') {
                             return $scope.communityRunGoals;
-                        }else {
+                        } else {
                             return null;
                         }
                     }

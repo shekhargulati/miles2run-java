@@ -46,23 +46,26 @@ public class GoalResource {
     @GET
     @Produces("application/json")
     @LoggedIn
-    public Map<GoalType, List<Object>> allGoal(@QueryParam("archived") boolean archived) {
+    public Response allGoal(@QueryParam("archived") boolean archived, @QueryParam("groupByType") Boolean groupByType) {
         String loggedInUser = securityContext.getUserPrincipal().getName();
         List<Goal> goals = goalService.findAllGoals(loggedInUser, archived);
-        Map<GoalType, List<Object>> goalsByType = new HashMap<>();
-        for (Goal goal : goals) {
-            GoalType goalType = goal.getGoalType();
-            Object specificGoal = toGoalType(goal);
-            if (goalsByType.containsKey(goalType)) {
-                List<Object> goalsForType = goalsByType.get(goalType);
-                goalsForType.add(specificGoal);
-            } else {
-                List<Object> goalsForType = new ArrayList<>();
-                goalsForType.add(specificGoal);
-                goalsByType.put(goalType, goalsForType);
+        if (groupByType != null && groupByType == true) {
+            Map<GoalType, List<Object>> goalsByType = new HashMap<>();
+            for (Goal goal : goals) {
+                GoalType goalType = goal.getGoalType();
+                Object specificGoal = toGoalType(goal);
+                if (goalsByType.containsKey(goalType)) {
+                    List<Object> goalsForType = goalsByType.get(goalType);
+                    goalsForType.add(specificGoal);
+                } else {
+                    List<Object> goalsForType = new ArrayList<>();
+                    goalsForType.add(specificGoal);
+                    goalsByType.put(goalType, goalsForType);
+                }
             }
+            return Response.status(Response.Status.OK).entity(goalsByType).build();
         }
-        return goalsByType;
+        return Response.status(Response.Status.OK).entity(goals).build();
     }
 
     private Object toGoalType(Goal goal) {

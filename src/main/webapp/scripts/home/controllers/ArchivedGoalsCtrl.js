@@ -5,7 +5,7 @@ angular.module('miles2run-home')
 
         $scope.goalExists = true;
 
-        $scope.archivedGoalsPromise = $http.get(ConfigService.getBaseUrl() + "goals/", {params: {"archived": true}}).success(function (data) {
+        $scope.archivedGoalsPromise = $http.get(ConfigService.getBaseUrl() + "goals/", {params: {"groupByType": true, "archived": true}}).success(function (data) {
             if (isEmpty(data)) {
                 $scope.goalExists = false;
             } else {
@@ -41,7 +41,7 @@ angular.module('miles2run-home')
                         } else if (goalType === 'COMMUNITY_RUN_GOAL') {
                             var goalToUnArchive = $scope.communityRunGoals[idx];
                             return goalToUnArchive;
-                        }else {
+                        } else {
                             return null;
                         }
                     },
@@ -53,7 +53,7 @@ angular.module('miles2run-home')
                             return $scope.distanceGoals;
                         } else if (goalType === 'DURATION_GOAL') {
                             return $scope.durationGoals;
-                        }else if (goalType === 'COMMUNITY_RUN_GOAL') {
+                        } else if (goalType === 'COMMUNITY_RUN_GOAL') {
                             return $scope.communityRunGoals;
                         } else {
                             return null;

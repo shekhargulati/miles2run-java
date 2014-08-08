@@ -15,6 +15,94 @@
 <!-- /.row -->
 <div class="row">
     <div class="col-lg-12">
+        <div class="panel panel-default" ng-if="goalExists" ng-cloak>
+            <div class="panel-heading">
+                <i class="fa fa-pencil-square-o fa-fw"></i> Log new run
+            </div>
+            <!-- /.panel-heading -->
+            <div class="panel-body">
+                <div class="well well-sm">
+                    <form name="forms.activityForm" role="form" ng-submit="postActivity()" novalidate>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <select id="goal" name="goal" class="form-control" required="required" ng-model="goal" ng-options='goal.purpose for goal in goals'>
+
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <input type="text" id="activityDate" name="activityDate" class="form-control"
+                                               datepicker-popup="dd-MMM-yyyy" ng-model="activity.activityDate"
+                                               is-open="opened"
+                                               min-date="minDate"
+                                               max-date="maxDate"
+                                               datepicker-options="dateOptions" close-text="Close"
+                                               placeholder="dd-MMM-YYYY eg. 02-Aug-2014"
+                                               title="Run Date" required>
+                                        <span class="input-group-btn">
+                                            <button class="btn btn-info" ng-click="open($event)"><i
+                                                    class="fa fa-calendar fa-fw"></i>
+                                            </button>
+                                        </span>
+                                    </div>
+
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <input id="distanceCovered" name="distanceCovered" type="number"
+                                               placeholder="Distance ran" class="form-control"
+                                               ng-model="activity.distanceCovered" min="1" step="1"
+                                               title="Distance ran" required>
+                                        <span class="input-group-addon">
+                                            <select name="goalUnit" ng-model="activity.goalUnit">
+                                                <option value="KM" ng-selected="activity.goalUnit == 'KM'">km</option>
+                                                <option value="MI" ng-selected="activity.goalUnit == 'MI'">mi</option>
+                                            </select>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <input id="durationHours" class="col-md-4" name="durationHours"
+                                           ng-model="duration.hours"
+                                           title="Hours" type="number" min="0" max="23" placeholder="00"
+                                           ng-blur="validateDuration(duration)">
+                                    <input id="durationMinutes" class="col-md-4" name="durationMinutes"
+                                           ng-model="duration.minutes"
+                                           title="Minutes" type="number" min="0" max="59" placeholder="00"
+                                           ng-blur="validateDuration(duration)">
+                                    <input id="durationSeconds" class="col-md-4" name="durationSeconds"
+                                           ng-model="duration.seconds"
+                                           title="Seconds" type="number" min="0" max="59" placeholder="00"
+                                           ng-blur="validateDuration(duration)">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <textarea name="status" id="status" class="form-control" rows="4" cols="25"
+                                              required="required"
+                                              placeholder="How did it go?" ng-model="activity.status"></textarea>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="col-md-offset-5 col-md-7">
+                                    <button class="btn btn-primary" type="submit"
+                                            ng-disabled="successfulSubmission">
+                                        Log your run
+                                    </button>
+                                </div>
+
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-12">
         <div class="panel panel-default">
             <div class="panel-heading">
                 <i class="fa fa-clock-o fa-fw"></i> Your home timeline
@@ -31,11 +119,15 @@
                 <ul class="timeline" ng-if="activities.length">
                     <li ng-repeat="activity in activities" ng-class-even="'timeline-inverted'">
                         <div class="timeline-badge">
-                            <span class="avatar"><a ng-href="{{appContext()}}profiles/{{activity.username}}"><img ng-src="{{activity.profilePic}}"></a></span>
+                            <span class="avatar"><a ng-href="{{appContext()}}profiles/{{activity.username}}"><img
+                                    ng-src="{{activity.profilePic}}"></a></span>
                         </div>
                         <div class="timeline-panel">
                             <div class="timeline-heading clearfix ">
-                                <h4 class="timeline-title"><a ng-href="{{appContext()}}profiles/{{activity.username}}/activities/{{activity.id}}">{{activity.username}} ran {{activity.distanceCovered | number:2}} {{activity.goalUnit | lowercase}}</a></h4>
+                                <h4 class="timeline-title"><a
+                                        ng-href="{{appContext()}}profiles/{{activity.username}}/activities/{{activity.id}}">{{activity.username}}
+                                    ran {{activity.distanceCovered | number:2}} {{activity.goalUnit | lowercase}}</a>
+                                </h4>
                                 <span class="pull-right text-muted small"><i class="fa fa-calendar fa-fw"></i><em>{{activity.activityDate
                                     | date:'MMM dd, yyyy'}}</em></span>
                             </div>
@@ -51,10 +143,12 @@
                                     <ul class="dropdown-menu" role="menu"
                                         ng-if="activity.username == currentUser.username" ng-cloak>
                                         <li>
-                                            <a ng-href="{{appContext()}}profiles/{{activity.username}}/activities/{{activity.id}}" title="view activity">View</a>
+                                            <a ng-href="{{appContext()}}profiles/{{activity.username}}/activities/{{activity.id}}"
+                                               title="view activity">View</a>
                                         </li>
                                         <li>
-                                            <a ng-href="{{appContext()}}goals/{{activity.goalId}}#/activity/edit/{{activity.id}}" title="edit activity">Edit</a>
+                                            <a ng-href="{{appContext()}}goals/{{activity.goalId}}#/activity/edit/{{activity.id}}"
+                                               title="edit activity">Edit</a>
                                         </li>
                                         <li class="divider"></li>
                                         <li>
@@ -65,18 +159,22 @@
                                     <ul class="dropdown-menu" role="menu"
                                         ng-if="activity.username != currentUser.username" ng-cloak>
                                         <li>
-                                            <a ng-href="{{appContext()}}profiles/{{activity.username}}/activities/{{activity.id}}" title="view activity">View</a>
+                                            <a ng-href="{{appContext()}}profiles/{{activity.username}}/activities/{{activity.id}}"
+                                               title="view activity">View</a>
                                         </li>
                                     </ul>
                                 </div>
                                 <div class="pull-right">
-                                    <a class="btn btn-xs btn-social-icon btn-facebook" target="_blank" ng-href="{{facebookShareUrl(activity)}}">
+                                    <a class="btn btn-xs btn-social-icon btn-facebook" target="_blank"
+                                       ng-href="{{facebookShareUrl(activity)}}">
                                         <i class="fa fa-facebook"></i>
                                     </a>
-                                    <a class="btn btn-xs btn-social-icon btn-twitter" target="_blank" ng-href="{{twitterShareUrl(activity)}}">
+                                    <a class="btn btn-xs btn-social-icon btn-twitter" target="_blank"
+                                       ng-href="{{twitterShareUrl(activity)}}">
                                         <i class="fa fa-twitter"></i>
                                     </a>
-                                    <a class="btn btn-xs btn-social-icon btn-google-plus" target="_blank" ng-href="{{googleShareUrl(activity)}}">
+                                    <a class="btn btn-xs btn-social-icon btn-google-plus" target="_blank"
+                                       ng-href="{{googleShareUrl(activity)}}">
                                         <i class="fa fa-google-plus"></i>
                                     </a>
                                 </div>
@@ -84,7 +182,8 @@
                         </div>
                     </li>
                 </ul>
-                <pagination direction-links="false" total-items="totalItems" ng-model="currentPage" ng-change="pageChanged()"></pagination>
+                <pagination direction-links="false" total-items="totalItems" ng-model="currentPage"
+                            ng-change="pageChanged()"></pagination>
             </div>
 
             <!-- /.panel-body -->
