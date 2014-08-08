@@ -7,6 +7,7 @@ angular.module('miles2run-home')
         $scope.forms.selectedGoal = {};
 
         $scope.activity = {
+            activityDate: new Date(),
             goalUnit: 'MI',
             share: {}
         };
@@ -24,6 +25,7 @@ angular.module('miles2run-home')
                 $scope.goalExists = true;
                 $scope.goals = data;
                 $scope.forms.selectedGoal = $scope.goals[0];
+                $scope.updateForm();
             }
         }).error(function (data, status) {
             $scope.goalExists = false;
@@ -70,6 +72,7 @@ angular.module('miles2run-home')
                     toastr.success("Posted new activity");
                     $window.location.href = ConfigService.appContext() + 'goals/' + $scope.forms.selectedGoal.id;
                 }).error(function (data, status, headers, config) {
+                    $scope.successfulSubmission = false;
                     console.log("Error handler for PostActivity. Status code " + status);
                     toastr.error("Unable to post activity. Please try later.");
                     $location.path('/');
@@ -78,6 +81,11 @@ angular.module('miles2run-home')
 
 
         };
+
+        $scope.updateForm = function () {
+            $scope.toggleMin();
+            $scope.activity.goalUnit = $scope.forms.selectedGoal.goalUnit;
+        }
 
         $scope.today = function () {
             $scope.dt = new Date();
@@ -99,10 +107,15 @@ angular.module('miles2run-home')
         };
 
         $scope.toggleMin = function () {
-            $scope.minDate = null;
-            var current = new Date();
-            $scope.maxDate = current;
-
+            if ($scope.forms.selectedGoal) {
+                $scope.minDate = $scope.forms.selectedGoal.startDate ? new Date($scope.forms.selectedGoal.startDate) : null;
+                var current = new Date();
+                $scope.maxDate = $scope.forms.selectedGoal.endDate ? (new Date($scope.forms.selectedGoal.endDate) > current ? current : new Date($scope.forms.selectedGoal.endDate)) : current;
+            } else {
+                $scope.minDate = null;
+                var current = new Date();
+                $scope.maxDate = current;
+            }
         };
         $scope.toggleMin();
 
