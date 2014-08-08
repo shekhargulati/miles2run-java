@@ -4,6 +4,7 @@ angular.module('miles2run-home')
     .controller('HomeTimelineCtrl', function ($scope, $http, $modal, $location, activeProfile, ConfigService, ActivityService, $window) {
         $scope.currentUser = activeProfile;
         $scope.forms = {};
+        $scope.forms.selectedGoal = {};
 
         $scope.activity = {
             goalUnit: 'MI',
@@ -22,7 +23,7 @@ angular.module('miles2run-home')
             } else {
                 $scope.goalExists = true;
                 $scope.goals = data;
-                $scope.goal = $scope.goals[0];
+                $scope.forms.selectedGoal = $scope.goals[0];
             }
         }).error(function (data, status) {
             $scope.goalExists = false;
@@ -65,9 +66,9 @@ angular.module('miles2run-home')
                 $scope.successfulSubmission = true;
                 $scope.buttonText = "Logging your run..";
                 $scope.activity.duration = toAppSeconds($scope.duration);
-                ActivityService.postActivity($scope.activity, $scope.goal.id).success(function (data, status, headers, config) {
+                ActivityService.postActivity($scope.activity, $scope.forms.selectedGoal.id).success(function (data, status, headers, config) {
                     toastr.success("Posted new activity");
-                    $window.location.href = ConfigService.appContext() + 'goals/' + data.id;
+                    $window.location.href = ConfigService.appContext() + 'goals/' + $scope.forms.selectedGoal.id;
                 }).error(function (data, status, headers, config) {
                     console.log("Error handler for PostActivity. Status code " + status);
                     toastr.error("Unable to post activity. Please try later.");

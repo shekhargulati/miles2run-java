@@ -26,11 +26,10 @@
                         <div class="row">
                             <div class="col-md-4">
                                 <div class="form-group">
-                                    <select id="goal" name="goal" class="form-control" required="required" ng-model="goal" ng-options='goal.purpose for goal in goals'>
-
+                                    <select id="goal" name="goal" class="form-control" required="required" ng-model="forms.selectedGoal" ng-options='goal.purpose for goal in goals'>
                                     </select>
                                 </div>
-                                <div class="form-group">
+                                <div class="form-group" ng-class="{'has-error': ((forms.activityForm.activityDate.$invalid || forms.activityForm.$error['date-disabled']) && submitted)}">
                                     <div class="input-group">
                                         <input type="text" id="activityDate" name="activityDate" class="form-control"
                                                datepicker-popup="dd-MMM-yyyy" ng-model="activity.activityDate"
@@ -46,11 +45,13 @@
                                             </button>
                                         </span>
                                     </div>
-
+                                    <span class="help-block" ng-if="forms.activityForm.activityDate.$error.required  && submitted">Activity Date is required.</span>
+                                    <span class="help-block" ng-if="forms.activityForm.activityDate.$error.date && submitted">Activity Date is invalid.</span>
+                                    <span class="help-block" ng-if="forms.activityForm.$error['date-disabled'] && submitted">Activity Date should not be greater than today's date.</span>
                                 </div>
                             </div>
                             <div class="col-md-4">
-                                <div class="form-group">
+                                <div class="form-group" ng-class="{'has-error':forms.activityForm.distanceCovered.$invalid && submitted}">
                                     <div class="input-group">
                                         <input id="distanceCovered" name="distanceCovered" type="number"
                                                placeholder="Distance ran" class="form-control"
@@ -63,8 +64,11 @@
                                             </select>
                                         </span>
                                     </div>
+                                    <span class="help-block" ng-if="forms.activityForm.distanceCovered.$error.required && submitted">Distance is required.</span>
+                                    <span class="help-block" ng-if="forms.activityForm.distanceCovered.$error.min && submitted">Distance should be greater than 0.</span>
+                                    <span class="help-block" ng-if="forms.activityForm.distanceCovered.$error.number && submitted">Distance should be a number greater than 0.</span>
                                 </div>
-                                <div class="form-group">
+                                <div class="form-group" ng-class="{'has-error':((forms.activityForm.durationHours.$invalid || forms.activityForm.durationMinutes.$invalid || forms.activityForm.durationSeconds.$invalid) && submitted)}">
                                     <input id="durationHours" class="col-md-4" name="durationHours"
                                            ng-model="duration.hours"
                                            title="Hours" type="number" min="0" max="23" placeholder="00"
@@ -77,13 +81,17 @@
                                            ng-model="duration.seconds"
                                            title="Seconds" type="number" min="0" max="59" placeholder="00"
                                            ng-blur="validateDuration(duration)">
+
+                                    <span class="help-block" ng-if="forms.activityForm.durationHours.$invalid && submitted">Duration is required.</span>
+                                    <span class="help-block" ng-if="forms.activityForm.durationHours.$error.number && submitted">Hours should be a number.</span>
+                                    <span class="help-block" ng-if="forms.activityForm.durationMinutes.$error.number && submitted">Minutes should be a number.</span>
+                                    <span class="help-block" ng-if="forms.activityForm.durationSeconds.$error.number && submitted">Seconds should be a number.</span>
                                 </div>
+
                             </div>
                             <div class="col-md-4">
                                 <div class="form-group">
-                                    <textarea name="status" id="status" class="form-control" rows="4" cols="25"
-                                              required="required"
-                                              placeholder="How did it go?" ng-model="activity.status"></textarea>
+                                    <textarea name="status" id="status" class="form-control" rows="4" cols="25" placeholder="How did it go?" ng-model="activity.status"></textarea>
                                 </div>
                             </div>
                             <div class="col-md-12">
