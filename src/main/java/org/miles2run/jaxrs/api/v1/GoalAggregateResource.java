@@ -3,7 +3,7 @@ package org.miles2run.jaxrs.api.v1;
 import org.jug.filters.LoggedIn;
 import org.miles2run.business.domain.jpa.Goal;
 import org.miles2run.business.domain.jpa.Profile;
-import org.miles2run.business.services.ChartService;
+import org.miles2run.business.services.redis.GoalAggregationService;
 import org.miles2run.business.services.jpa.GoalJPAService;
 import org.miles2run.business.services.ProfileService;
 import org.miles2run.business.services.TimelineService;
@@ -20,7 +20,7 @@ import java.util.Map;
  * Created by shekhargulati on 06/06/14.
  */
 @Path("/api/v1/goal_aggregate/{goalId}")
-public class DashboardResource {
+public class GoalAggregateResource {
 
     @Context
     private SecurityContext securityContext;
@@ -31,7 +31,7 @@ public class DashboardResource {
     @Inject
     private GoalJPAService goalJPAService;
     @Inject
-    private ChartService chartService;
+    private GoalAggregationService goalAggregationService;
 
     @GET
     @LoggedIn
@@ -46,11 +46,11 @@ public class DashboardResource {
         interval = interval == null ? "day" : interval;
         switch (interval) {
             case "day":
-                return chartService.distanceAndPaceOverNDays(profile.getUsername(), goal, days);
+                return goalAggregationService.distanceAndPaceOverNDays(profile.getUsername(), goal, days);
             case "month":
                 return timelineService.distanceAndPaceOverNMonths(profile, goal, interval, months);
             default:
-                return chartService.distanceAndPaceOverNDays(profile.getUsername(), goal, days);
+                return goalAggregationService.distanceAndPaceOverNDays(profile.getUsername(), goal, days);
         }
     }
 
@@ -79,7 +79,7 @@ public class DashboardResource {
             return Response.status(Response.Status.NOT_FOUND).entity("No goal exists with id " + goalId).build();
         }
         nMonths = nMonths == 0 || nMonths > 12 ? 3 : nMonths;
-        Map<String, Double> data = chartService.getActivitiesPerformedInLastNMonthsForGoal(profile.getUsername(), goal, nMonths);
+        Map<String, Double> data = goalAggregationService.getActivitiesPerformedInLastNMonthsForGoal(profile.getUsername(), goal, nMonths);
         return Response.status(Response.Status.OK).entity(data).build();
     }
 }

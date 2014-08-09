@@ -5,7 +5,6 @@ import org.jug.view.NotFoundExceptionMapper;
 import org.jug.view.ViewExceptionMapper;
 import org.jug.view.ViewResourceNotFoundExceptionMapper;
 import org.jug.view.ViewWriter;
-import org.miles2run.business.domain.jpa.CommunityRun;
 import org.miles2run.jaxrs.api.v1.*;
 import org.miles2run.jaxrs.filters.InjectProfileFilter;
 import org.miles2run.jaxrs.views.*;
@@ -48,7 +47,7 @@ public class RestConfig extends Application {
         classes.add(GoogleCallbackView.class);
         classes.add(ActivityView.class);
         classes.add(TimelineResource.class);
-        classes.add(DashboardResource.class);
+        classes.add(GoalAggregateResource.class);
         classes.add(GoalView.class);
         classes.add(GoalTimelineResource.class);
         classes.add(GoalResource.class);
