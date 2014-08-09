@@ -79,17 +79,46 @@ app.filter('moment', function () {
     }
 });
 
-app.filter('momentDaysBetween', function () {
-    return function (text, startDate) {
+app.filter('remainingDays', function () {
+    return function (text, startDateText) {
         if (!text) {
             return "-";
         }
-        startDate = startDate ? new Date(startDate) : new Date();
-        var currentMoment = moment(moment(startDate).format("MMDDYYYY"),"MMDDYYYY");
+
+        var startDate = new Date(startDateText);
+        var currentDate = new Date();
+        var isStartDateAfterCurrentDate = startDate.getTime() > currentDate.getTime();
+        startDate = startDateText ? (isStartDateAfterCurrentDate ? startDate : currentDate) : currentDate;
+        var currentMoment = moment(moment(startDate).format("MMDDYYYY"), "MMDDYYYY");
+        var targetMoment = moment(text, "MMDDYYYY");
+        var daysDiff = targetMoment.diff(currentMoment, 'days');
+        if (daysDiff > 0 && (isStartDateAfterCurrentDate === true)) {
+            daysDiff += 1; // added one because moment does not consider today's date. So, this would result in wrong date being shown when start date is ahead of current date
+            return daysDiff + ' day(s)';
+        } else if (daysDiff > 0 && (isStartDateAfterCurrentDate === false)) {
+            return daysDiff + ' day(s)';
+        }
+        else if (daysDiff === 0) {
+            return 'Ends Today'
+        } else {
+            return moment(text, "MMDDYYYY").fromNow();
+        }
+
+    }
+});
+
+app.filter('totalDays', function () {
+    return function (text, startDateText) {
+        if (!text) {
+            return "-";
+        }
+
+        var startDate = new Date(startDateText);
+        var currentMoment = moment(moment(startDate).format("MMDDYYYY"), "MMDDYYYY");
         var targetMoment = moment(text, "MMDDYYYY");
         var daysDiff = targetMoment.diff(currentMoment, 'days');
         if (daysDiff > 0) {
-            daysDiff += 1; // added one because moment does not consider today's date. The number of days between 23rd July and 24th July should be 2 not 1.
+            daysDiff += 1; // added one because moment does not consider today's date. So, this would result in wrong date being shown when start date is ahead of current date
             return daysDiff + ' day(s)';
         } else if (daysDiff === 0) {
             return 'Ends Today'
