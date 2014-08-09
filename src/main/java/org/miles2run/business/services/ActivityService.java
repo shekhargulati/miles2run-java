@@ -3,6 +3,7 @@ package org.miles2run.business.services;
 import org.miles2run.business.domain.jpa.Activity;
 import org.miles2run.business.domain.jpa.Goal;
 import org.miles2run.business.domain.jpa.Profile;
+import org.miles2run.business.services.jpa.GoalJPAService;
 import org.miles2run.business.vo.ActivityDetails;
 import org.miles2run.business.vo.Progress;
 
@@ -26,7 +27,7 @@ public class ActivityService {
     @Inject
     private ProfileService profileService;
     @Inject
-    private GoalService goalService;
+    private GoalJPAService goalJPAService;
 
     public ActivityDetails save(Activity activity) {
         entityManager.persist(activity);
@@ -95,7 +96,7 @@ public class ActivityService {
     }
 
     public Progress calculateUserProgressForGoal(Profile profile, Long goalId) {
-        Goal goal = goalService.find(goalId);
+        Goal goal = goalJPAService.find(goalId);
         return calculateUserProgressForGoal(profile, goal);
     }
 

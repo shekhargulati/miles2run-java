@@ -4,7 +4,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.jug.filters.LoggedIn;
 import org.miles2run.business.domain.jpa.*;
 import org.miles2run.business.services.*;
+import org.miles2run.business.services.jpa.GoalJPAService;
 import org.miles2run.business.services.redis.CommunityRunRedisService;
+import org.miles2run.business.services.redis.GoalRedisService;
 import org.miles2run.business.utils.UrlUtils;
 import org.miles2run.business.vo.ActivityDetails;
 import org.slf4j.Logger;
@@ -47,9 +49,12 @@ public class ActivityResource {
     @Context
     private SecurityContext securityContext;
     @Inject
-    private GoalService goalService;
+    private GoalJPAService goalJPAService;
     @Inject
     private CommunityRunRedisService communityRunRedisService;
+    @Inject
+    private GoalRedisService goalRedisService;
+
 
     @POST
     @Consumes("application/json")
@@ -58,7 +63,7 @@ public class ActivityResource {
     public Response postActivity(@PathParam("goalId") Long goalId, @Valid final Activity activity) {
         String loggedInUser = securityContext.getUserPrincipal().getName();
         Profile profile = profileService.findProfile(loggedInUser);
-        Goal goal = goalService.findGoal(profile, goalId);
+        Goal goal = goalJPAService.findGoal(profile, goalId);
         logger.debug("Found goal {}", goal);
         if (goal == null) {
             return Response.status(Response.Status.NOT_FOUND).entity("No goal exists with id " + goalId).build();
@@ -70,7 +75,7 @@ public class ActivityResource {
         ActivityDetails savedActivity = activityService.save(activity);
         counterService.updateDistanceCount(distanceCovered);
         counterService.updateActivitySecondsCount(activity.getDuration());
-        goalService.updateTotalDistanceCoveredForAGoal(goal.getId(), savedActivity.getDistanceCovered());
+        goalRedisService.updateTotalDistanceCoveredForAGoal(goal.getId(), savedActivity.getDistanceCovered());
         timelineService.postActivityToTimeline(savedActivity, profile, goal);
         if (goal.getGoalType() == GoalType.COMMUNITY_RUN_GOAL) {
             communityRunRedisService.updateCommunityRunStats(loggedInUser, goal, activity);
@@ -96,7 +101,7 @@ public class ActivityResource {
     public Response updateActivity(@PathParam("goalId") Long goalId, @PathParam("id") Long id, @Valid Activity activity) {
         String loggedInUser = securityContext.getUserPrincipal().getName();
         Profile profile = profileService.findProfile(loggedInUser);
-        Goal goal = goalService.findGoal(profile, goalId);
+        Goal goal = goalJPAService.findGoal(profile, goalId);
         if (goal == null) {
             return Response.status(Response.Status.NOT_FOUND).entity("No goal exists with id " + goalId).build();
         }
@@ -122,7 +127,7 @@ public class ActivityResource {
         long existingActivityDuration = existingActivity.getDuration();
         long updatedDuration = duration - existingActivityDuration;
         counterService.updateActivitySecondsCount(updatedDuration);
-        goalService.updateTotalDistanceCoveredForAGoal(goalId, updatedDistanceCovered);
+        goalRedisService.updateTotalDistanceCoveredForAGoal(goalId, updatedDistanceCovered);
         if (goal.getGoalType() == GoalType.COMMUNITY_RUN_GOAL) {
             communityRunRedisService.updateCommunityRunDistanceAndDurationStats(goal.getCommunityRun().getSlug(), updatedDistanceCovered, updatedDuration);
         }
@@ -135,7 +140,7 @@ public class ActivityResource {
     public Response deleteActivity(@PathParam("goalId") Long goalId, @PathParam("activityId") Long activityId) {
         String loggedInUser = securityContext.getUserPrincipal().getName();
         Profile profile = profileService.findProfile(loggedInUser);
-        Goal goal = goalService.findGoal(profile, goalId);
+        Goal goal = goalJPAService.findGoal(profile, goalId);
         if (goal == null) {
             return Response.status(Response.Status.NOT_FOUND).entity("No goal exists with id " + goalId).build();
         }
@@ -150,7 +155,7 @@ public class ActivityResource {
         activityService.delete(activityId);
         timelineService.deleteActivityFromTimeline(loggedInUser, activityId, goal);
         double activityPreviousDistanceCovered = existingActivity.getDistanceCovered();
-        goalService.updateTotalDistanceCoveredForAGoal(goalId, (-1) * activityPreviousDistanceCovered);
+        goalRedisService.updateTotalDistanceCoveredForAGoal(goalId, (-1) * activityPreviousDistanceCovered);
         return Response.noContent().build();
     }
 

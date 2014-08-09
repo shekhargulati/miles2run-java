@@ -3,12 +3,11 @@ package org.miles2run.jaxrs.api.v1;
 import org.apache.commons.lang3.StringUtils;
 import org.jug.filters.InjectPrincipal;
 import org.jug.filters.LoggedIn;
-import org.jug.view.View;
 import org.miles2run.business.domain.jpa.CommunityRun;
 import org.miles2run.business.domain.jpa.Goal;
 import org.miles2run.business.domain.jpa.Profile;
 import org.miles2run.business.domain.jpa.Role;
-import org.miles2run.business.services.GoalService;
+import org.miles2run.business.services.jpa.GoalJPAService;
 import org.miles2run.business.services.ProfileMongoService;
 import org.miles2run.business.services.jpa.CommunityRunJPAService;
 import org.miles2run.business.services.redis.CommunityRunRedisService;
@@ -48,7 +47,7 @@ public class CommunityRunResource {
     @Inject
     private ProfileMongoService profileMongoService;
     @Inject
-    private GoalService goalService;
+    private GoalJPAService goalJPAService;
 
     @POST
     @Consumes("application/json")
@@ -145,7 +144,7 @@ public class CommunityRunResource {
 
         Goal goal = Goal.newCommunityRunGoal(communityRun);
         logger.info("Creating a CommunityRun goal for profile {}", principal);
-        Goal savedGoal = goalService.save(goal, profile);
+        Goal savedGoal = goalJPAService.save(goal, profile);
         logger.info("Created a new goal with id {}", savedGoal.getId());
 
         communityRunRedisService.addGoalToCommunityRun(slug, savedGoal.getId());
@@ -168,7 +167,7 @@ public class CommunityRunResource {
         Profile profile = profileService.findProfile(principal);
         logger.info("User {} leaving community run {}", principal, slug);
         communityRunJPAService.leaveCommunityRun(slug, profile);
-        goalService.archiveGoalWithCommunityRun(communityRunJPAService.find(slug));
+        goalJPAService.archiveGoalWithCommunityRun(communityRunJPAService.find(slug));
         communityRunRedisService.removeRunnerFromCommunityRun(slug, principal);
         return Response.status(Response.Status.OK).build();
     }

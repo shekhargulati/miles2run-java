@@ -18,6 +18,8 @@ import org.miles2run.business.domain.jpa.SocialConnection;
 import org.miles2run.business.domain.jpa.SocialProvider;
 import org.miles2run.business.domain.mongo.UserProfile;
 import org.miles2run.business.services.*;
+import org.miles2run.business.services.jpa.GoalJPAService;
+import org.miles2run.business.services.redis.GoalRedisService;
 import org.miles2run.business.utils.CityAndCountry;
 import org.miles2run.business.utils.GeocoderUtils;
 import org.miles2run.business.utils.UrlUtils;
@@ -81,7 +83,9 @@ public class ProfileView {
     @Inject
     private GoogleService googleService;
     @Inject
-    private GoalService goalService;
+    private GoalJPAService goalJPAService;
+    @Inject
+    private GoalRedisService goalRedisService;
 
 
     @GET
@@ -225,16 +229,16 @@ public class ProfileView {
                 }
             }
 
-            Long goalId = goalService.findLatestGoalWithActivity(username);
+            Long goalId = goalRedisService.findLatestGoalWithActivity(username);
             if (goalId == null) {
-                Goal activeGoal = goalService.findLatestCreatedGoal(username);
+                Goal activeGoal = goalJPAService.findLatestCreatedGoal(username);
                 if (activeGoal != null) {
                     model.put("activeGoal", new GoalDetails(activeGoal));
                     model.put("progress", new Progress(activeGoal));
                 }
                 return View.of("/profile", templateEngine).withModel(model);
             }
-            Goal activeGoal = goalService.findGoal(username, goalId);
+            Goal activeGoal = goalJPAService.findGoal(username, goalId);
             model.put("activeGoal", new GoalDetails(activeGoal));
             Progress progress = activityService.calculateUserProgressForGoal(username, goalId);
             model.put("progress", progress);

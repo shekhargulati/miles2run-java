@@ -4,7 +4,7 @@ import org.jug.filters.EnableSession;
 import org.jug.view.View;
 import org.miles2run.business.domain.jpa.Goal;
 import org.miles2run.business.services.CounterService;
-import org.miles2run.business.services.GoalService;
+import org.miles2run.business.services.jpa.GoalJPAService;
 import org.miles2run.jaxrs.filters.InjectProfile;
 import org.thymeleaf.TemplateEngine;
 
@@ -34,7 +34,7 @@ public class IndexView {
     @Context
     private HttpServletRequest request;
     @Inject
-    private GoalService goalService;
+    private GoalJPAService goalJPAService;
 
     @GET
     @EnableSession
@@ -44,7 +44,7 @@ public class IndexView {
         HttpSession session = request.getSession(false);
         if (session != null && session.getAttribute("principal") != null) {
             String loggedInUser = (String) session.getAttribute("principal");
-            List<Goal> goals = goalService.findAllGoals(loggedInUser, false);
+            List<Goal> goals = goalJPAService.findAllGoals(loggedInUser, false);
             return View.of("/home", templateEngine).withModel("goals", goals);
         } else {
             return View.of("/index", templateEngine).withModel("counter", counterService.currentCounter());

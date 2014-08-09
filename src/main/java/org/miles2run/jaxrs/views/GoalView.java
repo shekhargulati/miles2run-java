@@ -5,7 +5,7 @@ import org.jug.view.View;
 import org.jug.view.ViewException;
 import org.jug.view.ViewResourceNotFoundException;
 import org.miles2run.business.domain.jpa.Goal;
-import org.miles2run.business.services.GoalService;
+import org.miles2run.business.services.jpa.GoalJPAService;
 import org.miles2run.business.services.ProfileService;
 import org.miles2run.business.vo.ProfileSocialConnectionDetails;
 import org.miles2run.jaxrs.filters.InjectProfile;
@@ -34,7 +34,7 @@ public class GoalView {
     @Inject
     private ProfileService profileService;
     @Inject
-    private GoalService goalService;
+    private GoalJPAService goalJPAService;
     @Inject
     private TemplateEngine templateEngine;
 
@@ -48,7 +48,7 @@ public class GoalView {
         try {
             String username = securityContext.getUserPrincipal().getName();
             logger.info("Rendering Goal page for user {} ", username);
-            Goal goal = goalService.findGoal(username, goalId);
+            Goal goal = goalJPAService.findGoal(username, goalId);
             if (goal == null) {
                 logger.info("No Goal found for id {}", goalId);
                 throw new ViewResourceNotFoundException("There is no goal with id : " + goalId, templateEngine);

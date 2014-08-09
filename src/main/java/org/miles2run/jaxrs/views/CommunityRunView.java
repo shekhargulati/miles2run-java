@@ -8,8 +8,8 @@ import org.miles2run.business.domain.jpa.CommunityRun;
 import org.miles2run.business.domain.jpa.Goal;
 import org.miles2run.business.domain.jpa.Profile;
 import org.miles2run.business.services.jpa.CommunityRunJPAService;
+import org.miles2run.business.services.jpa.GoalJPAService;
 import org.miles2run.business.services.redis.CommunityRunRedisService;
-import org.miles2run.business.services.GoalService;
 import org.miles2run.business.services.ProfileService;
 import org.miles2run.jaxrs.filters.InjectProfile;
 import org.miles2run.jaxrs.vo.CommunityRunDetails;
@@ -21,7 +21,6 @@ import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +45,7 @@ public class CommunityRunView {
     private SecurityContext securityContext;
 
     @Inject
-    private GoalService goalService;
+    private GoalJPAService goalJPAService;
 
     @Inject
     private ProfileService profileService;
@@ -77,7 +76,7 @@ public class CommunityRunView {
         if (securityContext.getUserPrincipal() != null) {
             String principal = securityContext.getUserPrincipal().getName();
             if (communityRunRedisService.isUserAlreadyPartOfRun(slug, principal)) {
-                Long goalId = goalService.findGoalIdWithCommunityRunAndProfile(slug, profileService.findProfile(principal));
+                Long goalId = goalJPAService.findGoalIdWithCommunityRunAndProfile(slug, profileService.findProfile(principal));
                 communityRunDetails.addParticipationDetails(true);
                 return View.of("/community_run", templateEngine).withModel("communityRun", communityRunDetails).withModel("goalId", goalId);
             }
@@ -104,7 +103,7 @@ public class CommunityRunView {
 
         Goal goal = Goal.newCommunityRunGoal(communityRun);
         logger.info("Creating a CommunityRun goal for profile {}", principal);
-        Goal savedGoal = goalService.save(goal, profile);
+        Goal savedGoal = goalJPAService.save(goal, profile);
         logger.info("Created a new goal with id {}", savedGoal.getId());
 
         communityRunRedisService.addGoalToCommunityRun(slug, savedGoal.getId());
@@ -127,7 +126,7 @@ public class CommunityRunView {
         Profile profile = profileService.findProfile(principal);
         logger.info("User {} leaving community run {}", principal, slug);
         communityRunJPAService.leaveCommunityRun(slug, profile);
-        goalService.archiveGoalWithCommunityRun(communityRunJPAService.find(slug));
+        goalJPAService.archiveGoalWithCommunityRun(communityRunJPAService.find(slug));
         communityRunRedisService.removeRunnerFromCommunityRun(slug, principal);
         return View.of("/community_runs/" + slug, true);
     }

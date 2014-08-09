@@ -16,8 +16,6 @@ public class JedisExecutionService {
     @Inject
     JedisPool jedisPool;
 
-
-
     public <T> T execute(JedisOperation<T> operation) {
         Jedis jedis = jedisPool.getResource();
         try {
@@ -33,5 +31,9 @@ public class JedisExecutionService {
             }
         }
         return null;
+    }
+
+    public void setJedisPool(JedisPool jedisPool) {
+        this.jedisPool = jedisPool;
     }
 }

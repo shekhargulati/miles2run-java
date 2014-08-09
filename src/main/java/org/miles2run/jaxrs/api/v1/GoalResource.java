@@ -1,20 +1,19 @@
 package org.miles2run.jaxrs.api.v1;
 
 import org.apache.commons.lang3.StringUtils;
-import org.joda.time.DateTime;
 import org.joda.time.Interval;
 import org.jug.filters.LoggedIn;
 import org.miles2run.business.domain.jpa.Goal;
 import org.miles2run.business.domain.jpa.GoalType;
 import org.miles2run.business.domain.jpa.Profile;
 import org.miles2run.business.services.ActivityService;
-import org.miles2run.business.services.GoalService;
 import org.miles2run.business.services.ProfileService;
+import org.miles2run.business.services.jpa.GoalJPAService;
+import org.miles2run.business.services.redis.GoalRedisService;
 import org.miles2run.business.vo.Progress;
 import org.miles2run.jaxrs.vo.CommunityRunGoalDetails;
 import org.miles2run.jaxrs.vo.DistanceGoalDetails;
 import org.miles2run.jaxrs.vo.DurationGoalDetails;
-import org.miles2run.jaxrs.vo.GoalDetails;
 
 import javax.inject.Inject;
 import javax.validation.Valid;
@@ -22,7 +21,10 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 /**
@@ -31,14 +33,17 @@ import java.util.logging.Logger;
 @Path("/api/v1/goals")
 public class GoalResource {
 
+    @Inject
+    private Logger logger;
+
     @Context
     private SecurityContext securityContext;
     @Inject
     private ProfileService profileService;
     @Inject
-    private GoalService goalService;
+    private GoalJPAService goalJPAService;
     @Inject
-    private Logger logger;
+    private GoalRedisService goalRedisService;
     @Inject
     private ActivityService activityService;
 
@@ -48,7 +53,7 @@ public class GoalResource {
     @LoggedIn
     public Response allGoal(@QueryParam("archived") boolean archived, @QueryParam("groupByType") Boolean groupByType) {
         String loggedInUser = securityContext.getUserPrincipal().getName();
-        List<Goal> goals = goalService.findAllGoals(loggedInUser, archived);
+        List<Goal> goals = goalJPAService.findAllGoals(loggedInUser, archived);
         if (groupByType != null && groupByType == true) {
             Map<GoalType, List<Object>> goalsByType = new HashMap<>();
             for (Goal goal : goals) {
@@ -100,7 +105,7 @@ public class GoalResource {
     @LoggedIn
     public Object goal(@PathParam("goalId") Long goalId) {
         String loggedInUser = securityContext.getUserPrincipal().getName();
-        Goal goal = goalService.findGoal(loggedInUser, goalId);
+        Goal goal = goalJPAService.findGoal(loggedInUser, goalId);
         return toGoalType(goal);
     }
 
@@ -115,7 +120,7 @@ public class GoalResource {
             String loggedInUser = securityContext.getUserPrincipal().getName();
             Profile profile = profileService.findProfile(loggedInUser);
             goal.setDistance(goal.getDistance() * goal.getGoalUnit().getConversion());
-            Goal createdGoal = goalService.save(goal, profile);
+            Goal createdGoal = goalJPAService.save(goal, profile);
             return Response.status(Response.Status.CREATED).entity(createdGoal).build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
@@ -130,7 +135,7 @@ public class GoalResource {
     public Response updateGoal(@PathParam("goalId") Long goalId, @Valid Goal goal) {
         String loggedInUser = securityContext.getUserPrincipal().getName();
         Profile profile = profileService.findProfile(loggedInUser);
-        Goal existingGoal = goalService.find(goalId);
+        Goal existingGoal = goalJPAService.find(goalId);
         if (existingGoal == null) {
             return Response.status(Response.Status.NOT_FOUND).entity("No goal exists with id " + goalId).build();
         }
@@ -138,7 +143,7 @@ public class GoalResource {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }
         goal.setDistance(goal.getDistance() * goal.getGoalUnit().getConversion());
-        goalService.update(goal, goalId);
+        goalJPAService.update(goal, goalId);
         return Response.status(Response.Status.OK).build();
     }
 
@@ -149,11 +154,11 @@ public class GoalResource {
     public Response archiveGoal(@PathParam("goalId") Long goalId, @QueryParam("archived") boolean archived) {
         String loggedInUser = securityContext.getUserPrincipal().getName();
         Profile profile = profileService.findProfile(loggedInUser);
-        Goal existingGoal = goalService.findGoal(profile, goalId);
+        Goal existingGoal = goalJPAService.findGoal(profile, goalId);
         if (existingGoal == null) {
             return Response.status(Response.Status.NOT_FOUND).entity("No goal exists with id " + goalId).build();
         }
-        goalService.updatedArchiveStatus(goalId, archived);
+        goalJPAService.updatedArchiveStatus(goalId, archived);
         return Response.status(Response.Status.OK).build();
     }
 
@@ -164,7 +169,7 @@ public class GoalResource {
     public Response progress(@PathParam("goalId") Long goalId) {
         String username = securityContext.getUserPrincipal().getName();
         Profile loggedInUser = profileService.findProfile(username);
-        Goal goal = goalService.find(goalId);
+        Goal goal = goalJPAService.find(goalId);
         if (goal == null) {
             return Response.status(Response.Status.NOT_FOUND).entity("No goal exists with id " + goalId).build();
         }
@@ -172,26 +177,26 @@ public class GoalResource {
             Progress progress = activityService.calculateUserProgressForGoal(loggedInUser, goal);
             return Response.status(Response.Status.OK).entity(progress).build();
         }
-        Map<String, Object> progress = goalService.getDurationGoalProgress(username, goalId, new Interval(goal.getStartDate().getTime(), goal.getEndDate().getTime()));
+        Map<String, Object> progress = goalRedisService.getDurationGoalProgress(username, goalId, new Interval(goal.getStartDate().getTime(), goal.getEndDate().getTime()));
         return Response.status(Response.Status.OK).entity(progress).build();
     }
 
     public Response deleteGoal(@PathParam("goalId") Long goalId) {
         String loggedInUser = securityContext.getUserPrincipal().getName();
         Profile profile = profileService.findProfile(loggedInUser);
-        Goal existingGoal = goalService.find(goalId);
+        Goal existingGoal = goalJPAService.find(goalId);
         if (existingGoal == null) {
             return Response.status(Response.Status.NOT_FOUND).entity("No goal exists with id " + goalId).build();
         }
         if (!StringUtils.equals(loggedInUser, existingGoal.getProfile().getUsername())) {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }
-        goalService.delete(goalId);
+        goalJPAService.delete(goalId);
         return Response.status(Response.Status.OK).build();
     }
 
     private double percentageGoalCompleted(Goal goal) {
-        double totalDistanceCoveredForGoal = goalService.totalDistanceCoveredForGoal(goal.getId());
+        double totalDistanceCoveredForGoal = goalRedisService.totalDistanceCoveredForGoal(goal.getId());
         double percentageCompleted = (Double.valueOf(totalDistanceCoveredForGoal) * 100 / goal.getDistance());
         return percentageCompleted > 100 ? 100 : percentageCompleted;
     }
