@@ -3,7 +3,6 @@ package org.miles2run.business.services.jpa;
 import org.miles2run.business.domain.jpa.CommunityRun;
 import org.miles2run.business.domain.jpa.Goal;
 import org.miles2run.business.domain.jpa.Profile;
-import org.miles2run.business.services.ProfileService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

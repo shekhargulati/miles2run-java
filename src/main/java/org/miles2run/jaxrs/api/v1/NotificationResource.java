@@ -2,7 +2,7 @@ package org.miles2run.jaxrs.api.v1;
 
 import org.jug.filters.LoggedIn;
 import org.miles2run.business.domain.redis.Notification;
-import org.miles2run.business.services.NotificationService;
+import org.miles2run.business.services.redis.NotificationService;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;

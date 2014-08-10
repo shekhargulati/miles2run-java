@@ -1,4 +1,4 @@
-package org.miles2runtest.business.services.jpa;
+package org.miles2run.business.services.jpa;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -15,8 +15,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.miles2run.business.domain.jpa.*;
 import org.miles2run.business.producers.EntityManagerProducer;
-import org.miles2run.business.services.ProfileService;
-import org.miles2run.business.services.jpa.CommunityRunJPAService;
 import org.miles2run.business.vo.ProfileDetails;
 import org.miles2run.business.vo.ProfileGroupDetails;
 import org.miles2run.business.vo.ProfileSocialConnectionDetails;
@@ -25,7 +23,6 @@ import org.miles2run.jaxrs.forms.ProfileForm;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.transaction.UserTransaction;
-import javax.validation.ConstraintViolationException;
 import java.util.Date;
 import java.util.List;
 

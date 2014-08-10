@@ -1,4 +1,4 @@
-package org.miles2run.business.services;
+package org.miles2run.business.services.social;
 
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;

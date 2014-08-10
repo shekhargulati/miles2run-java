@@ -1,4 +1,4 @@
-package org.miles2run.business.services;
+package org.miles2run.business.services.mongo;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
@@ -8,6 +8,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.miles2run.business.services.mongo.ProfileMongoService;
 
 /**
  * Created by shekhargulati on 02/08/14.

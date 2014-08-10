@@ -1,7 +1,7 @@
 package org.miles2run.jaxrs.views;
 
 import org.jug.view.View;
-import org.miles2run.business.services.GoogleService;
+import org.miles2run.business.services.social.GoogleService;
 import org.miles2run.business.utils.UrlUtils;
 
 import javax.inject.Inject;

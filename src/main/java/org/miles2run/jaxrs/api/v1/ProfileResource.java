@@ -2,8 +2,8 @@ package org.miles2run.jaxrs.api.v1;
 
 import org.jug.filters.LoggedIn;
 import org.miles2run.business.domain.mongo.UserProfile;
-import org.miles2run.business.services.ProfileMongoService;
-import org.miles2run.business.services.ProfileService;
+import org.miles2run.business.services.mongo.ProfileMongoService;
+import org.miles2run.business.services.jpa.ProfileService;
 import org.miles2run.business.vo.ProfileDetails;
 import org.miles2run.business.vo.ProfileSocialConnectionDetails;
 

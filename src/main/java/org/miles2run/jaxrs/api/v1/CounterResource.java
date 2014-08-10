@@ -1,6 +1,6 @@
 package org.miles2run.jaxrs.api.v1;
 
-import org.miles2run.business.services.CounterService;
+import org.miles2run.business.services.redis.CounterService;
 import org.miles2run.business.domain.redis.Counter;
 
 import javax.inject.Inject;

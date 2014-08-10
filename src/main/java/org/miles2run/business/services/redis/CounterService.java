@@ -1,6 +1,8 @@
-package org.miles2run.business.services;
+package org.miles2run.business.services.redis;
 
 import org.miles2run.business.domain.redis.Counter;
+import org.miles2run.business.services.redis.JedisExecutionService;
+import org.miles2run.business.services.redis.JedisOperation;
 import redis.clients.jedis.Jedis;
 
 import javax.enterprise.context.ApplicationScoped;

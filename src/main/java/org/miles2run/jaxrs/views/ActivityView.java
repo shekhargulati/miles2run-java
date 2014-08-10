@@ -3,7 +3,7 @@ package org.miles2run.jaxrs.views;
 import org.jug.filters.InjectPrincipal;
 import org.jug.view.View;
 import org.jug.view.ViewResourceNotFoundException;
-import org.miles2run.business.services.ActivityService;
+import org.miles2run.business.services.jpa.ActivityService;
 import org.miles2run.business.vo.ActivityDetails;
 import org.miles2run.jaxrs.filters.InjectProfile;
 import org.thymeleaf.TemplateEngine;

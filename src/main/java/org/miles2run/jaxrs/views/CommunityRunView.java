@@ -10,7 +10,7 @@ import org.miles2run.business.domain.jpa.Profile;
 import org.miles2run.business.services.jpa.CommunityRunJPAService;
 import org.miles2run.business.services.jpa.GoalJPAService;
 import org.miles2run.business.services.redis.CommunityRunRedisService;
-import org.miles2run.business.services.ProfileService;
+import org.miles2run.business.services.jpa.ProfileService;
 import org.miles2run.jaxrs.filters.InjectProfile;
 import org.miles2run.jaxrs.vo.CommunityRunDetails;
 import org.slf4j.Logger;

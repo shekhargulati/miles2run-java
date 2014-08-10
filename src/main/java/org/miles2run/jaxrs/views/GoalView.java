@@ -6,7 +6,7 @@ import org.jug.view.ViewException;
 import org.jug.view.ViewResourceNotFoundException;
 import org.miles2run.business.domain.jpa.Goal;
 import org.miles2run.business.services.jpa.GoalJPAService;
-import org.miles2run.business.services.ProfileService;
+import org.miles2run.business.services.jpa.ProfileService;
 import org.miles2run.business.vo.ProfileSocialConnectionDetails;
 import org.miles2run.jaxrs.filters.InjectProfile;
 import org.slf4j.Logger;

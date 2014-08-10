@@ -1,6 +1,7 @@
-package org.miles2run.business.services;
+package org.miles2run.business.services.social;
 
 import org.miles2run.business.domain.jpa.SocialConnection;
+import org.miles2run.business.services.jpa.SocialConnectionService;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;

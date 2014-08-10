@@ -7,7 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.jug.view.View;
 import org.miles2run.business.domain.jpa.SocialConnection;
 import org.miles2run.business.domain.jpa.SocialProvider;
-import org.miles2run.business.services.SocialConnectionService;
+import org.miles2run.business.services.jpa.SocialConnectionService;
 import org.miles2run.business.utils.UrlUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

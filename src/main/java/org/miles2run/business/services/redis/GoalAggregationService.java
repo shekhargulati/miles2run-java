@@ -2,9 +2,6 @@ package org.miles2run.business.services.redis;
 
 import org.joda.time.Interval;
 import org.miles2run.business.domain.jpa.Goal;
-import org.miles2run.business.services.JedisExecutionService;
-import org.miles2run.business.services.JedisOperation;
-import org.miles2run.business.services.RedisKeyNames;
 import org.miles2run.business.utils.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

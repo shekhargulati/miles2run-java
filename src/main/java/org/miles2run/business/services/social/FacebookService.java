@@ -1,4 +1,4 @@
-package org.miles2run.business.services;
+package org.miles2run.business.services.social;
 
 import facebook4j.Facebook;
 import facebook4j.FacebookException;

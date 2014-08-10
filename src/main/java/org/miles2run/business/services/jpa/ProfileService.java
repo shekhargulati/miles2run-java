@@ -1,4 +1,4 @@
-package org.miles2run.business.services;
+package org.miles2run.business.services.jpa;
 
 import org.miles2run.business.domain.jpa.Profile;
 import org.miles2run.business.domain.jpa.SocialProvider;

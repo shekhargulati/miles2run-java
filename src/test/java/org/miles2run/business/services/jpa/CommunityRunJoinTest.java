@@ -1,4 +1,4 @@
-package org.miles2runtest.business.services.jpa;
+package org.miles2run.business.services.jpa;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -14,8 +14,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.miles2run.business.domain.jpa.*;
 import org.miles2run.business.producers.EntityManagerProducer;
-import org.miles2run.business.services.ProfileService;
-import org.miles2run.business.services.jpa.CommunityRunJPAService;
 import org.miles2run.business.vo.ProfileDetails;
 import org.miles2run.business.vo.ProfileGroupDetails;
 import org.miles2run.business.vo.ProfileSocialConnectionDetails;
@@ -27,7 +25,6 @@ import javax.transaction.UserTransaction;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;

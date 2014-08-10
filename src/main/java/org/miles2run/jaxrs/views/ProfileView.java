@@ -12,23 +12,25 @@ import org.jug.filters.LoggedIn;
 import org.jug.view.View;
 import org.jug.view.ViewException;
 import org.jug.view.ViewResourceNotFoundException;
-import org.miles2run.business.domain.jpa.Goal;
 import org.miles2run.business.domain.jpa.Profile;
 import org.miles2run.business.domain.jpa.SocialConnection;
 import org.miles2run.business.domain.jpa.SocialProvider;
 import org.miles2run.business.domain.mongo.UserProfile;
-import org.miles2run.business.services.*;
+import org.miles2run.business.services.jpa.ActivityService;
 import org.miles2run.business.services.jpa.GoalJPAService;
+import org.miles2run.business.services.jpa.ProfileService;
+import org.miles2run.business.services.jpa.SocialConnectionService;
+import org.miles2run.business.services.mongo.ProfileMongoService;
+import org.miles2run.business.services.redis.CounterService;
 import org.miles2run.business.services.redis.GoalRedisService;
+import org.miles2run.business.services.social.GoogleService;
 import org.miles2run.business.utils.CityAndCountry;
 import org.miles2run.business.utils.GeocoderUtils;
 import org.miles2run.business.utils.UrlUtils;
 import org.miles2run.business.vo.Google;
-import org.miles2run.business.vo.Progress;
 import org.miles2run.jaxrs.filters.InjectProfile;
 import org.miles2run.jaxrs.forms.ProfileForm;
 import org.miles2run.jaxrs.forms.UpdateProfileForm;
-import org.miles2run.jaxrs.vo.GoalDetails;
 import org.miles2run.jaxrs.vo.ProfileDetails;
 import org.thymeleaf.TemplateEngine;
 import twitter4j.Twitter;
@@ -229,19 +231,11 @@ public class ProfileView {
                 }
             }
 
-            Long goalId = goalRedisService.findLatestGoalWithActivity(username);
-            if (goalId == null) {
-                Goal activeGoal = goalJPAService.findLatestCreatedGoal(username);
-                if (activeGoal != null) {
-                    model.put("activeGoal", new GoalDetails(activeGoal));
-                    model.put("progress", new Progress(activeGoal));
-                }
-                return View.of("/profile", templateEngine).withModel(model);
-            }
-            Goal activeGoal = goalJPAService.findGoal(username, goalId);
-            model.put("activeGoal", new GoalDetails(activeGoal));
-            Progress progress = activityService.calculateUserProgressForGoal(username, goalId);
-            model.put("progress", progress);
+            /*
+                1. Find count of total active goals for a user profile -- RDBMS
+                2. Find total activities and total distance covered by a user. -- Can be done from both RDBMS and Redis -- Easily done from RDBMS
+                3. Create a value object and add to the model -- New value object
+             */
             return View.of("/profile", templateEngine).withModel(model);
         } catch (Exception e) {
             if (e instanceof ViewResourceNotFoundException) {

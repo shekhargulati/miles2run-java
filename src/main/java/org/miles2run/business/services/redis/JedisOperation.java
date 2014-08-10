@@ -1,4 +1,4 @@
-package org.miles2run.business.services;
+package org.miles2run.business.services.redis;
 
 import redis.clients.jedis.Jedis;
 

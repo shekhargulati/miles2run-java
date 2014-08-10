@@ -1,4 +1,4 @@
-package org.miles2run.business.services;
+package org.miles2run.business.services.mongo;
 
 import java.util.List;
 

@@ -1,10 +1,11 @@
-package org.miles2run.business.services;
+package org.miles2run.business.services.redis;
 
 import org.joda.time.DateTime;
 import org.miles2run.business.domain.jpa.CommunityRun;
 import org.miles2run.business.domain.jpa.Goal;
 import org.miles2run.business.domain.jpa.Profile;
 import org.miles2run.business.domain.mongo.UserProfile;
+import org.miles2run.business.services.mongo.ProfileMongoService;
 import org.miles2run.business.vo.ActivityDetails;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Pipeline;
@@ -231,7 +232,7 @@ public class TimelineService {
         return jedisExecutionService.execute(new JedisOperation<List<ActivityDetails>>() {
             @Override
             public List<ActivityDetails> perform(Jedis jedis) {
-                String profileTimelineKey = String.format("profile:%s:timeline", username);
+                String profileTimelineKey = String.format(RedisKeyNames.PROFILE_S_TIMELINE, username);
                 Set<String> activityIds = jedis.zrevrange(profileTimelineKey, (page - 1) * count, page * (count - 1));
                 Pipeline pipeline = jedis.pipelined();
                 List<Response<Map<String, String>>> result = new ArrayList<>();

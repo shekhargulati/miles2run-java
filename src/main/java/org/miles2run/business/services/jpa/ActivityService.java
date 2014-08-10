@@ -1,9 +1,8 @@
-package org.miles2run.business.services;
+package org.miles2run.business.services.jpa;
 
 import org.miles2run.business.domain.jpa.Activity;
 import org.miles2run.business.domain.jpa.Goal;
 import org.miles2run.business.domain.jpa.Profile;
-import org.miles2run.business.services.jpa.GoalJPAService;
 import org.miles2run.business.vo.ActivityDetails;
 import org.miles2run.business.vo.Progress;
 

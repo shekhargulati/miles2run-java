@@ -1,7 +1,7 @@
 package org.miles2run.jaxrs.filters;
 
 import org.jug.view.View;
-import org.miles2run.business.services.ProfileService;
+import org.miles2run.business.services.jpa.ProfileService;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -12,7 +12,6 @@ import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.ext.Provider;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 

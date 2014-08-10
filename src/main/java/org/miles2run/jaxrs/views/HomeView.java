@@ -4,7 +4,7 @@ import org.jug.filters.LoggedIn;
 import org.jug.view.View;
 import org.miles2run.business.domain.jpa.Goal;
 import org.miles2run.business.services.jpa.GoalJPAService;
-import org.miles2run.business.services.ProfileService;
+import org.miles2run.business.services.jpa.ProfileService;
 import org.miles2run.jaxrs.filters.InjectProfile;
 import org.thymeleaf.TemplateEngine;
 
