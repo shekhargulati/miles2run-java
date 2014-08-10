@@ -25,7 +25,7 @@ function CreateDurationGoalCtrl($scope, $location, activeProfile, $http, ConfigS
     $scope.createDurationGoal = function () {
         $scope.submitted = true;
         $scope.validateDateRange($scope.goal.startDate, $scope.goal.endDate);
-        if ($scope.goalForm.$valid && !$scope.goalForm.startDate.$invalid) {
+        if ($scope.goalForm.$valid) {
             createGoal('DURATION_GOAL');
         }
     }
@@ -33,9 +33,14 @@ function CreateDurationGoalCtrl($scope, $location, activeProfile, $http, ConfigS
     var createGoal = function (goalType) {
         $scope.successfulSubmission = true;
         $scope.buttonText = "Creating Goal..";
-        $scope.goal.goalType = goalType;
-        delete $scope.goal.numberOfDays;
-        $scope.createGoalPromise = $http.post(ConfigService.getBaseUrl() + "goals", $scope.goal).success(function (data) {
+        var goal = {
+            startDate: $scope.goal.startDate,
+            endDate: $scope.goal.endDate,
+            goalType: goalType,
+            purpose: $scope.goal.purpose
+
+        }
+        $scope.createGoalPromise = $http.post(ConfigService.getBaseUrl() + "goals", goal).success(function (data) {
             toastr.success("Created new goal");
             $window.location.href = ConfigService.appContext() + 'goals/' + data.id;
         }).error(function (data, status) {

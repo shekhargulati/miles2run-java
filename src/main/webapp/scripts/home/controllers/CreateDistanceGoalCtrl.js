@@ -23,7 +23,6 @@ function CreateDistanceGoalCtrl($scope, $location, activeProfile, $http, ConfigS
         $scope.successfulSubmission = true;
         $scope.buttonText = "Creating Goal..";
         $scope.goal.goalType = goalType;
-        delete $scope.goal.numberOfDays;
         $scope.createGoalPromise = $http.post(ConfigService.getBaseUrl() + "goals", $scope.goal).success(function (data) {
             toastr.success("Created new goal");
             $window.location.href = ConfigService.appContext() + 'goals/' + data.id;
