@@ -23,8 +23,8 @@ import java.util.logging.Logger;
 @Path("/api/v1/profiles")
 public class ProfileResource {
 
-    @Context
-    private HttpServletRequest request;
+    @Inject
+    private Logger logger;
 
     @Inject
     private ProfileService profileService;
@@ -32,8 +32,7 @@ public class ProfileResource {
     private SecurityContext securityContext;
     @Inject
     private ProfileMongoService profileMongoService;
-    @Inject
-    private Logger logger;
+
 
     @Path("/me")
     @GET

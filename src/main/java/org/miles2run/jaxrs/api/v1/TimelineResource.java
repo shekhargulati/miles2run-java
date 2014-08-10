@@ -38,7 +38,7 @@ public class TimelineResource {
             return Collections.emptyMap();
         }
         page = page == 0 ? 1 : page;
-        count = count == 0 || count > 50 ? 10 : count;
+        count = (count == 0 || count > 10) ? 10 : count;
         List<ActivityDetails> homeTimeline = timelineService.getProfileTimeline(username, page, count);
         Map<String, Object> response = new HashMap<>();
         response.put("timeline", homeTimeline);

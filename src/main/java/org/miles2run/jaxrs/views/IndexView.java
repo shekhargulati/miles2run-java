@@ -3,6 +3,8 @@ package org.miles2run.jaxrs.views;
 import org.jug.filters.EnableSession;
 import org.jug.view.View;
 import org.miles2run.business.domain.jpa.Goal;
+import org.miles2run.business.domain.jpa.Profile;
+import org.miles2run.business.services.jpa.ProfileService;
 import org.miles2run.business.services.redis.CounterService;
 import org.miles2run.business.services.jpa.GoalJPAService;
 import org.miles2run.jaxrs.filters.InjectProfile;
@@ -35,6 +37,8 @@ public class IndexView {
     private HttpServletRequest request;
     @Inject
     private GoalJPAService goalJPAService;
+    @Inject
+    private ProfileService profileService;
 
     @GET
     @EnableSession
@@ -44,7 +48,8 @@ public class IndexView {
         HttpSession session = request.getSession(false);
         if (session != null && session.getAttribute("principal") != null) {
             String loggedInUser = (String) session.getAttribute("principal");
-            List<Goal> goals = goalJPAService.findAllGoals(loggedInUser, false);
+            Profile profile = profileService.findProfile(loggedInUser);
+            List<Goal> goals = goalJPAService.findAllGoals(profile, false);
             return View.of("/home", templateEngine).withModel("goals", goals);
         } else {
             return View.of("/index", templateEngine).withModel("counter", counterService.currentCounter());

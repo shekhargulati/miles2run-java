@@ -79,7 +79,7 @@
                     <div class="panel panel-primary">
                         <div class="panel-heading">
                             <h4 th:inline="text">
-                                <a href="#" th:href="@{'/profiles/' + ${activity.username}}" th:inline="text"><img th:src="${activity.profilePic}" class="img-thumbnail"/></a> [[${activity.fullname} + ' ran '+ ${activity.distanceCovered} +' '+ ${activity.goalUnit} + ' on ' + ${#dates.format(activity.activityDate, 'dd-MMM-yyyy')}]]
+                                <a href="#" th:href="@{'/profiles/' + ${activity.username}}" th:inline="text"><img width="50" height="50" th:src="${activity.profilePic}" class="img-thumbnail"/></a> [[${activity.fullname} + ' ran '+ ${activity.distanceCovered} +' '+ ${activity.goalUnit} + ' on ' + ${#dates.format(activity.activityDate, 'dd-MMM-yyyy')}]]
                             </h4>
                         </div>
                     </div>

@@ -76,7 +76,7 @@ public class CommunityRunView {
         if (securityContext.getUserPrincipal() != null) {
             String principal = securityContext.getUserPrincipal().getName();
             if (communityRunRedisService.isUserAlreadyPartOfRun(slug, principal)) {
-                Long goalId = goalJPAService.findGoalIdWithCommunityRunAndProfile(slug, profileService.findProfile(principal));
+                Long goalId = goalJPAService.findGoalIdWithCommunityRunAndProfile(communityRunJPAService.find(slug), profileService.findProfile(principal));
                 communityRunDetails.addParticipationDetails(true);
                 return View.of("/community_run", templateEngine).withModel("communityRun", communityRunDetails).withModel("goalId", goalId);
             }

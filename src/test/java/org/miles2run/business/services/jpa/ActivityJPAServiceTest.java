@@ -1,7 +1,6 @@
 package org.miles2run.business.services.jpa;
 
 import org.hamcrest.CoreMatchers;
-import org.hamcrest.collection.IsCollectionWithSize;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -14,22 +13,19 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.miles2run.business.domain.jpa.*;
 import org.miles2run.business.producers.EntityManagerProducer;
-import org.miles2run.business.vo.ProfileDetails;
-import org.miles2run.business.vo.ProfileGroupDetails;
-import org.miles2run.business.vo.ProfileSocialConnectionDetails;
+import org.miles2run.business.vo.*;
 import org.miles2run.jaxrs.forms.ProfileForm;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.transaction.UserTransaction;
-import java.util.List;
+import java.util.Date;
 
 /**
  * Created by shekhargulati on 10/08/14.
  */
 @RunWith(Arquillian.class)
-public class GoalJPAServiceTest {
-
+public class ActivityJPAServiceTest {
 
     @Deployment
     public static Archive<?> deployment() {
@@ -52,8 +48,13 @@ public class GoalJPAServiceTest {
                 addClass(EntityManagerProducer.class).
                 addClass(GoalJPAService.class).
                 addClass(ProfileService.class).
+                addClass(Activity.class).
+                addClass(ActivityJPAService.class).
+                addClass(ActivityDetails.class).
+                addClass(ActivityCountAndDistanceTuple.class).
+                addClass(Progress.class).
                 addClass(CommunityRun.class).
-                addClass(CommunityRunJPAService.class).
+                addClass(Share.class).
                 addAsResource("META-INF/test_persistence.xml", "META-INF/persistence.xml").
                 addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
         System.out.printf("WebArchive %s", webArchive.toString(true));
@@ -70,74 +71,55 @@ public class GoalJPAServiceTest {
     private EntityManager entityManager;
     @Inject
     private UserTransaction userTransaction;
+    @Inject
+    private ActivityJPAService activityJPAService;
 
     @Before
     public void setUp() throws Exception {
         userTransaction.begin();
+        entityManager.createQuery("DELETE from Activity a").executeUpdate();
         entityManager.createQuery("DELETE from Goal g").executeUpdate();
         entityManager.createQuery("DELETE from Profile p").executeUpdate();
         userTransaction.commit();
     }
 
     @Test
-    public void findAllGoals_3ActiveGoalsAnd2ArchivedGoalCreatedByUser_ReturnGoalsCollectionWithSize3() throws Exception {
+    public void calculateTotalActivitiesAndDistanceCoveredByUser_5ActivitiesEachWith20AsDistanceCovered_TotalActivities5AndTotalDistance100() throws Exception {
         Profile profile = createProfile();
-        createNActiveGoals(profile, 3);
-        createNArchivedGoals(profile, 2);
-        List<Goal> activeGoals = goalJPAService.findAllGoals(profile, false);
-        Assert.assertThat(activeGoals, IsCollectionWithSize.hasSize(3));
-    }
-
-    @Test
-    public void countOfActiveGoalsCreatedByUser_3ActiveGoalsAnd2ArchivedGoalsCreatedByUser_ShouldBeThreeGoals() throws Exception {
-        Profile profile = createProfile();
-        createNActiveGoals(profile, 3);
-        createNArchivedGoals(profile, 2);
-        long count = goalJPAService.countOfActiveGoalCreatedByUser(profile);
-        Assert.assertThat(count, CoreMatchers.is(CoreMatchers.equalTo(3L)));
-    }
-
-    @Test
-    public void countOfActiveGoalsCreatedByUser_NoGoalCreatedByUser_Return0Goal() throws Exception {
-        Profile profile = createProfile();
-        long count = goalJPAService.countOfActiveGoalCreatedByUser(profile);
-        Assert.assertThat(count, CoreMatchers.is(CoreMatchers.equalTo(0L)));
-    }
-
-    @Test
-    public void countOfActiveGoalsCreatedByUser_2ArchivedGoalsCreatedByUser_Return0Goal() throws Exception {
-        Profile profile = createProfile();
-        createNArchivedGoals(profile, 2);
-        long count = goalJPAService.countOfActiveGoalCreatedByUser(profile);
-        Assert.assertThat(count, CoreMatchers.is(CoreMatchers.equalTo(0L)));
-    }
-
-    private void createNArchivedGoals(Profile profile, int n) {
-        for (int i = 0; i < n; i++) {
-            Goal goal = newGoal(i);
-            goal.setArchived(true);
-            goalJPAService.save(goal, profile);
+        Goal goal = createGoal(profile);
+        for (int i = 0; i < 5; i++) {
+            Activity activity = new Activity(new Date(), 20d, GoalUnit.MI);
+            activity.setGoal(goal);
+            activity.setPostedBy(profile);
+            activityJPAService.save(activity);
         }
+        ActivityCountAndDistanceTuple tuple = activityJPAService.calculateTotalActivitiesAndDistanceCoveredByUser(profile);
+        Assert.assertThat(tuple.getActivityCount(), CoreMatchers.is(CoreMatchers.equalTo(5L)));
+        Assert.assertThat(tuple.getDistanceCovered(), CoreMatchers.is(CoreMatchers.equalTo(100d)));
     }
 
-    void createNActiveGoals(Profile profile, int n) {
-        for (int i = 0; i < n; i++) {
-            goalJPAService.save(newGoal(i), profile);
-        }
+    @Test
+    public void calculateTotalActivitiesAndDistanceCoveredByUser_NoActivityForAGoal_TotalActivities0TotalDistance0() throws Exception {
+        Profile profile = createProfile();
+        ActivityCountAndDistanceTuple tuple = activityJPAService.calculateTotalActivitiesAndDistanceCoveredByUser(profile);
+        System.out.printf("ActivityCountAndDistanceTuple %s", tuple);
+        Assert.assertThat(tuple.getActivityCount(), CoreMatchers.is(CoreMatchers.equalTo(0L)));
+        Assert.assertThat(tuple.getDistanceCovered(), CoreMatchers.is(CoreMatchers.equalTo(0d)));
     }
 
-    Goal newGoal(int i) {
+    Goal createGoal(Profile profile) {
         Goal goal = new Goal();
-        goal.setDistance(100 + i);
+        goal.setDistance(100);
         goal.setGoalUnit(GoalUnit.MI);
-        goal.setPurpose("Run" + 100 + i + "miles");
+        goal.setPurpose("Run 100 miles");
         goal.setGoalType(GoalType.DISTANCE_GOAL);
-        return goal;
+        return goalJPAService.save(goal, profile);
     }
 
     private Profile createProfile() {
         Profile profile = Profile.createProfile("test@test.com", "test_user", "Test User", "city", "country", Gender.MALE);
         return profileService.save(profile);
     }
+
 
 }

@@ -5,6 +5,7 @@ import org.jug.view.View;
 import org.jug.view.ViewException;
 import org.jug.view.ViewResourceNotFoundException;
 import org.miles2run.business.domain.jpa.Goal;
+import org.miles2run.business.domain.jpa.Profile;
 import org.miles2run.business.services.jpa.GoalJPAService;
 import org.miles2run.business.services.jpa.ProfileService;
 import org.miles2run.business.vo.ProfileSocialConnectionDetails;
@@ -48,7 +49,8 @@ public class GoalView {
         try {
             String username = securityContext.getUserPrincipal().getName();
             logger.info("Rendering Goal page for user {} ", username);
-            Goal goal = goalJPAService.findGoal(username, goalId);
+            Profile profile = profileService.findProfile(username);
+            Goal goal = goalJPAService.findGoal(profile, goalId);
             if (goal == null) {
                 logger.info("No Goal found for id {}", goalId);
                 throw new ViewResourceNotFoundException("There is no goal with id : " + goalId, templateEngine);

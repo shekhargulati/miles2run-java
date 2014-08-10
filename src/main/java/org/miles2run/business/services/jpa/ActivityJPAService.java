@@ -3,6 +3,7 @@ package org.miles2run.business.services.jpa;
 import org.miles2run.business.domain.jpa.Activity;
 import org.miles2run.business.domain.jpa.Goal;
 import org.miles2run.business.domain.jpa.Profile;
+import org.miles2run.business.vo.ActivityCountAndDistanceTuple;
 import org.miles2run.business.vo.ActivityDetails;
 import org.miles2run.business.vo.Progress;
 
@@ -19,14 +20,10 @@ import java.util.List;
  * Created by shekhargulati on 04/03/14.
  */
 @Stateless
-public class ActivityService {
+public class ActivityJPAService {
 
     @Inject
     private EntityManager entityManager;
-    @Inject
-    private ProfileService profileService;
-    @Inject
-    private GoalJPAService goalJPAService;
 
     public ActivityDetails save(Activity activity) {
         entityManager.persist(activity);
@@ -47,7 +44,7 @@ public class ActivityService {
     }
 
 
-    public List<ActivityDetails> findAll(Profile postedBy, int start, int max) {
+    public List<ActivityDetails> findAll(@NotNull final Profile postedBy, int start, int max) {
         TypedQuery<ActivityDetails> query = entityManager.createNamedQuery("Activity.findAll", ActivityDetails.class);
         query.setFirstResult(start);
         query.setMaxResults(max);
@@ -55,8 +52,7 @@ public class ActivityService {
         return query.getResultList();
     }
 
-    public List<ActivityDetails> findAll(String username) {
-        Profile profile = profileService.findProfile(username);
+    public List<ActivityDetails> findAll(@NotNull final Profile profile) {
         TypedQuery<ActivityDetails> query = entityManager.createNamedQuery("Activity.findAll", ActivityDetails.class);
         query.setParameter("postedBy", profile);
         List<ActivityDetails> activities = query.getResultList();
@@ -85,7 +81,7 @@ public class ActivityService {
 
     }
 
-    public Progress calculateUserProgressForGoal(Profile profile, Goal goal) {
+    public Progress calculateUserProgressForGoal(@NotNull Profile profile, @NotNull Goal goal) {
         long count = entityManager.createNamedQuery("Activity.countByProfileAndGoal", Long.class).setParameter("profile", profile).setParameter("goal", goal).getSingleResult();
         if (count == 0) {
             return new Progress(goal);
@@ -94,29 +90,17 @@ public class ActivityService {
         return query.getSingleResult();
     }
 
-    public Progress calculateUserProgressForGoal(Profile profile, Long goalId) {
-        Goal goal = goalJPAService.find(goalId);
-        return calculateUserProgressForGoal(profile, goal);
-    }
-
-    public Progress calculateUserProgressForGoal(String loggedInUser, Long goalId) {
-        return calculateUserProgressForGoal(profileService.findProfile(loggedInUser), goalId);
-    }
-
-
-    public List<Activity> findActivitiesWithTimeStamp(Profile profile) {
+    public List<Activity> findActivitiesWithTimeStamp(@NotNull Profile profile) {
         return entityManager.createQuery("SELECT NEW Activity(a.activityDate,a.distanceCovered,a.goalUnit) from Activity a WHERE a.postedBy =:profile", Activity.class).setParameter("profile", profile).getResultList();
     }
 
 
-    public long count(String username) {
-        Profile profile = profileService.findProfile(username);
+    public long count(@NotNull Profile profile) {
         long count = entityManager.createNamedQuery("Activity.countByProfile", Long.class).setParameter("profile", profile).getSingleResult();
         return count;
     }
 
-    public ActivityDetails findByUsernameAndId(String username, Long activityId) {
-        Profile profile = profileService.findProfile(username);
+    public ActivityDetails findByUsernameAndId(@NotNull Profile profile, @NotNull Long activityId) {
         TypedQuery<ActivityDetails> query = entityManager.createNamedQuery("Activity.findByUsernameAndId", ActivityDetails.class);
         query.setParameter("activityId", activityId);
         query.setParameter("profile", profile);
@@ -126,5 +110,11 @@ public class ActivityService {
             return null;
         }
     }
+
+    @SuppressWarnings("unchecked")
+    public ActivityCountAndDistanceTuple calculateTotalActivitiesAndDistanceCoveredByUser(@NotNull Profile profile) {
+        return entityManager.createQuery("SELECT new org.miles2run.business.vo.ActivityCountAndDistanceTuple(COUNT(a),SUM(a.distanceCovered)) FROM Activity a where a.postedBy =:profile", ActivityCountAndDistanceTuple.class).setParameter("profile", profile).getSingleResult();
+    }
+
 
 }

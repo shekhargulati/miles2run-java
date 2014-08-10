@@ -2,6 +2,7 @@ package org.miles2run.jaxrs.api.v1;
 
 import org.jug.filters.LoggedIn;
 import org.miles2run.business.domain.jpa.Goal;
+import org.miles2run.business.domain.jpa.Profile;
 import org.miles2run.business.services.jpa.GoalJPAService;
 import org.miles2run.business.services.jpa.ProfileService;
 import org.miles2run.business.services.redis.TimelineService;
@@ -41,7 +42,8 @@ public class GoalTimelineResource {
     @LoggedIn
     public Map<String, Object> goalTimeline(@PathParam("goalId") Long goalId, @QueryParam("page") int page, @QueryParam("count") int count) {
         String loggedInUser = securityContext.getUserPrincipal().getName();
-        Goal goal = goalJPAService.findGoal(loggedInUser, goalId);
+        Profile profile = profileService.findProfile(loggedInUser);
+        Goal goal = goalJPAService.findGoal(profile, goalId);
         if (goal == null) {
             return Collections.emptyMap();
         }
@@ -58,7 +60,8 @@ public class GoalTimelineResource {
     @GET
     @Produces("application/json")
     public Map<String, Object> getUserGoalTimeline(@PathParam("goalId") Long goalId, @QueryParam("username") String username, @QueryParam("page") int page, @QueryParam("count") int count) {
-        Goal goal = goalJPAService.findGoal(username, goalId);
+        Profile profile = profileService.findProfile(username);
+        Goal goal = goalJPAService.findGoal(profile, goalId);
         if (goal == null) {
             return Collections.emptyMap();
         }

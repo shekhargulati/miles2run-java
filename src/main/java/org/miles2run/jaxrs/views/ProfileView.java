@@ -12,11 +12,12 @@ import org.jug.filters.LoggedIn;
 import org.jug.view.View;
 import org.jug.view.ViewException;
 import org.jug.view.ViewResourceNotFoundException;
+import org.miles2run.business.domain.jpa.GoalUnit;
 import org.miles2run.business.domain.jpa.Profile;
 import org.miles2run.business.domain.jpa.SocialConnection;
 import org.miles2run.business.domain.jpa.SocialProvider;
 import org.miles2run.business.domain.mongo.UserProfile;
-import org.miles2run.business.services.jpa.ActivityService;
+import org.miles2run.business.services.jpa.ActivityJPAService;
 import org.miles2run.business.services.jpa.GoalJPAService;
 import org.miles2run.business.services.jpa.ProfileService;
 import org.miles2run.business.services.jpa.SocialConnectionService;
@@ -27,6 +28,7 @@ import org.miles2run.business.services.social.GoogleService;
 import org.miles2run.business.utils.CityAndCountry;
 import org.miles2run.business.utils.GeocoderUtils;
 import org.miles2run.business.utils.UrlUtils;
+import org.miles2run.business.vo.ActivityCountAndDistanceTuple;
 import org.miles2run.business.vo.Google;
 import org.miles2run.jaxrs.filters.InjectProfile;
 import org.miles2run.jaxrs.forms.ProfileForm;
@@ -42,7 +44,6 @@ import twitter4j.auth.AccessToken;
 import javax.inject.Inject;
 import javax.persistence.PersistenceException;
 import javax.transaction.RollbackException;
-import javax.transaction.Transactional;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.ws.rs.*;
@@ -59,7 +60,6 @@ import java.util.logging.Logger;
  * Created by shekhargulati on 05/03/14.
  */
 @Path("/profiles")
-@Transactional
 public class ProfileView {
 
     @Inject
@@ -77,7 +77,7 @@ public class ProfileView {
     @Inject
     private CounterService counterService;
     @Inject
-    private ActivityService activityService;
+    private ActivityJPAService activityJPAService;
     @Context
     private SecurityContext securityContext;
     @Inject
@@ -203,7 +203,7 @@ public class ProfileView {
     }
 
     private Profile toProfile(UpdateProfileForm profileForm) {
-       return Profile.createProfileForUpdate(profileForm.getFullname(),profileForm.getBio(),profileForm.getCity(),profileForm.getCountry(),profileForm.getGender());
+        return Profile.createProfileForUpdate(profileForm.getFullname(), profileForm.getBio(), profileForm.getCity(), profileForm.getCountry(), profileForm.getGender());
     }
 
 
@@ -214,12 +214,13 @@ public class ProfileView {
     @InjectPrincipal
     public View viewUserProfile(@PathParam("username") String username) {
         try {
-            Profile profile = profileService.findProfileByUsername(username);
+            Profile profile = profileService.findProfile(username);
             if (profile == null) {
                 throw new ViewResourceNotFoundException(String.format("No user exists with username %s", username), templateEngine);
             }
+            Profile userProfile = new Profile(profile);
             Map<String, Object> model = new HashMap<>();
-            model.put("userProfile", profile);
+            model.put("userProfile", userProfile);
             String currentLoggedInUser = securityContext.getUserPrincipal() != null ? securityContext.getUserPrincipal().getName() : null;
             logger.info("currentLoggedInUser : " + currentLoggedInUser);
             if (currentLoggedInUser != null) {
@@ -231,11 +232,11 @@ public class ProfileView {
                 }
             }
 
-            /*
-                1. Find count of total active goals for a user profile -- RDBMS
-                2. Find total activities and total distance covered by a user. -- Can be done from both RDBMS and Redis -- Easily done from RDBMS
-                3. Create a value object and add to the model -- New value object
-             */
+            long activeGoalCount = goalJPAService.countOfActiveGoalCreatedByUser(profile);
+            ActivityCountAndDistanceTuple tuple = activityJPAService.calculateTotalActivitiesAndDistanceCoveredByUser(profile);
+            model.put("activeGoalCount", activeGoalCount);
+            model.put("totalActivities", tuple.getActivityCount());
+            model.put("totalDistance", toMiles(tuple));
             return View.of("/profile", templateEngine).withModel(model);
         } catch (Exception e) {
             if (e instanceof ViewResourceNotFoundException) {
@@ -246,6 +247,10 @@ public class ProfileView {
         }
     }
 
+    double toMiles(ActivityCountAndDistanceTuple tuple) {
+        return tuple.getDistanceCovered() / GoalUnit.MI.getConversion();
+    }
+
     @GET
     @Path("/{username}/following")
     @Produces("text/html")
@@ -253,21 +258,22 @@ public class ProfileView {
     @InjectProfile
     public View following(@PathParam("username") String username) {
         try {
-            Profile profile = profileService.findProfileByUsername(username);
+            Profile profile = profileService.findProfile(username);
             if (profile == null) {
                 throw new ViewResourceNotFoundException(String.format("No user exists with username %s", username), templateEngine);
             }
+            Profile userProfile = new Profile(profile);
             Map<String, Object> model = new HashMap<>();
-            model.put("userProfile", profile);
-            UserProfile userProfile = profileMongoService.findProfile(username);
-            List<String> following = userProfile.getFollowing();
+            model.put("userProfile", userProfile);
+            UserProfile userProfileMongo = profileMongoService.findProfile(username);
+            List<String> following = userProfileMongo.getFollowing();
             if (!following.isEmpty()) {
                 List<org.miles2run.business.vo.ProfileDetails> profiles = profileService.findAllProfiles(following);
                 model.put("followingProfiles", profiles);
             }
-            model.put("followers", userProfile.getFollowers().size());
-            model.put("following", userProfile.getFollowing().size());
-            model.put("activities", activityService.count(username));
+            model.put("followers", userProfileMongo.getFollowers().size());
+            model.put("following", userProfileMongo.getFollowing().size());
+            model.put("activities", activityJPAService.count(profile));
             return View.of("/following", templateEngine).withModel(model);
         } catch (Exception e) {
             if (e instanceof ViewResourceNotFoundException) {
@@ -286,21 +292,22 @@ public class ProfileView {
     @InjectProfile
     public View followers(@PathParam("username") String username) {
         try {
-            Profile profile = profileService.findProfileByUsername(username);
+            Profile profile = profileService.findProfile(username);
             if (profile == null) {
                 throw new ViewResourceNotFoundException(String.format("No user exists with username %s", username), templateEngine);
             }
+            Profile userProfile = new Profile(profile);
             Map<String, Object> model = new HashMap<>();
-            model.put("userProfile", profile);
-            UserProfile userProfile = profileMongoService.findProfile(username);
-            List<String> followers = userProfile.getFollowers();
+            model.put("userProfile", userProfile);
+            UserProfile userProfileMongo = profileMongoService.findProfile(username);
+            List<String> followers = userProfileMongo.getFollowers();
             if (!followers.isEmpty()) {
                 List<org.miles2run.business.vo.ProfileDetails> profiles = profileService.findAllProfiles(followers);
                 model.put("followerProfiles", profiles);
             }
-            model.put("followers", userProfile.getFollowers().size());
-            model.put("following", userProfile.getFollowing().size());
-            model.put("activities", activityService.count(username));
+            model.put("followers", userProfileMongo.getFollowers().size());
+            model.put("following", userProfileMongo.getFollowing().size());
+            model.put("activities", activityJPAService.count(profile));
             return View.of("/followers", templateEngine).withModel(model);
         } catch (Exception e) {
             if (e instanceof ViewResourceNotFoundException) {

@@ -6,7 +6,7 @@ import org.jug.filters.LoggedIn;
 import org.miles2run.business.domain.jpa.Goal;
 import org.miles2run.business.domain.jpa.GoalType;
 import org.miles2run.business.domain.jpa.Profile;
-import org.miles2run.business.services.jpa.ActivityService;
+import org.miles2run.business.services.jpa.ActivityJPAService;
 import org.miles2run.business.services.jpa.ProfileService;
 import org.miles2run.business.services.jpa.GoalJPAService;
 import org.miles2run.business.services.redis.GoalRedisService;
@@ -45,7 +45,7 @@ public class GoalResource {
     @Inject
     private GoalRedisService goalRedisService;
     @Inject
-    private ActivityService activityService;
+    private ActivityJPAService activityJPAService;
 
 
     @GET
@@ -53,7 +53,8 @@ public class GoalResource {
     @LoggedIn
     public Response allGoal(@QueryParam("archived") boolean archived, @QueryParam("groupByType") Boolean groupByType) {
         String loggedInUser = securityContext.getUserPrincipal().getName();
-        List<Goal> goals = goalJPAService.findAllGoals(loggedInUser, archived);
+        Profile profile = profileService.findProfile(loggedInUser);
+        List<Goal> goals = goalJPAService.findAllGoals(profile, archived);
         if (groupByType != null && groupByType == true) {
             Map<GoalType, List<Object>> goalsByType = new HashMap<>();
             for (Goal goal : goals) {
@@ -105,7 +106,8 @@ public class GoalResource {
     @LoggedIn
     public Object goal(@PathParam("goalId") Long goalId) {
         String loggedInUser = securityContext.getUserPrincipal().getName();
-        Goal goal = goalJPAService.findGoal(loggedInUser, goalId);
+        Profile profile = profileService.findProfile(loggedInUser);
+        Goal goal = goalJPAService.findGoal(profile, goalId);
         return toGoalType(goal);
     }
 
@@ -174,7 +176,7 @@ public class GoalResource {
             return Response.status(Response.Status.NOT_FOUND).entity("No goal exists with id " + goalId).build();
         }
         if (goal.getGoalType() == GoalType.DISTANCE_GOAL) {
-            Progress progress = activityService.calculateUserProgressForGoal(loggedInUser, goal);
+            Progress progress = activityJPAService.calculateUserProgressForGoal(loggedInUser, goal);
             return Response.status(Response.Status.OK).entity(progress).build();
         }
         Map<String, Object> progress = goalRedisService.getDurationGoalProgress(username, goalId, new Interval(goal.getStartDate().getTime(), goal.getEndDate().getTime()));

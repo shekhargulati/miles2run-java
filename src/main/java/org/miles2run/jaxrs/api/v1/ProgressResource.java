@@ -1,7 +1,9 @@
 package org.miles2run.jaxrs.api.v1;
 
+import org.miles2run.business.domain.jpa.Goal;
 import org.miles2run.business.domain.jpa.Profile;
-import org.miles2run.business.services.jpa.ActivityService;
+import org.miles2run.business.services.jpa.ActivityJPAService;
+import org.miles2run.business.services.jpa.GoalJPAService;
 import org.miles2run.business.services.jpa.ProfileService;
 import org.miles2run.business.vo.Progress;
 
@@ -22,17 +24,20 @@ import javax.ws.rs.core.SecurityContext;
 public class ProgressResource {
 
     @Inject
-    private ActivityService activityService;
+    private ActivityJPAService activityJPAService;
     @Inject
     private ProfileService profileService;
     @Context
     private SecurityContext securityContext;
+    @Inject
+    private GoalJPAService goalJPAService;
 
     @GET
     @Produces("application/json")
     public Response progress(@NotNull @PathParam("username") String username, @NotNull @PathParam("goalId") Long goalId) {
-        Profile loggedInUser = profileService.findProfile(username);
-        Progress progress = activityService.calculateUserProgressForGoal(loggedInUser, goalId);
+        Profile profile = profileService.findProfile(username);
+        Goal goal = goalJPAService.find(goalId);
+        Progress progress = activityJPAService.calculateUserProgressForGoal(profile, goal);
         return Response.status(Response.Status.OK).entity(progress).build();
     }
 

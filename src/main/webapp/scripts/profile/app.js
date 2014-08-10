@@ -38,8 +38,6 @@ app.config(['$provide', function ($provide) {
     $provide.constant('activeProfile', activeUserProfile);
     var userProfile = angular.copy(window.userProfile);
     $provide.constant('userProfile', userProfile);
-    var activeGoal = angular.copy(window.activeGoal);
-    $provide.constant('activeGoal', activeGoal);
 }]);
 
 app.run(function ($rootScope, $location) {
@@ -76,17 +74,5 @@ function NotificationCtrl($scope, $http, activeProfile, $location) {
             context = "/miles2run/";
         }
         return context;
-    }
-}
-
-function ProgressCtrl($scope, ConfigService, userProfile, activeGoal, $http) {
-
-    if(activeGoal != null){
-        $http.get(ConfigService.getBaseUrl() + "profiles/" + userProfile.username + "/goals/" + activeGoal.id + "/progress").success(function (data, status, headers, config) {
-            $scope.error = null;
-            $scope.status = status;
-            $scope.percentage = Math.ceil(data.percentage);
-            $scope.style = "width:" + Math.ceil(data.percentage) + "%";
-        });
     }
 }

@@ -10,6 +10,7 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -22,13 +23,8 @@ public class GoalJPAService {
 
     @Inject
     private EntityManager entityManager;
-    @Inject
-    private ProfileService profileService;
-    @Inject
-    private CommunityRunJPAService communityRunJPAService;
 
-    public List<Goal> findAllGoals(String loggedInuser, boolean archived) {
-        Profile profile = profileService.findProfile(loggedInuser);
+    public List<Goal> findAllGoals(Profile profile, boolean archived) {
         TypedQuery<Goal> query = entityManager.createNamedQuery("Goal.findAllWithProfileAndArchive", Goal.class);
         query.setParameter("profile", profile);
         query.setParameter("archived", archived);
@@ -40,25 +36,6 @@ public class GoalJPAService {
         goal.setProfile(profile);
         entityManager.persist(goal);
         return findGoal(profile, goal.getId());
-    }
-
-    public Long save(Goal goal, String loggedInUser) {
-        Profile profile = profileService.findProfile(loggedInUser);
-        goal.setProfile(profile);
-        entityManager.persist(goal);
-        return goal.getId();
-    }
-
-    public Goal findGoal(String loggedInuser, Long goalId) {
-        try {
-            Profile profile = profileService.findProfile(loggedInuser);
-            TypedQuery<Goal> query = entityManager.createNamedQuery("Goal.findGoalWithIdAndProfile", Goal.class);
-            query.setParameter("profile", profile);
-            query.setParameter("goalId", goalId);
-            return query.getSingleResult();
-        } catch (Exception e) {
-            return null;
-        }
     }
 
     public Goal findGoal(Profile profile, Long goalId) {
@@ -98,9 +75,7 @@ public class GoalJPAService {
     }
 
 
-
-    public Goal findLatestCreatedGoal(String username) {
-        Profile profile = profileService.findProfile(username);
+    public Goal findLatestCreatedGoal(Profile profile) {
         TypedQuery<Goal> query = entityManager.createNamedQuery("Goal.findLastedCreatedGoal", Goal.class);
         query.setParameter("profile", profile);
         query.setMaxResults(1);
@@ -108,8 +83,7 @@ public class GoalJPAService {
         return goals.isEmpty() ? null : goals.get(0);
     }
 
-    public Long findGoalIdWithCommunityRunAndProfile(String slug, Profile profile) {
-        CommunityRun communityRun = communityRunJPAService.find(slug);
+    public Long findGoalIdWithCommunityRunAndProfile(CommunityRun communityRun, Profile profile) {
         List<Long> list = entityManager.createQuery("SELECT g.id FROM Goal g where g.communityRun =:communityRun  and g.profile =:profile and g.archived is FALSE", Long.class).setParameter("communityRun", communityRun).setParameter("profile", profile).getResultList();
         if (list.isEmpty()) {
             return null;
@@ -122,5 +96,9 @@ public class GoalJPAService {
         goal.setArchived(true);
         entityManager.merge(goal);
         entityManager.flush();
+    }
+
+    public long countOfActiveGoalCreatedByUser(@NotNull Profile profile) {
+        return entityManager.createQuery("SELECT count(g) FROM Goal g where g.profile =:profile and g.archived is FALSE", Long.class).setParameter("profile", profile).getSingleResult();
     }
 }

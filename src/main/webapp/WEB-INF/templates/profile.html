@@ -95,7 +95,7 @@
             <!-- /.sidebar-collapse -->
         </div>
 
-
+    </div>
     </nav>
 
     <div id="page-wrapper">
@@ -122,36 +122,33 @@
                     </div>
                     <div class="panel-footer">
                         <div class="row">
-                            <div class="col-lg-10 col-sm-10" th:if="${activeGoal != null}">
+                            <div class="col-lg-10 col-sm-10">
                                 <div class="col-lg-4 col-sm-4 text-center">
                                     <h5>Total Goals</h5>
 
-                                    <div th:inline="text">
-                                        [[${#numbers.formatDecimal(activeGoal.distance,1,2)} + ' ' + ${activeGoal.goalUnit.upperCase()}]]
+                                    <div th:text="${activeGoalCount}">
                                     </div>
                                 </div>
                                 <div class="col-lg-4 col-sm-4 text-center">
                                     <h5>Total Activities</h5>
 
-                                    <div th:inline="text">
-                                        [[${#numbers.formatDecimal(progress.totalDistanceCovered,1,2)} + ' ' + ${activeGoal.goalUnit.upperCase()}]]
+                                    <div th:text="${totalActivities}">
                                     </div>
                                 </div>
                                 <div class="col-lg-4 col-sm-4 text-center">
                                     <h5>Total Distance</h5>
 
-                                    <div th:inline="text">
-                                        [[${#numbers.formatDecimal(progress.averagePace,1,2)} + ' mins/' + ${activeGoal.goalUnit.upperCase()}]]
+                                    <div th:text="${#numbers.formatDecimal(totalDistance,1,2)} + ' mi'">
                                     </div>
                                 </div>
                             </div>
                             <div class="col-lg-2 col-sm-2 text-center pull-right" th:if="${profile != null}" ng-controller="FriendsCtrl">
                                 <h4></h4>
-                                <a th:href="@{/profiles/edit}" class="btn btn-default" th:if="${isMyProfile} == true">Edit
-                                    Profile</a>
+                                <a th:href="@{/profiles/edit}" class="btn btn-default" th:if="${isMyProfile} == true">Edit Profile</a>
                                 <a href="#unfollow" class="btn btn-info" th:if="${isFollowing} == true" ng-click="unfollowUser()">Following</a>
-                                <a href="#follow" class="btn btn-default" th:if="${isFollowing} == false" ng-click="followUser()"><span
-                                        class="glyphicon glyphicon-user"></span> Follow</a>
+                                <a href="#follow" class="btn btn-default" th:if="${isFollowing} == false" ng-click="followUser()">
+                                    <span class="glyphicon glyphicon-user"></span> Follow
+                                </a>
                             </div>
                         </div>
 
