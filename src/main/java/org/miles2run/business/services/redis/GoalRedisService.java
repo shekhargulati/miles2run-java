@@ -114,10 +114,13 @@ public class GoalRedisService {
     }
 
     Set<LocalDate> allDatesWithin(DateTime start, DateTime end) {
-        Interval intervalBetweenStartDateAndTodayDate = new Interval(start, end);
-        int numberOfDays = Days.daysIn(intervalBetweenStartDateAndTodayDate).getDays() + 1;
+        int numberOfDays = Days.daysBetween(start.toLocalDate(), end.toLocalDate()).getDays();
+        if (numberOfDays < 0) {
+            return Collections.emptySet();
+        }
+        int numberOfDaysWithOffset = numberOfDays + 1;
         Set<LocalDate> datesTillToday = new LinkedHashSet<>();
-        for (int i = 0; i < numberOfDays; i++) {
+        for (int i = 0; i < numberOfDaysWithOffset; i++) {
             LocalDate ithDate = start.toLocalDate().plusDays(i);
             datesTillToday.add(ithDate);
         }

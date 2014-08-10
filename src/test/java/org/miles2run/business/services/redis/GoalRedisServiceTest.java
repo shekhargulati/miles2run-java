@@ -3,6 +3,7 @@ package org.miles2run.business.services.redis;
 import com.google.common.collect.Sets;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matchers;
+import org.hamcrest.collection.IsCollectionWithSize;
 import org.hamcrest.core.Is;
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
@@ -82,11 +83,20 @@ public class GoalRedisServiceTest {
     }
 
 
-    @Test(expected = IllegalArgumentException.class)
-    public void allDatesWithin_StartDateGreaterThanEndDate_ThrowsException() throws Exception {
+    @Test
+    public void allDatesWithin_StartDateGreaterThanEndDate_ReturnsEmptySet() throws Exception {
         DateTime start = new DateTime(2014, 8, 12, 0, 0);
         DateTime end = new DateTime(2014, 8, 1, 23, 59);
-        goalRedisService.allDatesWithin(start, end);
+        Set<LocalDate> dates = goalRedisService.allDatesWithin(start, end);
+        Assert.assertThat(dates, IsCollectionWithSize.hasSize(0));
+    }
+
+    @Test
+    public void allDatesWithin_StartDateAndEndDateAreSame_SetWithOneDate() throws Exception {
+        DateTime start = new DateTime(2014, 8, 1, 13, 0);
+        DateTime end = new DateTime(2014, 8, 1, 15, 59);
+        Set<LocalDate> dates = goalRedisService.allDatesWithin(start, end);
+        Assert.assertThat(dates, IsCollectionWithSize.hasSize(1));
     }
 
     @Test
@@ -180,7 +190,7 @@ public class GoalRedisServiceTest {
     }
 
     @Test
-    public void getDurationGoalProgress_CurrentDateLessThanGoalStartDate_RemainingDaysShouldBe30() throws Exception{
+    public void getDurationGoalProgress_CurrentDateLessThanGoalStartDate_RemainingDaysShouldBe30() throws Exception {
         GoalRedisService goalRedisService = new GoalRedisService() {
             @Override
             Set<Tuple> activitiesPerformedWithinAGoalInterval(String username, Long goalId, Interval goalInterval) {
@@ -201,6 +211,41 @@ public class GoalRedisServiceTest {
         Assert.assertThat(progress, Matchers.hasEntry(Is.is("performedDays"), Is.is((Object) 0)));
         Assert.assertThat(progress, Matchers.hasEntry(Is.is("missedDays"), Is.is((Object) 0)));
         Assert.assertThat(progress, Matchers.hasEntry(Is.is("remainingDays"), Is.is((Object) 30)));
+    }
+
+
+    @Test
+    public void getDurationGoalProgress_StartDate9AugEndDate7SeptActivityPerformedOneDay_MissedDays1AndRemainingDays28() throws Exception {
+        GoalRedisService goalRedisService = new GoalRedisService() {
+            @Override
+            Set<Tuple> activitiesPerformedWithinAGoalInterval(String username, Long goalId, Interval goalInterval) {
+                Tuple tuple1 = new Tuple("1", Double.valueOf(new DateTime(2014, 8, 9, 15, 30, 30).getMillis()));
+                Set<Tuple> activitiesPerformed = Sets.newHashSet(tuple1);
+                return activitiesPerformed;
+            }
+
+            @Override
+            DateTime today() {
+                return new DateTime(2014, 8, 10, 14, 10, 30);
+            }
+        };
+        DateTime start = new DateTime(1407604407000L);
+        DateTime end = new DateTime(2014, 9, 7, 23, 59);
+        Interval goalInterval = new Interval(start, end);
+
+        Map<String, Object> progress = goalRedisService.getDurationGoalProgress("test_user", 1L, goalInterval);
+        Assert.assertThat(progress, Matchers.hasEntry(Is.is("totalDays"), Is.is((Object) 30)));
+        Assert.assertThat(progress, Matchers.hasEntry(Is.is("performedDays"), Is.is((Object) 1)));
+        Assert.assertThat(progress, Matchers.hasEntry(Is.is("missedDays"), Is.is((Object) 1)));
+        Assert.assertThat(progress, Matchers.hasEntry(Is.is("remainingDays"), Is.is((Object) 28)));
+    }
+
+    @Test
+    public void allDatesWithin_TwoConsecutiveDates_ShouldBeAColletionOfSize2() throws Exception {
+        DateTime start = new DateTime(1407604407000L);
+        DateTime end = new DateTime(1407660461744L);
+        Set<LocalDate> dates = goalRedisService.allDatesWithin(start, end);
+        Assert.assertThat(dates, IsCollectionWithSize.hasSize(2));
     }
 
 }
