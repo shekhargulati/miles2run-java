@@ -1,12 +1,15 @@
 alter table activity drop foreign key FK_gc4upw5javfk56282fwilny20;
 alter table activity drop foreign key FK_ke6jaidnwub7r90ghbk7a0te9;
 alter table activity drop foreign key FK_t5785e7gww3npdt6rignrb19d;
+alter table community_run_profile drop foreign key FK_nd6awmoln2u5lmegwweeol00d;
+alter table community_run_profile drop foreign key FK_ooluk2kx60s3i9igoc9v8klvy;
 alter table communityrun_hashtags drop foreign key FK_laxcovjdakegyaoig5ii2i30;
 alter table goal drop foreign key FK_i1mflw4g8jr0qf0n7gyfxaxjk;
 alter table goal drop foreign key FK_fhi96d3255v3f8djjmojj5fqp;
 alter table social_connection drop foreign key FK_rjdwtl9njl9osnelclcn07y8w;
 drop table if exists activity;
 drop table if exists community_run;
+drop table if exists community_run_profile;
 drop table if exists communityrun_hashtags;
 drop table if exists goal;
 drop table if exists profile;
