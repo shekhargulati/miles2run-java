@@ -167,7 +167,7 @@ public class CommunityRunResource {
         Profile profile = profileService.findProfile(principal);
         logger.info("User {} leaving community run {}", principal, slug);
         communityRunJPAService.leaveCommunityRun(slug, profile);
-        goalJPAService.archiveGoalWithCommunityRun(communityRunJPAService.find(slug));
+        goalJPAService.archiveGoalWithCommunityRun(communityRunJPAService.find(slug), profile);
         communityRunRedisService.removeRunnerFromCommunityRun(slug, principal);
         return Response.status(Response.Status.OK).build();
     }

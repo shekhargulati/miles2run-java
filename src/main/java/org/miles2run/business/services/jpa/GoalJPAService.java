@@ -91,8 +91,8 @@ public class GoalJPAService {
         return list.get(0);
     }
 
-    public void archiveGoalWithCommunityRun(CommunityRun communityRun) {
-        Goal goal = entityManager.createQuery("SELECT g from Goal g where g.communityRun =:communityRun and g.archived is FALSE", Goal.class).setParameter("communityRun", communityRun).getSingleResult();
+    public void archiveGoalWithCommunityRun(CommunityRun communityRun, Profile profile) {
+        Goal goal = entityManager.createQuery("SELECT g from Goal g where g.communityRun =:communityRun and g.profile =:profile and g.archived is FALSE", Goal.class).setParameter("communityRun", communityRun).setParameter("profile", profile).getSingleResult();
         goal.setArchived(true);
         entityManager.merge(goal);
         entityManager.flush();

@@ -33,6 +33,10 @@ public class CommunityRunJPAService {
         return communityRun.getId();
     }
 
+    public CommunityRun findById(Long id) {
+        return entityManager.find(CommunityRun.class, id);
+    }
+
     public List<CommunityRun> findAllActiveCommunityRuns(@Max(value = 20) int max, @Min(value = 1) int page) {
         return entityManager.
                 createNamedQuery("CommunityRun.findAllActiveRaces", CommunityRun.class).

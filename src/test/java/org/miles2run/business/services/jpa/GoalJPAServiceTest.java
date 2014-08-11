@@ -8,6 +8,8 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.jboss.shrinkwrap.resolver.api.maven.Maven;
+import org.joda.time.DateTime;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,6 +24,7 @@ import org.miles2run.jaxrs.forms.ProfileForm;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.transaction.UserTransaction;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -53,7 +56,9 @@ public class GoalJPAServiceTest {
                 addClass(GoalJPAService.class).
                 addClass(ProfileService.class).
                 addClass(CommunityRun.class).
+                addClass(CommunityRunBuilder.class).
                 addClass(CommunityRunJPAService.class).
+                addAsLibraries(Maven.resolver().loadPomFromFile("pom.xml").resolve("joda-time:joda-time").withoutTransitivity().asFile()).
                 addAsResource("META-INF/test_persistence.xml", "META-INF/persistence.xml").
                 addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
         System.out.printf("WebArchive %s", webArchive.toString(true));
@@ -70,6 +75,9 @@ public class GoalJPAServiceTest {
     private EntityManager entityManager;
     @Inject
     private UserTransaction userTransaction;
+    @Inject
+    CommunityRunJPAService communityRunJPAService;
+
 
     @Before
     public void setUp() throws Exception {
@@ -112,6 +120,38 @@ public class GoalJPAServiceTest {
         Assert.assertThat(count, CoreMatchers.is(CoreMatchers.equalTo(0L)));
     }
 
+    @Test
+    public void archiveGoalWithCommunityRun_CommunityRunWithMoreThanOneActiveGoal_ArchiveGoal() throws Exception {
+        CommunityRun communityRun = new CommunityRunBuilder().
+                setName("JavaOne 2014").
+                setBannerImg("http://example.com/javaone.png").
+                setDescription("biggest Java conference").
+                setSlug("javaone-2014").
+                setStartDate(new Date()).
+                setEndDate(new DateTime().plusDays(5).toDate()).
+                setTwitterHandle("javaoneconf").
+                setWebsite("https://www.oracle.com/javaone/index.html").
+                createCommunityRun();
+        Long id = communityRunJPAService.save(communityRun);
+
+        Profile profile1 = createProfile("test1@email.com", "test_user_1");
+        Profile profile2 = createProfile("test2@email.com", "test_user_2");
+        Goal goal1 = newGoal(id);
+        Goal goal2 = newGoal(id);
+        goalJPAService.save(goal1, profile1);
+        goalJPAService.save(goal2, profile2);
+
+        goalJPAService.archiveGoalWithCommunityRun(communityRun, profile1);
+    }
+
+    Goal newGoal(Long id) {
+        Goal goal = new Goal();
+        goal.setPurpose("JavaOne run | community run");
+        goal.setCommunityRun(communityRunJPAService.findById(id));
+        goal.setGoalType(GoalType.COMMUNITY_RUN_GOAL);
+        return goal;
+    }
+
     private void createNArchivedGoals(Profile profile, int n) {
         for (int i = 0; i < n; i++) {
             Goal goal = newGoal(i);
@@ -137,6 +177,11 @@ public class GoalJPAServiceTest {
 
     private Profile createProfile() {
         Profile profile = Profile.createProfile("test@test.com", "test_user", "Test User", "city", "country", Gender.MALE);
+        return profileService.save(profile);
+    }
+
+    private Profile createProfile(String email, String username) {
+        Profile profile = Profile.createProfile(email, username, "Test User", "city", "country", Gender.MALE);
         return profileService.save(profile);
     }
 
