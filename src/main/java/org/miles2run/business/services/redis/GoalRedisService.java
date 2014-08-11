@@ -101,6 +101,8 @@ public class GoalRedisService {
     }
 
     int calculateMissedDays(Set<LocalDate> performedActivityDates, Set<LocalDate> allDates) {
+        logger.info("Performed Activity Dates {}", performedActivityDates);
+        logger.info("All dates {}", allDates);
         int missedDays = 0;
         for (LocalDate date : allDates) {
             if (!performedActivityDates.contains(date)) {
@@ -111,14 +113,17 @@ public class GoalRedisService {
     }
 
     Set<LocalDate> allDatesWithin(DateTime start, DateTime end) {
-        int numberOfDays = Days.daysBetween(start.toLocalDate(), end.toLocalDate()).getDays();
+        LocalDate startLocalDate = start.toLocalDate();
+        LocalDate endLocalDate = end.toLocalDate();
+        int numberOfDays = Days.daysBetween(startLocalDate, endLocalDate).getDays();
         if (numberOfDays < 0) {
             return Collections.emptySet();
         }
+        logger.info("StartLocalDate : {}", startLocalDate);
         int numberOfDaysWithOffset = numberOfDays + 1;
         Set<LocalDate> datesTillToday = new LinkedHashSet<>();
         for (int i = 0; i < numberOfDaysWithOffset; i++) {
-            LocalDate ithDate = start.toLocalDate().plusDays(i);
+            LocalDate ithDate = startLocalDate.plusDays(i);
             datesTillToday.add(ithDate);
         }
         return datesTillToday;

@@ -38,6 +38,7 @@ function PostActivityCtrl($scope, ActivityService, $location, ProfileService, ac
             $scope.successfulSubmission = true;
             $scope.buttonText = "Logging your run..";
             $scope.activity.duration = toAppSeconds($scope.duration);
+            $scope.activity.activityDate = moment($scope.activity.activityDate.toLocaleString(), "MM/DD/yyyy").format("YYYY-MM-DD");
             ActivityService.postActivity($scope.activity, activeGoal.id).success(function (data, status, headers, config) {
                 $rootScope.$broadcast('update.progress', 'true');
                 toastr.success("Posted new activity");
