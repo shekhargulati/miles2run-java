@@ -1,4 +1,4 @@
-create table activity (id bigint not null, createdAt datetime, version bigint, activityDate datetime not null, distanceCovered double precision not null, duration bigint not null, goalUnit varchar(255) not null, status varchar(1000), goal_id bigint, postedBy_id bigint, share_id bigint, primary key (id));
+create table activity (id bigint not null, createdAt datetime, version bigint, activityDate date not null, distanceCovered double precision not null, duration bigint not null, goalUnit varchar(255) not null, status varchar(1000), goal_id bigint, postedBy_id bigint, share_id bigint, primary key (id));
 create table community_run (id bigint not null, createdAt datetime, version bigint, active bit not null, bannerImg varchar(255) not null, description varchar(4000) not null, endDate datetime not null, name varchar(255) not null, slug varchar(255), startDate datetime not null, twitterHandle varchar(255) not null, website varchar(255), primary key (id));
 create table community_run_profile (community_run_id bigint not null, profiles_id bigint not null);
 create table communityrun_hashtags (communityRun_Id bigint not null, hashtags varchar(255));

@@ -25,9 +25,9 @@ public class ActivityJPAService {
     @Inject
     private EntityManager entityManager;
 
-    public ActivityDetails save(Activity activity) {
+    public Long save(Activity activity) {
         entityManager.persist(activity);
-        return findById(activity.getId());
+        return activity.getId();
     }
 
     public ActivityDetails findById(@NotNull Long id) {

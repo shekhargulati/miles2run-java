@@ -1,5 +1,6 @@
 package org.miles2run.business.vo;
 
+import org.miles2run.business.domain.jpa.Activity;
 import org.miles2run.business.domain.jpa.GoalUnit;
 import org.miles2run.business.domain.jpa.Share;
 
@@ -39,13 +40,12 @@ public class ActivityDetails {
 
     }
 
-    public ActivityDetails(Long id, String status, double distanceCovered, GoalUnit goalUnit, Date activityDate, Share share, String fullname, long duration, String username, String profilePic, Date postedAt) {
+    public ActivityDetails(Long id, String status, double distanceCovered, GoalUnit goalUnit, Date activityDate, String fullname, long duration, String username, String profilePic, Date postedAt) {
         this.id = id;
         this.status = status;
         this.goalUnit = goalUnit;
         this.distanceCovered = distanceCovered;
         this.activityDate = activityDate;
-        this.share = share;
         this.fullname = fullname;
         this.username = username;
         this.profilePic = profilePic;

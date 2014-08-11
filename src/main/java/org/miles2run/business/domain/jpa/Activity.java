@@ -12,12 +12,12 @@ import java.util.Date;
  */
 @Entity
 @NamedQueries({
-        @NamedQuery(name = "Activity.findAll", query = "SELECT NEW org.miles2run.business.vo.ActivityDetails(a.id,a.status,a.distanceCovered,a.goalUnit,a.activityDate,a.share,a.postedBy.fullname,a.duration,a.postedBy.username,a.postedBy.profilePic,a.createdAt) FROM Activity a WHERE a.postedBy =:postedBy ORDER BY a.activityDate DESC"),
-        @NamedQuery(name = "Activity.findById", query = "SELECT new org.miles2run.business.vo.ActivityDetails(a.id,a.status,a.distanceCovered,a.goalUnit,a.activityDate,a.share,a.postedBy.fullname,a.duration,a.postedBy.username,a.postedBy.profilePic,a.createdAt) from Activity a where a.id =:id"),
+        @NamedQuery(name = "Activity.findAll", query = "SELECT NEW org.miles2run.business.vo.ActivityDetails(a.id,a.status,a.distanceCovered,a.goalUnit,a.activityDate,a.postedBy.fullname,a.duration,a.postedBy.username,a.postedBy.profilePic,a.createdAt) FROM Activity a WHERE a.postedBy =:postedBy ORDER BY a.activityDate DESC"),
+        @NamedQuery(name = "Activity.findById", query = "SELECT new org.miles2run.business.vo.ActivityDetails(a.id,a.status,a.distanceCovered,a.goalUnit,a.activityDate,a.postedBy.fullname,a.duration,a.postedBy.username,a.postedBy.profilePic,a.createdAt) from Activity a where a.id =:id"),
         @NamedQuery(name = "Activity.countByProfile", query = "SELECT COUNT(a) FROM Activity a WHERE a.postedBy =:profile"),
         @NamedQuery(name = "Activity.countByProfileAndGoal", query = "SELECT COUNT(a) FROM Activity a WHERE a.postedBy =:profile and a.goal =:goal"),
         @NamedQuery(name = "Activity.userGoalProgress", query = "SELECT new org.miles2run.business.vo.Progress(a.goal.distance,a.goal.goalUnit,SUM(a.distanceCovered),COUNT(a), SUM(a.duration) ,a.goal.goalType) from Activity a WHERE a.postedBy =:postedBy and a.goal =:goal"),
-        @NamedQuery(name = "Activity.findByUsernameAndId", query = "SELECT new org.miles2run.business.vo.ActivityDetails(a.id,a.status,a.distanceCovered,a.goalUnit,a.activityDate,a.share,a.postedBy.fullname,a.duration,a.postedBy.username,a.postedBy.profilePic,a.createdAt) from Activity a where a.id =:activityId and a.postedBy =:profile")
+        @NamedQuery(name = "Activity.findByUsernameAndId", query = "SELECT new org.miles2run.business.vo.ActivityDetails(a.id,a.status,a.distanceCovered,a.goalUnit,a.activityDate,a.postedBy.fullname,a.duration,a.postedBy.username,a.postedBy.profilePic,a.createdAt) from Activity a where a.id =:activityId and a.postedBy =:profile")
 
 })
 @Access(AccessType.FIELD)
@@ -34,7 +34,7 @@ public class Activity extends BaseEntity {
     @NotNull
     private double distanceCovered;
 
-    @Temporal(TemporalType.TIMESTAMP)
+    @Temporal(TemporalType.DATE)
     @NotNull
     private Date activityDate;
 
@@ -84,6 +84,15 @@ public class Activity extends BaseEntity {
         this.distanceCovered = activityDetails.getDistanceCovered();
         this.activityDate = activityDetails.getActivityDate();
         this.duration = activityDetails.getDuration();
+    }
+
+    public Activity(String status, double distanceCovered, GoalUnit goalUnit, long duration, Date activityDate) {
+        this.status = status;
+        this.distanceCovered = distanceCovered;
+        this.goalUnit = goalUnit;
+        this.duration = duration;
+        this.activityDate = activityDate;
+
     }
 
     public String getStatus() {
@@ -148,5 +157,15 @@ public class Activity extends BaseEntity {
 
     public void setGoal(Goal goal) {
         this.goal = goal;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("Activity{");
+        sb.append("activityDate=").append(activityDate);
+        sb.append(", distanceCovered=").append(distanceCovered);
+        sb.append(", goalUnit=").append(goalUnit);
+        sb.append('}');
+        return sb.toString();
     }
 }

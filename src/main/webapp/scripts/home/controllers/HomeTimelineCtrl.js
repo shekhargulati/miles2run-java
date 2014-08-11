@@ -13,8 +13,7 @@ angular.module('miles2run-home')
 
         $scope.activity = {
             activityDate: new Date(),
-            goalUnit: 'MI',
-            share: {}
+            goalUnit: 'MI'
         };
 
         $scope.duration = {

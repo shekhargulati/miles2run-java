@@ -8,8 +8,7 @@ function PostActivityCtrl($scope, ActivityService, $location, ProfileService, ac
     $scope.buttonText = "Log your Run";
 
     $scope.activity = {
-        goalUnit: $scope.activeGoal.goalUnit.$name,
-        share: {}
+        goalUnit: $scope.activeGoal.goalUnit.$name
     };
 
     $scope.validateDuration = function (duration) {

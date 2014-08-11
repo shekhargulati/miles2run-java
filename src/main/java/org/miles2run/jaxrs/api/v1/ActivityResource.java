@@ -15,6 +15,7 @@ import org.miles2run.business.services.social.GoogleService;
 import org.miles2run.business.services.social.TwitterService;
 import org.miles2run.business.utils.UrlUtils;
 import org.miles2run.business.vo.ActivityDetails;
+import org.miles2run.jaxrs.requests.ActivityRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,7 +67,9 @@ public class ActivityResource {
     @Consumes("application/json")
     @Produces("application/json")
     @LoggedIn
-    public Response postActivity(@PathParam("goalId") Long goalId, @Valid final Activity activity) {
+    public Response postActivity(@PathParam("goalId") Long goalId, @Valid final ActivityRequest activityRequest) {
+        logger.info("Posting Activity {}", activityRequest);
+        Activity activity = activityRequest.toActivity();
         String loggedInUser = securityContext.getUserPrincipal().getName();
         Profile profile = profileService.findProfile(loggedInUser);
         Goal goal = goalJPAService.findGoal(profile, goalId);
@@ -78,7 +81,8 @@ public class ActivityResource {
         activity.setDistanceCovered(distanceCovered);
         activity.setPostedBy(profile);
         activity.setGoal(goal);
-        ActivityDetails savedActivity = activityJPAService.save(activity);
+        Long persistedActivityId = activityJPAService.save(activity);
+        ActivityDetails savedActivity = activityJPAService.findById(persistedActivityId);
         counterService.updateDistanceCount(distanceCovered);
         counterService.updateActivitySecondsCount(activity.getDuration());
         goalRedisService.updateTotalDistanceCoveredForAGoal(goal.getId(), savedActivity.getDistanceCovered());
