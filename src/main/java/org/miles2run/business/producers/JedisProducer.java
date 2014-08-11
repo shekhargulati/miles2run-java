@@ -1,13 +1,14 @@
 package org.miles2run.business.producers;
 
+import org.apache.commons.pool.impl.GenericObjectPool;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 
 import javax.annotation.PreDestroy;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
-import javax.inject.Inject;
-import java.util.logging.Logger;
 
 /**
  * Created by shekhargulati on 17/03/14.
@@ -15,20 +16,27 @@ import java.util.logging.Logger;
 @ApplicationScoped
 public class JedisProducer {
 
-    @Inject
-    private Logger logger;
+    private Logger logger = LoggerFactory.getLogger(JedisProducer.class);
 
     @Produces
     public JedisPool jedisPool() {
         JedisPoolConfig poolConfig = new JedisPoolConfig();
-        String host = System.getenv("OPENSHIFT_REDIS_HOST");
+        poolConfig.setMaxActive(128);
+        poolConfig.setMaxIdle(20);
+        poolConfig.setTestWhileIdle(true);
+        poolConfig.setTestOnBorrow(true);
+        poolConfig.setTestWhileIdle(true);
+        poolConfig.setTestOnReturn(true);
+        poolConfig.setMinIdle(10);
+        poolConfig.setWhenExhaustedAction(GenericObjectPool.WHEN_EXHAUSTED_GROW);
+        String host = System.getenv("OPENSHIFT_REDIS_DB_HOST");
         if (host == null) {
             System.out.print("Localhost Redis Configuration");
             return new JedisPool(poolConfig, "localhost");
         }
-        int port = Integer.valueOf(System.getenv("OPENSHIFT_REDIS_PORT"));
-        String password = System.getenv("REDIS_PASSWORD");
-        logger.info(String.format("Redis configuration : Host %s Port %d Password %s", host, port, password));
+        int port = Integer.valueOf(System.getenv("OPENSHIFT_REDIS_DB_PORT"));
+        String password = System.getenv("OPENSHIFT_REDIS_DB_PASSWORD");
+        logger.info("Redis configuration : Host {} Port {} Password {}", host, port, password);
         JedisPool jedisPool = new JedisPool(poolConfig, host, port, 2000, password);
         return jedisPool;
     }

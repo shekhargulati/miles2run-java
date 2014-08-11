@@ -4,15 +4,13 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.MongoClient;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.miles2run.business.services.mongo.ProfileMongoService;
 
 /**
  * Created by shekhargulati on 02/08/14.
  */
+@Ignore
 public class ProfileMongoServiceTest {
 
 
