@@ -1,8 +1,10 @@
 'use strict';
 
 angular.module('milestogo')
-    .controller('ViewActivityCtrl', function ($scope, $routeParams, ActivityService, $location, $modal, TimelineService, activeGoal,ConfigService) {
+    .controller('ViewActivityCtrl', function ($scope, $routeParams, ActivityService, $location, $modal, TimelineService, activeGoal, ConfigService) {
         var activityId = $routeParams.activityId;
+
+        $scope.activity = {};
 
         ActivityService.get(activityId, activeGoal.id).success(function (data) {
             $scope.activity = data;
@@ -32,6 +34,40 @@ angular.module('milestogo')
         });
 
         $scope.appContext = ConfigService.appContext();
+
+        $scope.messageToShare = function (activity) {
+            return activity.fullname + ' ran ' + activity.distanceCovered + ' ' + activity.goalUnit + ' &via=miles2runorg';
+        };
+
+        $scope.redirectUri = function () {
+            return ConfigService.absUrl();
+        }
+
+        $scope.facebookAppId = function () {
+            if ($location.host() === "localhost") {
+                return 433218286822536;
+            } else if ($location.host() === "miles2run.org") {
+                return 1466042716958015;
+            }
+            return 1441151639474875;
+        }
+
+        $scope.facebookShareUrl = function () {
+            return "https://www.facebook.com/dialog/feed?redirect_uri=" + $scope.redirectUri() + "&link=" + $scope.activityUrl($scope.activity) + "&display=popup&description=" + $scope.messageToShare($scope.activity) + "&app_id=" + $scope.facebookAppId();
+        }
+
+        $scope.twitterShareUrl = function () {
+            return "https://twitter.com/intent/tweet?url=" + $scope.activityUrl($scope.activity) + "&text=" + $scope.messageToShare($scope.activity);
+        }
+
+        $scope.googleShareUrl = function () {
+            return "https://plus.google.com/share?url=" + $scope.activityUrl($scope.activity);
+        }
+
+        $scope.activityUrl = function (activity) {
+            return ConfigService.absUrl() + 'profiles/' + activity.username + '/activities/' + activity.id;
+        }
+
 
     });
 

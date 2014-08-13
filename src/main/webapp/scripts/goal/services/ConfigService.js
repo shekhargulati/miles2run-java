@@ -19,6 +19,12 @@ angular.module('milestogo')
                 } else {
                     return "/";
                 }
+            },
+            absUrl: function () {
+                if ($location.host() === "localhost") {
+                    return "http://localhost:8080/miles2run/"
+                }
+                return $location.protocol() + $location.host() + "/";
             }
 
 
