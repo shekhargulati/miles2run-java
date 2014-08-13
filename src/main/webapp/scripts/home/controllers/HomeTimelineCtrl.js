@@ -65,9 +65,11 @@ angular.module('miles2run-home')
 
 
         $scope.postActivity = function () {
-            console.log($scope.activity);
+            $scope.forms.activityForm.durationHours.$invalid = false;
             $scope.submitted = true;
-            $scope.validateDuration($scope.duration);
+            if ($scope.forms.selectedGoal.goalType === 'DISTANCE_GOAL') {
+                $scope.validateDuration($scope.duration);
+            }
             if ($scope.forms.activityForm.$valid && !$scope.forms.activityForm.durationHours.$invalid) {
                 $scope.successfulSubmission = true;
                 $scope.buttonText = "Logging your run..";

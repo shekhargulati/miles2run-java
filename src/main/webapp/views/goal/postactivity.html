@@ -75,8 +75,7 @@
                                        title="Seconds" type="number" min="0" max="59" placeholder="00" ng-blur="validateDuration(duration)">
                             </div>
                                 <span class="help-block col-md-offset-2"
-                                      ng-if="activityForm.durationHours.$invalid && submitted">Duration is required.</span>
-
+                                      ng-if="activityForm.durationHours.$invalid && submitted">Duration is invalid.</span>
                                 <span class="help-block col-md-offset-2"
                                       ng-if="activityForm.durationHours.$error.number && submitted">Hours should be a number.</span>
                                 <span class="help-block col-md-offset-2"

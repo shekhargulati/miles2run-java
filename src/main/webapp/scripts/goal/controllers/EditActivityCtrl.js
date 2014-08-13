@@ -37,7 +37,9 @@ angular.module('milestogo')
 
         $scope.updateActivity = function () {
             $scope.submitted = true;
-            $scope.validateDuration($scope.duration);
+            if (activeGoal.goalType.$name === 'DISTANCE_GOAL') {
+                $scope.validateDuration($scope.duration);
+            }
             if ($scope.activityForm.$valid && !$scope.activityForm.durationHours.$invalid) {
                 $scope.successfulSubmission = true;
                 $scope.buttonText = "Updating your run..";
