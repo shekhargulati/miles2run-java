@@ -71,6 +71,14 @@ public class SocialConnection extends BaseEntity{
         this.profile = profile;
     }
 
+    public void setAccessToken(String accessToken) {
+        this.accessToken = accessToken;
+    }
+
+    public void setAccessSecret(String accessSecret) {
+        this.accessSecret = accessSecret;
+    }
+
     @Override
     public String toString() {
         return "SocialConnection{" +

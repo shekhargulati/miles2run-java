@@ -8,10 +8,10 @@ public class CommunityRunStats {
     private final Long runners;
     private final Long countries;
     private final Long cities;
-    private final Long totalDistance;
+    private final Double totalDistance;
     private final Long totalDuration;
 
-    public CommunityRunStats(Long runners, Long countries, Long cities, Long totalDistance, Long totalDuration) {
+    public CommunityRunStats(Long runners, Long countries, Long cities, Double totalDistance, Long totalDuration) {
         this.runners = runners;
         this.countries = countries;
         this.cities = cities;
@@ -31,7 +31,7 @@ public class CommunityRunStats {
         return cities;
     }
 
-    public Long getTotalDistance() {
+    public Double getTotalDistance() {
         return totalDistance;
     }
 

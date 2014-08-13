@@ -39,4 +39,10 @@ public class SocialConnectionService {
         socialConnection.setProfile(profile);
         entityManager.persist(socialConnection);
     }
+
+    public void update(Long id, String accessToken, String accessSecret) {
+        SocialConnection socialConnection = entityManager.find(SocialConnection.class, id);
+        socialConnection.setAccessToken(accessToken);
+        socialConnection.setAccessSecret(accessSecret);
+    }
 }
