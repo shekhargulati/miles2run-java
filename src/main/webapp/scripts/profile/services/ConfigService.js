@@ -25,7 +25,7 @@ angular.module('miles2run-profile')
                 if ($location.host() === "localhost") {
                     return "http://localhost:8080/miles2run/"
                 }
-                return "http://" + $location.host() + "/";
+                return $location.protocol() + "://" + $location.host() + "/";
             }
 
         };

@@ -95,7 +95,7 @@
 
                 <div class="col-lg-10 col-md-10 col-sm-9 col-xs-9">
                     <div class="row">
-                        <div class="col-md-8">
+                        <div class="col-md-7">
                             <h2 class="large body-type" itemprop="name" th:text="${communityRun.name}"></h2>
 
                             <div>
@@ -117,7 +117,7 @@
                             </div>
                         </div>
 
-                        <div class="col-md-4 push-3q-top push-1q-bottom" th:if="${communityRun.loggedInUserParticipating == false}">
+                        <div class="col-md-5 push-3q-top push-1q-bottom" th:if="${communityRun.loggedInUserParticipating == false}">
                             <form th:action="@{'/community_runs/' + ${communityRun.slug}+'/join'}" method="POST">
                                 <button class="btn btn-success btn-lg">Join Community Run</button>
                             </form>

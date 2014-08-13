@@ -24,7 +24,7 @@ angular.module('milestogo')
                 if ($location.host() === "localhost") {
                     return "http://localhost:8080/miles2run/"
                 }
-                return $location.protocol() + $location.host() + "/";
+                return $location.protocol() + "://" + $location.host() + "/";
             }
 
 
