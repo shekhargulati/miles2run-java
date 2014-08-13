@@ -100,24 +100,3 @@ function HeaderCtrl($scope, $location) {
         return viewLocation === $location.path();
     };
 }
-
-function ProgressCtrl($scope, ProgressService, activeProfile, $rootScope, activeGoal) {
-
-    $scope.currentUser = activeProfile;
-
-    ProgressService.progress(activeGoal.id).success(function (data, status, headers, config) {
-        $scope.error = null;
-        $scope.status = status;
-        $scope.percentage = Math.ceil(data.percentage);
-        $scope.style = "width:" + Math.ceil(data.percentage) + "%";
-    });
-
-    $rootScope.$on('update.progress', function (event, value) {
-        ProgressService.progress(activeGoal.id).success(function (data, status, headers, config) {
-            $scope.error = null;
-            $scope.status = status;
-            $scope.percentage = Math.ceil(data.percentage);
-            $scope.style = "width:" + Math.ceil(data.percentage) + "%";
-        });
-    });
-}
