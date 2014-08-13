@@ -89,7 +89,7 @@
 
                 <div class="col-lg-2 col-md-2 col-sm-3 col-xs-3">
                     <a th:href="@{'/community_runs/' + ${communityRun.slug}}" class="thumbnail-logo">
-                        <img width="160" height="160" th:src="${communityRun.bannerImg}" alt=""/>
+                        <img width="160" height="160" th:src="${communityRun.bannerImg}" alt="" class="img-responsive"/>
                     </a>
                 </div>
 
@@ -103,14 +103,27 @@
                                     [[${#dates.format(communityRun.startDate,'dd MMMM yyyy')} + ' - ' +
                                     ${#dates.format(communityRun.endDate,'dd MMMM yyyy')}]]</h4>
                             </div>
+
+                            <p class="normal legible-prose push-half" th:text="${communityRun.description}"></p>
+
+                            <div class="legible-prose prose-type push-1-bottom lightblue">
+
+                                Official website: <a th:href="${communityRun.website}" target="_blank"
+                                                     th:text="${communityRun.website}"></a><br/>
+
+                                Twitter: <a th:href="@{'http://twitter.com/'+ ${communityRun.twitterHandle}}"
+                                            target="_blank" th:text="${communityRun.twitterHandle}"></a>
+
+                            </div>
                         </div>
+
                         <div class="col-md-4 push-3q-top push-1q-bottom" th:if="${communityRun.loggedInUserParticipating == false}">
                             <form th:action="@{'/community_runs/' + ${communityRun.slug}+'/join'}" method="POST">
                                 <button class="btn btn-success btn-lg">Join Community Run</button>
                             </form>
                         </div>
 
-                        <div class="col-md-4" th:if="${communityRun.loggedInUserParticipating == true}">
+                        <div class="col-md-4  push-3q-top push-1q-bottom" th:if="${communityRun.loggedInUserParticipating == true}">
 
                             <div class="row">
                                 <div class="col-md-12">
@@ -120,32 +133,21 @@
                             <div class="row">
                                 <div class="col-md-12">
                                     <p>
-                                    <form th:action="@{'/community_runs/' + ${communityRun.slug}+'/leave'}" method="POST">
-                                        <button class="btn btn-danger">Leave Community Run</button>
-                                    </form>
-                                    </p>
-                                    <p>
-                                        <a class="btn btn-success" th:href="@{'/goals/' + ${goalId}}">Go to Goal Dashboard</a>
-                                    </p>
-                                    <p>
-                                        <a class="btn btn-success" th:href="@{'/goals/' +${goalId} + '#/activity/post'}">Log New Activity</a>
+                                        <a class="btn btn-default btn-block btn-success" th:href="@{'/goals/' +${goalId} + '#/activity/post'}">Log New Activity</a>
                                     </p>
 
+                                    <p>
+                                        <a class="btn btn-default btn-block btn-success" th:href="@{'/goals/' + ${goalId}}">Go to Dashboard</a>
+                                    </p>
+
+                                    <form th:action="@{'/community_runs/' + ${communityRun.slug}+'/leave'}"
+                                          method="POST">
+                                        <button class="btn btn-default btn-block btn-danger">Leave Community Run</button>
+                                    </form>
                                 </div>
                             </div>
 
                         </div>
-
-                    </div>
-                    <p class="normal legible-prose push-half" th:text="${communityRun.description}"></p>
-
-                    <div class="legible-prose prose-type push-1-bottom lightblue">
-
-                        Official website: <a th:href="${communityRun.website}" target="_blank"
-                                             th:text="${communityRun.website}"></a><br/>
-
-                        Twitter: <a th:href="@{'http://twitter.com/'+ ${communityRun.twitterHandle}}"
-                                    target="_blank" th:text="${communityRun.twitterHandle}"></a>
 
                     </div>
                 </div>
