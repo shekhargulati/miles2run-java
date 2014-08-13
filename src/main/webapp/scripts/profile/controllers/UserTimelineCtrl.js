@@ -41,7 +41,7 @@ angular.module('miles2run-profile')
         $scope.facebookAppId = function () {
             if ($location.host() === "localhost") {
                 return 433218286822536;
-            } else if ($location.host() === "miles2run.org") {
+            } else if ($location.host() === "www.miles2run.org") {
                 return 1466042716958015;
             }
             return 1441151639474875;

@@ -7,7 +7,7 @@ angular.module('milestogo')
         if (!angular.isDefined($scope.currentPage)) {
             $scope.currentPage = 1;
         }
-        $scope.goalTimelinePromise =  TimelineService.goalTimeline(activeGoal.id, 1).success(function (data, status, headers, config) {
+        $scope.goalTimelinePromise = TimelineService.goalTimeline(activeGoal.id, 1).success(function (data, status, headers, config) {
             $scope.activities = data.timeline;
             $scope.totalItems = data.totalItems;
         }).error(function (data, status, headers, config) {
@@ -38,8 +38,10 @@ angular.module('milestogo')
         $scope.facebookAppId = function () {
             if ($location.host() === "localhost") {
                 return 433218286822536;
+            } else if ($location.host() === "www.miles2run.org") {
+                return 1466042716958015;
             }
-            return 433218286822536;
+            return 1441151639474875;
         }
 
         $scope.delete = function (idx) {
