@@ -51,15 +51,15 @@
                                 <div class="form-group" ng-class="{'has-error':((forms.activityForm.durationHours.$invalid || forms.activityForm.durationMinutes.$invalid || forms.activityForm.durationSeconds.$invalid) && submitted)}" title="Activity Duration(hh:mm:ss)">
                                     <input id="durationHours" class="col-md-4" name="durationHours"
                                            ng-model="duration.hours"
-                                           title="Duration Hours" type="number" min="0" max="23" placeholder="00"
+                                           title="Duration Hours" type="number" min="0" max="23" placeholder="hh"
                                            ng-blur="validateDuration(duration)">
                                     <input id="durationMinutes" class="col-md-4" name="durationMinutes"
                                            ng-model="duration.minutes"
-                                           title="Duration Minutes" type="number" min="0" max="59" placeholder="00"
+                                           title="Duration Minutes" type="number" min="0" max="59" placeholder="mm"
                                            ng-blur="validateDuration(duration)">
                                     <input id="durationSeconds" class="col-md-4" name="durationSeconds"
                                            ng-model="duration.seconds"
-                                           title="Duration Seconds" type="number" min="0" max="59" placeholder="00"
+                                           title="Duration Seconds" type="number" min="0" max="59" placeholder="ss"
                                            ng-blur="validateDuration(duration)">
 
                                     <span class="help-block" ng-if="forms.activityForm.durationHours.$invalid && submitted">Duration is required.</span>
