@@ -64,8 +64,9 @@ public class GoalRedisService {
 
     public Map<String, Object> getDurationGoalProgress(final String username, final Long goalId, final Interval goalInterval) {
         final int totalDays = calculateTotalDays(goalInterval);
-        DateTime today = today();
-        if (today.isBefore(goalInterval.getStart())) {
+
+        DateTime current = new DateTime();
+        if (current.isBefore(goalInterval.getStart())) {
             final Map<String, Object> goalProgress = new HashMap<>();
             goalProgress.put("totalDays", totalDays);
             goalProgress.put("performedDays", 0);
@@ -74,10 +75,15 @@ public class GoalRedisService {
             goalProgress.put("percentage", 0.0d);
             return goalProgress;
         }
-        final int remainingDays = calculateRemainingDays(today.toLocalDate(), goalInterval.getEnd().toLocalDate());
+
         final Set<Tuple> activitiesPerformed = activitiesPerformedWithinAGoalInterval(username, goalId, goalInterval);
         final Set<LocalDate> performedActivityDates = toCollectionOfPerformedActivityDates(activitiesPerformed);
         final int performedDays = performedActivityDates.size();
+
+        boolean activityPerformedTodayExists = isActivityPerformedToday(performedActivityDates);
+
+        DateTime today = today(activityPerformedTodayExists);
+        final int remainingDays = calculateRemainingDays(today.toLocalDate(), goalInterval.getEnd().toLocalDate());
         final Set<LocalDate> datesTillToday = allDatesWithin(goalInterval.getStart(), today);
         final int missedDays = calculateMissedDays(performedActivityDates, datesTillToday);
 
@@ -91,13 +97,23 @@ public class GoalRedisService {
         return goalProgress;
     }
 
+    private boolean isActivityPerformedToday(Set<LocalDate> performedActivityDates) {
+        LocalDate today = new LocalDate();
+        for (LocalDate performedActivityDate : performedActivityDates) {
+            if (today.equals(performedActivityDate)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private int calculateRemainingDaysWithOffset(LocalDate start, LocalDate end) {
         int remainingDays = Days.daysBetween(start, end).getDays();
         return remainingDays < 0 ? 0 : remainingDays + 1;
     }
 
-    DateTime today() {
-        return new DateTime();
+    DateTime today(boolean activityPerformedTodayExists) {
+        return activityPerformedTodayExists == true ? new DateTime() : new DateTime().minusDays(1);
     }
 
     int calculateMissedDays(Set<LocalDate> performedActivityDates, Set<LocalDate> allDates) {

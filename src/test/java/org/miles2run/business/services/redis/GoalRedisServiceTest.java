@@ -120,7 +120,7 @@ public class GoalRedisServiceTest {
             }
 
             @Override
-            DateTime today() {
+            DateTime today(boolean activityPerformedTodayExists) {
                 return new DateTime(2014, 8, 15, 15, 30, 30);
             }
         };
@@ -150,7 +150,7 @@ public class GoalRedisServiceTest {
             }
 
             @Override
-            DateTime today() {
+            DateTime today(boolean activityPerformedTodayExists) {
                 return new DateTime(2014, 8, 15, 15, 30, 30);
             }
         };
@@ -174,7 +174,7 @@ public class GoalRedisServiceTest {
             }
 
             @Override
-            DateTime today() {
+            DateTime today(boolean activityPerformedTodayExists) {
                 return new DateTime(2014, 8, 15, 15, 30, 30);
             }
         };
@@ -198,7 +198,7 @@ public class GoalRedisServiceTest {
             }
 
             @Override
-            DateTime today() {
+            DateTime today(boolean activityPerformedTodayExists) {
                 return new DateTime(2014, 8, 9, 19, 10, 30);
             }
         };
@@ -225,7 +225,7 @@ public class GoalRedisServiceTest {
             }
 
             @Override
-            DateTime today() {
+            DateTime today(boolean activityPerformedTodayExists) {
                 return new DateTime(2014, 8, 10, 14, 10, 30);
             }
         };
@@ -246,6 +246,50 @@ public class GoalRedisServiceTest {
         DateTime end = new DateTime(1407660461744L);
         Set<LocalDate> dates = goalRedisService.allDatesWithin(start, end);
         Assert.assertThat(dates, IsCollectionWithSize.hasSize(2));
+    }
+
+    @Test
+    public void getDurationGoalProgress_StartDateTodayAnyEndDateNoActivityPerformed_TodayDateShouldNotBeShownInMissedDays() throws Exception {
+        GoalRedisService goalRedisService = new GoalRedisService() {
+            @Override
+            Set<Tuple> activitiesPerformedWithinAGoalInterval(String username, Long goalId, Interval goalInterval) {
+                return Collections.emptySet();
+            }
+
+        };
+        DateTime start = new DateTime();
+        DateTime end = start.plusDays(29);
+        System.out.printf("Start %s End %s", start, end);
+        Interval goalInterval = new Interval(start, end);
+
+        Map<String, Object> progress = goalRedisService.getDurationGoalProgress("test_user", 1L, goalInterval);
+        Assert.assertThat(progress, Matchers.hasEntry(Is.is("totalDays"), Is.is((Object) 30)));
+        Assert.assertThat(progress, Matchers.hasEntry(Is.is("performedDays"), Is.is((Object) 0)));
+        Assert.assertThat(progress, Matchers.hasEntry(Is.is("missedDays"), Is.is((Object) 0)));
+        Assert.assertThat(progress, Matchers.hasEntry(Is.is("remainingDays"), Is.is((Object) 30)));
+    }
+
+    @Test
+    public void getDurationGoalProgress_StartDateTodayAnyEndDateActivityPerformed_Missed0Completed1() throws Exception {
+        GoalRedisService goalRedisService = new GoalRedisService() {
+            @Override
+            Set<Tuple> activitiesPerformedWithinAGoalInterval(String username, Long goalId, Interval goalInterval) {
+                Tuple tuple1 = new Tuple("1", Double.valueOf(new DateTime().getMillis()));
+                Set<Tuple> activitiesPerformed = Sets.newHashSet(tuple1);
+                return activitiesPerformed;
+            }
+
+        };
+        DateTime start = new DateTime();
+        DateTime end = start.plusDays(29);
+        System.out.printf("Start %s End %s", start, end);
+        Interval goalInterval = new Interval(start, end);
+
+        Map<String, Object> progress = goalRedisService.getDurationGoalProgress("test_user", 1L, goalInterval);
+        Assert.assertThat(progress, Matchers.hasEntry(Is.is("totalDays"), Is.is((Object) 30)));
+        Assert.assertThat(progress, Matchers.hasEntry(Is.is("performedDays"), Is.is((Object) 1)));
+        Assert.assertThat(progress, Matchers.hasEntry(Is.is("missedDays"), Is.is((Object) 0)));
+        Assert.assertThat(progress, Matchers.hasEntry(Is.is("remainingDays"), Is.is((Object) 29)));
     }
 
 }
