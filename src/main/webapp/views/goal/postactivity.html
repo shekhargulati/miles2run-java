@@ -61,7 +61,7 @@
                         </div>
 
                         <div class="form-group"
-                             ng-class="{'has-error':((activityForm.durationHours.$invalid || activityForm.durationMinutes.$invalid || activityForm.durationSeconds.$invalid) && submitted)}">
+                             ng-class="{'has-error':((activityForm.durationHours.$invalid || activityForm..durationHours.$error.number ||  activityForm.durationMinutes.$invalid || activityForm.durationSeconds.$invalid) && submitted)}">
                             <label class="col-md-2 control-label">Duration</label>
                             <div class="input-group col-md-6">
                                 <input id="durationHours" class="col-md-4" name="durationHours"

@@ -48,7 +48,7 @@
                                     <span class="help-block" ng-if="forms.activityForm.distanceCovered.$error.min && submitted">Distance should be greater than 0.</span>
                                     <span class="help-block" ng-if="forms.activityForm.distanceCovered.$error.number && submitted">Distance should be a number greater than 0.</span>
                                 </div>
-                                <div class="form-group" ng-class="{'has-error':((forms.activityForm.durationHours.$invalid || forms.activityForm.durationMinutes.$invalid || forms.activityForm.durationSeconds.$invalid) && submitted)}" title="Activity Duration(hh:mm:ss)">
+                                <div class="form-group" ng-class="{'has-error':((forms.activityForm.durationHours.$invalid || forms.activityForm.durationHours.$error.number || forms.activityForm.durationHours.$invalid || forms.activityForm.durationMinutes.$invalid || forms.activityForm.durationSeconds.$invalid) && submitted)}" title="Activity Duration(hh:mm:ss)">
                                     <input id="durationHours" class="col-md-4" name="durationHours"
                                            ng-model="duration.hours"
                                            title="Duration Hours" type="number" min="0" max="23" placeholder="hh"

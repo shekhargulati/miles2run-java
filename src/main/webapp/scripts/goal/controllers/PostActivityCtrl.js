@@ -13,7 +13,7 @@ function PostActivityCtrl($scope, ActivityService, $location, ProfileService, ac
 
     $scope.validateDuration = function (duration) {
         var durationVal = toAppSeconds(duration)
-        if (durationVal > 0) {
+        if (durationVal >= 0) {
             $scope.activityForm.durationHours.$invalid = false;
         } else {
             $scope.activityForm.durationHours.$invalid = true;
