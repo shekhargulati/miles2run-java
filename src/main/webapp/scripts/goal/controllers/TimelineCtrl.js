@@ -47,7 +47,7 @@ angular.module('milestogo')
         $scope.delete = function (idx) {
             var modalIntance = $modal.open({
                 templateUrl: "confirm.html",
-                controller: DeleteActivityCtrl,
+                controller: TimelineDeleteActivityCtrl,
                 resolve: {
                     activityToDelete: function () {
                         var activityToDelete = $scope.activities[idx];
@@ -66,14 +66,15 @@ angular.module('milestogo')
 
     });
 
-var DeleteActivityCtrl = function ($scope, ActivityService, $modalInstance, activityToDelete, idx, activities, $rootScope, activeGoal) {
+var TimelineDeleteActivityCtrl = function ($scope, ActivityService, $modalInstance, activityToDelete, idx, activities, $rootScope, activeGoal, $location, $route) {
 
     $scope.ok = function () {
         ActivityService.deleteActivity(activityToDelete.id, activeGoal.id).success(function (data, status) {
             toastr.success("Deleted activity");
             activities.splice(idx, 1);
-            $rootScope.$broadcast('update.progress', 'true');
             $modalInstance.close({});
+            $location.path('/timeline');
+            $route.reload();
         }).error(function (data, status, headers, config) {
             console.log("Status code %s", status);
             if (status == 401) {
