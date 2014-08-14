@@ -128,19 +128,8 @@ public class ActivityResource {
         double distanceCovered = activity.getDistanceCovered() * activity.getGoalUnit().getConversion();
         activity.setDistanceCovered(distanceCovered);
         ActivityDetails updatedActivity = activityJPAService.update(existingActivity, activity);
-        double activityPreviousDistanceCovered = existingActivity.getDistanceCovered();
-        double updatedDistanceCovered = distanceCovered - activityPreviousDistanceCovered;
-
         timelineService.updateActivity(updatedActivity, profile, goal);
-        counterService.updateDistanceCount(updatedDistanceCovered);
-        long duration = activity.getDuration();
-        long existingActivityDuration = existingActivity.getDuration();
-        long updatedDuration = duration - existingActivityDuration;
-        counterService.updateActivitySecondsCount(updatedDuration);
-        goalRedisService.updateTotalDistanceCoveredForAGoal(goalId, updatedDistanceCovered);
-        if (goal.getGoalType() == GoalType.COMMUNITY_RUN_GOAL) {
-            communityRunRedisService.updateCommunityRunDistanceAndDurationStats(goal.getCommunityRun().getSlug(), updatedDistanceCovered, updatedDuration);
-        }
+        updateStats(goal, existingActivity.getDistanceCovered(), existingActivity.getDuration(), activity.getDistanceCovered(), activity.getDuration());
         return Response.status(Response.Status.OK).entity(ActivityDetails.toHumanReadable(updatedActivity)).build();
     }
 
@@ -164,8 +153,7 @@ public class ActivityResource {
         }
         activityJPAService.delete(activityId);
         timelineService.deleteActivityFromTimeline(loggedInUser, activityId, goal);
-        double activityPreviousDistanceCovered = existingActivity.getDistanceCovered();
-        goalRedisService.updateTotalDistanceCoveredForAGoal(goalId, (-1) * activityPreviousDistanceCovered);
+        updateStats(goal, existingActivity.getDistanceCovered(), existingActivity.getDuration(), 0.0d, 0L);
         return Response.noContent().build();
     }
 
@@ -208,6 +196,18 @@ public class ActivityResource {
                 }
             }
 
+        }
+    }
+
+    void updateStats(Goal goal, double existingDistanceCovered, long existingDuration, double distanceCovered, long duration) {
+        Long goalId = goal.getId();
+        double updatedDistanceCovered = distanceCovered - existingDistanceCovered;
+        counterService.updateDistanceCount(updatedDistanceCovered);
+        long updatedDuration = duration - existingDuration;
+        counterService.updateActivitySecondsCount(updatedDuration);
+        goalRedisService.updateTotalDistanceCoveredForAGoal(goalId, updatedDistanceCovered);
+        if (goal.getGoalType() == GoalType.COMMUNITY_RUN_GOAL) {
+            communityRunRedisService.updateCommunityRunDistanceAndDurationStats(goal.getCommunityRun().getSlug(), updatedDistanceCovered, updatedDuration);
         }
     }
 }
