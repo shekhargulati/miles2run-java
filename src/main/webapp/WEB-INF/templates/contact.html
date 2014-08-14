@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+
+    <title>Contact -- Miles2Run</title>
+
+    <!-- Core CSS - Include with every page -->
+    <link href="/css/bootstrap.css" th:href="@{/css/bootstrap.css}" rel="stylesheet"/>
+    <link href="/css/sb-admin.css" th:href="@{/css/sb-admin.css}" rel="stylesheet"/>
+    <link href='http://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic' rel='stylesheet' type='text/css'/>
+
+    <!-- Page-Level Plugin CSS -->
+    <link href="/css/plugins/timeline/timeline.css" th:href="@{/css/plugins/timeline/timeline.css}" rel="stylesheet"/>
+    <link href="/css/plugins/social-buttons/social-buttons.css" th:href="@{/css/plugins/social-buttons/social-buttons.css}" rel="stylesheet"/>
+
+    <!-- Miles2Run Overrides -->
+    <link href="/css/miles2run.css" th:href="@{/css/miles2run.css}" rel="stylesheet"/>
+
+
+</head>
+
+<body id="home">
+
+<div class="wrap">
+
+    <nav class="navbar navbar-default" role="navigation">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".sidebar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/" th:href="@{/}">Miles2Run</a>
+        </div>
+        <!-- /.navbar-header -->
+    </nav>
+
+    <section id="second">
+        <div class="container clearfix">
+            <div class="row">
+                <div class="col-lg-6">
+
+                    <h1>Join Miles2Run Today</h1>
+
+                    <p class="lead">Capture all your runs, anytime, anywhere.</p>
+
+                    <p class="lead">Miles2Run is a fast and fun way to share your running activities with friends and
+                        family. Sign up, enter an activity, share, and track your progress. It's easy.</p>
+                </div>
+                <!-- /.col-lg-6 -->
+                <div class="col-lg-6">
+                    <a class="btn btn-lg btn-block btn-social btn-facebook" href="/facebook/signin" th:href="@{/facebook/signin}">
+                        <i class="fa fa-facebook"></i> Sign in with Facebook
+                    </a>
+                    <a class="btn btn-lg btn-block btn-social btn-google-plus" href="/google/signin" th:href="@{/google/signin}">
+                        <i class="fa fa-google-plus"></i> Sign in with Google
+                    </a>
+                    <a class="btn btn-lg btn-block btn-social btn-twitter" href="/twitter/signin" th:href="@{/twitter/signin}">
+                        <i class="fa fa-twitter"></i> Sign in with Twitter
+                    </a>
+                </div>
+                <!-- /.col-lg-6 -->
+            </div>
+        </div>
+    </section>
+
+</div>
+<!-- /.wrap -->
+
+<footer>
+    <div class="container clearfix">
+        <div class="col-lg-6 links">
+            <a href="/about" th:href="@{/about}">About</a>
+            <a href="/contact" th:href="@{/contact}">Contact</a>
+        </div>
+        <!-- /.col-lg-6 -->
+        <div class="col-lg-6 text-right">
+            <a class="btn btn-social-icon btn-facebook" href="https://facebook.com/miles2run" target="_blank"><i class="fa fa-facebook"></i></a>
+            <a class="btn btn-social-icon btn-google-plus" href="https://plus.google.com/u/0/+Miles2Run" target="_blank"><i class="fa fa-google-plus"></i></a>
+            <a class="btn btn-social-icon btn-twitter" href="https://twitter.com/miles2runorg" target="_blank"><i class="fa fa-twitter"></i></a>
+        </div>
+        <!-- /.col-lg-6 -->
+    </div>
+</footer>
+
+<!-- Core Scripts - Include with every page -->
+<script src="/js/libs/jquery.js" th:src="@{/js/libs/jquery.js}"></script>
+<script src="/js/bootstrap.min.js" th:src="@{/js/bootstrap.min.js}"></script>
+<script src="/js/plugins/metisMenu/jquery.metisMenu.js" th:src="@{/js/plugins/metisMenu/jquery.metisMenu.js}"></script>
+
+<!-- SB Admin Scripts - Include with every page -->
+<script src="/js/sb-admin.js" th:src="@{/js/sb-admin.js}"></script>
+
+<script>
+    (function (i, s, o, g, r, a, m) {
+        i['GoogleAnalyticsObject'] = r;
+        i[r] = i[r] || function () {
+            (i[r].q = i[r].q || []).push(arguments)
+        }, i[r].l = 1 * new Date();
+        a = s.createElement(o),
+                m = s.getElementsByTagName(o)[0];
+        a.async = 1;
+        a.src = g;
+        m.parentNode.insertBefore(a, m)
+    })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+
+    ga('create', 'UA-49243977-1', 'miles2run.org');
+    ga('send', 'pageview');
+
+</script>
+
+</body>
+
+</html>

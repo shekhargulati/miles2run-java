@@ -54,6 +54,8 @@ public class RestConfig extends Application {
         classes.add(PingResource.class);
         classes.add(CommunityRunResource.class);
         classes.add(CommunityRunView.class);
+        classes.add(AboutView.class);
+        classes.add(ContactView.class);
         return classes;
     }
 }
