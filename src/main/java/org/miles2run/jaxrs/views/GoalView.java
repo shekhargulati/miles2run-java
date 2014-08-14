@@ -4,7 +4,9 @@ import org.jug.filters.LoggedIn;
 import org.jug.view.View;
 import org.jug.view.ViewException;
 import org.jug.view.ViewResourceNotFoundException;
+import org.miles2run.business.domain.jpa.CommunityRun;
 import org.miles2run.business.domain.jpa.Goal;
+import org.miles2run.business.domain.jpa.GoalType;
 import org.miles2run.business.domain.jpa.Profile;
 import org.miles2run.business.services.jpa.GoalJPAService;
 import org.miles2run.business.services.jpa.ProfileService;
@@ -21,6 +23,8 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.SecurityContext;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by shekhargulati on 11/06/14.
@@ -55,9 +59,15 @@ public class GoalView {
                 logger.info("No Goal found for id {}", goalId);
                 throw new ViewResourceNotFoundException("There is no goal with id : " + goalId, templateEngine);
             }
+            Map<String, Object> model = new HashMap<>();
+            if (goal.getGoalType() == GoalType.COMMUNITY_RUN_GOAL) {
+                CommunityRun communityRun = goal.getCommunityRun();
+                model.put("communityRun", communityRun);
+            }
             ProfileSocialConnectionDetails activeProfileWithSocialConnections = profileService.findProfileWithSocialConnections(username);
-            logger.info("Rendering goal {}", goalId);
-            return View.of("/goal", templateEngine).withModel("activeProfile", activeProfileWithSocialConnections).withModel("goal", goal);
+            model.put("activeProfile", activeProfileWithSocialConnections);
+            model.put("goal", goal);
+            return View.of("/goal", templateEngine).withModel(model);
         } catch (Exception e) {
             if (e instanceof ViewResourceNotFoundException) {
                 throw e;

@@ -5,6 +5,7 @@ angular.module('milestogo')
         $scope.currentUser = activeProfile;
         $scope.error = null;
         $scope.data = {};
+        $scope.activeGoal = activeGoal;
 
         var goalUnit = activeGoal.goalUnit.$name.toLowerCase();
         var paceUnit = 'mins/' + goalUnit;
