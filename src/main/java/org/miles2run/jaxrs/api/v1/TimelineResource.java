@@ -3,6 +3,7 @@ package org.miles2run.jaxrs.api.v1;
 import org.hibernate.validator.constraints.NotBlank;
 import org.jug.filters.LoggedIn;
 import org.miles2run.business.domain.jpa.Profile;
+import org.miles2run.business.services.jpa.ActivityJPAService;
 import org.miles2run.business.services.jpa.ProfileService;
 import org.miles2run.business.services.redis.TimelineService;
 import org.miles2run.business.vo.ActivityDetails;
@@ -28,6 +29,8 @@ public class TimelineResource {
     private ProfileService profileService;
     @Context
     private SecurityContext securityContext;
+    @Inject
+    private ActivityJPAService activityJPAService;
 
     @Path("/user_timeline")
     @GET
@@ -39,11 +42,11 @@ public class TimelineResource {
         }
         page = page == 0 ? 1 : page;
         count = (count == 0 || count > 10) ? 10 : count;
-        List<ActivityDetails> homeTimeline = timelineService.getProfileTimeline(username, page, count);
-        Map<String, Object> response = new HashMap<>();
-        response.put("timeline", homeTimeline);
-        response.put("totalItems", timelineService.totalItems(username));
-        return response;
+        Set<String> timelineIds = timelineService.getProfileTimelineIds(username, page, count);
+        if (timelineIds == null || timelineIds.isEmpty()) {
+            return emptyResponse();
+        }
+        return toTimelineResponse(username, timelineIds);
     }
 
     @Path("/home_timeline")
@@ -53,8 +56,28 @@ public class TimelineResource {
     public Map<String, Object> homeTimeline(@QueryParam("page") int page, @QueryParam("count") int count) {
         String loggedInUser = securityContext.getUserPrincipal().getName();
         page = page == 0 ? 1 : page;
-        count = count == 0 || count > 50 ? 10 : count;
-        List<ActivityDetails> homeTimeline = timelineService.getHomeTimeline(loggedInUser, page, count);
+        count = count == 0 || count > 10 ? 10 : count;
+        Set<String> homeTimelineIds = timelineService.getHomeTimelineIds(loggedInUser, page, count);
+        if (homeTimelineIds == null || homeTimelineIds.isEmpty()) {
+            return emptyResponse();
+        }
+        return toTimelineResponse(loggedInUser, homeTimelineIds);
+    }
+
+    private Map<String, Object> emptyResponse() {
+        Map<String, Object> response = new HashMap<>();
+        response.put("timeline", Collections.emptyList());
+        response.put("totalItems", 0L);
+        return response;
+
+    }
+
+    Map<String, Object> toTimelineResponse(String loggedInUser, Set<String> homeTimelineIds) {
+        List<Long> activityIds = new ArrayList<>();
+        for (String homeTimelineId : homeTimelineIds) {
+            activityIds.add(Long.valueOf(homeTimelineId));
+        }
+        List<ActivityDetails> homeTimeline = ActivityDetails.toListOfHumanReadable(activityJPAService.findAllActivitiesByIds(activityIds));
         Map<String, Object> response = new HashMap<>();
         response.put("timeline", homeTimeline);
         response.put("totalItems", timelineService.totalItems(loggedInUser));

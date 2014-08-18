@@ -34,6 +34,29 @@ public class TimelineService {
     @Inject
     private ProfileMongoService profileMongoService;
 
+
+    public Set<String> getHomeTimelineIds(final String username, final long page, final long count) {
+        return jedisExecutionService.execute(new JedisOperation<Set<String>>() {
+            @Override
+            public Set<String> perform(Jedis jedis) {
+                String key = String.format(RedisKeyNames.HOME_S_TIMELINE, username);
+                Set<String> activityIds = jedis.zrevrange(key, (page - 1) * count, page * (count - 1));
+                return activityIds;
+            }
+        });
+    }
+
+    public Set<String> getProfileTimelineIds(final String username, final long page, final long count) {
+        return jedisExecutionService.execute(new JedisOperation<Set<String>>() {
+            @Override
+            public Set<String> perform(Jedis jedis) {
+                String profileTimelineKey = String.format(RedisKeyNames.PROFILE_S_TIMELINE, username);
+                Set<String> activityIds = jedis.zrevrange(profileTimelineKey, (page - 1) * count, page * (count - 1));
+                return activityIds;
+            }
+        });
+    }
+
     public List<ActivityDetails> getHomeTimeline(final String username, final long page, final long count) {
         return jedisExecutionService.execute(new JedisOperation<List<ActivityDetails>>() {
             @Override
@@ -136,6 +159,7 @@ public class TimelineService {
                 data.put("userId", String.valueOf(profile.getId()));
                 String posted = String.valueOf(activity.getActivityDate().getTime());
                 data.put("posted", posted);
+                data.put("activityDate", activity.getActivityDate().toString());
                 data.put("fullname", profile.getFullname());
                 data.put("distanceCovered", String.valueOf(activity.getDistanceCovered()));
                 data.put("goalUnit", goal.getGoalUnit().getUnit());
@@ -346,6 +370,17 @@ public class TimelineService {
             @Override
             public Long perform(Jedis jedis) {
                 return jedis.zcard(String.format(RedisKeyNames.HOME_S_TIMELINE, loggedInUser));
+            }
+        });
+    }
+
+
+    public Set<String> getGoalTimelineIds(final String loggedInUser, final Goal goal, final int page, final int count) {
+        return jedisExecutionService.execute(new JedisOperation<Set<String>>() {
+            @Override
+            public Set<String> perform(Jedis jedis) {
+                Set<String> activityIds = jedis.zrevrange(String.format(RedisKeyNames.PROFILE_S_GOAL_S_TIMELINE, loggedInUser, goal.getId()), (page - 1) * count, page * (count - 1));
+                return activityIds;
             }
         });
     }

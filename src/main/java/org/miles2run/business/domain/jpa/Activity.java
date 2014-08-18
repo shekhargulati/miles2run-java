@@ -12,12 +12,13 @@ import java.util.Date;
  */
 @Entity
 @NamedQueries({
-        @NamedQuery(name = "Activity.findAll", query = "SELECT NEW org.miles2run.business.vo.ActivityDetails(a.id,a.status,a.distanceCovered,a.goalUnit,a.activityDate,a.postedBy.fullname,a.duration,a.postedBy.username,a.postedBy.profilePic,a.createdAt) FROM Activity a WHERE a.postedBy =:postedBy ORDER BY a.activityDate DESC"),
-        @NamedQuery(name = "Activity.findById", query = "SELECT new org.miles2run.business.vo.ActivityDetails(a.id,a.status,a.distanceCovered,a.goalUnit,a.activityDate,a.postedBy.fullname,a.duration,a.postedBy.username,a.postedBy.profilePic,a.createdAt) from Activity a where a.id =:id"),
+        @NamedQuery(name = "Activity.findAll", query = "SELECT NEW org.miles2run.business.vo.ActivityDetails(a.id,a.status,a.distanceCovered,a.goalUnit,a.activityDate,a.postedBy.fullname,a.duration,a.postedBy.username,a.postedBy.profilePic,a.createdAt,a.goal.id) FROM Activity a WHERE a.postedBy =:postedBy ORDER BY a.activityDate DESC"),
+        @NamedQuery(name = "Activity.findById", query = "SELECT new org.miles2run.business.vo.ActivityDetails(a.id,a.status,a.distanceCovered,a.goalUnit,a.activityDate,a.postedBy.fullname,a.duration,a.postedBy.username,a.postedBy.profilePic,a.createdAt,a.goal.id) from Activity a where a.id =:id"),
         @NamedQuery(name = "Activity.countByProfile", query = "SELECT COUNT(a) FROM Activity a WHERE a.postedBy =:profile"),
         @NamedQuery(name = "Activity.countByProfileAndGoal", query = "SELECT COUNT(a) FROM Activity a WHERE a.postedBy =:profile and a.goal =:goal"),
         @NamedQuery(name = "Activity.userGoalProgress", query = "SELECT new org.miles2run.business.vo.Progress(a.goal.distance,a.goal.goalUnit,SUM(a.distanceCovered),COUNT(a), SUM(a.duration) ,a.goal.goalType) from Activity a WHERE a.postedBy =:postedBy and a.goal =:goal"),
-        @NamedQuery(name = "Activity.findByUsernameAndId", query = "SELECT new org.miles2run.business.vo.ActivityDetails(a.id,a.status,a.distanceCovered,a.goalUnit,a.activityDate,a.postedBy.fullname,a.duration,a.postedBy.username,a.postedBy.profilePic,a.createdAt) from Activity a where a.id =:activityId and a.postedBy =:profile")
+        @NamedQuery(name = "Activity.findByUsernameAndId", query = "SELECT new org.miles2run.business.vo.ActivityDetails(a.id,a.status,a.distanceCovered,a.goalUnit,a.activityDate,a.postedBy.fullname,a.duration,a.postedBy.username,a.postedBy.profilePic,a.createdAt,a.goal.id) from Activity a where a.id =:activityId and a.postedBy =:profile"),
+        @NamedQuery(name = "Activity.findByIds", query = "SELECT new org.miles2run.business.vo.ActivityDetails(a.id,a.status,a.distanceCovered,a.goalUnit,a.activityDate,a.postedBy.fullname,a.duration,a.postedBy.username,a.postedBy.profilePic,a.createdAt,a.goal.id) from Activity a where a.id IN :activityIds order by a.activityDate desc")
 
 })
 @Access(AccessType.FIELD)

@@ -3,6 +3,7 @@ package org.miles2run.jaxrs.api.v1;
 import org.jug.filters.LoggedIn;
 import org.miles2run.business.domain.jpa.Goal;
 import org.miles2run.business.domain.jpa.Profile;
+import org.miles2run.business.services.jpa.ActivityJPAService;
 import org.miles2run.business.services.jpa.GoalJPAService;
 import org.miles2run.business.services.jpa.ProfileService;
 import org.miles2run.business.services.redis.TimelineService;
@@ -12,10 +13,7 @@ import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.SecurityContext;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Logger;
 
 /**
@@ -32,9 +30,10 @@ public class GoalTimelineResource {
     private ProfileService profileService;
     @Context
     private SecurityContext securityContext;
-
     @Inject
     private GoalJPAService goalJPAService;
+    @Inject
+    private ActivityJPAService activityJPAService;
 
     @Path("/goal_timeline")
     @GET
@@ -49,11 +48,11 @@ public class GoalTimelineResource {
         }
         page = page == 0 ? 1 : page;
         count = count == 0 || count > 50 ? 10 : count;
-        List<ActivityDetails> goalTimeline = timelineService.getGoalTimeline(loggedInUser, goal, page, count);
-        Map<String, Object> response = new HashMap<>();
-        response.put("timeline", goalTimeline);
-        response.put("totalItems", timelineService.totalActivitiesForGoal(loggedInUser, goal));
-        return response;
+        Set<String> timelineIds = timelineService.getGoalTimelineIds(loggedInUser, goal, page, count);
+        if (timelineIds == null || timelineIds.isEmpty()) {
+            return emptyResponse();
+        }
+        return toTimelineResponse(loggedInUser, goal, timelineIds);
     }
 
     @Path("/user_goal_timeline")
@@ -67,10 +66,30 @@ public class GoalTimelineResource {
         }
         page = page == 0 ? 1 : page;
         count = count == 0 || count > 50 ? 10 : count;
-        List<ActivityDetails> goalTimeline = timelineService.getGoalTimeline(username, goal, page, count);
+        Set<String> timelineIds = timelineService.getGoalTimelineIds(username, goal, page, count);
+        if (timelineIds == null || timelineIds.isEmpty()) {
+            return emptyResponse();
+        }
+        return toTimelineResponse(username, goal, timelineIds);
+    }
+
+    Map<String, Object> toTimelineResponse(String loggedInUser, Goal goal, Set<String> homeTimelineIds) {
+        List<Long> activityIds = new ArrayList<>();
+        for (String homeTimelineId : homeTimelineIds) {
+            activityIds.add(Long.valueOf(homeTimelineId));
+        }
+        List<ActivityDetails> homeTimeline = ActivityDetails.toListOfHumanReadable(activityJPAService.findAllActivitiesByIds(activityIds));
         Map<String, Object> response = new HashMap<>();
-        response.put("timeline", goalTimeline);
-        response.put("totalItems", timelineService.totalActivitiesForGoal(username, goal));
+        response.put("timeline", homeTimeline);
+        response.put("totalItems", timelineService.totalActivitiesForGoal(loggedInUser, goal));
         return response;
+    }
+
+    private Map<String, Object> emptyResponse() {
+        Map<String, Object> response = new HashMap<>();
+        response.put("timeline", Collections.emptyList());
+        response.put("totalItems", 0L);
+        return response;
+
     }
 }

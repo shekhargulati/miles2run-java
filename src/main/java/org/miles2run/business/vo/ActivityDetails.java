@@ -1,10 +1,12 @@
 package org.miles2run.business.vo;
 
-import org.miles2run.business.domain.jpa.Activity;
 import org.miles2run.business.domain.jpa.GoalUnit;
 import org.miles2run.business.domain.jpa.Share;
+import org.miles2run.business.utils.DateUtils;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -40,7 +42,7 @@ public class ActivityDetails {
 
     }
 
-    public ActivityDetails(Long id, String status, double distanceCovered, GoalUnit goalUnit, Date activityDate, String fullname, long duration, String username, String profilePic, Date postedAt) {
+    public ActivityDetails(Long id, String status, double distanceCovered, GoalUnit goalUnit, Date activityDate, String fullname, long duration, String username, String profilePic, Date postedAt, Long goalId) {
         this.id = id;
         this.status = status;
         this.goalUnit = goalUnit;
@@ -51,11 +53,13 @@ public class ActivityDetails {
         this.profilePic = profilePic;
         this.duration = duration;
         this.postedAt = postedAt;
+        this.goalId = goalId;
     }
 
     public static ActivityDetails toHumanReadable(ActivityDetails activityDetails) {
         ActivityDetails hr = new ActivityDetails();
         hr.id = activityDetails.getId();
+        hr.goalId = activityDetails.goalId;
         hr.status = activityDetails.status;
         hr.goalUnit = activityDetails.goalUnit;
         hr.distanceCovered = activityDetails.distanceCovered / hr.goalUnit.getConversion();
@@ -68,6 +72,14 @@ public class ActivityDetails {
         hr.postedAt = activityDetails.postedAt;
         hr.durationStr = toDurationText(activityDetails.duration);
         return hr;
+    }
+
+    public static List<ActivityDetails> toListOfHumanReadable(List<ActivityDetails> activityDetailsList) {
+        List<ActivityDetails> activityDetailsReadableList = new ArrayList<>();
+        for (ActivityDetails activityDetails : activityDetailsList) {
+            activityDetailsReadableList.add(toHumanReadable(activityDetails));
+        }
+        return activityDetailsReadableList;
     }
 
     private static String toDurationText(long duration) {
@@ -94,7 +106,7 @@ public class ActivityDetails {
     public ActivityDetails(Map<String, String> hash) {
         this.id = Long.valueOf(hash.get("id"));
         this.username = hash.get("username");
-        this.activityDate = new Date(Long.valueOf(hash.get("posted")));
+        this.activityDate = DateUtils.toDate(hash.get("activityDate"));
         this.goalUnit = GoalUnit.fromStringToGoalUnit(hash.get("goalUnit"));
         this.distanceCovered = Double.valueOf(hash.get("distanceCovered")) / this.goalUnit.getConversion();
         this.fullname = hash.get("fullname");

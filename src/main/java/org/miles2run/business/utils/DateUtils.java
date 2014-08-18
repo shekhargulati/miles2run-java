@@ -5,6 +5,8 @@ import org.joda.time.Days;
 import org.joda.time.Interval;
 import org.joda.time.LocalDate;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -58,6 +60,15 @@ public abstract class DateUtils {
         data.put("performedDays", performedDays);
         data.put("missedDays", missedDays);
         return data;
+    }
+
+    public static Date toDate(String text) {
+        try {
+            return new SimpleDateFormat("yyyy-MM-dd").parse(text);
+        } catch (ParseException e) {
+            return null;
+
+        }
     }
 
 }

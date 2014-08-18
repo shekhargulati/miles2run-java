@@ -53,6 +53,15 @@ angular.module('miles2run-home')
             }
         }
 
+        $scope.validateDurationForDistanceGoal = function (duration) {
+            var durationVal = toAppSeconds(duration)
+            if (durationVal > 0) {
+                $scope.forms.activityForm.durationHours.$invalid = false;
+            } else {
+                $scope.forms.activityForm.durationHours.$invalid = true;
+            }
+        }
+
         var toAppSeconds = function (duration) {
             if (duration) {
                 var hours = duration.hours && duration.hours !== '00' ? duration.hours : 0;
@@ -68,15 +77,24 @@ angular.module('miles2run-home')
             $scope.forms.activityForm.durationHours.$invalid = false;
             $scope.submitted = true;
             if ($scope.forms.selectedGoal.goalType === 'DISTANCE_GOAL') {
-                $scope.validateDuration($scope.duration);
+                $scope.validateDurationForDistanceGoal($scope.duration);
             }
             if ($scope.forms.activityForm.$valid && !$scope.forms.activityForm.durationHours.$invalid) {
                 $scope.successfulSubmission = true;
                 $scope.buttonText = "Logging your run..";
-                $scope.activity.duration = toAppSeconds($scope.duration);
-                $scope.activity.activityDate = removeTime($scope.activity.activityDate);
-                $scope.activity.activityDate = moment($scope.activity.activityDate.toLocaleString(), "MM/DD/yyyy").format("YYYY-MM-DD");
-                ActivityService.postActivity($scope.activity, $scope.forms.selectedGoal.id).success(function (data, status, headers, config) {
+                var duration = toAppSeconds($scope.duration);
+                var activityDate = removeTime($scope.activity.activityDate).toDateString();
+                var index = activityDate.indexOf(" ");
+                activityDate = activityDate.substr(index + 1, activityDate.length);
+                activityDate = moment(activityDate, "MMM DD yyyy").format("YYYY-MM-DD");
+                var activity = {
+                    activityDate: activityDate,
+                    status: $scope.activity.status,
+                    goalUnit: $scope.activity.goalUnit,
+                    distanceCovered: $scope.activity.distanceCovered,
+                    duration: duration
+                }
+                ActivityService.postActivity(activity, $scope.forms.selectedGoal.id).success(function (data, status, headers, config) {
                     toastr.success("Posted new activity");
                     $window.location.href = ConfigService.appContext() + 'goals/' + $scope.forms.selectedGoal.id;
                 }).error(function (data, status, headers, config) {
@@ -199,7 +217,7 @@ angular.module('miles2run-home')
         $scope.delete = function (idx) {
             var modalIntance = $modal.open({
                 templateUrl: "confirm.html",
-                controller: DeleteActivityCtrl,
+                controller: HomeTimelineDeleteActivityCtrl,
                 resolve: {
                     activityToDelete: function () {
                         var activityToDelete = $scope.activities[idx];
@@ -218,13 +236,15 @@ angular.module('miles2run-home')
 
     });
 
-var DeleteActivityCtrl = function ($scope, $modalInstance, activityToDelete, idx, activities, ConfigService, $http) {
+var HomeTimelineDeleteActivityCtrl = function ($scope, $modalInstance, activityToDelete, idx, activities, ConfigService, $http, $location, $route) {
 
     $scope.ok = function () {
         $http.delete(ConfigService.getBaseUrl() + "goals/" + activityToDelete.goalId + "/activities/" + activityToDelete.id).success(function (data, status) {
             toastr.success("Deleted activity");
             activities.splice(idx, 1);
             $modalInstance.close({});
+            $location.path('/timeline');
+            $route.reload();
         }).error(function (data, status, headers, config) {
             console.log("Status code %s", status);
             if (status == 401) {

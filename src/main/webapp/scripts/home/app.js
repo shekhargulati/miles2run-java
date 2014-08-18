@@ -24,6 +24,10 @@ var app = angular.module('miles2run-home', [
                 templateUrl: 'views/home/timeline.html',
                 controller: 'HomeTimelineCtrl'
             })
+            .when('/timeline', {
+                templateUrl: 'views/home/timeline.html',
+                controller: 'HomeTimelineCtrl'
+            })
             .when('/community_run', {
                 templateUrl: 'views/home/community_run.html',
                 controller: 'CommunityRunCtrl'

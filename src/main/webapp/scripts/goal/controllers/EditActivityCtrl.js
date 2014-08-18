@@ -18,9 +18,18 @@ angular.module('milestogo')
 
         $scope.validateDuration = function (duration) {
             var durationVal = toAppSeconds(duration)
+            if (durationVal >= 0) {
+                $scope.activityForm.durationHours.$invalid = false;
+            } else {
+                $scope.activityForm.durationHours.$invalid = true;
+            }
+        }
+
+        $scope.validateDurationForDistanceGoal = function (duration) {
+            var durationVal = toAppSeconds(duration)
             if (durationVal > 0) {
                 $scope.activityForm.durationHours.$invalid = false;
-            }else{
+            } else {
                 $scope.activityForm.durationHours.$invalid = true;
             }
         }
@@ -35,14 +44,22 @@ angular.module('milestogo')
             return 0;
         }
 
+        var removeTime = function (d) {
+            return new Date(d.getFullYear(), d.getMonth(), d.getDate())
+        }
+
         $scope.updateActivity = function () {
             $scope.submitted = true;
             if (activeGoal.goalType.$name === 'DISTANCE_GOAL') {
-                $scope.validateDuration($scope.duration);
+                $scope.validateDurationForDistanceGoal($scope.duration);
             }
             if ($scope.activityForm.$valid && !$scope.activityForm.durationHours.$invalid) {
                 $scope.successfulSubmission = true;
                 $scope.buttonText = "Updating your run..";
+                var activityDate = removeTime($scope.activity.activityDate).toDateString();
+                var index = activityDate.indexOf(" ");
+                activityDate = activityDate.substr(index + 1, activityDate.length);
+                activityDate = moment(activityDate, "MMM DD yyyy").format("YYYY-MM-DD");
 
                 var activity = {
                     id: $scope.activity.id,
@@ -50,7 +67,7 @@ angular.module('milestogo')
                     goalUnit: $scope.activity.goalUnit,
                     distanceCovered: $scope.activity.distanceCovered,
                     share: $scope.activity.share,
-                    activityDate: $scope.activity.activityDate
+                    activityDate: activityDate
                 };
                 activity.duration = toAppSeconds($scope.duration);
                 ActivityService.updateActivity(activityId, activity, activeGoal.id).success(function (data, status, headers, config) {

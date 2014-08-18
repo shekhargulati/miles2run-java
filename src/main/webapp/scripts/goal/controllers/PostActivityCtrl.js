@@ -20,6 +20,15 @@ function PostActivityCtrl($scope, ActivityService, $location, ProfileService, ac
         }
     }
 
+    $scope.validateDurationForDistanceGoal = function (duration) {
+        var durationVal = toAppSeconds(duration)
+        if (durationVal > 0) {
+            $scope.activityForm.durationHours.$invalid = false;
+        } else {
+            $scope.activityForm.durationHours.$invalid = true;
+        }
+    }
+
     var toAppSeconds = function (duration) {
         if (duration) {
             var hours = duration.hours && duration.hours !== '00' ? duration.hours : 0;
@@ -30,21 +39,35 @@ function PostActivityCtrl($scope, ActivityService, $location, ProfileService, ac
         return 0;
     }
 
+    var removeTime = function (d) {
+        return new Date(d.getFullYear(), d.getMonth(), d.getDate())
+    }
+
     $scope.postActivity = function () {
         $scope.submitted = true;
         if (activeGoal.goalType.$name === 'DISTANCE_GOAL') {
-            $scope.validateDuration($scope.duration);
+            $scope.validateDurationForDistanceGoal($scope.duration);
         }
         if ($scope.activityForm.$valid && !$scope.activityForm.durationHours.$invalid) {
             $scope.successfulSubmission = true;
             $scope.buttonText = "Logging your run..";
-            $scope.activity.duration = toAppSeconds($scope.duration);
-            $scope.activity.activityDate = moment($scope.activity.activityDate.toLocaleString(), "MM/DD/yyyy").format("YYYY-MM-DD");
-            ActivityService.postActivity($scope.activity, activeGoal.id).success(function (data, status, headers, config) {
-                $rootScope.$broadcast('update.progress', 'true');
+            var duration = toAppSeconds($scope.duration);
+            var activityDate = removeTime($scope.activity.activityDate).toDateString();
+            var index = activityDate.indexOf(" ");
+            activityDate = activityDate.substr(index + 1, activityDate.length);
+            activityDate = moment(activityDate, "MMM DD yyyy").format("YYYY-MM-DD");
+            var activity = {
+                activityDate: activityDate,
+                status: $scope.activity.status,
+                goalUnit: $scope.activity.goalUnit,
+                distanceCovered: $scope.activity.distanceCovered,
+                duration: duration
+            }
+            ActivityService.postActivity(activity, $scope.activeGoal.id).success(function (data, status, headers, config) {
                 toastr.success("Posted new activity");
                 $location.path('/activity/' + data.id);
             }).error(function (data, status, headers, config) {
+                $scope.successfulSubmission = false;
                 console.log("Error handler for PostActivity. Status code " + status);
                 toastr.error("Unable to post activity. Please try later.");
                 $location.path('/');

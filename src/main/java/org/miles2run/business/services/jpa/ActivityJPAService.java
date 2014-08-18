@@ -15,6 +15,7 @@ import javax.persistence.TypedQuery;
 import javax.validation.constraints.NotNull;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by shekhargulati on 04/03/14.
@@ -111,10 +112,12 @@ public class ActivityJPAService {
         }
     }
 
-    @SuppressWarnings("unchecked")
     public ActivityCountAndDistanceTuple calculateTotalActivitiesAndDistanceCoveredByUser(@NotNull Profile profile) {
         return entityManager.createQuery("SELECT new org.miles2run.business.vo.ActivityCountAndDistanceTuple(COUNT(a),SUM(a.distanceCovered)) FROM Activity a where a.postedBy =:profile", ActivityCountAndDistanceTuple.class).setParameter("profile", profile).getSingleResult();
     }
 
 
+    public List<ActivityDetails> findAllActivitiesByIds(List<Long> activityIds) {
+        return entityManager.createNamedQuery("Activity.findByIds", ActivityDetails.class).setParameter("activityIds", activityIds).getResultList();
+    }
 }
