@@ -77,22 +77,17 @@ public class ActivityResource {
         if (goal == null) {
             return Response.status(Response.Status.NOT_FOUND).entity("No goal exists with id " + goalId).build();
         }
-        double distanceCovered = activity.getDistanceCovered() * activity.getGoalUnit().getConversion();
-        activity.setDistanceCovered(distanceCovered);
         activity.setPostedBy(profile);
         activity.setGoal(goal);
         Long persistedActivityId = activityJPAService.save(activity);
         ActivityDetails savedActivity = activityJPAService.findById(persistedActivityId);
-        counterService.updateDistanceCount(distanceCovered);
+        counterService.updateDistanceCount(activity.getDistanceCovered());
         counterService.updateActivitySecondsCount(activity.getDuration());
         goalRedisService.updateTotalDistanceCoveredForAGoal(goal.getId(), savedActivity.getDistanceCovered());
         timelineService.postActivityToTimeline(savedActivity, profile, goal);
         if (goal.getGoalType() == GoalType.COMMUNITY_RUN_GOAL) {
             communityRunRedisService.updateCommunityRunStats(loggedInUser, goal, activity);
         }
-        Share share = activity.getShare();
-        String message = toActivityMessage(activity, profile);
-        shareActivity(message, profile, share);
         return Response.status(Response.Status.CREATED).entity(ActivityDetails.toHumanReadable(savedActivity)).build();
     }
 

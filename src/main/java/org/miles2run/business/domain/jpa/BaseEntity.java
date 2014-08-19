@@ -1,5 +1,7 @@
 package org.miles2run.business.domain.jpa;
 
+import org.hibernate.annotations.Type;
+
 import javax.persistence.*;
 import java.util.Date;
 
@@ -18,8 +20,8 @@ public abstract class BaseEntity {
     @Version
     Long version;
 
-    @Temporal(TemporalType.TIMESTAMP)
     @Column(updatable = false)
+    @Type(type = "org.jadira.usertype.dateandtime.legacyjdk.PersistentDate")
     Date createdAt = new Date();
 
 

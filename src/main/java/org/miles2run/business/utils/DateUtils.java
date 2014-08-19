@@ -5,6 +5,7 @@ import org.joda.time.Days;
 import org.joda.time.Interval;
 import org.joda.time.LocalDate;
 
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -68,6 +69,17 @@ public abstract class DateUtils {
         } catch (ParseException e) {
             return null;
 
+        }
+    }
+
+    public static Date toUTCDate(Date date) {
+        try {
+            DateFormat df = DateFormat.getInstance();
+            df.setTimeZone(TimeZone.getTimeZone("UTC"));
+            Date utcDate = df.parse(df.format(date));
+            return utcDate;
+        } catch (ParseException e) {
+            return date;
         }
     }
 

@@ -8,6 +8,7 @@ function PostActivityCtrl($scope, ActivityService, $location, ProfileService, ac
     $scope.buttonText = "Log your Run";
 
     $scope.activity = {
+        activityDate: new Date(),
         goalUnit: $scope.activeGoal.goalUnit.$name
     };
 
@@ -39,10 +40,6 @@ function PostActivityCtrl($scope, ActivityService, $location, ProfileService, ac
         return 0;
     }
 
-    var removeTime = function (d) {
-        return new Date(d.getFullYear(), d.getMonth(), d.getDate())
-    }
-
     $scope.postActivity = function () {
         $scope.submitted = true;
         if (activeGoal.goalType.$name === 'DISTANCE_GOAL') {
@@ -52,12 +49,8 @@ function PostActivityCtrl($scope, ActivityService, $location, ProfileService, ac
             $scope.successfulSubmission = true;
             $scope.buttonText = "Logging your run..";
             var duration = toAppSeconds($scope.duration);
-            var activityDate = removeTime($scope.activity.activityDate).toDateString();
-            var index = activityDate.indexOf(" ");
-            activityDate = activityDate.substr(index + 1, activityDate.length);
-            activityDate = moment(activityDate, "MMM DD yyyy").format("YYYY-MM-DD");
             var activity = {
-                activityDate: activityDate,
+                activityDate: $scope.activity.activityDate,
                 status: $scope.activity.status,
                 goalUnit: $scope.activity.goalUnit,
                 distanceCovered: $scope.activity.distanceCovered,

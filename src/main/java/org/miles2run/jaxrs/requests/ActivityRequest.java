@@ -31,7 +31,7 @@ public class ActivityRequest {
     private double distanceCovered;
 
     @NotNull
-    private String activityDate;
+    private Date activityDate;
 
     @NotNull
     private long duration;
@@ -39,7 +39,7 @@ public class ActivityRequest {
     public ActivityRequest() {
     }
 
-    public ActivityRequest(String status, GoalUnit goalUnit, double distanceCovered, String activityDate, long duration) {
+    public ActivityRequest(String status, GoalUnit goalUnit, double distanceCovered, Date activityDate, long duration) {
         this.status = status;
         this.goalUnit = goalUnit;
         this.distanceCovered = distanceCovered;
@@ -59,7 +59,7 @@ public class ActivityRequest {
         return distanceCovered;
     }
 
-    public String getActivityDate() {
+    public Date getActivityDate() {
         return activityDate;
     }
 
@@ -68,18 +68,9 @@ public class ActivityRequest {
     }
 
     public Activity toActivity() {
-        Activity activity = new Activity(this.status, this.distanceCovered, this.goalUnit, this.duration, toActivityDate(this.activityDate));
+        double distanceCovered = this.distanceCovered * this.goalUnit.getConversion();
+        Activity activity = new Activity(this.status, distanceCovered, this.goalUnit, this.duration, this.activityDate);
         return activity;
-    }
-
-    private Date toActivityDate(String activityDate) {
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-        try {
-            Date date = df.parse(activityDate);
-            return date;
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     @Override

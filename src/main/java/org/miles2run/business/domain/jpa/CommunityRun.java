@@ -1,5 +1,6 @@
 package org.miles2run.business.domain.jpa;
 
+import org.hibernate.annotations.Type;
 import org.hibernate.validator.constraints.URL;
 import org.miles2run.business.bean_validation.CommunityRunDateRange;
 import org.miles2run.business.bean_validation.ImageUrl;
@@ -40,12 +41,12 @@ public class CommunityRun extends BaseEntity {
     @Size(max = 4000)
     private String description;
 
-    @Temporal(TemporalType.TIMESTAMP)
     @NotNull
+    @Type(type = "org.jadira.usertype.dateandtime.legacyjdk.PersistentDate")
     private Date startDate;
 
-    @Temporal(TemporalType.TIMESTAMP)
     @NotNull
+    @Type(type = "org.jadira.usertype.dateandtime.legacyjdk.PersistentDate")
     private Date endDate;
 
     @URL

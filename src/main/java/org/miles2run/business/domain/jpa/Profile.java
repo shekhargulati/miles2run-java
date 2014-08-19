@@ -84,8 +84,7 @@ public class Profile extends BaseEntity{
         this.fullname = p.fullname;
         this.profilePic = p.profilePic;
         this.gender = p.gender;
-        Timestamp createdAtTimestamp = (Timestamp) (p.createdAt);
-        this.createdAt = new Date(createdAtTimestamp.getTime());
+        this.createdAt = p.createdAt;
         this.role = p.role;
     }
 

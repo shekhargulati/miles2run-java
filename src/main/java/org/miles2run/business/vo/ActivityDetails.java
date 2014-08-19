@@ -175,15 +175,11 @@ public class ActivityDetails {
     public String toString() {
         return "ActivityDetails{" +
                 "id=" + id +
-                ", status='" + status + '\'' +
-                ", distanceCovered=" + distanceCovered +
-                ", goalUnit=" + goalUnit +
                 ", activityDate=" + activityDate +
-                ", share=" + share +
-                ", fullname='" + fullname + '\'' +
+                ", timestamp=" + activityDate.getTime() +
                 ", username='" + username + '\'' +
-                ", profilePic='" + profilePic + '\'' +
-                ", duration=" + duration +
                 '}';
     }
+
+
 }

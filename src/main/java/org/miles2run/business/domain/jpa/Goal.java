@@ -1,6 +1,8 @@
 package org.miles2run.business.domain.jpa;
 
 
+import org.hibernate.annotations.Type;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
@@ -23,10 +25,10 @@ public class Goal extends BaseEntity {
     @NotNull
     private String purpose;
 
-    @Temporal(TemporalType.TIMESTAMP)
+    @Type(type = "org.jadira.usertype.dateandtime.legacyjdk.PersistentDate")
     private Date startDate;
 
-    @Temporal(TemporalType.TIMESTAMP)
+    @Type(type = "org.jadira.usertype.dateandtime.legacyjdk.PersistentDate")
     private Date endDate;
 
     @ManyToOne

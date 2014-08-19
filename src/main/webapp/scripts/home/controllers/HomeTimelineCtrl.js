@@ -3,10 +3,6 @@
 angular.module('miles2run-home')
     .controller('HomeTimelineCtrl', function ($scope, $http, $modal, $location, activeProfile, ConfigService, ActivityService, $window) {
 
-        var removeTime = function (d) {
-            return new Date(d.getFullYear(), d.getMonth(), d.getDate())
-        }
-
         $scope.currentUser = activeProfile;
         $scope.forms = {};
         $scope.forms.selectedGoal = {};
@@ -83,12 +79,8 @@ angular.module('miles2run-home')
                 $scope.successfulSubmission = true;
                 $scope.buttonText = "Logging your run..";
                 var duration = toAppSeconds($scope.duration);
-                var activityDate = removeTime($scope.activity.activityDate).toDateString();
-                var index = activityDate.indexOf(" ");
-                activityDate = activityDate.substr(index + 1, activityDate.length);
-                activityDate = moment(activityDate, "MMM DD yyyy").format("YYYY-MM-DD");
                 var activity = {
-                    activityDate: activityDate,
+                    activityDate: $scope.activity.activityDate,
                     status: $scope.activity.status,
                     goalUnit: $scope.activity.goalUnit,
                     distanceCovered: $scope.activity.distanceCovered,

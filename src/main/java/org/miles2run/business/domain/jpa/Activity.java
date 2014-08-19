@@ -1,5 +1,6 @@
 package org.miles2run.business.domain.jpa;
 
+import org.hibernate.annotations.Type;
 import org.miles2run.business.vo.ActivityDetails;
 
 import javax.persistence.*;
@@ -35,8 +36,8 @@ public class Activity extends BaseEntity {
     @NotNull
     private double distanceCovered;
 
-    @Temporal(TemporalType.DATE)
     @NotNull
+    @Type(type = "org.jadira.usertype.dateandtime.legacyjdk.PersistentDate")
     private Date activityDate;
 
     @ManyToOne

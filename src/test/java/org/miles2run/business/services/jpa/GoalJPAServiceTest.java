@@ -59,6 +59,7 @@ public class GoalJPAServiceTest {
                 addClass(CommunityRunBuilder.class).
                 addClass(CommunityRunJPAService.class).
                 addAsLibraries(Maven.resolver().loadPomFromFile("pom.xml").resolve("joda-time:joda-time").withoutTransitivity().asFile()).
+                addAsLibraries(Maven.resolver().loadPomFromFile("pom.xml").resolve("org.jadira.usertype:usertype.core").withTransitivity().asFile()).
                 addAsResource("META-INF/test_persistence.xml", "META-INF/persistence.xml").
                 addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
         System.out.printf("WebArchive %s", webArchive.toString(true));

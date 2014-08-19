@@ -34,7 +34,7 @@ angular.module('milestogo')
             }
         }
 
-        var toAppSeconds = function(duration){
+        var toAppSeconds = function (duration) {
             if (duration) {
                 var hours = duration.hours && duration.hours !== '00' ? duration.hours : 0;
                 var minutes = duration.minutes && duration.minutes !== '00' ? duration.minutes : 0;
@@ -56,20 +56,17 @@ angular.module('milestogo')
             if ($scope.activityForm.$valid && !$scope.activityForm.durationHours.$invalid) {
                 $scope.successfulSubmission = true;
                 $scope.buttonText = "Updating your run..";
-                var activityDate = removeTime($scope.activity.activityDate).toDateString();
-                var index = activityDate.indexOf(" ");
-                activityDate = activityDate.substr(index + 1, activityDate.length);
-                activityDate = moment(activityDate, "MMM DD yyyy").format("YYYY-MM-DD");
-
+                var duration = toAppSeconds($scope.duration);
                 var activity = {
                     id: $scope.activity.id,
                     status: $scope.activity.status,
                     goalUnit: $scope.activity.goalUnit,
                     distanceCovered: $scope.activity.distanceCovered,
                     share: $scope.activity.share,
-                    activityDate: activityDate
+                    activityDate: $scope.activity.activityDate,
+                    duration: duration
                 };
-                activity.duration = toAppSeconds($scope.duration);
+
                 ActivityService.updateActivity(activityId, activity, activeGoal.id).success(function (data, status, headers, config) {
                     $rootScope.$broadcast('update.progress', 'true');
                     toastr.success("Updated activity");

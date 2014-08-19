@@ -7,13 +7,17 @@ import org.miles2run.business.services.jpa.ActivityJPAService;
 import org.miles2run.business.services.jpa.ProfileService;
 import org.miles2run.business.services.redis.TimelineService;
 import org.miles2run.business.vo.ActivityDetails;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import javax.ws.rs.*;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.SecurityContext;
 import java.util.*;
-import java.util.logging.Logger;
 
 /**
  * Created by shekhargulati on 05/06/14.
@@ -21,8 +25,8 @@ import java.util.logging.Logger;
 @Path("/api/v1/activities")
 public class TimelineResource {
 
-    @Inject
-    private Logger logger;
+    private Logger logger = LoggerFactory.getLogger(TimelineResource.class);
+
     @Inject
     private TimelineService timelineService;
     @Inject
@@ -78,6 +82,7 @@ public class TimelineResource {
             activityIds.add(Long.valueOf(homeTimelineId));
         }
         List<ActivityDetails> homeTimeline = ActivityDetails.toListOfHumanReadable(activityJPAService.findAllActivitiesByIds(activityIds));
+        logger.info("Found {} activities : {}", homeTimeline.size(), homeTimeline);
         Map<String, Object> response = new HashMap<>();
         response.put("timeline", homeTimeline);
         response.put("totalItems", timelineService.totalItems(loggedInUser));

@@ -7,6 +7,7 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -55,6 +56,7 @@ public class ActivityJPAServiceTest {
                 addClass(Progress.class).
                 addClass(CommunityRun.class).
                 addClass(Share.class).
+                addAsLibraries(Maven.resolver().loadPomFromFile("pom.xml").resolve("org.jadira.usertype:usertype.core").withTransitivity().asFile()).
                 addAsResource("META-INF/test_persistence.xml", "META-INF/persistence.xml").
                 addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
         System.out.printf("WebArchive %s", webArchive.toString(true));
