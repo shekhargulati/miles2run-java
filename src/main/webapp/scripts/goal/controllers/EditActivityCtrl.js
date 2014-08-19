@@ -104,7 +104,9 @@ angular.module('milestogo')
         };
 
         $scope.toggleMin = function () {
-            $scope.minDate = ( $scope.minDate ) ? null : new Date();
+            $scope.minDate = activeGoal.startDate ? new Date(activeGoal.startDate.time) : null;
+            var current = new Date();
+            $scope.maxDate = activeGoal.endDate ? (new Date(activeGoal.endDate.time) > current ? current : new Date(activeGoal.endDate.time)) : current;
         };
         $scope.toggleMin();
 

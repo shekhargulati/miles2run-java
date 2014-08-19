@@ -30,9 +30,10 @@ public class GoalAggregationService {
     public List<Object[]> distanceAndPaceOverNDays(final String username, final Goal goal, final int daysBack) {
         final Interval interval = DateUtils.toDateRangeInterval(daysBack);
         Set<Tuple> activityIdsInNDaysWithScores = findActivitiesWithScore(username, goal, interval);
-        Map<LocalDate, List<String>> timestampAndActivities = toMapOfTimestampAndActivities(activityIdsInNDaysWithScores);
+        Map<LocalDate, List<String>> localdateAndTimestamp = toMapOfLocalDateAndActivities(activityIdsInNDaysWithScores);
+        logger.info("localdateAndTimestamp : {}", localdateAndTimestamp);
         List<Object[]> result = new ArrayList<>();
-        for (Map.Entry<LocalDate, List<String>> entry : timestampAndActivities.entrySet()) {
+        for (Map.Entry<LocalDate, List<String>> entry : localdateAndTimestamp.entrySet()) {
             List<String> activityIds = entry.getValue();
             double totalDistanceRanOnADay = 0;
             double totalPaceOnADay = 0.0;
@@ -47,7 +48,8 @@ public class GoalAggregationService {
                 totalPaceOnADay += pace;
             }
             double averagePaceOnADay = totalPaceOnADay / activityIds.size();
-            result.add(new Object[]{entry.getKey().toDate().getTime(), totalDistanceRanOnADay, averagePaceOnADay});
+            long timestamp = entry.getKey().toDate().getTime();
+            result.add(new Object[]{entry.getKey().toString(), totalDistanceRanOnADay, averagePaceOnADay});
         }
         return result;
 
@@ -80,10 +82,10 @@ public class GoalAggregationService {
                 Interval interval = DateUtils.toDateRangeIntervalInMonths(nMonths);
                 String key = String.format(RedisKeyNames.PROFILE_S_GOAL_S_TIMELINE, username, goal.getId());
                 Set<Tuple> activityIdsInNMonthWithScores = jedis.zrangeByScoreWithScores(key, interval.getStartMillis(), interval.getEndMillis());
-                Map<LocalDate, List<String>> timestampAndActivities = toMapOfTimestampAndActivities(activityIdsInNMonthWithScores);
+                Map<Long, List<String>> timestampAndActivities = toMapOfTimestampAndActivities(activityIdsInNMonthWithScores);
                 logger.debug("for key {} : timestampAndActivities {}", key, timestampAndActivities);
                 Map<String, Double> data = new LinkedHashMap<>();
-                for (Map.Entry<LocalDate, List<String>> entry : timestampAndActivities.entrySet()) {
+                for (Map.Entry<Long, List<String>> entry : timestampAndActivities.entrySet()) {
                     List<String> activityIds = entry.getValue();
                     double totalDistanceRanOnADay = 0;
                     for (String activityId : activityIds) {
@@ -91,7 +93,7 @@ public class GoalAggregationService {
                         double distanceWithUnitConversion = distance / goal.getGoalUnit().getConversion();
                         totalDistanceRanOnADay += distanceWithUnitConversion;
                     }
-                    long timestamp = entry.getKey().toDate().getTime() / 1000;
+                    long timestamp = entry.getKey() / 1000;
                     data.put(String.valueOf(timestamp), totalDistanceRanOnADay);
                 }
                 return data;
@@ -99,7 +101,7 @@ public class GoalAggregationService {
         });
     }
 
-    Map<LocalDate, List<String>> toMapOfTimestampAndActivities(Set<Tuple> activityIdsInNDaysWithScores) {
+    Map<LocalDate, List<String>> toMapOfLocalDateAndActivities(Set<Tuple> activityIdsInNDaysWithScores) {
         Map<LocalDate, List<String>> timestampAndActivities = new HashMap<>();
         for (Tuple tuple : activityIdsInNDaysWithScores) {
             String activityId = tuple.getElement();
@@ -111,6 +113,23 @@ public class GoalAggregationService {
                 List<String> activityIds = new ArrayList<>();
                 activityIds.add(activityId);
                 timestampAndActivities.put(localDate, activityIds);
+            }
+        }
+        return timestampAndActivities;
+    }
+
+    Map<Long, List<String>> toMapOfTimestampAndActivities(Set<Tuple> activityIdsInNDaysWithScores) {
+        Map<Long, List<String>> timestampAndActivities = new HashMap<>();
+        for (Tuple tuple : activityIdsInNDaysWithScores) {
+            String activityId = tuple.getElement();
+            Long timestamp = Double.valueOf(tuple.getScore()).longValue();
+            if (timestampAndActivities.containsKey(timestamp)) {
+                List<String> activityIds = timestampAndActivities.get(timestamp);
+                activityIds.add(activityId);
+            } else {
+                List<String> activityIds = new ArrayList<>();
+                activityIds.add(activityId);
+                timestampAndActivities.put(timestamp, activityIds);
             }
         }
         return timestampAndActivities;

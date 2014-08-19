@@ -7,8 +7,13 @@ angular.module('miles2run-home')
 
         $http.get(ConfigService.getBaseUrl() + "goals/" + $routeParams.goalId).success(function (data) {
             $scope.goal = data;
-            if($scope.goal.startDate && $scope.goal.endDate){
-                $scope.goal.numberOfDays = moment($scope.goal.endDate).diff($scope.goal.startDate,'days') + 1;
+            if ($scope.goal.startDate && $scope.goal.endDate) {
+                $scope.goal.numberOfDays = moment($scope.goal.endDate).diff($scope.goal.startDate, 'days') + 1;
+                if ($scope.goal.goalType === "COMMUNITY_RUN_GOAL") {
+                    $scope.minStartDate = new Date($scope.goal.communityRunStartDate);
+                    $scope.maxEndDate = new Date($scope.goal.communityRunEndDate)
+                }
+
             }
             $scope.today();
         }).error(function (data, status) {

@@ -13,9 +13,9 @@ import java.util.Date;
 @Entity
 @NamedQueries(
         {
-                @NamedQuery(name = "Goal.findAllWithProfileAndArchive", query = "SELECT new Goal(g.id,g.version, g.purpose,g.startDate,g.endDate,g.distance, g.goalUnit, g.archived,g.goalType) FROM Goal g where g.profile =:profile and g.archived =:archived"),
+                @NamedQuery(name = "Goal.findAllWithProfileAndArchive", query = "SELECT new Goal(g) FROM Goal g where g.profile =:profile and g.archived =:archived"),
                 @NamedQuery(name = "Goal.findGoalWithIdAndProfile", query = "SELECT new Goal(g) FROM Goal g where g.profile =:profile and g.id =:goalId"),
-                @NamedQuery(name = "Goal.findLastedCreatedGoal", query = "SELECT new Goal(g.id,g.version,g.purpose,g.startDate,g.endDate,g.distance, g.goalUnit, g.archived,g.goalType) from Goal g where g.profile =:profile order by g.createdAt desc")
+                @NamedQuery(name = "Goal.findLastedCreatedGoal", query = "SELECT new Goal(g) from Goal g where g.profile =:profile order by g.createdAt desc")
         }
 )
 @Access(AccessType.FIELD)

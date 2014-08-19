@@ -1,6 +1,7 @@
 package org.miles2run.jaxrs.vo;
 
 import org.miles2run.business.domain.jpa.Goal;
+import org.miles2run.business.domain.jpa.GoalType;
 import org.miles2run.business.domain.jpa.GoalUnit;
 
 import java.util.Date;
@@ -15,6 +16,7 @@ public class DurationGoalDetails {
     private final boolean archived;
     private final Date startDate;
     private final Date endDate;
+    private final GoalType goalType;
 
     public DurationGoalDetails(Goal goal) {
         this.id = goal.getId();
@@ -22,6 +24,7 @@ public class DurationGoalDetails {
         this.archived = goal.isArchived();
         this.startDate = goal.getStartDate();
         this.endDate = goal.getEndDate();
+        this.goalType = goal.getGoalType();
     }
 
     public Long getId() {
@@ -42,5 +45,9 @@ public class DurationGoalDetails {
 
     public Date getEndDate() {
         return endDate;
+    }
+
+    public GoalType getGoalType() {
+        return goalType;
     }
 }
