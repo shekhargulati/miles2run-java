@@ -65,7 +65,7 @@ public class GoalRedisService {
     public Map<String, Object> getDurationGoalProgress(final String username, final Long goalId, final Interval goalInterval) {
         final int totalDays = calculateTotalDays(goalInterval);
 
-        DateTime current = new DateTime();
+        DateTime current = today();
         if (current.isBefore(goalInterval.getStart())) {
             final Map<String, Object> goalProgress = new HashMap<>();
             goalProgress.put("totalDays", totalDays);
@@ -114,6 +114,10 @@ public class GoalRedisService {
 
     DateTime today(boolean activityPerformedTodayExists) {
         return activityPerformedTodayExists == true ? new DateTime() : new DateTime().minusDays(1);
+    }
+
+    DateTime today() {
+        return new DateTime();
     }
 
     int calculateMissedDays(Set<LocalDate> performedActivityDates, Set<LocalDate> allDates) {

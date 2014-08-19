@@ -198,7 +198,7 @@ public class GoalRedisServiceTest {
             }
 
             @Override
-            DateTime today(boolean activityPerformedTodayExists) {
+            DateTime today() {
                 return new DateTime(2014, 8, 9, 19, 10, 30);
             }
         };
