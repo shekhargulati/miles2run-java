@@ -47,7 +47,6 @@
                             <th>#</th>
                             <th>Purpose</th>
                             <th>Distance</th>
-                            <th>Remaining Days</th>
                             <th>% Completed</th>
                             <th>Actions</th>
                         </tr>
@@ -59,7 +58,6 @@
                                 <a ng-href="{{appContext}}goals/{{goal.id}}">{{goal.purpose}}</a>
                             </td>
                             <td>{{(goal.distance |number:2) + ' ' + goal.goalUnit|lowercase}}</td>
-                            <td>{{goal.endDate | date:'MMddyyyy HH mm ss'|remainingDays:goal.startDate}}</td>
                             <td>{{goal.percentageCompleted |number:2}}% Complete</td>
                             <td>
                                 <div class="btn-group pull-right">
@@ -108,7 +106,6 @@
                             <th>Start Date</th>
                             <th>End Date</th>
                             <th>Total Days</th>
-                            <th>Remaining Days</th>
                             <th>Actions</th>
                         </tr>
                         </thead>
@@ -121,7 +118,6 @@
                             <td>{{goal.startDate | date:'MMMM dd, yyyy'}}</td>
                             <td>{{goal.endDate | date:'MMMM dd, yyyy'}}</td>
                             <td>{{goal.endDate | date:'MMddyyyy HH mm ss'|totalDays:goal.startDate}}</td>
-                            <td>{{goal.endDate | date:'MMddyyyy HH mm ss'|remainingDays:goal.startDate}}</td>
                             <td>
                                 <div class="btn-group pull-right">
                                     <button type="button" class="btn btn-default btn-xs dropdown-toggle"
@@ -170,7 +166,6 @@
                             <th>Start Date</th>
                             <th>End Date</th>
                             <th>Total Days</th>
-                            <th>Remaining Days</th>
                             <th>Actions</th>
                         </tr>
                         </thead>
@@ -183,7 +178,6 @@
                             <td>{{goal.startDate | date:'MMMM dd, yyyy'}}</td>
                             <td>{{goal.endDate | date:'MMMM dd, yyyy'}}</td>
                             <td>{{goal.endDate | date:'MMddyyyy HH mm ss'|totalDays:goal.startDate}}</td>
-                            <td>{{goal.endDate | date:'MMddyyyy HH mm ss'|remainingDays:goal.startDate}}</td>
                             <td>
                                 <div class="btn-group pull-right">
                                     <button type="button" class="btn btn-default btn-xs dropdown-toggle"
