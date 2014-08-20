@@ -87,12 +87,12 @@ angular.module('miles2run-home')
                     duration: duration
                 }
                 ActivityService.postActivity(activity, $scope.forms.selectedGoal.id).success(function (data, status, headers, config) {
-                    toastr.success("Posted new activity");
+                    toastr.success("Saved new activity");
                     $window.location.href = ConfigService.appContext() + 'goals/' + $scope.forms.selectedGoal.id;
                 }).error(function (data, status, headers, config) {
                     $scope.successfulSubmission = false;
                     console.log("Error handler for PostActivity. Status code " + status);
-                    toastr.error("Unable to post activity. Please try later.");
+                    toastr.error("Unable to save activity. Please try later.");
                     $location.path('/');
                 });
             }

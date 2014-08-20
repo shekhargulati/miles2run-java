@@ -5,7 +5,7 @@ function PostActivityCtrl($scope, ActivityService, $location, ProfileService, ac
     $scope.currentUser = activeProfile;
     $scope.activeGoal = activeGoal;
 
-    $scope.buttonText = "Log your Run";
+    $scope.buttonText = "Save";
 
     $scope.activity = {
         activityDate: new Date(),
@@ -47,7 +47,7 @@ function PostActivityCtrl($scope, ActivityService, $location, ProfileService, ac
         }
         if ($scope.activityForm.$valid && !$scope.activityForm.durationHours.$invalid) {
             $scope.successfulSubmission = true;
-            $scope.buttonText = "Logging your run..";
+            $scope.buttonText = "Saving..";
             var duration = toAppSeconds($scope.duration);
             var activity = {
                 activityDate: $scope.activity.activityDate,
@@ -57,12 +57,12 @@ function PostActivityCtrl($scope, ActivityService, $location, ProfileService, ac
                 duration: duration
             }
             ActivityService.postActivity(activity, $scope.activeGoal.id).success(function (data, status, headers, config) {
-                toastr.success("Posted new activity");
+                toastr.success("Saved new activity");
                 $location.path('/activity/' + data.id);
             }).error(function (data, status, headers, config) {
                 $scope.successfulSubmission = false;
                 console.log("Error handler for PostActivity. Status code " + status);
-                toastr.error("Unable to post activity. Please try later.");
+                toastr.error("Unable to save activity. Please try later.");
                 $location.path('/');
             });
         }
