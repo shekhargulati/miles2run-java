@@ -3,6 +3,7 @@
 angular.module('milestogo')
     .controller('TimelineCtrl', function ($scope, TimelineService, $modal, $location, activeProfile, activeGoal) {
         $scope.currentUser = activeProfile;
+        $scope.activeGoal = activeGoal;
 
         if (!angular.isDefined($scope.currentPage)) {
             $scope.currentPage = 1;

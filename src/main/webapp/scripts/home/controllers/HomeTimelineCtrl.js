@@ -88,7 +88,7 @@ angular.module('miles2run-home')
                 }
                 ActivityService.postActivity(activity, $scope.forms.selectedGoal.id).success(function (data, status, headers, config) {
                     toastr.success("Saved new activity");
-                    $window.location.href = ConfigService.appContext() + 'goals/' + $scope.forms.selectedGoal.id;
+                    $window.location.href = ConfigService.appContext() + 'goals/' + $scope.forms.selectedGoal.id + '#/activity/' + data.id;
                 }).error(function (data, status, headers, config) {
                     $scope.successfulSubmission = false;
                     console.log("Error handler for PostActivity. Status code " + status);
