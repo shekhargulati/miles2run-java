@@ -148,7 +148,6 @@ angular.module('milestogo')
                         'pace': "#1b9e77"
                     },
                     x: 'x1',
-//                    x_format: null,
                     rows: rows
                 },
                 axis: {
@@ -165,6 +164,9 @@ angular.module('milestogo')
                         label: { // ADD
                             text: 'Distance (' + goalUnit + ')',
                             position: 'outer-middle'
+                        },
+                        tick: {
+                            format: d3.format(".2f")
                         }
 
                     }
