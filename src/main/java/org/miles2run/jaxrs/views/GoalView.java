@@ -57,7 +57,7 @@ public class GoalView {
             Goal goal = goalJPAService.findGoal(profile, goalId);
             if (goal == null) {
                 logger.info("No Goal found for id {}", goalId);
-                throw new ViewResourceNotFoundException("There is no goal with id : " + goalId, templateEngine);
+                throw new ViewResourceNotFoundException(String.format("There is no goal with id %s associated with user %s", goalId, username), templateEngine);
             }
             Map<String, Object> model = new HashMap<>();
             if (goal.getGoalType() == GoalType.COMMUNITY_RUN_GOAL) {

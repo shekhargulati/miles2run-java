@@ -171,16 +171,19 @@ public class GoalResource {
     public Response progress(@PathParam("goalId") Long goalId) {
         String username = securityContext.getUserPrincipal().getName();
         Profile loggedInUser = profileService.findProfile(username);
-        Goal goal = goalJPAService.find(goalId);
+        Goal goal = goalJPAService.findGoal(loggedInUser, goalId);
         if (goal == null) {
             return Response.status(Response.Status.NOT_FOUND).entity("No goal exists with id " + goalId).build();
         }
+        Progress progress = activityJPAService.calculateUserProgressForGoal(loggedInUser, goal);
         if (goal.getGoalType() == GoalType.DISTANCE_GOAL) {
-            Progress progress = activityJPAService.calculateUserProgressForGoal(loggedInUser, goal);
             return Response.status(Response.Status.OK).entity(progress).build();
         }
-        Map<String, Object> progress = goalRedisService.getDurationGoalProgress(username, goalId, new Interval(goal.getStartDate().getTime(), goal.getEndDate().getTime()));
-        return Response.status(Response.Status.OK).entity(progress).build();
+        Map<String, Object> goalProgress = goalRedisService.getDurationGoalProgress(username, goalId, new Interval(goal.getStartDate().getTime(), goal.getEndDate().getTime()));
+        goalProgress.put("activityCount", progress.getActivityCount());
+        goalProgress.put("totalDistanceCovered", progress.getTotalDistanceCovered());
+        goalProgress.put("goalUnit", progress.getGoalUnit());
+        return Response.status(Response.Status.OK).entity(goalProgress).build();
     }
 
     public Response deleteGoal(@PathParam("goalId") Long goalId) {

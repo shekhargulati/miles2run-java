@@ -221,6 +221,9 @@ angular.module('milestogo')
                         label: { // ADD
                             text: 'Distance (' + goalUnit + ')',
                             position: 'outer-middle'
+                        },
+                        tick: {
+                            format: d3.format(".2f")
                         }
 
                     }
@@ -312,7 +315,7 @@ angular.module('milestogo')
                 },
                 bar: {
                     width: {
-                        ratio: 0.4
+                        ratio: 0.1
                     }
                 },
                 axis: {
@@ -323,6 +326,9 @@ angular.module('milestogo')
                         label: {
                             text: 'Distance (' + goalUnit + ')',
                             position: 'outer-middle'
+                        },
+                        tick: {
+                            format: d3.format(".2f")
                         }
 
                     }
