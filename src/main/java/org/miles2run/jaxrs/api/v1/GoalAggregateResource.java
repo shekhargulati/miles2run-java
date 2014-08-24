@@ -37,7 +37,7 @@ public class GoalAggregateResource {
     @LoggedIn
     @Produces("application/json")
     @Path("/distance_and_pace")
-    public List<Object[]> getDistanceAndPaceOverTime(@PathParam("goalId") Long goalId, @QueryParam("interval") String interval, @QueryParam("days") int days, @QueryParam("months") int months) {
+    public List<Object[]> getDistanceAndPaceOverTime(@PathParam("goalId") Long goalId, @QueryParam("interval") String interval, @QueryParam("days") int days, @QueryParam("months") int months, @CookieParam("timezoneoffset") int timezoneOffset) {
         String loggedInUser = securityContext.getUserPrincipal().getName();
         Profile profile = profileService.findProfile(loggedInUser);
         Goal goal = goalJPAService.findGoal(profile, goalId);
@@ -46,11 +46,11 @@ public class GoalAggregateResource {
         interval = interval == null ? "day" : interval;
         switch (interval) {
             case "day":
-                return goalAggregationService.distanceAndPaceOverNDays(profile.getUsername(), goal, days);
+                return goalAggregationService.distanceAndPaceOverNDays(profile.getUsername(), goal, days, timezoneOffset);
             case "month":
                 return timelineService.distanceAndPaceOverNMonths(profile, goal, interval, months);
             default:
-                return goalAggregationService.distanceAndPaceOverNDays(profile.getUsername(), goal, days);
+                return goalAggregationService.distanceAndPaceOverNDays(profile.getUsername(), goal, days, timezoneOffset);
         }
     }
 

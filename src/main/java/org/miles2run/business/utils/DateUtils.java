@@ -1,9 +1,6 @@
 package org.miles2run.business.utils;
 
-import org.joda.time.DateTime;
-import org.joda.time.Days;
-import org.joda.time.Interval;
-import org.joda.time.LocalDate;
+import org.joda.time.*;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -15,8 +12,8 @@ import java.util.*;
  */
 public abstract class DateUtils {
 
-    public static Interval toDateRangeInterval(int daysBack) {
-        DateTime currentDateTime = new DateTime();
+    public static Interval toDateRangeInterval(int daysBack, DateTimeZone dateTimeZone) {
+        DateTime currentDateTime = new DateTime(dateTimeZone);
         DateTime nDaysBack = currentDateTime.minusDays(daysBack);
         return new Interval(nDaysBack.getMillis(), currentDateTime.getMillis());
     }

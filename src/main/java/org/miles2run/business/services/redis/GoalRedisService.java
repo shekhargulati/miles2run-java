@@ -62,15 +62,18 @@ public class GoalRedisService {
 
     public Map<String, Object> getDurationGoalProgress(final String username, final Long goalId, final Interval goalInterval, int timezoneOffsetInMinutes) {
         int timezoneOffsetInMillis = (-1) * timezoneOffsetInMinutes * 60 * 1000;
-        DateTimeZone dateTimeZone = timezoneOffsetInMillis == 0 ? DateTimeZone.getDefault() : DateTimeZone.forOffsetMillis(timezoneOffsetInMillis);
+        DateTimeZone dateTimeZone = timezoneOffsetInMillis == 0 ? DateTimeZone.forID("UTC") : DateTimeZone.forOffsetMillis(timezoneOffsetInMillis);
         logger.info("User {} with DateTimeZone {}", username, dateTimeZone.toTimeZone());
         final DateTime startDateTimeInUserTimezone = goalInterval.getStart().toDateTime(dateTimeZone);
         final DateTime endDateTimeInUserTimezone = goalInterval.getEnd().toDateTime(dateTimeZone);
+        logger.info("Calculating Goal-{} progress between {} and {}", goalId, startDateTimeInUserTimezone, endDateTimeInUserTimezone);
 
         final int totalDays = calculateTotalDays(startDateTimeInUserTimezone, endDateTimeInUserTimezone);
+        logger.info("For {}-goal-{} totalDays {}", username, goalId, totalDays);
 
         DateTime current = today(dateTimeZone);
         if (current.isBefore(startDateTimeInUserTimezone)) {
+            logger.info("For {}-goal-{} current_datetime {} is before startdatetime {} so returning empty progress", username, goalId, current, startDateTimeInUserTimezone);
             final Map<String, Object> goalProgress = new HashMap<>();
             goalProgress.put("totalDays", totalDays);
             goalProgress.put("performedDays", 0);
@@ -79,17 +82,19 @@ public class GoalRedisService {
             goalProgress.put("percentage", 0.0d);
             return goalProgress;
         }
-
         final Set<Tuple> activitiesPerformed = activitiesPerformedWithinAGoalInterval(username, goalId, goalInterval);
+        logger.info("{}-goal-{} TotalActivitiesPerformed : {}", username, goalId, activitiesPerformed.size());
         final Set<LocalDate> performedActivityDates = toCollectionOfPerformedActivityDates(activitiesPerformed, dateTimeZone);
         final int performedDays = performedActivityDates.size();
+        logger.info("{}-goal-{} ActivityPerformedDays :{}", username, goalId, performedDays);
 
         boolean activityPerformedTodayExists = isActivityPerformedToday(performedActivityDates, dateTimeZone);
-
         DateTime today = today(activityPerformedTodayExists, dateTimeZone);
         final int remainingDays = calculateRemainingDays(today.toLocalDate(), endDateTimeInUserTimezone.toLocalDate());
-        final Set<LocalDate> datesTillToday = allDatesWithin(startDateTimeInUserTimezone, today);
-        final int missedDays = calculateMissedDays(performedActivityDates, datesTillToday);
+        logger.info("{}-goal-{} Remaining days between start {} and end {} is {}", username, goalId, today.toLocalDate(), endDateTimeInUserTimezone.toLocalDate(), remainingDays);
+        final int missedDays = totalDays - (performedDays + remainingDays);
+        logger.info("{}-goal-{} Missing Days '{} - ({} + {}) == {}'", username, goalId, totalDays, performedDays, remainingDays, missedDays);
+
 
         final Map<String, Object> goalProgress = new HashMap<>();
         goalProgress.put("totalDays", totalDays);
@@ -117,7 +122,8 @@ public class GoalRedisService {
     }
 
     DateTime today(boolean activityPerformedTodayExists, DateTimeZone dateTimeZone) {
-        return activityPerformedTodayExists == true ? new DateTime(dateTimeZone) : new DateTime(dateTimeZone).minusDays(1);
+        DateTime today = new DateTime(dateTimeZone);
+        return activityPerformedTodayExists == true ? today : today.minusDays(1);
     }
 
     DateTime today(DateTimeZone dateTimeZone) {

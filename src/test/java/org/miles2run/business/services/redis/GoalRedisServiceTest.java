@@ -121,8 +121,9 @@ public class GoalRedisServiceTest {
             }
 
         };
-        DateTime start = new DateTime(2014, 8, 1, 0, 0);
-        DateTime end = new DateTime(2014, 8, 30, 23, 59);
+        DateTimeZone utc = DateTimeZone.forID("UTC");
+        DateTime start = new DateTime(2014, 8, 1, 0, 0, utc);
+        DateTime end = new DateTime(2014, 8, 30, 23, 59, utc);
         Interval goalInterval = new Interval(start, end);
 
         Map<String, Object> progress = goalRedisService.getDurationGoalProgress("test_user", 1L, goalInterval, 0);
@@ -151,8 +152,9 @@ public class GoalRedisServiceTest {
                 return new DateTime(2014, 8, 15, 15, 30, 30, dateTimeZone);
             }
         };
-        DateTime start = new DateTime(2014, 8, 1, 0, 0);
-        DateTime end = new DateTime(2014, 8, 30, 23, 59);
+        DateTimeZone utc = DateTimeZone.forID("UTC");
+        DateTime start = new DateTime(2014, 8, 1, 0, 0, utc);
+        DateTime end = new DateTime(2014, 8, 30, 23, 59, utc);
         Interval goalInterval = new Interval(start, end);
 
         Map<String, Object> progress = goalRedisService.getDurationGoalProgress("test_user", 1L, goalInterval, 0);
@@ -175,8 +177,9 @@ public class GoalRedisServiceTest {
                 return new DateTime(2014, 8, 15, 15, 30, 30, dateTimeZone);
             }
         };
-        DateTime start = new DateTime(2014, 8, 16, 0, 0);
-        DateTime end = new DateTime(2014, 8, 30, 23, 59);
+        DateTimeZone utc = DateTimeZone.forID("UTC");
+        DateTime start = new DateTime(2014, 8, 16, 0, 0, utc);
+        DateTime end = new DateTime(2014, 8, 30, 23, 59, utc);
         Interval goalInterval = new Interval(start, end);
 
         Map<String, Object> progress = goalRedisService.getDurationGoalProgress("test_user", 1L, goalInterval, 0);

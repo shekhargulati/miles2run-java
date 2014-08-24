@@ -1,5 +1,6 @@
 package org.miles2run.business.services.redis;
 
+import org.joda.time.DateTimeZone;
 import org.joda.time.Interval;
 import org.joda.time.LocalDate;
 import org.miles2run.business.domain.jpa.Goal;
@@ -27,10 +28,13 @@ public class GoalAggregationService {
     JedisExecutionService jedisExecutionService;
 
 
-    public List<Object[]> distanceAndPaceOverNDays(final String username, final Goal goal, final int daysBack) {
-        final Interval interval = DateUtils.toDateRangeInterval(daysBack);
+    public List<Object[]> distanceAndPaceOverNDays(final String username, final Goal goal, final int daysBack, int timezoneOffsetInMinutes) {
+        int timezoneOffsetInMillis = (-1) * timezoneOffsetInMinutes * 60 * 1000;
+        DateTimeZone dateTimeZone = timezoneOffsetInMillis == 0 ? DateTimeZone.forID("UTC") : DateTimeZone.forOffsetMillis(timezoneOffsetInMillis);
+
+        final Interval interval = DateUtils.toDateRangeInterval(daysBack, dateTimeZone);
         Set<Tuple> activityIdsInNDaysWithScores = findActivitiesWithScore(username, goal, interval);
-        Map<LocalDate, List<String>> localdateAndTimestamp = toMapOfLocalDateAndActivities(activityIdsInNDaysWithScores);
+        Map<LocalDate, List<String>> localdateAndTimestamp = toMapOfLocalDateAndActivities(activityIdsInNDaysWithScores, dateTimeZone);
         logger.info("localdateAndTimestamp : {}", localdateAndTimestamp);
         List<Object[]> result = new ArrayList<>();
         for (Map.Entry<LocalDate, List<String>> entry : localdateAndTimestamp.entrySet()) {
@@ -48,7 +52,6 @@ public class GoalAggregationService {
                 totalPaceOnADay += pace;
             }
             double averagePaceOnADay = totalPaceOnADay / activityIds.size();
-            long timestamp = entry.getKey().toDate().getTime();
             result.add(new Object[]{entry.getKey().toString(), totalDistanceRanOnADay, averagePaceOnADay});
         }
         return result;
@@ -101,11 +104,11 @@ public class GoalAggregationService {
         });
     }
 
-    Map<LocalDate, List<String>> toMapOfLocalDateAndActivities(Set<Tuple> activityIdsInNDaysWithScores) {
+    Map<LocalDate, List<String>> toMapOfLocalDateAndActivities(Set<Tuple> activityIdsInNDaysWithScores, DateTimeZone dateTimeZone) {
         Map<LocalDate, List<String>> timestampAndActivities = new HashMap<>();
         for (Tuple tuple : activityIdsInNDaysWithScores) {
             String activityId = tuple.getElement();
-            LocalDate localDate = new LocalDate(Double.valueOf(tuple.getScore()).longValue());
+            LocalDate localDate = new LocalDate(Double.valueOf(tuple.getScore()).longValue(), dateTimeZone);
             if (timestampAndActivities.containsKey(localDate)) {
                 List<String> activityIds = timestampAndActivities.get(localDate);
                 activityIds.add(activityId);
