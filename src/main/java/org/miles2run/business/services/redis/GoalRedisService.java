@@ -1,9 +1,6 @@
 package org.miles2run.business.services.redis;
 
-import org.joda.time.DateTime;
-import org.joda.time.Days;
-import org.joda.time.Interval;
-import org.joda.time.LocalDate;
+import org.joda.time.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import redis.clients.jedis.Jedis;
@@ -11,6 +8,7 @@ import redis.clients.jedis.Tuple;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import java.sql.Time;
 import java.util.*;
 
 /**
@@ -62,29 +60,35 @@ public class GoalRedisService {
         });
     }
 
-    public Map<String, Object> getDurationGoalProgress(final String username, final Long goalId, final Interval goalInterval) {
-        final int totalDays = calculateTotalDays(goalInterval);
+    public Map<String, Object> getDurationGoalProgress(final String username, final Long goalId, final Interval goalInterval, int timezoneOffsetInMinutes) {
+        int timezoneOffsetInMillis = (-1) * timezoneOffsetInMinutes * 60 * 1000;
+        DateTimeZone dateTimeZone = timezoneOffsetInMillis == 0 ? DateTimeZone.getDefault() : DateTimeZone.forOffsetMillis(timezoneOffsetInMillis);
+        logger.info("User {} with DateTimeZone {}", username, dateTimeZone.toTimeZone());
+        final DateTime startDateTimeInUserTimezone = goalInterval.getStart().toDateTime(dateTimeZone);
+        final DateTime endDateTimeInUserTimezone = goalInterval.getEnd().toDateTime(dateTimeZone);
 
-        DateTime current = today();
-        if (current.isBefore(goalInterval.getStart())) {
+        final int totalDays = calculateTotalDays(startDateTimeInUserTimezone, endDateTimeInUserTimezone);
+
+        DateTime current = today(dateTimeZone);
+        if (current.isBefore(startDateTimeInUserTimezone)) {
             final Map<String, Object> goalProgress = new HashMap<>();
             goalProgress.put("totalDays", totalDays);
             goalProgress.put("performedDays", 0);
             goalProgress.put("missedDays", 0);
-            goalProgress.put("remainingDays", calculateRemainingDaysWithOffset(goalInterval.getStart().toLocalDate(), goalInterval.getEnd().toLocalDate()));
+            goalProgress.put("remainingDays", calculateRemainingDaysWithOffset(startDateTimeInUserTimezone.toLocalDate(), endDateTimeInUserTimezone.toLocalDate()));
             goalProgress.put("percentage", 0.0d);
             return goalProgress;
         }
 
         final Set<Tuple> activitiesPerformed = activitiesPerformedWithinAGoalInterval(username, goalId, goalInterval);
-        final Set<LocalDate> performedActivityDates = toCollectionOfPerformedActivityDates(activitiesPerformed);
+        final Set<LocalDate> performedActivityDates = toCollectionOfPerformedActivityDates(activitiesPerformed, dateTimeZone);
         final int performedDays = performedActivityDates.size();
 
-        boolean activityPerformedTodayExists = isActivityPerformedToday(performedActivityDates);
+        boolean activityPerformedTodayExists = isActivityPerformedToday(performedActivityDates, dateTimeZone);
 
-        DateTime today = today(activityPerformedTodayExists);
-        final int remainingDays = calculateRemainingDays(today.toLocalDate(), goalInterval.getEnd().toLocalDate());
-        final Set<LocalDate> datesTillToday = allDatesWithin(goalInterval.getStart(), today);
+        DateTime today = today(activityPerformedTodayExists, dateTimeZone);
+        final int remainingDays = calculateRemainingDays(today.toLocalDate(), endDateTimeInUserTimezone.toLocalDate());
+        final Set<LocalDate> datesTillToday = allDatesWithin(startDateTimeInUserTimezone, today);
         final int missedDays = calculateMissedDays(performedActivityDates, datesTillToday);
 
         final Map<String, Object> goalProgress = new HashMap<>();
@@ -97,8 +101,8 @@ public class GoalRedisService {
         return goalProgress;
     }
 
-    private boolean isActivityPerformedToday(Set<LocalDate> performedActivityDates) {
-        LocalDate today = new LocalDate();
+    private boolean isActivityPerformedToday(Set<LocalDate> performedActivityDates, DateTimeZone dateTimeZone) {
+        LocalDate today = new LocalDate(dateTimeZone);
         for (LocalDate performedActivityDate : performedActivityDates) {
             if (today.equals(performedActivityDate)) {
                 return true;
@@ -112,12 +116,12 @@ public class GoalRedisService {
         return remainingDays < 0 ? 0 : remainingDays + 1;
     }
 
-    DateTime today(boolean activityPerformedTodayExists) {
-        return activityPerformedTodayExists == true ? new DateTime() : new DateTime().minusDays(1);
+    DateTime today(boolean activityPerformedTodayExists, DateTimeZone dateTimeZone) {
+        return activityPerformedTodayExists == true ? new DateTime(dateTimeZone) : new DateTime(dateTimeZone).minusDays(1);
     }
 
-    DateTime today() {
-        return new DateTime();
+    DateTime today(DateTimeZone dateTimeZone) {
+        return new DateTime(dateTimeZone);
     }
 
     int calculateMissedDays(Set<LocalDate> performedActivityDates, Set<LocalDate> allDates) {
@@ -154,14 +158,14 @@ public class GoalRedisService {
         return remainingDays < 0 ? 0 : remainingDays;
     }
 
-    int calculateTotalDays(Interval goalInterval) {
-        return Days.daysBetween(goalInterval.getStart().toLocalDate(), goalInterval.getEnd().toLocalDate()).getDays() + 1;
+    int calculateTotalDays(final DateTime startDateTime, final DateTime endDateTime) {
+        return Days.daysBetween(startDateTime.toLocalDate(), endDateTime.toLocalDate()).getDays() + 1;
     }
 
-    Set<LocalDate> toCollectionOfPerformedActivityDates(Set<Tuple> activitiesPerformed) {
+    Set<LocalDate> toCollectionOfPerformedActivityDates(Set<Tuple> activitiesPerformed, DateTimeZone dateTimeZone) {
         Set<LocalDate> performedActivityDates = new HashSet<>();
         for (Tuple activityIdAndScore : activitiesPerformed) {
-            performedActivityDates.add(new LocalDate(Double.valueOf(activityIdAndScore.getScore()).longValue()));
+            performedActivityDates.add(new LocalDate(Double.valueOf(activityIdAndScore.getScore()).longValue(), dateTimeZone));
         }
         return performedActivityDates;
     }

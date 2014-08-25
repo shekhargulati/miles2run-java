@@ -33,7 +33,7 @@ function CommunityRunCtrl($scope, $location, activeProfile, $http, ConfigService
                 toastr.success("Created new Community run");
                 $window.location.href = ConfigService.appContext() + 'community_runs';
             }).error(function (data, status) {
-                toastr.error("Unable to Community run. Please try after sometime.");
+                toastr.error("Unable to create Community run. Please try after sometime.");
                 console.log("Error " + data);
                 console.log("Status " + status)
                 $location.path("/");

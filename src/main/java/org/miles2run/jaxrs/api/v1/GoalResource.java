@@ -168,7 +168,7 @@ public class GoalResource {
     @GET
     @Produces("application/json")
     @LoggedIn
-    public Response progress(@PathParam("goalId") Long goalId) {
+    public Response progress(@PathParam("goalId") Long goalId, @CookieParam("timezoneoffset") int timezoneOffset) {
         String username = securityContext.getUserPrincipal().getName();
         Profile loggedInUser = profileService.findProfile(username);
         Goal goal = goalJPAService.findGoal(loggedInUser, goalId);
@@ -179,7 +179,7 @@ public class GoalResource {
         if (goal.getGoalType() == GoalType.DISTANCE_GOAL) {
             return Response.status(Response.Status.OK).entity(progress).build();
         }
-        Map<String, Object> goalProgress = goalRedisService.getDurationGoalProgress(username, goalId, new Interval(goal.getStartDate().getTime(), goal.getEndDate().getTime()));
+        Map<String, Object> goalProgress = goalRedisService.getDurationGoalProgress(username, goalId, new Interval(goal.getStartDate().getTime(), goal.getEndDate().getTime()), timezoneOffset);
         goalProgress.put("activityCount", progress.getActivityCount());
         goalProgress.put("totalDistanceCovered", progress.getTotalDistanceCovered());
         goalProgress.put("goalUnit", progress.getGoalUnit());

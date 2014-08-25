@@ -6,16 +6,14 @@ import org.hamcrest.Matchers;
 import org.hamcrest.collection.IsCollectionWithSize;
 import org.hamcrest.core.Is;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.Interval;
 import org.joda.time.LocalDate;
 import org.junit.Assert;
 import org.junit.Test;
 import redis.clients.jedis.Tuple;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by shekhargulati on 09/08/14.
@@ -28,8 +26,7 @@ public class GoalRedisServiceTest {
     public void calculateTotalDays_IntervalBetween1stAugustAnd30thAugust_30Days() throws Exception {
         DateTime start = new DateTime(2014, 8, 1, 0, 0);
         DateTime end = new DateTime(2014, 8, 30, 23, 59);
-        Interval goalInterval = new Interval(start, end);
-        int totalDays = goalRedisService.calculateTotalDays(goalInterval);
+        int totalDays = goalRedisService.calculateTotalDays(start, end);
         Assert.assertThat(totalDays, CoreMatchers.is(CoreMatchers.equalTo(30)));
     }
 
@@ -37,8 +34,7 @@ public class GoalRedisServiceTest {
     public void calculateTotalDays_IntervalBetween1stAugustAnd29thOctober2014_90Days() throws Exception {
         DateTime start = new DateTime(2014, 8, 1, 0, 0);
         DateTime end = new DateTime(2014, 10, 29, 23, 59);
-        Interval goalInterval = new Interval(start, end);
-        int totalDays = goalRedisService.calculateTotalDays(goalInterval);
+        int totalDays = goalRedisService.calculateTotalDays(start, end);
         Assert.assertThat(totalDays, CoreMatchers.is(CoreMatchers.equalTo(90)));
     }
 
@@ -60,7 +56,7 @@ public class GoalRedisServiceTest {
         Tuple tuple2 = new Tuple("2", Double.valueOf(new DateTime(2014, 8, 11, 17, 30, 30).getMillis()));
         Tuple tuple3 = new Tuple("3", Double.valueOf(new DateTime(2014, 8, 12, 16, 30, 30).getMillis()));
         Set<Tuple> activitiesPerformed = Sets.newHashSet(tuple1, tuple2, tuple3);
-        Set<LocalDate> activityPerformedDates = goalRedisService.toCollectionOfPerformedActivityDates(activitiesPerformed);
+        Set<LocalDate> activityPerformedDates = goalRedisService.toCollectionOfPerformedActivityDates(activitiesPerformed, null);
         Assert.assertThat(activityPerformedDates, Matchers.hasSize(3));
     }
 
@@ -70,7 +66,7 @@ public class GoalRedisServiceTest {
         Tuple tuple2 = new Tuple("2", Double.valueOf(new DateTime(2014, 8, 10, 17, 30, 30).getMillis()));
         Tuple tuple3 = new Tuple("3", Double.valueOf(new DateTime(2014, 8, 12, 16, 30, 30).getMillis()));
         Set<Tuple> activitiesPerformed = Sets.newHashSet(tuple1, tuple2, tuple3);
-        Set<LocalDate> activityPerformedDates = goalRedisService.toCollectionOfPerformedActivityDates(activitiesPerformed);
+        Set<LocalDate> activityPerformedDates = goalRedisService.toCollectionOfPerformedActivityDates(activitiesPerformed, null);
         Assert.assertThat(activityPerformedDates, Matchers.hasSize(2));
     }
 
@@ -120,15 +116,16 @@ public class GoalRedisServiceTest {
             }
 
             @Override
-            DateTime today(boolean activityPerformedTodayExists) {
-                return new DateTime(2014, 8, 15, 15, 30, 30);
+            DateTime today(boolean activityPerformedTodayExists, DateTimeZone dateTimeZone) {
+                return new DateTime(2014, 8, 15, 15, 30, 30, dateTimeZone);
             }
+
         };
         DateTime start = new DateTime(2014, 8, 1, 0, 0);
         DateTime end = new DateTime(2014, 8, 30, 23, 59);
         Interval goalInterval = new Interval(start, end);
 
-        Map<String, Object> progress = goalRedisService.getDurationGoalProgress("test_user", 1L, goalInterval);
+        Map<String, Object> progress = goalRedisService.getDurationGoalProgress("test_user", 1L, goalInterval, 0);
         Assert.assertThat(progress, Matchers.hasEntry(Is.is("totalDays"), Is.is((Object) 30)));
         Assert.assertThat(progress, Matchers.hasEntry(Is.is("performedDays"), Is.is((Object) 3)));
         Assert.assertThat(progress, Matchers.hasEntry(Is.is("missedDays"), Is.is((Object) 12)));
@@ -150,15 +147,15 @@ public class GoalRedisServiceTest {
             }
 
             @Override
-            DateTime today(boolean activityPerformedTodayExists) {
-                return new DateTime(2014, 8, 15, 15, 30, 30);
+            DateTime today(boolean activityPerformedTodayExists, DateTimeZone dateTimeZone) {
+                return new DateTime(2014, 8, 15, 15, 30, 30, dateTimeZone);
             }
         };
         DateTime start = new DateTime(2014, 8, 1, 0, 0);
         DateTime end = new DateTime(2014, 8, 30, 23, 59);
         Interval goalInterval = new Interval(start, end);
 
-        Map<String, Object> progress = goalRedisService.getDurationGoalProgress("test_user", 1L, goalInterval);
+        Map<String, Object> progress = goalRedisService.getDurationGoalProgress("test_user", 1L, goalInterval, 0);
         Assert.assertThat(progress, Matchers.hasEntry(Is.is("totalDays"), Is.is((Object) 30)));
         Assert.assertThat(progress, Matchers.hasEntry(Is.is("performedDays"), Is.is((Object) 4)));
         Assert.assertThat(progress, Matchers.hasEntry(Is.is("missedDays"), Is.is((Object) 11)));
@@ -174,15 +171,15 @@ public class GoalRedisServiceTest {
             }
 
             @Override
-            DateTime today(boolean activityPerformedTodayExists) {
-                return new DateTime(2014, 8, 15, 15, 30, 30);
+            DateTime today(boolean activityPerformedTodayExists, DateTimeZone dateTimeZone) {
+                return new DateTime(2014, 8, 15, 15, 30, 30, dateTimeZone);
             }
         };
         DateTime start = new DateTime(2014, 8, 16, 0, 0);
         DateTime end = new DateTime(2014, 8, 30, 23, 59);
         Interval goalInterval = new Interval(start, end);
 
-        Map<String, Object> progress = goalRedisService.getDurationGoalProgress("test_user", 1L, goalInterval);
+        Map<String, Object> progress = goalRedisService.getDurationGoalProgress("test_user", 1L, goalInterval, 0);
         Assert.assertThat(progress, Matchers.hasEntry(Is.is("totalDays"), Is.is((Object) 15)));
         Assert.assertThat(progress, Matchers.hasEntry(Is.is("performedDays"), Is.is((Object) 0)));
         Assert.assertThat(progress, Matchers.hasEntry(Is.is("missedDays"), Is.is((Object) 0)));
@@ -198,15 +195,16 @@ public class GoalRedisServiceTest {
             }
 
             @Override
-            DateTime today() {
-                return new DateTime(2014, 8, 9, 19, 10, 30);
+            DateTime today(DateTimeZone dateTimeZone) {
+                return new DateTime(2014, 8, 9, 19, 10, 30, dateTimeZone);
             }
+
         };
         DateTime start = new DateTime(2014, 8, 16, 18, 4);
         DateTime end = new DateTime(2014, 9, 14, 18, 4);
         Interval goalInterval = new Interval(start, end);
 
-        Map<String, Object> progress = goalRedisService.getDurationGoalProgress("test_user", 1L, goalInterval);
+        Map<String, Object> progress = goalRedisService.getDurationGoalProgress("test_user", 1L, goalInterval, 0);
         Assert.assertThat(progress, Matchers.hasEntry(Is.is("totalDays"), Is.is((Object) 30)));
         Assert.assertThat(progress, Matchers.hasEntry(Is.is("performedDays"), Is.is((Object) 0)));
         Assert.assertThat(progress, Matchers.hasEntry(Is.is("missedDays"), Is.is((Object) 0)));
@@ -225,15 +223,16 @@ public class GoalRedisServiceTest {
             }
 
             @Override
-            DateTime today(boolean activityPerformedTodayExists) {
-                return new DateTime(2014, 8, 10, 14, 10, 30);
+            DateTime today(boolean activityPerformedTodayExists, DateTimeZone dateTimeZone) {
+                return new DateTime(2014, 8, 10, 14, 10, 30, dateTimeZone);
             }
+
         };
         DateTime start = new DateTime(1407604407000L);
         DateTime end = new DateTime(2014, 9, 7, 23, 59);
         Interval goalInterval = new Interval(start, end);
 
-        Map<String, Object> progress = goalRedisService.getDurationGoalProgress("test_user", 1L, goalInterval);
+        Map<String, Object> progress = goalRedisService.getDurationGoalProgress("test_user", 1L, goalInterval, 0);
         Assert.assertThat(progress, Matchers.hasEntry(Is.is("totalDays"), Is.is((Object) 30)));
         Assert.assertThat(progress, Matchers.hasEntry(Is.is("performedDays"), Is.is((Object) 1)));
         Assert.assertThat(progress, Matchers.hasEntry(Is.is("missedDays"), Is.is((Object) 1)));
@@ -262,7 +261,7 @@ public class GoalRedisServiceTest {
         System.out.printf("Start %s End %s", start, end);
         Interval goalInterval = new Interval(start, end);
 
-        Map<String, Object> progress = goalRedisService.getDurationGoalProgress("test_user", 1L, goalInterval);
+        Map<String, Object> progress = goalRedisService.getDurationGoalProgress("test_user", 1L, goalInterval, 0);
         Assert.assertThat(progress, Matchers.hasEntry(Is.is("totalDays"), Is.is((Object) 30)));
         Assert.assertThat(progress, Matchers.hasEntry(Is.is("performedDays"), Is.is((Object) 0)));
         Assert.assertThat(progress, Matchers.hasEntry(Is.is("missedDays"), Is.is((Object) 0)));
@@ -285,11 +284,39 @@ public class GoalRedisServiceTest {
         System.out.printf("Start %s End %s", start, end);
         Interval goalInterval = new Interval(start, end);
 
-        Map<String, Object> progress = goalRedisService.getDurationGoalProgress("test_user", 1L, goalInterval);
+        Map<String, Object> progress = goalRedisService.getDurationGoalProgress("test_user", 1L, goalInterval, 0);
         Assert.assertThat(progress, Matchers.hasEntry(Is.is("totalDays"), Is.is((Object) 30)));
         Assert.assertThat(progress, Matchers.hasEntry(Is.is("performedDays"), Is.is((Object) 1)));
         Assert.assertThat(progress, Matchers.hasEntry(Is.is("missedDays"), Is.is((Object) 0)));
         Assert.assertThat(progress, Matchers.hasEntry(Is.is("remainingDays"), Is.is((Object) 29)));
+    }
+
+
+    @Test
+    public void getDurationGoalProgress_StartDate9AugEndDate7SeptActivityPerformedOneDayTimezoneOffset420_MissedDays1AndRemainingDays28() throws Exception {
+        GoalRedisService goalRedisService = new GoalRedisService() {
+            @Override
+            Set<Tuple> activitiesPerformedWithinAGoalInterval(String username, Long goalId, Interval goalInterval) {
+                Tuple tuple1 = new Tuple("1", Double.valueOf(new DateTime(2014, 8, 9, 15, 30, 30).getMillis()));
+                Set<Tuple> activitiesPerformed = Sets.newHashSet(tuple1);
+                return activitiesPerformed;
+            }
+
+            @Override
+            DateTime today(boolean activityPerformedTodayExists, DateTimeZone dateTimeZone) {
+                return new DateTime(2014, 8, 10, 14, 10, 30, dateTimeZone);
+            }
+
+        };
+        DateTime start = new DateTime(1407604407000L);
+        DateTime end = new DateTime(2014, 9, 7, 23, 59);
+        Interval goalInterval = new Interval(start, end);
+
+        Map<String, Object> progress = goalRedisService.getDurationGoalProgress("test_user", 1L, goalInterval, 420);
+        Assert.assertThat(progress, Matchers.hasEntry(Is.is("totalDays"), Is.is((Object) 30)));
+        Assert.assertThat(progress, Matchers.hasEntry(Is.is("performedDays"), Is.is((Object) 1)));
+        Assert.assertThat(progress, Matchers.hasEntry(Is.is("missedDays"), Is.is((Object) 1)));
+        Assert.assertThat(progress, Matchers.hasEntry(Is.is("remainingDays"), Is.is((Object) 28)));
     }
 
 }

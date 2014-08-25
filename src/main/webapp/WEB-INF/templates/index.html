@@ -11,11 +11,13 @@
     <!-- Core CSS - Include with every page -->
     <link href="/css/bootstrap.css" th:href="@{/css/bootstrap.css}" rel="stylesheet"/>
     <link href="/css/sb-admin.css" th:href="@{/css/sb-admin.css}" rel="stylesheet"/>
-    <link href='http://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic' rel='stylesheet' type='text/css'/>
+    <link href='http://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic' rel='stylesheet'
+          type='text/css'/>
 
     <!-- Page-Level Plugin CSS -->
     <link href="/css/plugins/timeline/timeline.css" th:href="@{/css/plugins/timeline/timeline.css}" rel="stylesheet"/>
-    <link href="/css/plugins/social-buttons/social-buttons.css" th:href="@{/css/plugins/social-buttons/social-buttons.css}" rel="stylesheet"/>
+    <link href="/css/plugins/social-buttons/social-buttons.css"
+          th:href="@{/css/plugins/social-buttons/social-buttons.css}" rel="stylesheet"/>
 
     <!-- Miles2Run Overrides -->
     <link href="/css/miles2run.css" th:href="@{/css/miles2run.css}" rel="stylesheet"/>
@@ -123,13 +125,16 @@
                 </div>
                 <!-- /.col-lg-6 -->
                 <div class="col-lg-6">
-                    <a class="btn btn-lg btn-block btn-social btn-facebook" href="/facebook/signin" th:href="@{/facebook/signin}">
+                    <a class="btn btn-lg btn-block btn-social btn-facebook" href="/facebook/signin"
+                       th:href="@{/facebook/signin}">
                         <i class="fa fa-facebook"></i> Sign in with Facebook
                     </a>
-                    <a class="btn btn-lg btn-block btn-social btn-google-plus" href="/google/signin" th:href="@{/google/signin}">
+                    <a class="btn btn-lg btn-block btn-social btn-google-plus" href="/google/signin"
+                       th:href="@{/google/signin}">
                         <i class="fa fa-google-plus"></i> Sign in with Google
                     </a>
-                    <a class="btn btn-lg btn-block btn-social btn-twitter" href="/twitter/signin" th:href="@{/twitter/signin}">
+                    <a class="btn btn-lg btn-block btn-social btn-twitter" href="/twitter/signin"
+                       th:href="@{/twitter/signin}">
                         <i class="fa fa-twitter"></i> Sign in with Twitter
                     </a>
                 </div>
@@ -171,9 +176,12 @@
         </div>
         <!-- /.col-lg-6 -->
         <div class="col-lg-6 text-right">
-            <a class="btn btn-social-icon btn-facebook" href="https://facebook.com/miles2run" target="_blank"><i class="fa fa-facebook"></i></a>
-            <a class="btn btn-social-icon btn-google-plus" href="https://plus.google.com/u/0/+Miles2Run" target="_blank"><i class="fa fa-google-plus"></i></a>
-            <a class="btn btn-social-icon btn-twitter" href="https://twitter.com/miles2runorg" target="_blank"><i class="fa fa-twitter"></i></a>
+            <a class="btn btn-social-icon btn-facebook" href="https://facebook.com/miles2run" target="_blank"><i
+                    class="fa fa-facebook"></i></a>
+            <a class="btn btn-social-icon btn-google-plus" href="https://plus.google.com/u/0/+Miles2Run"
+               target="_blank"><i class="fa fa-google-plus"></i></a>
+            <a class="btn btn-social-icon btn-twitter" href="https://twitter.com/miles2runorg" target="_blank"><i
+                    class="fa fa-twitter"></i></a>
         </div>
         <!-- /.col-lg-6 -->
     </div>
@@ -187,6 +195,8 @@
 
 <!-- Core Scripts - Include with every page -->
 <script src="/js/libs/jquery.js" th:src="@{/js/libs/jquery.js}"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+<script src="/js/timezone_cookie.js" th:src="@{/js/timezone_cookie.js}"></script>
 <script src="/js/bootstrap.min.js" th:src="@{/js/bootstrap.min.js}"></script>
 <script src="/js/plugins/metisMenu/jquery.metisMenu.js" th:src="@{/js/plugins/metisMenu/jquery.metisMenu.js}"></script>
 <script src="/js/libs/moment.js" th:src="@{/js/libs/moment.js}"></script>
