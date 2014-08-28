@@ -2,13 +2,13 @@ Some questions ...
 
 1. What is the advantage of Thymeleaf over JSF ?
 
-	Thymeleaf is an HTML 5 template engine. All the documents are valid HTMl 5 documents that you can use for static prototyping. It works great with AngularJS that we have used extensive for building this application. I don't think JSF is suitable for building Single Page web applications.
+	Thymeleaf is an HTML 5 template engine. All the documents are valid HTMl 5 documents that you can use for static prototyping. It works great with AngularJS that we have used extensively for building this application. I don't think JSF is suitable for building Single Page web applications.
 
 2. Why Thymeleaf was chosen instead of JSF that is part of Java EE ?
 	
 	1. I choose Thymeleaf because I wanted to use JAX-RS both as an MVC framework to render server side HTML pages and for exposing REST services. 
-	2. This application is an Single Page application built using AngularJS. So, we needed a lightweight approach to send server side pages. JAX-RS along with Thyemleaf render the main HTML 5 page and then we use AngularJS to render different partials/views on that page. For example, when you log in to the application, the home page is rendered by JAX-RS and Thymeleaf. When you work with different sections of this page all of them are part of a SPA managed by AngualarJS.
-	3. Thymeleaf documents are valid HTML 5 documents so you can work them offline for static prototyping.
+	2. This application is a Single Page application built using AngularJS. So, we needed a lightweight approach to render server side pages. JAX-RS along with Thyemleaf render the main HTML 5 page and then we use AngularJS to render different partials/views on that page. For example, when you log in to the application, the home page is rendered by JAX-RS and Thymeleaf. When you work with different sections of this page all of them are part of a SPA managed by AngualarJS.
+	3. Thymeleaf documents are valid HTML 5 documents so you can work with them offline for static prototyping.
 
 3. What is the advantage of using SLF4J instead of JDK logging ?
 
@@ -44,6 +44,7 @@ and store in database ?
     ```
 
 6. Is our database generated using SQL scripts or using new JPA functionality ?
+
 	In the development environment database scripts are generated using new JPA properties as shown below. Then these scripts are manually applied to database. These scripts are committed to version control system. I don't use <code>javax.persistence.schema-generation.database.action</code> option as that is very risky.
 	
 	```
@@ -72,7 +73,7 @@ the code, OK ?
 
 11. Why Redis is optimal for storing/rendering counters ?
 
-	In miles2run application, there are various application counters like counter for number of runners, cities, counters specific to goal like total distance covered in a goal etc. So, when you have lot of counters, it would be hell lot of write operations that you have to make to your database. Redis is an in-memory database so all the write and read operations are very performant. Redis counters are atomic, which means there are no concurrency issues associated with it as well. You can use Redis, INCR, INCRBY operations to add counters to your application.
+	In miles2run application, there are various application counters like counter for number of runners, cities, counters specific to goal like total distance covered in a goal etc. So, when you have lot of counters, it would be hell lot of write operations that you have to make to your database. Redis is an in-memory database so all the write and read operations are very performant. Redis counters are atomic, which means there are no concurrency issues associated with it as well. You can use Redis INCR, INCRBY operations to add counters to your application.
 
 12. How many instances of WildFly ? Load balancer ? Which one ?
 	
@@ -81,4 +82,4 @@ the code, OK ?
 13. Talk about dev/test and production environment easily facilitated by 
 OpenShift ?
 
-	For this app, I am not using OpenShift for my development environment. The advantage of working with OpenShift is that there is no OpenShift specific code in your application. So, its the same application that work locally that is deployed to test and production environment. The deployment currently is git based and we deploy the WAR to test and production environment. In future, I plan to use Jenkins to build the application and manage deployments.
+	For this app, I am not using OpenShift for my development environment. The advantage of working with OpenShift is that there is no OpenShift specific code in your application. So, it's the same application that work locally that is deployed to test and production environment. You just have to use environment variables to abstract out environment specific configuration. The deployment currently is git based and we deploy the WAR to test and production environment. In future, I plan to use Jenkins to build the application and manage deployments.
