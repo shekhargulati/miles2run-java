@@ -1,6 +1,6 @@
 package org.miles2run.jaxrs.api.v1;
 
-import org.miles2run.business.services.mongo.FriendRecommender;
+import org.miles2run.business.recommender.FriendRecommender;
 import org.miles2run.business.services.jpa.ProfileService;
 import org.miles2run.business.vo.ProfileDetails;
 

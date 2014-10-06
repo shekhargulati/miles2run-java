@@ -7,6 +7,7 @@ import org.miles2run.business.utils.GeocoderUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -18,14 +19,22 @@ import java.util.List;
 @ApplicationScoped
 public class ProfileMongoService {
 
+    public static final int RECOMMENDED_FRIENDS_COUNT = 3;
     private Logger logger = LoggerFactory.getLogger(ProfileMongoService.class);
 
     @Inject
     DB db;
+    private DBCollection profiles;
+    private DBCollection cities;
+
+    @PostConstruct
+    public void postConstruct() {
+        profiles = db.getCollection("profiles");
+        cities = db.getCollection("cities");
+    }
 
 
     public void save(Profile profile) {
-        DBCollection profiles = db.getCollection("profiles");
         double[] existingCoordinatesForACity = findLngLatForACity(profile.getCity());
         double[] lngLat = (existingCoordinatesForACity.length == 0) ? fetchLngLatAndSave(profile.getCity(), profile.getCountry()) : existingCoordinatesForACity;
         profiles.save(new BasicDBObject().append("username", profile.getUsername()).append("lngLat", lngLat));
@@ -33,13 +42,11 @@ public class ProfileMongoService {
 
     public double[] fetchLngLatAndSave(final String city, final String country) {
         double[] lngLat = GeocoderUtils.lngLat(city, country);
-        DBCollection cities = db.getCollection("cities");
         cities.save(new BasicDBObject("city", city).append("country", country).append("lngLat", lngLat));
         return lngLat;
     }
 
     public double[] findLngLatForACity(String city) {
-        DBCollection cities = db.getCollection("cities");
         BasicDBObject query = new BasicDBObject("city", city);
         DBObject cityDBObject = cities.findOne(query);
         if (cityDBObject == null) {
@@ -58,7 +65,6 @@ public class ProfileMongoService {
 
 
     public void createFriendship(String username, String userToFollow) {
-        DBCollection profiles = db.getCollection("profiles");
         BasicDBObject findQuery = new BasicDBObject("username", username);
         BasicDBObject updateQuery = new BasicDBObject();
         updateQuery.put("$push", new BasicDBObject("following", userToFollow));
@@ -67,7 +73,6 @@ public class ProfileMongoService {
     }
 
     public UserProfile findProfile(String username) {
-        DBCollection profiles = db.getCollection("profiles");
         BasicDBObject findQuery = new BasicDBObject("username", username);
         DBObject dbObject = profiles.findOne(findQuery);
         if (dbObject == null) {
@@ -96,13 +101,11 @@ public class ProfileMongoService {
     }
 
     public void update(String username, String city, String country) {
-        DBCollection profiles = db.getCollection("profiles");
         double[] lngLat = GeocoderUtils.lngLat(city, country);
         profiles.update(new BasicDBObject("username", username), new BasicDBObject("$set", new BasicDBObject("lngLat", lngLat)));
     }
 
     public boolean isUserFollowing(String currentLoggedInUser, String username) {
-        DBCollection profiles = db.getCollection("profiles");
         BasicDBObject query = new BasicDBObject("username", currentLoggedInUser).append("following", username);
         logger.info("isUserFollowing MongoDB query {}", query.toString());
         DBObject exists = profiles.findOne(query);
@@ -110,11 +113,40 @@ public class ProfileMongoService {
     }
 
     public void destroyFriendship(String username, String userToUnFollow) {
-        DBCollection profiles = db.getCollection("profiles");
         BasicDBObject findQuery = new BasicDBObject("username", username);
         BasicDBObject updateQuery = new BasicDBObject();
         updateQuery.put("$pull", new BasicDBObject("following", userToUnFollow));
         profiles.update(findQuery, updateQuery);
         profiles.update(new BasicDBObject("username", userToUnFollow), new BasicDBObject("$pull", new BasicDBObject("followers", username)));
+    }
+
+    public List<String> findUsersByProximity(final String username) {
+        BasicDBObject userRecommendationQuery = userRecommendationQuery(username);
+        DBCursor cursor = profiles.find(userRecommendationQuery, new BasicDBObject("username", 1)).limit(RECOMMENDED_FRIENDS_COUNT);
+        return toUsers(cursor);
+    }
+
+    private List<String> toUsers(DBCursor cursor) {
+        List<String> userFriends = new ArrayList<>();
+        while (cursor.hasNext()) {
+            userFriends.add((String) cursor.next().get("username"));
+        }
+        return userFriends;
+    }
+
+    private Object getUserLngLat(final String username) {
+        BasicDBObject userQuery = new BasicDBObject("username", username);
+        BasicDBObject lngLatField = new BasicDBObject("lngLat", 1);
+        return profiles.findOne(userQuery, lngLatField).get("lngLat");
+    }
+
+    public BasicDBObject userRecommendationQuery(final String username) {
+        Object lngLat = getUserLngLat(username);
+        BasicDBObject recommendationQuery = new BasicDBObject();
+        recommendationQuery.put("username", new BasicDBObject("$ne", username));
+        recommendationQuery.put("followers", new BasicDBObject("$nin", new String[]{username}));
+        recommendationQuery.put("lngLat", new BasicDBObject("$near", lngLat));
+        logger.debug("Recommending friends to {} using query {}", username, recommendationQuery);
+        return recommendationQuery;
     }
 }
