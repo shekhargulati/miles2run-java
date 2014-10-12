@@ -14,16 +14,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by shekhargulati on 20/03/14.
+ * Provides an API to work with profiles and cities MongoDB collection.
  */
 @ApplicationScoped
 public class ProfileMongoService {
 
-    public static final int RECOMMENDED_FRIENDS_COUNT = 3;
-    private Logger logger = LoggerFactory.getLogger(ProfileMongoService.class);
-
+    private static final int RECOMMENDED_FRIENDS_COUNT = 3;
     @Inject
     DB db;
+    private Logger logger = LoggerFactory.getLogger(ProfileMongoService.class);
     private DBCollection profiles;
     private DBCollection cities;
 
@@ -59,17 +58,21 @@ public class ProfileMongoService {
 
     public double[] findLatLngForACity(String city) {
         double[] lngLat = findLngLatForACity(city);
-        double[] latLng = lngLat.length == 0 ? new double[0] : new double[]{lngLat[1], lngLat[0]};
-        return latLng;
+        return lngLat.length == 0 ? new double[0] : new double[]{lngLat[1], lngLat[0]};
     }
 
 
-    public void createFriendship(String username, String userToFollow) {
-        BasicDBObject findQuery = new BasicDBObject("username", username);
-        BasicDBObject updateQuery = new BasicDBObject();
-        updateQuery.put("$push", new BasicDBObject("following", userToFollow));
-        profiles.update(findQuery, updateQuery);
-        profiles.update(new BasicDBObject("username", userToFollow), new BasicDBObject("$push", new BasicDBObject("followers", username)));
+    public void createFriendship(final String follower, final String following) {
+        updateFollowerFollowing(follower, following);
+        updateFollowingFollowers(following, follower);
+    }
+
+    private void updateFollowingFollowers(final String following, final String follower) {
+        profiles.update(new BasicDBObject("username", following), new BasicDBObject("$push", new BasicDBObject("followers", follower)));
+    }
+
+    private void updateFollowerFollowing(final String follower, final String following) {
+        profiles.update(new BasicDBObject("username", follower), new BasicDBObject("$push", new BasicDBObject("following", following)));
     }
 
     public UserProfile findProfile(String username) {
@@ -109,7 +112,7 @@ public class ProfileMongoService {
         BasicDBObject query = new BasicDBObject("username", currentLoggedInUser).append("following", username);
         logger.info("isUserFollowing MongoDB query {}", query.toString());
         DBObject exists = profiles.findOne(query);
-        return exists != null ? true : false;
+        return exists != null;
     }
 
     public void destroyFriendship(String username, String userToUnFollow) {

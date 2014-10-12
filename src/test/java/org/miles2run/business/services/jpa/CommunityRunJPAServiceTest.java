@@ -119,6 +119,7 @@ public class CommunityRunJPAServiceTest {
                 setWebsite("https://www.oracle.com/javaone/index.html").
                 createCommunityRun();
         communityRunJPAService.save(communityRun);
+        System.out.println(communityRun);
     }
 
 
