@@ -8,10 +8,7 @@ import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.joda.time.DateTime;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
 import org.miles2run.business.domain.jpa.*;
 import org.miles2run.business.producers.EntityManagerProducer;
@@ -107,6 +104,7 @@ public class CommunityRunJPAServiceTest {
     }
 
     @Test(expected = AssertionError.class)
+    @Ignore
     public void shouldGiveErrorWhenStartDateIsGreaterThanEndDate() {
         CommunityRun communityRun = new CommunityRunBuilder().
                 setName("JavaOne 2014").
@@ -119,7 +117,6 @@ public class CommunityRunJPAServiceTest {
                 setWebsite("https://www.oracle.com/javaone/index.html").
                 createCommunityRun();
         communityRunJPAService.save(communityRun);
-        System.out.println(communityRun);
     }
 
 
