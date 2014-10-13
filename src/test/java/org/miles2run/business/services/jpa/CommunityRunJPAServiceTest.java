@@ -29,6 +29,15 @@ import java.util.List;
 @RunWith(Arquillian.class)
 public class CommunityRunJPAServiceTest {
 
+    @Inject
+    private CommunityRunJPAService communityRunJPAService;
+    @Inject
+    private EntityManager entityManager;
+    @Inject
+    private UserTransaction userTransaction;
+    @Inject
+    private ProfileService profileService;
+
     @Deployment
     public static Archive<?> deployment() {
         WebArchive webArchive = ShrinkWrap.create(WebArchive.class).
@@ -47,23 +56,12 @@ public class CommunityRunJPAServiceTest {
                 addClass(CommunityRunBuilder.class).
                 addClass(CommunityRunJPAService.class).
                 addClass(EntityManagerProducer.class).
-                addAsLibraries(Maven.resolver().loadPomFromFile("pom.xml").resolve("joda-time:joda-time").withoutTransitivity().asFile()).
-                addAsLibraries(Maven.resolver().loadPomFromFile("pom.xml").resolve("org.jadira.usertype:usertype.core").withTransitivity().asFile()).
+                addAsLibraries(Maven.resolver().loadPomFromFile("pom.xml").resolve("joda-time:joda-time", "org.jadira.usertype:usertype.core").withTransitivity().asFile()).
                 addAsResource("META-INF/test_persistence.xml", "META-INF/persistence.xml").
                 addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
         System.out.printf("WebArchive %s", webArchive.toString(true));
         return webArchive;
     }
-
-    @Inject
-    private CommunityRunJPAService communityRunJPAService;
-
-    @Inject
-    private EntityManager entityManager;
-    @Inject
-    private UserTransaction userTransaction;
-    @Inject
-    private ProfileService profileService;
 
     @Before
     public void setUp() throws Exception {
