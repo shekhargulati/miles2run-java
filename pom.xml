@@ -17,6 +17,7 @@
         <failOnMissingWebXml>false</failOnMissingWebXml>
         <version.arquillian>1.1.5.Final</version.arquillian>
         <version.shrinkwrap.resolvers>2.2.0-beta-1</version.shrinkwrap.resolvers>
+        <version.wildfly>8.1.0.Final</version.wildfly>
     </properties>
 
     <dependencyManagement>
@@ -167,7 +168,7 @@
         <dependency>
             <groupId>org.wildfly</groupId>
             <artifactId>wildfly-arquillian-container-managed</artifactId>
-            <version>8.1.0.Final</version>
+            <version>${version.wildfly}</version>
             <scope>test</scope>
         </dependency>
 
@@ -191,7 +192,31 @@
         <finalName>miles2run</finalName>
 
         <plugins>
-
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>unpack</id>
+                        <phase>process-test-classes</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.wildfly</groupId>
+                                    <artifactId>wildfly-dist</artifactId>
+                                    <version>${version.wildfly}</version>
+                                    <type>zip</type>
+                                    <overWrite>false</overWrite>
+                                    <outputDirectory>${project.build.directory}</outputDirectory>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
@@ -200,12 +225,10 @@
                         <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
                     </systemPropertyVariables>
                     <environmentVariables>
-                        <JBOSS_HOME>H:\servers\wildfly-8.1.0.Final</JBOSS_HOME>
+                        <JBOSS_HOME>${project.build.directory}/wildfly-${version.wildfly}</JBOSS_HOME>
                     </environmentVariables>
                 </configuration>
-                <version>2.16</version>
             </plugin>
-
         </plugins>
     </build>
 
