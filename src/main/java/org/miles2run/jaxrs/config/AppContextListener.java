@@ -1,29 +1,26 @@
 package org.miles2run.jaxrs.config;
 
 import org.jug.JugFilterDispatcher;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import javax.inject.Inject;
 import javax.servlet.*;
 import javax.servlet.annotation.WebListener;
 import java.util.EnumSet;
-import java.util.logging.Logger;
 
-/**
- * Created by shekhargulati on 01/05/14.
- */
 @WebListener
-public class AppContextListener implements ServletContextListener{
+public class AppContextListener implements ServletContextListener {
 
-    @Inject
-    private Logger logger;
+    private Logger logger = LoggerFactory.getLogger(AppContextListener.class);
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
-        logger.info("Context Initialized....");
+        logger.info("inside contextInitialized()");
         ServletContext ctx = sce.getServletContext();
         FilterRegistration.Dynamic filter = ctx.addFilter("JUGFilter", JugFilterDispatcher.class);
         filter.setInitParameter("javax.ws.rs.Application", RestConfig.class.getName());
         filter.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, "/*");
+        logger.info("Context Initialized....");
     }
 
     @Override

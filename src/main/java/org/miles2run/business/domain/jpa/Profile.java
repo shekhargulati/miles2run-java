@@ -8,10 +8,7 @@ import org.miles2run.jaxrs.forms.ProfileForm;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.io.Serializable;
-import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -29,37 +26,29 @@ import java.util.List;
         @Index(unique = true, columnList = "email")
 })
 @Access(AccessType.FIELD)
-public class Profile extends BaseEntity{
+public class Profile extends BaseEntity {
 
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "profile")
+    private final List<SocialConnection> socialConnections = new ArrayList<>();
     @NotBlank
     @Column(unique = true)
     @Email
     private String email;
-
     @NotBlank
     @Column(unique = true, updatable = false)
     @Size(max = 20)
     private String username;
-
     @NotBlank
     @Size(max = 50)
     private String fullname;
-
     @Size(max = 500)
     private String bio;
-
     @NotBlank
     private String city;
-
     @NotBlank
     private String country;
-
     @Enumerated(EnumType.STRING)
     private Gender gender;
-
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "profile")
-    private final List<SocialConnection> socialConnections = new ArrayList<>();
-
     @ImageUrl
     private String profilePic;
 
@@ -108,16 +97,16 @@ public class Profile extends BaseEntity{
         this.gender = gender;
     }
 
-    public static Profile createProfile(String email, String username, String fullname, String city, String country, Gender gender) {
-        return new Profile(email, username, fullname, city, country, gender);
-    }
-
     private Profile(String fullname, String bio, String city, String country, Gender gender) {
         this.fullname = fullname;
         this.bio = bio;
         this.city = city;
         this.country = country;
         this.gender = gender;
+    }
+
+    public static Profile createProfile(String email, String username, String fullname, String city, String country, Gender gender) {
+        return new Profile(email, username, fullname, city, country, gender);
     }
 
     public static Profile createProfileForUpdate(String fullname, String bio, String city, String country, Gender gender) {
@@ -168,10 +157,6 @@ public class Profile extends BaseEntity{
         return getImageWithSize("mini");
     }
 
-    public String getBiggerProfilePic() {
-        return getImageWithSize("bigger");
-    }
-
     private String getImageWithSize(String size) {
         if (this.profilePic != null) {
             int index = this.profilePic.lastIndexOf(".");
@@ -180,6 +165,10 @@ public class Profile extends BaseEntity{
             return new StringBuilder(imgPrefix).append("_").append(size).append(picExtension).toString();
         }
         return this.profilePic;
+    }
+
+    public String getBiggerProfilePic() {
+        return getImageWithSize("bigger");
     }
 
     @Override

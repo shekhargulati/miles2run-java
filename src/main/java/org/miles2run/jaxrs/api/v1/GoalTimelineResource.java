@@ -55,24 +55,6 @@ public class GoalTimelineResource {
         return toTimelineResponse(loggedInUser, goal, timelineIds);
     }
 
-    @Path("/user_goal_timeline")
-    @GET
-    @Produces("application/json")
-    public Map<String, Object> getUserGoalTimeline(@PathParam("goalId") Long goalId, @QueryParam("username") String username, @QueryParam("page") int page, @QueryParam("count") int count) {
-        Profile profile = profileService.findProfile(username);
-        Goal goal = goalJPAService.findGoal(profile, goalId);
-        if (goal == null) {
-            return Collections.emptyMap();
-        }
-        page = page == 0 ? 1 : page;
-        count = count == 0 || count > 50 ? 10 : count;
-        Set<String> timelineIds = timelineService.getGoalTimelineIds(username, goal, page, count);
-        if (timelineIds == null || timelineIds.isEmpty()) {
-            return emptyResponse();
-        }
-        return toTimelineResponse(username, goal, timelineIds);
-    }
-
     Map<String, Object> toTimelineResponse(String loggedInUser, Goal goal, Set<String> homeTimelineIds) {
         List<Long> activityIds = new ArrayList<>();
         for (String homeTimelineId : homeTimelineIds) {
@@ -91,5 +73,23 @@ public class GoalTimelineResource {
         response.put("totalItems", 0L);
         return response;
 
+    }
+
+    @Path("/user_goal_timeline")
+    @GET
+    @Produces("application/json")
+    public Map<String, Object> getUserGoalTimeline(@PathParam("goalId") Long goalId, @QueryParam("username") String username, @QueryParam("page") int page, @QueryParam("count") int count) {
+        Profile profile = profileService.findProfile(username);
+        Goal goal = goalJPAService.findGoal(profile, goalId);
+        if (goal == null) {
+            return Collections.emptyMap();
+        }
+        page = page == 0 ? 1 : page;
+        count = count == 0 || count > 50 ? 10 : count;
+        Set<String> timelineIds = timelineService.getGoalTimelineIds(username, goal, page, count);
+        if (timelineIds == null || timelineIds.isEmpty()) {
+            return emptyResponse();
+        }
+        return toTimelineResponse(username, goal, timelineIds);
     }
 }

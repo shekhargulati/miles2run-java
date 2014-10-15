@@ -1,6 +1,9 @@
 package org.miles2run.jaxrs.config;
 
-import org.jug.filters.*;
+import org.jug.filters.AfterLoginFilter;
+import org.jug.filters.AuthenticationFilter;
+import org.jug.filters.EnableSessionFilter;
+import org.jug.filters.InjectPrincipalFilter;
 import org.jug.view.NotFoundExceptionMapper;
 import org.jug.view.ViewExceptionMapper;
 import org.jug.view.ViewResourceNotFoundExceptionMapper;

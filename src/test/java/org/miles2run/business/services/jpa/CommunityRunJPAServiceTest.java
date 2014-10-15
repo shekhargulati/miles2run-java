@@ -82,6 +82,19 @@ public class CommunityRunJPAServiceTest {
         Assert.assertNotNull(communityRunId);
     }
 
+    private CommunityRun createCommunityRun(String name, String slug) {
+        return new CommunityRunBuilder().
+                setName(name).
+                setBannerImg("http://example.com/javaone.png").
+                setDescription("biggest Java conference").
+                setSlug(slug).
+                setStartDate(new Date()).
+                setEndDate(new DateTime().plusDays(5).toDate()).
+                setTwitterHandle("javaoneconf").
+                setWebsite("https://www.oracle.com/javaone/index.html").
+                createCommunityRun();
+    }
+
     @Test(expected = Exception.class)
     public void shouldNotSaveACommunityRunWithSameName() throws Exception {
         CommunityRun communityRun = createCommunityRun("JavaOne", "javaone");
@@ -90,7 +103,6 @@ public class CommunityRunJPAServiceTest {
         CommunityRun anotherCommunityRunWithSameName = createCommunityRun("JavaOne", "javaone-1");
         communityRunJPAService.save(anotherCommunityRunWithSameName);
     }
-
 
     @Test(expected = Exception.class)
     public void shouldNotSaveACommunityRunWithSameSlug() throws Exception {
@@ -117,7 +129,6 @@ public class CommunityRunJPAServiceTest {
         communityRunJPAService.save(communityRun);
     }
 
-
     @Test
     public void shouldFindAllActiveRuns() throws Exception {
         createCommunityRuns(10);
@@ -125,6 +136,22 @@ public class CommunityRunJPAServiceTest {
         Assert.assertEquals(10, allActiveRaces.size());
     }
 
+    private void createCommunityRuns(int n) {
+        for (int i = 0; i < n; i++) {
+            CommunityRun communityRun = new CommunityRunBuilder().
+                    setName("JavaOne 201" + i).
+                    setBannerImg("http://example.com/javaone.png").
+                    setDescription("biggest Java conference").
+                    setSlug("javaone-201" + i).
+                    setStartDate(new Date()).
+                    setEndDate(new DateTime().plusDays(5).toDate()).
+                    setTwitterHandle("javaoneconf").
+                    setWebsite("https://www.oracle.com/javaone/index.html").
+                    createCommunityRun();
+
+            communityRunJPAService.save(communityRun);
+        }
+    }
 
     @Test
     public void shouldFindBySlug() throws Exception {
@@ -132,7 +159,6 @@ public class CommunityRunJPAServiceTest {
         CommunityRun communityRun = communityRunJPAService.findBySlug("javaone-2014");
         Assert.assertNotNull(communityRun);
     }
-
 
     @Test
     public void shouldReturnNullWhenCommunityRunDoesNotExistForSlug() throws Exception {
@@ -148,7 +174,6 @@ public class CommunityRunJPAServiceTest {
         Assert.assertEquals(10, communityRuns.size());
 
     }
-
 
     @Test
     public void shouldReturn10CommunityRunsWhenNameCaseIsDifferent() throws Exception {
@@ -175,7 +200,6 @@ public class CommunityRunJPAServiceTest {
             Assert.assertEquals("javax.validation.ConstraintViolationException", e.getCause().getClass().getName());
         }
     }
-
 
     @Test
     public void shouldRespectContraintsOnFindAllActiveCommunityRuns() throws Exception {
@@ -225,36 +249,5 @@ public class CommunityRunJPAServiceTest {
             actualPages++;
         }
         Assert.assertEquals(expectedPages, actualPages);
-    }
-
-    private void createCommunityRuns(int n) {
-        for (int i = 0; i < n; i++) {
-            CommunityRun communityRun = new CommunityRunBuilder().
-                    setName("JavaOne 201" + i).
-                    setBannerImg("http://example.com/javaone.png").
-                    setDescription("biggest Java conference").
-                    setSlug("javaone-201" + i).
-                    setStartDate(new Date()).
-                    setEndDate(new DateTime().plusDays(5).toDate()).
-                    setTwitterHandle("javaoneconf").
-                    setWebsite("https://www.oracle.com/javaone/index.html").
-                    createCommunityRun();
-
-            communityRunJPAService.save(communityRun);
-        }
-    }
-
-
-    private CommunityRun createCommunityRun(String name, String slug) {
-        return new CommunityRunBuilder().
-                setName(name).
-                setBannerImg("http://example.com/javaone.png").
-                setDescription("biggest Java conference").
-                setSlug(slug).
-                setStartDate(new Date()).
-                setEndDate(new DateTime().plusDays(5).toDate()).
-                setTwitterHandle("javaoneconf").
-                setWebsite("https://www.oracle.com/javaone/index.html").
-                createCommunityRun();
     }
 }

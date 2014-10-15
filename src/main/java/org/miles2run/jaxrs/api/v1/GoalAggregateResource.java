@@ -3,9 +3,9 @@ package org.miles2run.jaxrs.api.v1;
 import org.jug.filters.LoggedIn;
 import org.miles2run.business.domain.jpa.Goal;
 import org.miles2run.business.domain.jpa.Profile;
-import org.miles2run.business.services.redis.GoalAggregationService;
 import org.miles2run.business.services.jpa.GoalJPAService;
 import org.miles2run.business.services.jpa.ProfileService;
+import org.miles2run.business.services.redis.GoalAggregationService;
 import org.miles2run.business.services.redis.TimelineService;
 
 import javax.inject.Inject;
@@ -53,7 +53,6 @@ public class GoalAggregateResource {
                 return goalAggregationService.distanceAndPaceOverNDays(profile.getUsername(), goal, days, timezoneOffset);
         }
     }
-
 
     @GET
     @LoggedIn

@@ -2,13 +2,12 @@ package org.miles2run.jaxrs.api.v1;
 
 import org.jug.filters.LoggedIn;
 import org.miles2run.business.domain.mongo.UserProfile;
-import org.miles2run.business.services.mongo.ProfileMongoService;
 import org.miles2run.business.services.jpa.ProfileService;
+import org.miles2run.business.services.mongo.ProfileMongoService;
 import org.miles2run.business.vo.ProfileDetails;
 import org.miles2run.business.vo.ProfileSocialConnectionDetails;
 
 import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
@@ -32,7 +31,6 @@ public class ProfileResource {
     private SecurityContext securityContext;
     @Inject
     private ProfileMongoService profileMongoService;
-
 
     @Path("/me")
     @GET

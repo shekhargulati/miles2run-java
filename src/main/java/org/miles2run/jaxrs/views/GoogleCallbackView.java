@@ -4,8 +4,8 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse;
 import org.jug.view.View;
 import org.miles2run.business.domain.jpa.SocialConnection;
 import org.miles2run.business.domain.jpa.SocialProvider;
-import org.miles2run.business.services.social.GoogleService;
 import org.miles2run.business.services.jpa.SocialConnectionService;
+import org.miles2run.business.services.social.GoogleService;
 import org.miles2run.business.utils.UrlUtils;
 import org.miles2run.business.vo.Google;
 
@@ -33,7 +33,6 @@ public class GoogleCallbackView {
     private GoogleService googleService;
     @Inject
     private SocialConnectionService socialConnectionService;
-
 
     @GET
     @Produces("text/html")

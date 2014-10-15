@@ -65,7 +65,6 @@ public class GoogleService {
 
     }
 
-
     public void postStatus(String message, SocialConnection socialConnection) {
         throw new UnsupportedOperationException("GooglePlus postStatus() not implemented yet");
     }

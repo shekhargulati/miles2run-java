@@ -13,13 +13,16 @@ public class Notification {
     private long timestamp;
     private Action action;
 
-
-
     public Notification(String userToNotify, String userTookAction, Action action, long timestamp) {
         this.userToNotify = userToNotify;
         this.userTookAction = userTookAction;
         this.action = action;
         this.timestamp = timestamp;
+    }
+
+    public static Notification toNotification(String notification) {
+        Gson gson = new Gson();
+        return gson.fromJson(notification, Notification.class);
     }
 
     public String getUserToNotify() {
@@ -41,11 +44,6 @@ public class Notification {
     public String toJSON() {
         Gson gson = new Gson();
         return gson.toJson(this);
-    }
-
-    public static Notification toNotification(String notification) {
-        Gson gson = new Gson();
-        return gson.fromJson(notification, Notification.class);
     }
 
     @Override

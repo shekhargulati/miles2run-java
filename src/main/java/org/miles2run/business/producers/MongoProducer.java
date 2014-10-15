@@ -47,7 +47,6 @@ public class MongoProducer {
         }
     }
 
-
     @Produces
     @Named
     public DB db() {

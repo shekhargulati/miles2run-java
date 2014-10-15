@@ -9,14 +9,9 @@ public enum GoalUnit {
     private final String unit;
     private final long conversion;
 
-
     GoalUnit(String unit, long conversion) {
         this.unit = unit;
         this.conversion = conversion;
-    }
-
-    public String getUnit() {
-        return unit;
     }
 
     public static GoalUnit fromStringToGoalUnit(String goalUnit) {
@@ -29,6 +24,10 @@ public enum GoalUnit {
         return null;
     }
 
+    public String getUnit() {
+        return unit;
+    }
+
     public long getConversion() {
         return conversion;
     }
@@ -38,7 +37,7 @@ public enum GoalUnit {
         return this.unit != null ? this.unit.toLowerCase() : null;
     }
 
-    public String upperCase(){
+    public String upperCase() {
         return this.unit;
     }
 }

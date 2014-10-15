@@ -21,12 +21,9 @@ import java.util.*;
 public class GoalAggregationService {
 
     public static final int SECONDS_IN_ONE_MINUTE = 60;
-
-    private Logger logger = LoggerFactory.getLogger(GoalAggregationService.class);
-
     @Inject
     JedisExecutionService jedisExecutionService;
-
+    private Logger logger = LoggerFactory.getLogger(GoalAggregationService.class);
 
     public List<Object[]> distanceAndPaceOverNDays(final String username, final Goal goal, final int daysBack, int timezoneOffsetInMinutes) {
         int timezoneOffsetInMillis = (-1) * timezoneOffsetInMinutes * 60 * 1000;
@@ -77,6 +74,22 @@ public class GoalAggregationService {
         });
     }
 
+    Map<LocalDate, List<String>> toMapOfLocalDateAndActivities(Set<Tuple> activityIdsInNDaysWithScores, DateTimeZone dateTimeZone) {
+        Map<LocalDate, List<String>> timestampAndActivities = new HashMap<>();
+        for (Tuple tuple : activityIdsInNDaysWithScores) {
+            String activityId = tuple.getElement();
+            LocalDate localDate = new LocalDate(Double.valueOf(tuple.getScore()).longValue(), dateTimeZone);
+            if (timestampAndActivities.containsKey(localDate)) {
+                List<String> activityIds = timestampAndActivities.get(localDate);
+                activityIds.add(activityId);
+            } else {
+                List<String> activityIds = new ArrayList<>();
+                activityIds.add(activityId);
+                timestampAndActivities.put(localDate, activityIds);
+            }
+        }
+        return timestampAndActivities;
+    }
 
     public Map<String, Double> getActivitiesPerformedInLastNMonthsForGoal(final String username, final Goal goal, final int nMonths) {
         return jedisExecutionService.execute(new JedisOperation<Map<String, Double>>() {
@@ -104,23 +117,6 @@ public class GoalAggregationService {
         });
     }
 
-    Map<LocalDate, List<String>> toMapOfLocalDateAndActivities(Set<Tuple> activityIdsInNDaysWithScores, DateTimeZone dateTimeZone) {
-        Map<LocalDate, List<String>> timestampAndActivities = new HashMap<>();
-        for (Tuple tuple : activityIdsInNDaysWithScores) {
-            String activityId = tuple.getElement();
-            LocalDate localDate = new LocalDate(Double.valueOf(tuple.getScore()).longValue(), dateTimeZone);
-            if (timestampAndActivities.containsKey(localDate)) {
-                List<String> activityIds = timestampAndActivities.get(localDate);
-                activityIds.add(activityId);
-            } else {
-                List<String> activityIds = new ArrayList<>();
-                activityIds.add(activityId);
-                timestampAndActivities.put(localDate, activityIds);
-            }
-        }
-        return timestampAndActivities;
-    }
-
     Map<Long, List<String>> toMapOfTimestampAndActivities(Set<Tuple> activityIdsInNDaysWithScores) {
         Map<Long, List<String>> timestampAndActivities = new HashMap<>();
         for (Tuple tuple : activityIdsInNDaysWithScores) {
@@ -137,6 +133,5 @@ public class GoalAggregationService {
         }
         return timestampAndActivities;
     }
-
 
 }

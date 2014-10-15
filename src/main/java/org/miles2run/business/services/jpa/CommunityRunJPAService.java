@@ -37,6 +37,10 @@ public class CommunityRunJPAService {
         return entityManager.find(CommunityRun.class, id);
     }
 
+    public List<CommunityRun> findAllActiveCommunityRuns() {
+        return findAllActiveCommunityRuns(20, 1);
+    }
+
     public List<CommunityRun> findAllActiveCommunityRuns(@Max(value = 20) int max, @Min(value = 1) int page) {
         return entityManager.
                 createNamedQuery("CommunityRun.findAllActiveRaces", CommunityRun.class).
@@ -45,22 +49,8 @@ public class CommunityRunJPAService {
                 getResultList();
     }
 
-    public List<CommunityRun> findAllActiveCommunityRuns() {
-        return findAllActiveCommunityRuns(20, 1);
-    }
-
     public CommunityRun findBySlug(@NotNull String slug) {
         TypedQuery<CommunityRun> query = entityManager.createNamedQuery("CommunityRun.findBySlug", CommunityRun.class);
-        query.setParameter("slug", slug);
-        try {
-            return query.getSingleResult();
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    public CommunityRun find(@NotNull String slug) {
-        TypedQuery<CommunityRun> query = entityManager.createNamedQuery("CommunityRun.findBySlugWithProfiles", CommunityRun.class);
         query.setParameter("slug", slug);
         try {
             return query.getSingleResult();
@@ -82,6 +72,10 @@ public class CommunityRunJPAService {
         }
     }
 
+    public List<CommunityRun> findAllActiveCommunityRunsWithNameLike(@NotNull String name) {
+        return findAllActiveCommunityRunsWithNameLike(name, 20, 1);
+    }
+
     public List<CommunityRun> findAllActiveCommunityRunsWithNameLike(@NotNull String name, @Max(value = 20) int max, @Min(value = 1) int page) {
         name = name.toLowerCase();
         return entityManager.createNamedQuery("CommunityRun.findAllActiviRunsByNameLike", CommunityRun.class)
@@ -89,10 +83,6 @@ public class CommunityRunJPAService {
                 .setMaxResults(max)
                 .setFirstResult((page - 1) * max)
                 .getResultList();
-    }
-
-    public List<CommunityRun> findAllActiveCommunityRunsWithNameLike(@NotNull String name) {
-        return findAllActiveCommunityRunsWithNameLike(name, 20, 1);
     }
 
     public List<ProfileGroupDetails> groupAllUserInACommunityRunByCity(@NotNull String slug) {
@@ -110,6 +100,16 @@ public class CommunityRunJPAService {
         return profileGroups;
     }
 
+    public CommunityRun find(@NotNull String slug) {
+        TypedQuery<CommunityRun> query = entityManager.createNamedQuery("CommunityRun.findBySlugWithProfiles", CommunityRun.class);
+        query.setParameter("slug", slug);
+        try {
+            return query.getSingleResult();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     // TODO: IS THIS THE RIGHT  WAY TO HANDLE CONCURRENCY?
     public CommunityRun addRunnerToCommunityRun(final String slug, final Profile profile) {
         CommunityRun communityRun = this.findBySlugWithPessimisticWriteLock(slug);
@@ -119,18 +119,18 @@ public class CommunityRunJPAService {
         return communityRun;
     }
 
-    public void leaveCommunityRun(final String slug, final Profile profile) {
-        CommunityRun communityRun = this.findBySlugWithPessimisticWriteLock(slug);
-        communityRun.getProfiles().remove(profile);
-        entityManager.merge(communityRun);
-        entityManager.flush();
-    }
-
     public CommunityRun findBySlugWithPessimisticWriteLock(final String slug) {
         CommunityRun communityRun = entityManager.createNamedQuery("CommunityRun.findBySlugWithProfiles", CommunityRun.class).
                 setParameter("slug", slug).
                 setLockMode(LockModeType.PESSIMISTIC_WRITE).
                 getSingleResult();
         return communityRun;
+    }
+
+    public void leaveCommunityRun(final String slug, final Profile profile) {
+        CommunityRun communityRun = this.findBySlugWithPessimisticWriteLock(slug);
+        communityRun.getProfiles().remove(profile);
+        entityManager.merge(communityRun);
+        entityManager.flush();
     }
 }

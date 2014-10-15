@@ -22,6 +22,12 @@ public class SocialConnectionService {
         entityManager.persist(socialConnection);
     }
 
+    public void update(Profile profile, String connectionId) {
+        SocialConnection socialConnection = this.findByConnectionId(connectionId);
+        socialConnection.setProfile(profile);
+        entityManager.persist(socialConnection);
+    }
+
     public SocialConnection findByConnectionId(String connectionId) {
         TypedQuery<SocialConnection> query = entityManager.createNamedQuery("SocialConnection.findByConnectionId", SocialConnection.class);
         query.setParameter("connectionId", connectionId);
@@ -31,13 +37,6 @@ public class SocialConnectionService {
         } catch (NoResultException e) {
             return null;
         }
-    }
-
-
-    public void update(Profile profile, String connectionId) {
-        SocialConnection socialConnection = this.findByConnectionId(connectionId);
-        socialConnection.setProfile(profile);
-        entityManager.persist(socialConnection);
     }
 
     public void update(Long id, String accessToken, String accessSecret) {

@@ -31,7 +31,6 @@ public class GoalJPAService {
         return query.getResultList();
     }
 
-
     public Goal save(Goal goal, Profile profile) {
         goal.setProfile(profile);
         entityManager.persist(goal);
@@ -49,10 +48,6 @@ public class GoalJPAService {
         }
     }
 
-    public Goal find(Long goalId) {
-        return entityManager.find(Goal.class, goalId);
-    }
-
     public void update(Goal goal, Long goalId) {
         Goal existingGoal = this.find(goalId);
         existingGoal.setDistance(goal.getDistance());
@@ -64,6 +59,10 @@ public class GoalJPAService {
         entityManager.persist(existingGoal);
     }
 
+    public Goal find(Long goalId) {
+        return entityManager.find(Goal.class, goalId);
+    }
+
     public void delete(Long goalId) {
         entityManager.remove(this.find(goalId));
     }
@@ -73,7 +72,6 @@ public class GoalJPAService {
         goal.setArchived(archived);
         entityManager.persist(goal);
     }
-
 
     public Goal findLatestCreatedGoal(Profile profile) {
         TypedQuery<Goal> query = entityManager.createNamedQuery("Goal.findLastedCreatedGoal", Goal.class);

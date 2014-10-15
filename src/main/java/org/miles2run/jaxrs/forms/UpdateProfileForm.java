@@ -24,10 +24,8 @@ public class UpdateProfileForm {
     @FormParam("gender")
     private Gender gender;
 
-
     public UpdateProfileForm() {
     }
-
 
     public String getFullname() {
         return fullname;
@@ -68,7 +66,6 @@ public class UpdateProfileForm {
     public void setGender(Gender gender) {
         this.gender = gender;
     }
-
 
     @Override
     public String toString() {

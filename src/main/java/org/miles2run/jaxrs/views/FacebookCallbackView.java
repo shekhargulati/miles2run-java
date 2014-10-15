@@ -36,7 +36,6 @@ public class FacebookCallbackView {
     @Context
     private HttpServletRequest request;
 
-
     @Path("/facebook/callback")
     @GET
     @Produces("text/html")

@@ -33,6 +33,18 @@ import java.util.List;
 @RunWith(Arquillian.class)
 public class GoalJPAServiceTest {
 
+    @Inject
+    CommunityRunJPAService communityRunJPAService;
+    @Inject
+    private GoalJPAService goalJPAService;
+
+    @Inject
+    private ProfileService profileService;
+
+    @Inject
+    private EntityManager entityManager;
+    @Inject
+    private UserTransaction userTransaction;
 
     @Deployment
     public static Archive<?> deployment() {
@@ -66,20 +78,6 @@ public class GoalJPAServiceTest {
         return webArchive;
     }
 
-    @Inject
-    private GoalJPAService goalJPAService;
-
-    @Inject
-    private ProfileService profileService;
-
-    @Inject
-    private EntityManager entityManager;
-    @Inject
-    private UserTransaction userTransaction;
-    @Inject
-    CommunityRunJPAService communityRunJPAService;
-
-
     @Before
     public void setUp() throws Exception {
         userTransaction.begin();
@@ -95,6 +93,34 @@ public class GoalJPAServiceTest {
         createNArchivedGoals(profile, 2);
         List<Goal> activeGoals = goalJPAService.findAllGoals(profile, false);
         Assert.assertThat(activeGoals, IsCollectionWithSize.hasSize(3));
+    }
+
+    private void createNArchivedGoals(Profile profile, int n) {
+        for (int i = 0; i < n; i++) {
+            Goal goal = newGoal(i);
+            goal.setArchived(true);
+            goalJPAService.save(goal, profile);
+        }
+    }
+
+    void createNActiveGoals(Profile profile, int n) {
+        for (int i = 0; i < n; i++) {
+            goalJPAService.save(newGoal(i), profile);
+        }
+    }
+
+    Goal newGoal(int i) {
+        Goal goal = new Goal();
+        goal.setDistance(100 + i);
+        goal.setGoalUnit(GoalUnit.MI);
+        goal.setPurpose("Run" + 100 + i + "miles");
+        goal.setGoalType(GoalType.DISTANCE_GOAL);
+        return goal;
+    }
+
+    private Profile createProfile() {
+        Profile profile = Profile.createProfile("test@test.com", "test_user", "Test User", "city", "country", Gender.MALE);
+        return profileService.save(profile);
     }
 
     @Test
@@ -151,34 +177,6 @@ public class GoalJPAServiceTest {
         goal.setCommunityRun(communityRunJPAService.findById(id));
         goal.setGoalType(GoalType.COMMUNITY_RUN_GOAL);
         return goal;
-    }
-
-    private void createNArchivedGoals(Profile profile, int n) {
-        for (int i = 0; i < n; i++) {
-            Goal goal = newGoal(i);
-            goal.setArchived(true);
-            goalJPAService.save(goal, profile);
-        }
-    }
-
-    void createNActiveGoals(Profile profile, int n) {
-        for (int i = 0; i < n; i++) {
-            goalJPAService.save(newGoal(i), profile);
-        }
-    }
-
-    Goal newGoal(int i) {
-        Goal goal = new Goal();
-        goal.setDistance(100 + i);
-        goal.setGoalUnit(GoalUnit.MI);
-        goal.setPurpose("Run" + 100 + i + "miles");
-        goal.setGoalType(GoalType.DISTANCE_GOAL);
-        return goal;
-    }
-
-    private Profile createProfile() {
-        Profile profile = Profile.createProfile("test@test.com", "test_user", "Test User", "city", "country", Gender.MALE);
-        return profileService.save(profile);
     }
 
     private Profile createProfile(String email, String username) {

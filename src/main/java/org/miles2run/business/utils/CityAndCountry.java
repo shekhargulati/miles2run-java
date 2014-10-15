@@ -7,7 +7,6 @@ public class CityAndCountry {
     private String city;
     private String country;
 
-
     public CityAndCountry() {
     }
 

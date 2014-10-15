@@ -4,7 +4,7 @@ import java.util.List;
 
 /**
  * <p>
- *     Implementations of this interface can recommend friends to a user.
+ * Implementations of this interface can recommend friends to a user.
  * </p>
  */
 public interface FriendRecommender {

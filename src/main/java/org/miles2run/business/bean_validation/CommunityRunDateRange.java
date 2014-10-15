@@ -8,7 +8,7 @@ import java.lang.annotation.RetentionPolicy;
 /**
  * Created by shekhargulati on 01/08/14.
  */
-@Constraint(validatedBy = { CommunityRunDateRangeValidator.class })
+@Constraint(validatedBy = {CommunityRunDateRangeValidator.class})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface CommunityRunDateRange {
 

@@ -23,5 +23,4 @@ public class ContactView {
         return View.of("/contact", templateEngine);
     }
 
-
 }

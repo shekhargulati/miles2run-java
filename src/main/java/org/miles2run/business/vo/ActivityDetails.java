@@ -56,6 +56,27 @@ public class ActivityDetails {
         this.goalId = goalId;
     }
 
+    public ActivityDetails(Map<String, String> hash) {
+        this.id = Long.valueOf(hash.get("id"));
+        this.username = hash.get("username");
+        this.activityDate = DateUtils.toDate(hash.get("activityDate"));
+        this.goalUnit = GoalUnit.fromStringToGoalUnit(hash.get("goalUnit"));
+        this.distanceCovered = Double.valueOf(hash.get("distanceCovered")) / this.goalUnit.getConversion();
+        this.fullname = hash.get("fullname");
+        this.profilePic = hash.get("profilePic");
+        this.status = hash.get("status");
+        this.goalId = Long.valueOf(hash.get("goalId"));
+        this.duration = Long.valueOf(hash.get("duration"));
+    }
+
+    public static List<ActivityDetails> toListOfHumanReadable(List<ActivityDetails> activityDetailsList) {
+        List<ActivityDetails> activityDetailsReadableList = new ArrayList<>();
+        for (ActivityDetails activityDetails : activityDetailsList) {
+            activityDetailsReadableList.add(toHumanReadable(activityDetails));
+        }
+        return activityDetailsReadableList;
+    }
+
     public static ActivityDetails toHumanReadable(ActivityDetails activityDetails) {
         ActivityDetails hr = new ActivityDetails();
         hr.id = activityDetails.getId();
@@ -72,14 +93,6 @@ public class ActivityDetails {
         hr.postedAt = activityDetails.postedAt;
         hr.durationStr = toDurationText(activityDetails.duration);
         return hr;
-    }
-
-    public static List<ActivityDetails> toListOfHumanReadable(List<ActivityDetails> activityDetailsList) {
-        List<ActivityDetails> activityDetailsReadableList = new ArrayList<>();
-        for (ActivityDetails activityDetails : activityDetailsList) {
-            activityDetailsReadableList.add(toHumanReadable(activityDetails));
-        }
-        return activityDetailsReadableList;
     }
 
     private static String toDurationText(long duration) {
@@ -101,21 +114,6 @@ public class ActivityDetails {
     private static String toText(long val) {
         return val < 10 ? "0" + val : String.valueOf(val);
     }
-
-
-    public ActivityDetails(Map<String, String> hash) {
-        this.id = Long.valueOf(hash.get("id"));
-        this.username = hash.get("username");
-        this.activityDate = DateUtils.toDate(hash.get("activityDate"));
-        this.goalUnit = GoalUnit.fromStringToGoalUnit(hash.get("goalUnit"));
-        this.distanceCovered = Double.valueOf(hash.get("distanceCovered")) / this.goalUnit.getConversion();
-        this.fullname = hash.get("fullname");
-        this.profilePic = hash.get("profilePic");
-        this.status = hash.get("status");
-        this.goalId = Long.valueOf(hash.get("goalId"));
-        this.duration = Long.valueOf(hash.get("duration"));
-    }
-
 
     public Long getId() {
         return id;
@@ -157,11 +155,9 @@ public class ActivityDetails {
         return duration;
     }
 
-
     public Long getGoalId() {
         return goalId;
     }
-
 
     public Date getPostedAt() {
         return postedAt;
@@ -180,6 +176,5 @@ public class ActivityDetails {
                 ", username='" + username + '\'' +
                 '}';
     }
-
 
 }

@@ -1,7 +1,7 @@
 package org.miles2run.jaxrs.api.v1;
 
-import org.miles2run.business.services.redis.CounterService;
 import org.miles2run.business.domain.redis.Counter;
+import org.miles2run.business.services.redis.CounterService;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;
@@ -16,7 +16,6 @@ public class CounterResource {
 
     @Inject
     private CounterService counterService;
-
 
     @GET
     @Produces("application/json")

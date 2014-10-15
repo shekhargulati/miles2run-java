@@ -43,7 +43,6 @@ public class GoalView {
     @Inject
     private TemplateEngine templateEngine;
 
-
     @Path("/{goalId}")
     @GET
     @LoggedIn

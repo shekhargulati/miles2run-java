@@ -19,7 +19,6 @@ import java.util.List;
 @ApplicationScoped
 public class ProfileMongoService {
 
-    private static final int RECOMMENDED_FRIENDS_COUNT = 3;
     @Inject
     DB db;
     private Logger logger = LoggerFactory.getLogger(ProfileMongoService.class);
@@ -123,33 +122,15 @@ public class ProfileMongoService {
         profiles.update(new BasicDBObject("username", userToUnFollow), new BasicDBObject("$pull", new BasicDBObject("followers", username)));
     }
 
-    public List<String> findUsersByProximity(final String username) {
-        BasicDBObject userRecommendationQuery = userRecommendationQuery(username);
-        DBCursor cursor = profiles.find(userRecommendationQuery, new BasicDBObject("username", 1)).limit(RECOMMENDED_FRIENDS_COUNT);
-        return toUsers(cursor);
-    }
-
-    private List<String> toUsers(DBCursor cursor) {
-        List<String> userFriends = new ArrayList<>();
-        while (cursor.hasNext()) {
-            userFriends.add((String) cursor.next().get("username"));
-        }
-        return userFriends;
-    }
-
-    private Object getUserLngLat(final String username) {
+    public Object getUserLngLat(final String username) {
         BasicDBObject userQuery = new BasicDBObject("username", username);
         BasicDBObject lngLatField = new BasicDBObject("lngLat", 1);
         return profiles.findOne(userQuery, lngLatField).get("lngLat");
     }
 
-    public BasicDBObject userRecommendationQuery(final String username) {
-        Object lngLat = getUserLngLat(username);
-        BasicDBObject recommendationQuery = new BasicDBObject();
-        recommendationQuery.put("username", new BasicDBObject("$ne", username));
-        recommendationQuery.put("followers", new BasicDBObject("$nin", new String[]{username}));
-        recommendationQuery.put("lngLat", new BasicDBObject("$near", lngLat));
-        logger.debug("Recommending friends to {} using query {}", username, recommendationQuery);
-        return recommendationQuery;
+    public DBCursor findUsersByProximity(DBObject userRecommendationQuery, int limit) {
+        return profiles.find(userRecommendationQuery, new BasicDBObject("username", 1)).limit(limit);
+
     }
+
 }

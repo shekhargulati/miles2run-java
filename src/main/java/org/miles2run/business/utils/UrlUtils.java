@@ -37,5 +37,4 @@ public abstract class UrlUtils {
         return url;
     }
 
-
 }

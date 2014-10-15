@@ -16,7 +16,7 @@ public class ThymeleafConfig {
     private TemplateEngine templateEngine;
 
     @PostConstruct
-    public void configure(){
+    public void configure() {
         ServletContextTemplateResolver templateResolver = new ServletContextTemplateResolver();
         templateResolver.setTemplateMode("HTML5");
         templateResolver.setPrefix("/WEB-INF/templates");
@@ -27,9 +27,8 @@ public class ThymeleafConfig {
     }
 
     @Produces
-    public TemplateEngine templateEngine(){
+    public TemplateEngine templateEngine() {
         return this.templateEngine;
     }
-
 
 }

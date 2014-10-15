@@ -28,6 +28,17 @@ import java.util.Date;
 @RunWith(Arquillian.class)
 public class ActivityJPAServiceTest {
 
+    @Inject
+    private GoalJPAService goalJPAService;
+    @Inject
+    private ProfileService profileService;
+    @Inject
+    private EntityManager entityManager;
+    @Inject
+    private UserTransaction userTransaction;
+    @Inject
+    private ActivityJPAService activityJPAService;
+
     @Deployment
     public static Archive<?> deployment() {
         WebArchive webArchive = ShrinkWrap.create(WebArchive.class).
@@ -63,19 +74,6 @@ public class ActivityJPAServiceTest {
         return webArchive;
     }
 
-    @Inject
-    private GoalJPAService goalJPAService;
-
-    @Inject
-    private ProfileService profileService;
-
-    @Inject
-    private EntityManager entityManager;
-    @Inject
-    private UserTransaction userTransaction;
-    @Inject
-    private ActivityJPAService activityJPAService;
-
     @Before
     public void setUp() throws Exception {
         userTransaction.begin();
@@ -100,15 +98,6 @@ public class ActivityJPAServiceTest {
         Assert.assertThat(tuple.getDistanceCovered(), CoreMatchers.is(CoreMatchers.equalTo(100d)));
     }
 
-    @Test
-    public void calculateTotalActivitiesAndDistanceCoveredByUser_NoActivityForAGoal_TotalActivities0TotalDistance0() throws Exception {
-        Profile profile = createProfile();
-        ActivityCountAndDistanceTuple tuple = activityJPAService.calculateTotalActivitiesAndDistanceCoveredByUser(profile);
-        System.out.printf("ActivityCountAndDistanceTuple %s", tuple);
-        Assert.assertThat(tuple.getActivityCount(), CoreMatchers.is(CoreMatchers.equalTo(0L)));
-        Assert.assertThat(tuple.getDistanceCovered(), CoreMatchers.is(CoreMatchers.equalTo(0d)));
-    }
-
     Goal createGoal(Profile profile) {
         Goal goal = new Goal();
         goal.setDistance(100);
@@ -123,5 +112,13 @@ public class ActivityJPAServiceTest {
         return profileService.save(profile);
     }
 
+    @Test
+    public void calculateTotalActivitiesAndDistanceCoveredByUser_NoActivityForAGoal_TotalActivities0TotalDistance0() throws Exception {
+        Profile profile = createProfile();
+        ActivityCountAndDistanceTuple tuple = activityJPAService.calculateTotalActivitiesAndDistanceCoveredByUser(profile);
+        System.out.printf("ActivityCountAndDistanceTuple %s", tuple);
+        Assert.assertThat(tuple.getActivityCount(), CoreMatchers.is(CoreMatchers.equalTo(0L)));
+        Assert.assertThat(tuple.getDistanceCovered(), CoreMatchers.is(CoreMatchers.equalTo(0d)));
+    }
 
 }

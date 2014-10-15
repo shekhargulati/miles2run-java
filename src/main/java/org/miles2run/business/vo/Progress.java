@@ -4,8 +4,6 @@ import org.miles2run.business.domain.jpa.Goal;
 import org.miles2run.business.domain.jpa.GoalType;
 import org.miles2run.business.domain.jpa.GoalUnit;
 
-import java.util.Date;
-
 /**
  * Created by shekhargulati on 06/03/14.
  */

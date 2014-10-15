@@ -13,7 +13,10 @@ import org.junit.Assert;
 import org.junit.Test;
 import redis.clients.jedis.Tuple;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by shekhargulati on 09/08/14.
@@ -77,7 +80,6 @@ public class GoalRedisServiceTest {
         Set<LocalDate> dates = goalRedisService.allDatesWithin(start, end);
         Assert.assertThat(dates, Matchers.hasSize(3));
     }
-
 
     @Test
     public void allDatesWithin_StartDateGreaterThanEndDate_ReturnsEmptySet() throws Exception {
@@ -214,7 +216,6 @@ public class GoalRedisServiceTest {
         Assert.assertThat(progress, Matchers.hasEntry(Is.is("remainingDays"), Is.is((Object) 30)));
     }
 
-
     @Test
     public void getDurationGoalProgress_StartDate9AugEndDate7SeptActivityPerformedOneDay_MissedDays1AndRemainingDays28() throws Exception {
         GoalRedisService goalRedisService = new GoalRedisService() {
@@ -293,7 +294,6 @@ public class GoalRedisServiceTest {
         Assert.assertThat(progress, Matchers.hasEntry(Is.is("missedDays"), Is.is((Object) 0)));
         Assert.assertThat(progress, Matchers.hasEntry(Is.is("remainingDays"), Is.is((Object) 29)));
     }
-
 
     @Test
     public void getDurationGoalProgress_StartDate9AugEndDate7SeptActivityPerformedOneDayTimezoneOffset420_MissedDays1AndRemainingDays28() throws Exception {

@@ -53,21 +53,6 @@ public class TimelineResource {
         return toTimelineResponse(username, timelineIds);
     }
 
-    @Path("/home_timeline")
-    @GET
-    @Produces("application/json")
-    @LoggedIn
-    public Map<String, Object> homeTimeline(@QueryParam("page") int page, @QueryParam("count") int count) {
-        String loggedInUser = securityContext.getUserPrincipal().getName();
-        page = page == 0 ? 1 : page;
-        count = count == 0 || count > 10 ? 10 : count;
-        Set<String> homeTimelineIds = timelineService.getHomeTimelineIds(loggedInUser, page, count);
-        if (homeTimelineIds == null || homeTimelineIds.isEmpty()) {
-            return emptyResponse();
-        }
-        return toTimelineResponse(loggedInUser, homeTimelineIds);
-    }
-
     private Map<String, Object> emptyResponse() {
         Map<String, Object> response = new HashMap<>();
         response.put("timeline", Collections.emptyList());
@@ -89,5 +74,19 @@ public class TimelineResource {
         return response;
     }
 
+    @Path("/home_timeline")
+    @GET
+    @Produces("application/json")
+    @LoggedIn
+    public Map<String, Object> homeTimeline(@QueryParam("page") int page, @QueryParam("count") int count) {
+        String loggedInUser = securityContext.getUserPrincipal().getName();
+        page = page == 0 ? 1 : page;
+        count = count == 0 || count > 10 ? 10 : count;
+        Set<String> homeTimelineIds = timelineService.getHomeTimelineIds(loggedInUser, page, count);
+        if (homeTimelineIds == null || homeTimelineIds.isEmpty()) {
+            return emptyResponse();
+        }
+        return toTimelineResponse(loggedInUser, homeTimelineIds);
+    }
 
 }

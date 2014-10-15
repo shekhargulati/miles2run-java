@@ -66,7 +66,6 @@ public class CommunityRun extends BaseEntity {
     @ManyToMany
     private List<Profile> profiles = new ArrayList<>();
 
-
     private boolean active = true;
 
     public CommunityRun() {
@@ -84,6 +83,16 @@ public class CommunityRun extends BaseEntity {
         this.hashtags = communityRun.hashtags;
     }
 
+    public CommunityRun(String name, String bannerImg, String slug, String description, Date startDate, Date endDate, String website, String twitterHandle) {
+        this.name = name;
+        this.bannerImg = bannerImg;
+        this.slug = slug;
+        this.description = description;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.website = website;
+        this.twitterHandle = twitterHandle;
+    }
 
     public String getName() {
         return name;
@@ -163,16 +172,5 @@ public class CommunityRun extends BaseEntity {
 
     public List<Profile> getProfiles() {
         return profiles;
-    }
-
-    public CommunityRun(String name, String bannerImg, String slug, String description, Date startDate, Date endDate, String website, String twitterHandle) {
-        this.name = name;
-        this.bannerImg = bannerImg;
-        this.slug = slug;
-        this.description = description;
-        this.startDate = startDate;
-        this.endDate = endDate;
-        this.website = website;
-        this.twitterHandle = twitterHandle;
     }
 }

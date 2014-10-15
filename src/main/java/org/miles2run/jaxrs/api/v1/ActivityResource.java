@@ -62,7 +62,6 @@ public class ActivityResource {
     @Inject
     private GoalRedisService goalRedisService;
 
-
     @POST
     @Consumes("application/json")
     @Produces("application/json")
@@ -128,6 +127,18 @@ public class ActivityResource {
         return Response.status(Response.Status.OK).entity(ActivityDetails.toHumanReadable(updatedActivity)).build();
     }
 
+    void updateStats(Goal goal, double existingDistanceCovered, long existingDuration, double distanceCovered, long duration) {
+        Long goalId = goal.getId();
+        double updatedDistanceCovered = distanceCovered - existingDistanceCovered;
+        counterService.updateDistanceCount(updatedDistanceCovered);
+        long updatedDuration = duration - existingDuration;
+        counterService.updateActivitySecondsCount(updatedDuration);
+        goalRedisService.updateTotalDistanceCoveredForAGoal(goalId, updatedDistanceCovered);
+        if (goal.getGoalType() == GoalType.COMMUNITY_RUN_GOAL) {
+            communityRunRedisService.updateCommunityRunDistanceAndDurationStats(goal.getCommunityRun().getSlug(), updatedDistanceCovered, updatedDuration);
+        }
+    }
+
     @DELETE
     @Path("/{activityId}")
     @LoggedIn
@@ -170,7 +181,6 @@ public class ActivityResource {
         return new StringBuilder(profile.getFullname()).append(" ran ").append(activity.getDistanceCovered() / activity.getGoalUnit().getConversion()).append(" " + activity.getGoalUnit().toString()).append(" via @miles2runorg.").append(" Read full status here ").append(activityUrl).toString();
     }
 
-
     private void shareActivity(String message, Profile profile, Share share) {
         logger.info("in shareActivity() .. " + share);
         if (share != null) {
@@ -191,18 +201,6 @@ public class ActivityResource {
                 }
             }
 
-        }
-    }
-
-    void updateStats(Goal goal, double existingDistanceCovered, long existingDuration, double distanceCovered, long duration) {
-        Long goalId = goal.getId();
-        double updatedDistanceCovered = distanceCovered - existingDistanceCovered;
-        counterService.updateDistanceCount(updatedDistanceCovered);
-        long updatedDuration = duration - existingDuration;
-        counterService.updateActivitySecondsCount(updatedDuration);
-        goalRedisService.updateTotalDistanceCoveredForAGoal(goalId, updatedDistanceCovered);
-        if (goal.getGoalType() == GoalType.COMMUNITY_RUN_GOAL) {
-            communityRunRedisService.updateCommunityRunDistanceAndDurationStats(goal.getCommunityRun().getSlug(), updatedDistanceCovered, updatedDuration);
         }
     }
 }

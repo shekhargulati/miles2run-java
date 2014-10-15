@@ -7,8 +7,8 @@ import org.miles2run.business.domain.jpa.Goal;
 import org.miles2run.business.domain.jpa.GoalType;
 import org.miles2run.business.domain.jpa.Profile;
 import org.miles2run.business.services.jpa.ActivityJPAService;
-import org.miles2run.business.services.jpa.ProfileService;
 import org.miles2run.business.services.jpa.GoalJPAService;
+import org.miles2run.business.services.jpa.ProfileService;
 import org.miles2run.business.services.redis.GoalRedisService;
 import org.miles2run.business.vo.Progress;
 import org.miles2run.jaxrs.vo.CommunityRunGoalDetails;
@@ -46,7 +46,6 @@ public class GoalResource {
     private GoalRedisService goalRedisService;
     @Inject
     private ActivityJPAService activityJPAService;
-
 
     @GET
     @Produces("application/json")
@@ -100,6 +99,12 @@ public class GoalResource {
         return new DistanceGoalDetails(goal, percentageCompleted);
     }
 
+    private double percentageGoalCompleted(Goal goal) {
+        double totalDistanceCoveredForGoal = goalRedisService.totalDistanceCoveredForGoal(goal.getId());
+        double percentageCompleted = (Double.valueOf(totalDistanceCoveredForGoal) * 100 / goal.getDistance());
+        return percentageCompleted > 100 ? 100 : percentageCompleted;
+    }
+
     @Path("{goalId}")
     @GET
     @Produces("application/json")
@@ -110,7 +115,6 @@ public class GoalResource {
         Goal goal = goalJPAService.findGoal(profile, goalId);
         return toGoalType(goal);
     }
-
 
     @POST
     @Consumes("application/json")
@@ -128,7 +132,6 @@ public class GoalResource {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
-
 
     @Path("{goalId}")
     @PUT
@@ -198,11 +201,5 @@ public class GoalResource {
         }
         goalJPAService.delete(goalId);
         return Response.status(Response.Status.OK).build();
-    }
-
-    private double percentageGoalCompleted(Goal goal) {
-        double totalDistanceCoveredForGoal = goalRedisService.totalDistanceCoveredForGoal(goal.getId());
-        double percentageCompleted = (Double.valueOf(totalDistanceCoveredForGoal) * 100 / goal.getDistance());
-        return percentageCompleted > 100 ? 100 : percentageCompleted;
     }
 }

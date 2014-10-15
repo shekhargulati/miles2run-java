@@ -15,7 +15,6 @@ import javax.persistence.TypedQuery;
 import javax.validation.constraints.NotNull;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Created by shekhargulati on 04/03/14.
@@ -30,20 +29,6 @@ public class ActivityJPAService {
         entityManager.persist(activity);
         return activity.getId();
     }
-
-    public ActivityDetails findById(@NotNull Long id) {
-        TypedQuery<ActivityDetails> query = entityManager.createNamedQuery("Activity.findById", ActivityDetails.class).setParameter("id", id);
-        try {
-            return query.getSingleResult();
-        } catch (NoResultException e) {
-            return null;
-        }
-    }
-
-    public Activity read(@NotNull Long id) {
-        return entityManager.find(Activity.class, id);
-    }
-
 
     public List<ActivityDetails> findAll(@NotNull final Profile postedBy, int start, int max) {
         TypedQuery<ActivityDetails> query = entityManager.createNamedQuery("Activity.findAll", ActivityDetails.class);
@@ -74,6 +59,19 @@ public class ActivityJPAService {
         return this.findById(existingActivity.getId());
     }
 
+    public ActivityDetails findById(@NotNull Long id) {
+        TypedQuery<ActivityDetails> query = entityManager.createNamedQuery("Activity.findById", ActivityDetails.class).setParameter("id", id);
+        try {
+            return query.getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
+    }
+
+    public Activity read(@NotNull Long id) {
+        return entityManager.find(Activity.class, id);
+    }
+
     public void delete(@NotNull Long id) {
         Activity activity = this.read(id);
         if (activity != null) {
@@ -95,7 +93,6 @@ public class ActivityJPAService {
         return entityManager.createQuery("SELECT NEW Activity(a.activityDate,a.distanceCovered,a.goalUnit) from Activity a WHERE a.postedBy =:profile", Activity.class).setParameter("profile", profile).getResultList();
     }
 
-
     public long count(@NotNull Profile profile) {
         long count = entityManager.createNamedQuery("Activity.countByProfile", Long.class).setParameter("profile", profile).getSingleResult();
         return count;
@@ -115,7 +112,6 @@ public class ActivityJPAService {
     public ActivityCountAndDistanceTuple calculateTotalActivitiesAndDistanceCoveredByUser(@NotNull Profile profile) {
         return entityManager.createQuery("SELECT new org.miles2run.business.vo.ActivityCountAndDistanceTuple(COUNT(a),SUM(a.distanceCovered)) FROM Activity a where a.postedBy =:profile", ActivityCountAndDistanceTuple.class).setParameter("profile", profile).getSingleResult();
     }
-
 
     public List<ActivityDetails> findAllActivitiesByIds(List<Long> activityIds) {
         return entityManager.createNamedQuery("Activity.findByIds", ActivityDetails.class).setParameter("activityIds", activityIds).getResultList();

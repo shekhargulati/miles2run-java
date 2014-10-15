@@ -11,7 +11,6 @@ import java.util.Date;
 @MappedSuperclass
 public abstract class BaseEntity {
 
-
     @Id
     @TableGenerator(name = "id_generator", table = "id_gen", allocationSize = 100)
     @GeneratedValue(generator = "id_generator")
@@ -23,7 +22,6 @@ public abstract class BaseEntity {
     @Column(updatable = false)
     @Type(type = "org.jadira.usertype.dateandtime.legacyjdk.PersistentDate")
     Date createdAt = new Date();
-
 
     public Long getId() {
         return id;

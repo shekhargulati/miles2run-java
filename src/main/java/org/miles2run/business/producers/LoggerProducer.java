@@ -10,7 +10,7 @@ import java.util.logging.Logger;
 public class LoggerProducer {
 
     @Produces
-    public Logger createLogger(InjectionPoint injectionPoint){
+    public Logger createLogger(InjectionPoint injectionPoint) {
         return Logger.getLogger(injectionPoint.getMember().getDeclaringClass().getName());
     }
 }

@@ -4,9 +4,9 @@ import org.jug.filters.EnableSession;
 import org.jug.view.View;
 import org.miles2run.business.domain.jpa.Goal;
 import org.miles2run.business.domain.jpa.Profile;
+import org.miles2run.business.services.jpa.GoalJPAService;
 import org.miles2run.business.services.jpa.ProfileService;
 import org.miles2run.business.services.redis.CounterService;
-import org.miles2run.business.services.jpa.GoalJPAService;
 import org.miles2run.jaxrs.filters.InjectProfile;
 import org.thymeleaf.TemplateEngine;
 

@@ -10,7 +10,6 @@ public class ProfileGroupDetails {
     private final String country;
     private double[] latLng;
 
-
     public ProfileGroupDetails(long count, String city, String country) {
         this.count = count;
         this.city = city;
@@ -22,6 +21,10 @@ public class ProfileGroupDetails {
         this.city = city;
         this.country = country;
         this.latLng = latLng;
+    }
+
+    public static ProfileGroupDetails newWitLatLng(ProfileGroupDetails profileGroupDetails, double[] latLng) {
+        return new ProfileGroupDetails(profileGroupDetails.getCount(), profileGroupDetails.getCity(), profileGroupDetails.getCountry(), latLng);
     }
 
     public long getCount() {
@@ -38,10 +41,6 @@ public class ProfileGroupDetails {
 
     public double[] getLatLng() {
         return latLng;
-    }
-
-    public static ProfileGroupDetails newWitLatLng(ProfileGroupDetails profileGroupDetails, double[] latLng) {
-        return new ProfileGroupDetails(profileGroupDetails.getCount(), profileGroupDetails.getCity(), profileGroupDetails.getCountry(), latLng);
     }
 
     @Override

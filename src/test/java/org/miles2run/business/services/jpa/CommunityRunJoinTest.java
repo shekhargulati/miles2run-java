@@ -37,6 +37,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 @RunWith(Arquillian.class)
 public class CommunityRunJoinTest {
 
+    @Inject
+    private CommunityRunJPAService communityRunJPAService;
+    @Inject
+    private EntityManager entityManager;
+    @Inject
+    private UserTransaction userTransaction;
+    @Inject
+    private ProfileService profileService;
+
     @Deployment
     public static Archive<?> deployment() {
         WebArchive webArchive = ShrinkWrap.create(WebArchive.class).
@@ -62,16 +71,6 @@ public class CommunityRunJoinTest {
         System.out.printf("WebArchive %s", webArchive.toString(true));
         return webArchive;
     }
-
-    @Inject
-    private CommunityRunJPAService communityRunJPAService;
-
-    @Inject
-    private EntityManager entityManager;
-    @Inject
-    private UserTransaction userTransaction;
-    @Inject
-    private ProfileService profileService;
 
     @Before
     public void setUp() throws Exception {
@@ -99,6 +98,30 @@ public class CommunityRunJoinTest {
         for (ProfileGroupDetails profileGroupDetails : usersByCity) {
             Assert.assertEquals(2, profileGroupDetails.getCount());
         }
+    }
+
+    private List<Profile> createProfiles(int n) {
+        List<Profile> profiles = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            int cityId = i % 4;
+            Profile profile = Profile.createProfile("test@test.com" + i, "test_user" + i, "Test User", "city" + cityId, "country", Gender.MALE);
+            profileService.save(profile);
+            profiles.add(profile);
+        }
+        return profiles;
+    }
+
+    private CommunityRun createCommunityRun(String name, String slug) {
+        return new CommunityRunBuilder().
+                setName(name).
+                setBannerImg("http://example.com/javaone.png").
+                setDescription("biggest Java conference").
+                setSlug(slug).
+                setStartDate(new Date()).
+                setEndDate(new DateTime().plusDays(5).toDate()).
+                setTwitterHandle("javaoneconf").
+                setWebsite("https://www.oracle.com/javaone/index.html").
+                createCommunityRun();
     }
 
     @Test
@@ -183,7 +206,6 @@ public class CommunityRunJoinTest {
         Assert.assertEquals(10, runners.size());
     }
 
-
     @Test
     public void userShouldBeAllowedToLeaveACommunityRun() throws Exception {
         Profile profile = createProfiles(1).get(0);
@@ -197,7 +219,6 @@ public class CommunityRunJoinTest {
         Assert.assertEquals(0, runners.size());
 
     }
-
 
     @Test
     public void usersShouldBeAllowedToConcurrentlyLeaveACommunityRun() throws Exception {
@@ -223,30 +244,5 @@ public class CommunityRunJoinTest {
         latch.await(30, TimeUnit.SECONDS);
         List<Profile> runners = communityRunJPAService.findAllRunners(slug);
         Assert.assertEquals(0, runners.size());
-    }
-
-    private List<Profile> createProfiles(int n) {
-        List<Profile> profiles = new ArrayList<>();
-        for (int i = 0; i < n; i++) {
-            int cityId = i % 4;
-            Profile profile = Profile.createProfile("test@test.com" + i, "test_user" + i, "Test User", "city" + cityId, "country", Gender.MALE);
-            profileService.save(profile);
-            profiles.add(profile);
-        }
-        return profiles;
-    }
-
-
-    private CommunityRun createCommunityRun(String name, String slug) {
-        return new CommunityRunBuilder().
-                setName(name).
-                setBannerImg("http://example.com/javaone.png").
-                setDescription("biggest Java conference").
-                setSlug(slug).
-                setStartDate(new Date()).
-                setEndDate(new DateTime().plusDays(5).toDate()).
-                setTwitterHandle("javaoneconf").
-                setWebsite("https://www.oracle.com/javaone/index.html").
-                createCommunityRun();
     }
 }

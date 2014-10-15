@@ -9,9 +9,9 @@ import java.util.List;
  * Created by shekhargulati on 12/03/14.
  */
 public class ProfileSocialConnectionDetails {
+    private final List<String> providers = new ArrayList<>();
     private Long id;
     private String username;
-    private final List<String> providers = new ArrayList<>();
     private long goal;
     private GoalUnit goalUnit;
 

@@ -20,10 +20,9 @@ import javax.inject.Inject;
 @ApplicationScoped
 public class CommunityRunRedisService {
 
-    private Logger logger = LoggerFactory.getLogger(CommunityRunRedisService.class);
-
     @Inject
     JedisExecutionService jedisExecutionService;
+    private Logger logger = LoggerFactory.getLogger(CommunityRunRedisService.class);
 
     public void addGoalToCommunityRun(final String slug, final Long goalId) {
         jedisExecutionService.execute(new JedisOperation<Void>() {

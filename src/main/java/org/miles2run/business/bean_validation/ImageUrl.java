@@ -5,7 +5,7 @@ import javax.validation.Payload;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-@Constraint(validatedBy = { ImageUrlValidator.class })
+@Constraint(validatedBy = {ImageUrlValidator.class})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ImageUrl {
 

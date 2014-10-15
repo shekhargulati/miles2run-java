@@ -8,11 +8,11 @@ import javax.validation.constraints.NotNull;
  */
 @Entity
 @NamedQueries({
-        @NamedQuery(name = "SocialConnection.findByConnectionId",query = "SELECT s from SocialConnection s WHERE s.connectionId =:connectionId")
+        @NamedQuery(name = "SocialConnection.findByConnectionId", query = "SELECT s from SocialConnection s WHERE s.connectionId =:connectionId")
 })
 @Access(AccessType.FIELD)
-@Table(name="social_connection")
-public class SocialConnection extends BaseEntity{
+@Table(name = "social_connection")
+public class SocialConnection extends BaseEntity {
 
     @NotNull
     private String accessToken;
@@ -47,8 +47,16 @@ public class SocialConnection extends BaseEntity{
         return accessToken;
     }
 
+    public void setAccessToken(String accessToken) {
+        this.accessToken = accessToken;
+    }
+
     public String getAccessSecret() {
         return accessSecret;
+    }
+
+    public void setAccessSecret(String accessSecret) {
+        this.accessSecret = accessSecret;
     }
 
     public SocialProvider getProvider() {
@@ -69,14 +77,6 @@ public class SocialConnection extends BaseEntity{
 
     public void setProfile(Profile profile) {
         this.profile = profile;
-    }
-
-    public void setAccessToken(String accessToken) {
-        this.accessToken = accessToken;
-    }
-
-    public void setAccessSecret(String accessSecret) {
-        this.accessSecret = accessSecret;
     }
 
     @Override

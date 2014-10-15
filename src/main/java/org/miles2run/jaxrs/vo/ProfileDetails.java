@@ -46,7 +46,6 @@ public class ProfileDetails {
         this.goalUnit = profileForm.getGoalUnit();
     }
 
-
     public String getUsername() {
         return username;
     }

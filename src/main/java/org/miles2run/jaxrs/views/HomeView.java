@@ -46,5 +46,4 @@ public class HomeView {
         return View.of("/home", templateEngine).withModel("goals", goals);
     }
 
-
 }

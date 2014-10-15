@@ -8,7 +8,7 @@ import javax.persistence.*;
 @Entity
 @Table(name = "share")
 @Access(AccessType.FIELD)
-public class Share extends BaseEntity{
+public class Share extends BaseEntity {
 
     @Column(nullable = false, columnDefinition = "TINYINT(1)")
     private boolean twitter = false;
@@ -17,7 +17,7 @@ public class Share extends BaseEntity{
     private boolean facebook = false;
 
     @Column(nullable = false, columnDefinition = "TINYINT(1)")
-    private  boolean googlePlus = false;
+    private boolean googlePlus = false;
 
     public boolean isTwitter() {
         return twitter;

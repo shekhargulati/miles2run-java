@@ -89,7 +89,6 @@ public class ProfileView {
     @Inject
     private GoalRedisService goalRedisService;
 
-
     @GET
     @Produces("text/html")
     @Path("/new")
@@ -112,6 +111,76 @@ public class ProfileView {
             throw new ViewException(e.getMessage(), e, templateEngine);
         }
         return View.of("/signin", true);
+    }
+
+    private View twitterProfile(String connectionId, SocialConnection socialConnection) {
+        try {
+            Twitter twitter = twitterFactory.getInstance();
+            twitter.setOAuthAccessToken(new AccessToken(socialConnection.getAccessToken(), socialConnection.getAccessSecret()));
+            User user = twitter.showUser(Long.valueOf(connectionId));
+            String twitterProfilePic = user.getOriginalProfileImageURL();
+            twitterProfilePic = UrlUtils.removeProtocol(twitterProfilePic);
+            CityAndCountry cityAndCountry = GeocoderUtils.parseLocation(user.getLocation());
+            ProfileDetails profile = new ProfileDetails(user.getScreenName(), user.getName(), user.getDescription(), connectionId, twitterProfilePic, cityAndCountry.getCity(), cityAndCountry.getCountry());
+            return View.of("/createProfile", templateEngine).withModel("profile", profile);
+        } catch (TwitterException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    private View facebookProfile(String connectionId, SocialConnection socialConnection) {
+        Facebook facebook = facebookFactory.getInstance(new facebook4j.auth.AccessToken(socialConnection.getAccessToken(), null));
+        try {
+
+            facebook4j.User user = facebook.users().getMe();
+            String facebookProfilePic = null;
+            URL picture = facebook.getPictureURL(user.getId());
+            if (picture != null) {
+                try {
+                    facebookProfilePic = picture.toURI().toString();
+                    logger.info("Facebook Picture URL" + facebookProfilePic);
+                    facebookProfilePic = UrlUtils.removeProtocol(facebookProfilePic);
+                } catch (URISyntaxException e) {
+                    e.printStackTrace();
+                }
+
+            }
+
+            String email = user.getEmail();
+            String gender = user.getGender();
+            IdNameEntity location = user.getLocation();
+            CityAndCountry cityAndCountry = new CityAndCountry();
+            if (location != null) {
+                cityAndCountry = GeocoderUtils.parseLocation(location.getName());
+            }
+
+            ProfileDetails profile = new ProfileDetails(user.getUsername(), user.getName(), user.getBio(), connectionId, facebookProfilePic, cityAndCountry.getCity(), cityAndCountry.getCountry());
+            profile.setEmail(email);
+            profile.setGender(gender);
+            return View.of("/createProfile", templateEngine).withModel("profile", profile);
+        } catch (FacebookException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private View googleProfile(String connectionId, SocialConnection socialConnection) throws IOException {
+        String accessToken = socialConnection.getAccessToken();
+        GoogleTokenResponse token = new GoogleTokenResponse().setAccessToken(accessToken);
+        Google user = googleService.getUser(token);
+        String username = getUsernameFromEmail(user.getEmail());
+        ProfileDetails profile = new ProfileDetails(username, user.getName(), null, connectionId, UrlUtils.removeProtocol(user.getPicture()), null, null);
+        profile.setEmail(user.getEmail());
+        profile.setGender(user.getGender());
+        return View.of("/createProfile", templateEngine).withModel("profile", profile);
+    }
+
+    private String getUsernameFromEmail(String email) {
+        try {
+            return email.split("@")[0];
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     @POST
@@ -206,7 +275,6 @@ public class ProfileView {
         return Profile.createProfileForUpdate(profileForm.getFullname(), profileForm.getBio(), profileForm.getCity(), profileForm.getCountry(), profileForm.getGender());
     }
 
-
     @GET
     @Path("/{username}")
     @Produces("text/html")
@@ -249,6 +317,10 @@ public class ProfileView {
 
     double toMiles(ActivityCountAndDistanceTuple tuple) {
         return tuple.getDistanceCovered() / GoalUnit.MI.getConversion();
+    }
+
+    private boolean isFollowing(String currentLoggedInUser, String username) {
+        return profileMongoService.isUserFollowing(currentLoggedInUser, username);
     }
 
     @GET
@@ -315,80 +387,6 @@ public class ProfileView {
             }
             logger.log(Level.SEVERE, String.format("Unable to load %s page.", username), e);
             throw new ViewException(e.getMessage(), e, templateEngine);
-        }
-    }
-
-    private boolean isFollowing(String currentLoggedInUser, String username) {
-        return profileMongoService.isUserFollowing(currentLoggedInUser, username);
-    }
-
-    private View twitterProfile(String connectionId, SocialConnection socialConnection) {
-        try {
-            Twitter twitter = twitterFactory.getInstance();
-            twitter.setOAuthAccessToken(new AccessToken(socialConnection.getAccessToken(), socialConnection.getAccessSecret()));
-            User user = twitter.showUser(Long.valueOf(connectionId));
-            String twitterProfilePic = user.getOriginalProfileImageURL();
-            twitterProfilePic = UrlUtils.removeProtocol(twitterProfilePic);
-            CityAndCountry cityAndCountry = GeocoderUtils.parseLocation(user.getLocation());
-            ProfileDetails profile = new ProfileDetails(user.getScreenName(), user.getName(), user.getDescription(), connectionId, twitterProfilePic, cityAndCountry.getCity(), cityAndCountry.getCountry());
-            return View.of("/createProfile", templateEngine).withModel("profile", profile);
-        } catch (TwitterException e) {
-            throw new RuntimeException(e);
-        }
-
-    }
-
-    private View facebookProfile(String connectionId, SocialConnection socialConnection) {
-        Facebook facebook = facebookFactory.getInstance(new facebook4j.auth.AccessToken(socialConnection.getAccessToken(), null));
-        try {
-
-            facebook4j.User user = facebook.users().getMe();
-            String facebookProfilePic = null;
-            URL picture = facebook.getPictureURL(user.getId());
-            if (picture != null) {
-                try {
-                    facebookProfilePic = picture.toURI().toString();
-                    logger.info("Facebook Picture URL" + facebookProfilePic);
-                    facebookProfilePic = UrlUtils.removeProtocol(facebookProfilePic);
-                } catch (URISyntaxException e) {
-                    e.printStackTrace();
-                }
-
-            }
-
-            String email = user.getEmail();
-            String gender = user.getGender();
-            IdNameEntity location = user.getLocation();
-            CityAndCountry cityAndCountry = new CityAndCountry();
-            if (location != null) {
-                cityAndCountry = GeocoderUtils.parseLocation(location.getName());
-            }
-
-            ProfileDetails profile = new ProfileDetails(user.getUsername(), user.getName(), user.getBio(), connectionId, facebookProfilePic, cityAndCountry.getCity(), cityAndCountry.getCountry());
-            profile.setEmail(email);
-            profile.setGender(gender);
-            return View.of("/createProfile", templateEngine).withModel("profile", profile);
-        } catch (FacebookException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private View googleProfile(String connectionId, SocialConnection socialConnection) throws IOException {
-        String accessToken = socialConnection.getAccessToken();
-        GoogleTokenResponse token = new GoogleTokenResponse().setAccessToken(accessToken);
-        Google user = googleService.getUser(token);
-        String username = getUsernameFromEmail(user.getEmail());
-        ProfileDetails profile = new ProfileDetails(username, user.getName(), null, connectionId, UrlUtils.removeProtocol(user.getPicture()), null, null);
-        profile.setEmail(user.getEmail());
-        profile.setGender(user.getGender());
-        return View.of("/createProfile", templateEngine).withModel("profile", profile);
-    }
-
-    private String getUsernameFromEmail(String email) {
-        try {
-            return email.split("@")[0];
-        } catch (Exception e) {
-            return null;
         }
     }
 

@@ -34,11 +34,6 @@ public class CommunityRunDetails {
 
     private CommunityRunStats stats;
 
-
-    public static CommunityRunDetails fromCommunityRun(CommunityRun communityRun) {
-        return new CommunityRunDetails(communityRun);
-    }
-
     private CommunityRunDetails(CommunityRun communityRun) {
         this.name = communityRun.getName();
         this.bannerImg = communityRun.getBannerImg();
@@ -51,6 +46,9 @@ public class CommunityRunDetails {
         this.hashtags.addAll(communityRun.getHashtags());
     }
 
+    public static CommunityRunDetails fromCommunityRun(CommunityRun communityRun) {
+        return new CommunityRunDetails(communityRun);
+    }
 
     public CommunityRunDetails addParticipationDetails(boolean participating) {
         this.loggedInUserParticipating = participating;
@@ -61,7 +59,6 @@ public class CommunityRunDetails {
         this.stats = stats;
         return this;
     }
-
 
     public String getName() {
         return name;

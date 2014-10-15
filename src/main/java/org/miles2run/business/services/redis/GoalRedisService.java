@@ -8,7 +8,6 @@ import redis.clients.jedis.Tuple;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import java.sql.Time;
 import java.util.*;
 
 /**
@@ -17,10 +16,9 @@ import java.util.*;
 @ApplicationScoped
 public class GoalRedisService {
 
-    private Logger logger = LoggerFactory.getLogger(GoalRedisService.class);
-
     @Inject
     JedisExecutionService jedisExecutionService;
+    private Logger logger = LoggerFactory.getLogger(GoalRedisService.class);
 
     public void updateTotalDistanceCoveredForAGoal(final Long goalId, final double distanceCovered) {
         logger.info("Updating goal with id {} with distance {}", goalId, distanceCovered);
@@ -95,7 +93,6 @@ public class GoalRedisService {
         final int missedDays = totalDays - (performedDays + remainingDays);
         logger.info("{}-goal-{} Missing Days '{} - ({} + {}) == {}'", username, goalId, totalDays, performedDays, remainingDays, missedDays);
 
-
         final Map<String, Object> goalProgress = new HashMap<>();
         goalProgress.put("totalDays", totalDays);
         goalProgress.put("performedDays", performedDays);
@@ -130,35 +127,6 @@ public class GoalRedisService {
         return new DateTime(dateTimeZone);
     }
 
-    int calculateMissedDays(Set<LocalDate> performedActivityDates, Set<LocalDate> allDates) {
-        logger.info("Performed Activity Dates {}", performedActivityDates);
-        logger.info("All dates {}", allDates);
-        int missedDays = 0;
-        for (LocalDate date : allDates) {
-            if (!performedActivityDates.contains(date)) {
-                missedDays += 1;
-            }
-        }
-        return missedDays;
-    }
-
-    Set<LocalDate> allDatesWithin(DateTime start, DateTime end) {
-        LocalDate startLocalDate = start.toLocalDate();
-        LocalDate endLocalDate = end.toLocalDate();
-        int numberOfDays = Days.daysBetween(startLocalDate, endLocalDate).getDays();
-        if (numberOfDays < 0) {
-            return Collections.emptySet();
-        }
-        logger.info("StartLocalDate : {}", startLocalDate);
-        int numberOfDaysWithOffset = numberOfDays + 1;
-        Set<LocalDate> datesTillToday = new LinkedHashSet<>();
-        for (int i = 0; i < numberOfDaysWithOffset; i++) {
-            LocalDate ithDate = startLocalDate.plusDays(i);
-            datesTillToday.add(ithDate);
-        }
-        return datesTillToday;
-    }
-
     int calculateRemainingDays(LocalDate startDate, LocalDate endDate) {
         int remainingDays = Days.daysBetween(startDate, endDate).getDays();
         return remainingDays < 0 ? 0 : remainingDays;
@@ -186,6 +154,35 @@ public class GoalRedisService {
                 return activitiesPerformed;
             }
         });
+    }
+
+    int calculateMissedDays(Set<LocalDate> performedActivityDates, Set<LocalDate> allDates) {
+        logger.info("Performed Activity Dates {}", performedActivityDates);
+        logger.info("All dates {}", allDates);
+        int missedDays = 0;
+        for (LocalDate date : allDates) {
+            if (!performedActivityDates.contains(date)) {
+                missedDays += 1;
+            }
+        }
+        return missedDays;
+    }
+
+    Set<LocalDate> allDatesWithin(DateTime start, DateTime end) {
+        LocalDate startLocalDate = start.toLocalDate();
+        LocalDate endLocalDate = end.toLocalDate();
+        int numberOfDays = Days.daysBetween(startLocalDate, endLocalDate).getDays();
+        if (numberOfDays < 0) {
+            return Collections.emptySet();
+        }
+        logger.info("StartLocalDate : {}", startLocalDate);
+        int numberOfDaysWithOffset = numberOfDays + 1;
+        Set<LocalDate> datesTillToday = new LinkedHashSet<>();
+        for (int i = 0; i < numberOfDaysWithOffset; i++) {
+            LocalDate ithDate = startLocalDate.plusDays(i);
+            datesTillToday.add(ithDate);
+        }
+        return datesTillToday;
     }
 
 }

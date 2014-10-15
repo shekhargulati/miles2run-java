@@ -38,5 +38,4 @@ public class GoogleSigninView {
         return View.of(googleService.buildLoginUrl(UrlUtils.getBaseUrl(request)), true).withAbsoluteUrl();
     }
 
-
 }

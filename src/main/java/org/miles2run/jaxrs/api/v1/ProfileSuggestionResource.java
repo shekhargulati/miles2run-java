@@ -38,5 +38,4 @@ public class ProfileSuggestionResource {
         return profileService.findAllProfiles(recommendFriends);
     }
 
-
 }

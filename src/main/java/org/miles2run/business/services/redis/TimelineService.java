@@ -34,7 +34,6 @@ public class TimelineService {
     @Inject
     private ProfileMongoService profileMongoService;
 
-
     public Set<String> getHomeTimelineIds(final String username, final long page, final long count) {
         return jedisExecutionService.execute(new JedisOperation<Set<String>>() {
             @Override
@@ -78,6 +77,53 @@ public class TimelineService {
                 return homeTimeline;
             }
         });
+    }
+
+    public void updateTimelineWithFollowingTimeline(final String username, final String userToFollow) {
+        jedisExecutionService.execute(new JedisOperation<Void>() {
+            @Override
+            public Void perform(Jedis jedis) {
+                String profileTimelineKey = String.format("profile:%s:timeline", userToFollow);
+                Set<Tuple> activitiesWithScore = jedis.zrevrangeWithScores(profileTimelineKey, 0, HOME_TIMELINE_SIZE - 1);
+                if (activitiesWithScore != null && !activitiesWithScore.isEmpty()) {
+                    Pipeline pipeline = jedis.pipelined();
+                    String key = String.format("home:%s:timeline", username);
+                    pipeline.zadd(key, toMap(activitiesWithScore));
+                    pipeline.zremrangeByRank(key, 0, -(HOME_TIMELINE_SIZE - 1));
+                    pipeline.sync();
+                }
+                return null;
+            }
+        });
+    }
+
+    private Map<Double, String> toMap(Set<Tuple> activitiesWithScore) {
+        Map<Double, String> map = new HashMap<>();
+        for (Tuple tuple : activitiesWithScore) {
+            map.put(tuple.getScore(), tuple.getElement());
+        }
+        return map;
+    }
+
+    public void removeFollowingTimeline(final String username, final String userToUnfollow) {
+        jedisExecutionService.execute(new JedisOperation<Void>() {
+            @Override
+            public Void perform(Jedis jedis) {
+                String profileTimelineKey = String.format("profile:%s:timeline", userToUnfollow);
+                Set<String> activities = jedis.zrevrange(profileTimelineKey, 0, HOME_TIMELINE_SIZE - 1);
+                if (activities != null && !activities.isEmpty()) {
+                    String[] members = new ArrayList<>(activities).toArray(new String[0]);
+                    String key = String.format("home:%s:timeline", username);
+                    jedis.zrem(key, members);
+                }
+                return null;
+            }
+        });
+    }
+
+    public void updateActivity(final ActivityDetails updatedActivity, final Profile profile, Goal goal) {
+        deleteActivityFromTimeline(profile.getUsername(), updatedActivity.getId(), goal);
+        postActivityToTimeline(updatedActivity, profile, goal);
     }
 
     public void postActivityToTimeline(final ActivityDetails activity, final Profile profile, final Goal goal) {
@@ -144,7 +190,6 @@ public class TimelineService {
         });
     }
 
-
     private String storeActivity(final ActivityDetails activity, final Profile profile, final Goal goal) {
 
         return jedisExecutionService.execute(new JedisOperation<String>() {
@@ -173,53 +218,6 @@ public class TimelineService {
             }
         });
 
-    }
-
-    public void updateTimelineWithFollowingTimeline(final String username, final String userToFollow) {
-        jedisExecutionService.execute(new JedisOperation<Void>() {
-            @Override
-            public Void perform(Jedis jedis) {
-                String profileTimelineKey = String.format("profile:%s:timeline", userToFollow);
-                Set<Tuple> activitiesWithScore = jedis.zrevrangeWithScores(profileTimelineKey, 0, HOME_TIMELINE_SIZE - 1);
-                if (activitiesWithScore != null && !activitiesWithScore.isEmpty()) {
-                    Pipeline pipeline = jedis.pipelined();
-                    String key = String.format("home:%s:timeline", username);
-                    pipeline.zadd(key, toMap(activitiesWithScore));
-                    pipeline.zremrangeByRank(key, 0, -(HOME_TIMELINE_SIZE - 1));
-                    pipeline.sync();
-                }
-                return null;
-            }
-        });
-    }
-
-    private Map<Double, String> toMap(Set<Tuple> activitiesWithScore) {
-        Map<Double, String> map = new HashMap<>();
-        for (Tuple tuple : activitiesWithScore) {
-            map.put(tuple.getScore(), tuple.getElement());
-        }
-        return map;
-    }
-
-    public void removeFollowingTimeline(final String username, final String userToUnfollow) {
-        jedisExecutionService.execute(new JedisOperation<Void>() {
-            @Override
-            public Void perform(Jedis jedis) {
-                String profileTimelineKey = String.format("profile:%s:timeline", userToUnfollow);
-                Set<String> activities = jedis.zrevrange(profileTimelineKey, 0, HOME_TIMELINE_SIZE - 1);
-                if (activities != null && !activities.isEmpty()) {
-                    String[] members = new ArrayList<>(activities).toArray(new String[0]);
-                    String key = String.format("home:%s:timeline", username);
-                    jedis.zrem(key, members);
-                }
-                return null;
-            }
-        });
-    }
-
-    public void updateActivity(final ActivityDetails updatedActivity, final Profile profile, Goal goal) {
-        deleteActivityFromTimeline(profile.getUsername(), updatedActivity.getId(), goal);
-        postActivityToTimeline(updatedActivity, profile, goal);
     }
 
     public void deleteActivityFromTimeline(final String username, final Long activityId, final Goal goal) {
@@ -324,6 +322,11 @@ public class TimelineService {
         });
     }
 
+    private String formatDateToYearAndMonth(Date date) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MMMM");
+        return dateFormat.format(date);
+    }
+
     public List<Map<String, Object>> distanceAndPaceOverLastNDays(final Profile profile, final Goal goal, final String interval, final int n) {
         return jedisExecutionService.execute(new JedisOperation<List<Map<String, Object>>>() {
             @Override
@@ -354,15 +357,9 @@ public class TimelineService {
         });
     }
 
-
     private String formatDate(Date activityDate) {
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         return df.format(activityDate);
-    }
-
-    private String formatDateToYearAndMonth(Date date) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MMMM");
-        return dateFormat.format(date);
     }
 
     public Long totalItems(final String loggedInUser) {
@@ -373,7 +370,6 @@ public class TimelineService {
             }
         });
     }
-
 
     public Set<String> getGoalTimelineIds(final String loggedInUser, final Goal goal, final int page, final int count) {
         return jedisExecutionService.execute(new JedisOperation<Set<String>>() {

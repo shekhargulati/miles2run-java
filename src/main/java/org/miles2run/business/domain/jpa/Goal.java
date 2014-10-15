@@ -1,6 +1,5 @@
 package org.miles2run.business.domain.jpa;
 
-
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
@@ -79,48 +78,66 @@ public class Goal extends BaseEntity {
         this.goalType = goalType;
     }
 
+    public static Goal of(Long id, long distance, GoalUnit goalUnit) {
+        Goal goal = new Goal();
+        goal.id = id;
+        goal.distance = distance;
+        goal.goalUnit = goalUnit;
+        return goal;
+    }
+
+    public static Goal newCommunityRunGoal(CommunityRun communityRun) {
+        Goal goal = new Goal();
+        goal.purpose = communityRun.getName() + " Community Run";
+        goal.startDate = new Date();
+        goal.endDate = communityRun.getEndDate();
+        goal.goalType = GoalType.COMMUNITY_RUN_GOAL;
+        goal.communityRun = communityRun;
+        return goal;
+    }
+
     public String getPurpose() {
         return purpose;
-    }
-
-    public Date getEndDate() {
-        return endDate;
-    }
-
-    public Profile getProfile() {
-        return profile;
-    }
-
-    public long getDistance() {
-        return distance;
-    }
-
-    public GoalUnit getGoalUnit() {
-        return goalUnit;
-    }
-
-    public boolean isArchived() {
-        return archived;
     }
 
     public void setPurpose(String purpose) {
         this.purpose = purpose;
     }
 
+    public Date getEndDate() {
+        return endDate;
+    }
+
     public void setEndDate(Date targetDate) {
         this.endDate = targetDate;
+    }
+
+    public Profile getProfile() {
+        return profile;
     }
 
     public void setProfile(Profile profile) {
         this.profile = profile;
     }
 
+    public long getDistance() {
+        return distance;
+    }
+
     public void setDistance(long distance) {
         this.distance = distance;
     }
 
+    public GoalUnit getGoalUnit() {
+        return goalUnit;
+    }
+
     public void setGoalUnit(GoalUnit goalUnit) {
         this.goalUnit = goalUnit;
+    }
+
+    public boolean isArchived() {
+        return archived;
     }
 
     public void setArchived(boolean archived) {
@@ -162,23 +179,5 @@ public class Goal extends BaseEntity {
                 ", goalUnit=" + goalUnit +
                 ", archived=" + archived +
                 '}';
-    }
-
-    public static Goal of(Long id, long distance, GoalUnit goalUnit) {
-        Goal goal = new Goal();
-        goal.id = id;
-        goal.distance = distance;
-        goal.goalUnit = goalUnit;
-        return goal;
-    }
-
-    public static Goal newCommunityRunGoal(CommunityRun communityRun) {
-        Goal goal = new Goal();
-        goal.purpose = communityRun.getName() + " Community Run";
-        goal.startDate = new Date();
-        goal.endDate = communityRun.getEndDate();
-        goal.goalType = GoalType.COMMUNITY_RUN_GOAL;
-        goal.communityRun = communityRun;
-        return goal;
     }
 }

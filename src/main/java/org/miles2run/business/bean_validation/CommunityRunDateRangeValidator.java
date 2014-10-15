@@ -17,7 +17,7 @@ public class CommunityRunDateRangeValidator implements ConstraintValidator<Commu
 
     @Override
     public boolean isValid(CommunityRun communityRun, ConstraintValidatorContext context) {
-        if(communityRun == null){
+        if (communityRun == null) {
             return true;
         }
         return communityRun.getStartDate().before(communityRun.getEndDate());

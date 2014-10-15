@@ -23,5 +23,4 @@ public class AboutView {
         return View.of("/about", templateEngine);
     }
 
-
 }

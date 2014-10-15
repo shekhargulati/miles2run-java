@@ -18,6 +18,11 @@ public class JedisProducer {
 
     private Logger logger = LoggerFactory.getLogger(JedisProducer.class);
 
+    @PreDestroy
+    public void close() {
+        jedisPool().destroy();
+    }
+
     @Produces
     public JedisPool jedisPool() {
         JedisPoolConfig poolConfig = new JedisPoolConfig();
@@ -39,10 +44,5 @@ public class JedisProducer {
         logger.info("Redis configuration : Host {} Port {} Password {}", host, port, password);
         JedisPool jedisPool = new JedisPool(poolConfig, host, port, 2000, password);
         return jedisPool;
-    }
-
-    @PreDestroy
-    public void close() {
-        jedisPool().destroy();
     }
 }

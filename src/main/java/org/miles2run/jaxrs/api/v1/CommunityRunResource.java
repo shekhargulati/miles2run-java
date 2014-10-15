@@ -7,11 +7,11 @@ import org.miles2run.business.domain.jpa.CommunityRun;
 import org.miles2run.business.domain.jpa.Goal;
 import org.miles2run.business.domain.jpa.Profile;
 import org.miles2run.business.domain.jpa.Role;
-import org.miles2run.business.services.jpa.GoalJPAService;
-import org.miles2run.business.services.mongo.ProfileMongoService;
 import org.miles2run.business.services.jpa.CommunityRunJPAService;
-import org.miles2run.business.services.redis.CommunityRunRedisService;
+import org.miles2run.business.services.jpa.GoalJPAService;
 import org.miles2run.business.services.jpa.ProfileService;
+import org.miles2run.business.services.mongo.ProfileMongoService;
+import org.miles2run.business.services.redis.CommunityRunRedisService;
 import org.miles2run.business.utils.SlugUtils;
 import org.miles2run.business.vo.ProfileGroupDetails;
 import org.miles2run.jaxrs.vo.CommunityRunDetails;
@@ -66,7 +66,6 @@ public class CommunityRunResource {
         return Response.status(Response.Status.UNAUTHORIZED).build();
 
     }
-
 
     @GET
     @Produces("application/json")
@@ -124,7 +123,6 @@ public class CommunityRunResource {
         return profileGroupDetailsListWithLatLng;
     }
 
-
     // TODO : CODE COPIED FROM CommunityRunView
     @Path("/{slug}/join")
     @POST
@@ -171,6 +169,5 @@ public class CommunityRunResource {
         communityRunRedisService.removeRunnerFromCommunityRun(slug, principal);
         return Response.status(Response.Status.OK).build();
     }
-
 
 }

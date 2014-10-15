@@ -29,7 +29,6 @@ public class ProfileDetails {
         this.bio = bio;
     }
 
-
     private String getImageWithSize(String picUrl, String size) {
         if (picUrl != null) {
             int index = picUrl.lastIndexOf(".");
