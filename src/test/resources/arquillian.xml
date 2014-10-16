@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<arquillian xmlns="http://jboss.org/schema/arquillian"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://jboss.org/schema/arquillian http://jboss.org/schema/arquillian/arquillian_1_0.xsd">
+
+    <defaultProtocol type="Servlet 3.0" />
+
+    <container qualifier="wildfly" default="true">
+        <configuration>
+            <property name="jbossHome">target/wildfly-8.1.0.Final</property>
+            <property name="javaVmArguments">-Djboss.socket.binding.port-offset=10000 -Djboss.management.native.port=19990 -Xmx1024m -XX:MaxPermSize=512m</property>
+            <property name="managementPort">19990</property>
+        </configuration>
+    </container>
+
+</arquillian>
