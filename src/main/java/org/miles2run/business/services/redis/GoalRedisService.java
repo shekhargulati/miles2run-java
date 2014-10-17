@@ -32,7 +32,7 @@ public class GoalRedisService {
         });
     }
 
-    public double totalDistanceCoveredForGoal(final Long goalId) {
+    public double distanceCovered(final Long goalId) {
         return jedisExecutionService.execute(new JedisOperation<Double>() {
             @Override
             public Double perform(Jedis jedis) {

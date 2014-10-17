@@ -5,10 +5,7 @@ import org.miles2run.business.domain.jpa.GoalType;
 
 import java.util.Date;
 
-/**
- * Created by shekhargulati on 09/07/14.
- */
-public class DurationGoalDetails {
+public class DurationGoalDetails implements GoalDetails {
 
     private final Long id;
     private final String purpose;

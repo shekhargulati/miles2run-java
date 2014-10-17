@@ -8,7 +8,7 @@ import java.util.Date;
 /**
  * Created by shekhargulati on 23/07/14.
  */
-public class CommunityRunGoalDetails {
+public class CommunityRunGoalDetails implements GoalDetails {
 
     private final Long id;
     private final String purpose;

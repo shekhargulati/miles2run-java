@@ -11,9 +11,10 @@ import org.miles2run.business.services.jpa.GoalJPAService;
 import org.miles2run.business.services.jpa.ProfileService;
 import org.miles2run.business.services.redis.GoalRedisService;
 import org.miles2run.business.vo.Progress;
-import org.miles2run.jaxrs.vo.CommunityRunGoalDetails;
-import org.miles2run.jaxrs.vo.DistanceGoalDetails;
-import org.miles2run.jaxrs.vo.DurationGoalDetails;
+import org.miles2run.jaxrs.vo.GoalDetails;
+import org.miles2run.jaxrs.vo.GoalDetailsFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.validation.Valid;
@@ -25,16 +26,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
-/**
- * Created by shekhargulati on 12/06/14.
- */
 @Path("/api/v1/goals")
 public class GoalResource {
 
-    @Inject
-    private Logger logger;
+    private Logger logger = LoggerFactory.getLogger(GoalResource.class);
 
     @Context
     private SecurityContext securityContext;
@@ -51,69 +47,46 @@ public class GoalResource {
     @Produces("application/json")
     @LoggedIn
     public Response allGoal(@QueryParam("archived") boolean archived, @QueryParam("groupByType") Boolean groupByType) {
-        String loggedInUser = securityContext.getUserPrincipal().getName();
-        Profile profile = profileService.findProfile(loggedInUser);
+        Profile profile = getProfile();
         List<Goal> goals = goalJPAService.findAllGoals(profile, archived);
-        if (groupByType != null && groupByType == true) {
-            Map<GoalType, List<Object>> goalsByType = new HashMap<>();
-            for (Goal goal : goals) {
-                GoalType goalType = goal.getGoalType();
-                Object specificGoal = toGoalType(goal);
-                if (goalsByType.containsKey(goalType)) {
-                    List<Object> goalsForType = goalsByType.get(goalType);
-                    goalsForType.add(specificGoal);
-                } else {
-                    List<Object> goalsForType = new ArrayList<>();
-                    goalsForType.add(specificGoal);
-                    goalsByType.put(goalType, goalsForType);
-                }
-            }
-            return Response.status(Response.Status.OK).entity(goalsByType).build();
+        if (groupByType != null && groupByType) {
+            return groupGoalsByType(goals);
         }
         return Response.status(Response.Status.OK).entity(goals).build();
     }
 
-    private Object toGoalType(Goal goal) {
-        switch (goal.getGoalType()) {
-            case DURATION_GOAL:
-                return toDurationGoal(goal);
-            case DISTANCE_GOAL:
-                return toDistanceGoal(goal);
-            case COMMUNITY_RUN_GOAL:
-                return toCommunityRunGoal(goal);
-            default:
-                return null;
+    private Response groupGoalsByType(List<Goal> goals) {
+        Map<GoalType, List<Object>> goalsByType = new HashMap<>();
+        for (Goal goal : goals) {
+            GoalType goalType = goal.getGoalType();
+            double totalDistanceCoveredForGoal = goalRedisService.distanceCovered(goal.getId());
+            GoalDetails specificGoal = GoalDetailsFactory.toGoalType(goal, totalDistanceCoveredForGoal);
+            if (goalsByType.containsKey(goalType)) {
+                List<Object> goalsForType = goalsByType.get(goalType);
+                goalsForType.add(specificGoal);
+            } else {
+                List<Object> goalsForType = new ArrayList<>();
+                goalsForType.add(specificGoal);
+                goalsByType.put(goalType, goalsForType);
+            }
         }
+        return Response.status(Response.Status.OK).entity(goalsByType).build();
     }
 
-    private CommunityRunGoalDetails toCommunityRunGoal(Goal goal) {
-        return new CommunityRunGoalDetails(goal);
-    }
-
-    private DurationGoalDetails toDurationGoal(Goal goal) {
-        return new DurationGoalDetails(goal);
-    }
-
-    private DistanceGoalDetails toDistanceGoal(Goal goal) {
-        double percentageCompleted = percentageGoalCompleted(goal);
-        return new DistanceGoalDetails(goal, percentageCompleted);
-    }
-
-    private double percentageGoalCompleted(Goal goal) {
-        double totalDistanceCoveredForGoal = goalRedisService.totalDistanceCoveredForGoal(goal.getId());
-        double percentageCompleted = (Double.valueOf(totalDistanceCoveredForGoal) * 100 / goal.getDistance());
-        return percentageCompleted > 100 ? 100 : percentageCompleted;
+    private Profile getProfile() {
+        String loggedInUser = securityContext.getUserPrincipal().getName();
+        return profileService.findProfile(loggedInUser);
     }
 
     @Path("{goalId}")
     @GET
     @Produces("application/json")
     @LoggedIn
-    public Object goal(@PathParam("goalId") Long goalId) {
-        String loggedInUser = securityContext.getUserPrincipal().getName();
-        Profile profile = profileService.findProfile(loggedInUser);
+    public GoalDetails goal(@PathParam("goalId") Long goalId) {
+        Profile profile = getProfile();
         Goal goal = goalJPAService.findGoal(profile, goalId);
-        return toGoalType(goal);
+        double distanceCovered = goalRedisService.distanceCovered(goal.getId());
+        return GoalDetailsFactory.toGoalType(goal, distanceCovered);
     }
 
     @POST
@@ -123,8 +96,7 @@ public class GoalResource {
     public Response createGoal(@Valid Goal goal) {
         try {
             logger.info("Goal : " + goal);
-            String loggedInUser = securityContext.getUserPrincipal().getName();
-            Profile profile = profileService.findProfile(loggedInUser);
+            Profile profile = getProfile();
             goal.setDistance(goal.getDistance() * goal.getGoalUnit().getConversion());
             Goal createdGoal = goalJPAService.save(goal, profile);
             return Response.status(Response.Status.CREATED).entity(createdGoal).build();
@@ -139,7 +111,6 @@ public class GoalResource {
     @LoggedIn
     public Response updateGoal(@PathParam("goalId") Long goalId, @Valid Goal goal) {
         String loggedInUser = securityContext.getUserPrincipal().getName();
-        Profile profile = profileService.findProfile(loggedInUser);
         Goal existingGoal = goalJPAService.find(goalId);
         if (existingGoal == null) {
             return Response.status(Response.Status.NOT_FOUND).entity("No goal exists with id " + goalId).build();
@@ -157,8 +128,7 @@ public class GoalResource {
     @Produces("application/json")
     @LoggedIn
     public Response archiveGoal(@PathParam("goalId") Long goalId, @QueryParam("archived") boolean archived) {
-        String loggedInUser = securityContext.getUserPrincipal().getName();
-        Profile profile = profileService.findProfile(loggedInUser);
+        Profile profile = getProfile();
         Goal existingGoal = goalJPAService.findGoal(profile, goalId);
         if (existingGoal == null) {
             return Response.status(Response.Status.NOT_FOUND).entity("No goal exists with id " + goalId).build();
@@ -189,17 +159,4 @@ public class GoalResource {
         return Response.status(Response.Status.OK).entity(goalProgress).build();
     }
 
-    public Response deleteGoal(@PathParam("goalId") Long goalId) {
-        String loggedInUser = securityContext.getUserPrincipal().getName();
-        Profile profile = profileService.findProfile(loggedInUser);
-        Goal existingGoal = goalJPAService.find(goalId);
-        if (existingGoal == null) {
-            return Response.status(Response.Status.NOT_FOUND).entity("No goal exists with id " + goalId).build();
-        }
-        if (!StringUtils.equals(loggedInUser, existingGoal.getProfile().getUsername())) {
-            return Response.status(Response.Status.UNAUTHORIZED).build();
-        }
-        goalJPAService.delete(goalId);
-        return Response.status(Response.Status.OK).build();
-    }
 }
