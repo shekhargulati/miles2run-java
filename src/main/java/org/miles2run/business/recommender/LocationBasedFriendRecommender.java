@@ -2,7 +2,7 @@ package org.miles2run.business.recommender;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCursor;
-import org.miles2run.business.services.mongo.ProfileMongoService;
+import org.miles2run.business.repository.mongo.UserProfileRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,7 +23,7 @@ public class LocationBasedFriendRecommender implements FriendRecommender {
     private final Logger logger = LoggerFactory.getLogger(LocationBasedFriendRecommender.class);
 
     @Inject
-    private ProfileMongoService profileMongoService;
+    private UserProfileRepository userProfileRepository;
 
     /**
      * <p>This method recommend users that are closest to the user location.
@@ -36,12 +36,12 @@ public class LocationBasedFriendRecommender implements FriendRecommender {
     public List<String> recommend(@NotNull final String username) {
         BasicDBObject userRecommendationQuery = userRecommendationQuery(username);
         logger.debug("Recommending friends to {} using query {}", username, userRecommendationQuery);
-        DBCursor usersCursor = profileMongoService.findUsersByProximity(userRecommendationQuery, RECOMMENDED_FRIENDS_COUNT);
+        DBCursor usersCursor = userProfileRepository.findUsersByProximity(userRecommendationQuery, RECOMMENDED_FRIENDS_COUNT);
         return toUsers(usersCursor);
     }
 
     private BasicDBObject userRecommendationQuery(final String username) {
-        Object lngLat = profileMongoService.getUserLngLat(username);
+        Object lngLat = userProfileRepository.getUserLngLat(username);
         BasicDBObject recommendationQuery = new BasicDBObject();
         recommendationQuery.put("username", new BasicDBObject("$ne", username));
         recommendationQuery.put("followers", new BasicDBObject("$nin", new String[]{username}));

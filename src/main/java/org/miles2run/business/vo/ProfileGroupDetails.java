@@ -23,7 +23,7 @@ public class ProfileGroupDetails {
         this.latLng = latLng;
     }
 
-    public static ProfileGroupDetails newWitLatLng(ProfileGroupDetails profileGroupDetails, double[] latLng) {
+    public static ProfileGroupDetails withLatLng(ProfileGroupDetails profileGroupDetails, double[] latLng) {
         return new ProfileGroupDetails(profileGroupDetails.getCount(), profileGroupDetails.getCity(), profileGroupDetails.getCountry(), latLng);
     }
 

@@ -5,7 +5,7 @@ import org.miles2run.business.domain.jpa.CommunityRun;
 import org.miles2run.business.domain.jpa.Goal;
 import org.miles2run.business.domain.jpa.Profile;
 import org.miles2run.business.domain.mongo.UserProfile;
-import org.miles2run.business.services.mongo.ProfileMongoService;
+import org.miles2run.business.repository.mongo.UserProfileRepository;
 import org.miles2run.business.vo.ActivityDetails;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Pipeline;
@@ -32,7 +32,7 @@ public class TimelineService {
     @Inject
     private Logger logger;
     @Inject
-    private ProfileMongoService profileMongoService;
+    private UserProfileRepository userProfileRepository;
 
     public Set<String> getHomeTimelineIds(final String username, final long page, final long count) {
         return jedisExecutionService.execute(new JedisOperation<Set<String>>() {
@@ -172,7 +172,7 @@ public class TimelineService {
     }
 
     private void postActivityToFollowersTimeline(final String username, final String activityId, final Long posted) {
-        UserProfile userProfile = profileMongoService.findProfile(username);
+        UserProfile userProfile = userProfileRepository.findProfile(username);
         final List<String> followers = userProfile.getFollowers();
         logger.info(String.format("Followers for %s are %s", username, followers));
         jedisExecutionService.execute(new JedisOperation<Object>() {
@@ -236,7 +236,7 @@ public class TimelineService {
                 pipeline.zrem(profileTimelineKey, String.valueOf(activityId));
                 pipeline.zrem(String.format(RedisKeyNames.PROFILE_S_GOAL_S_TIMELINE, username, goal.getId()), String.valueOf(activityId));
                 pipeline.zrem(String.format(RedisKeyNames.PROFILE_S_TIMELINE_LATEST, username), String.valueOf(activityId));
-                UserProfile userProfile = profileMongoService.findProfile(username);
+                UserProfile userProfile = userProfileRepository.findProfile(username);
                 logger.info("Deleting activity from all the followers timeline");
                 final List<String> followers = userProfile.getFollowers();
                 logger.info(String.format("Followers for %s are %s", username, followers));

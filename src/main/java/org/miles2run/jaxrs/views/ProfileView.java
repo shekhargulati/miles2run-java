@@ -17,11 +17,12 @@ import org.miles2run.business.domain.jpa.Profile;
 import org.miles2run.business.domain.jpa.SocialConnection;
 import org.miles2run.business.domain.jpa.SocialProvider;
 import org.miles2run.business.domain.mongo.UserProfile;
+import org.miles2run.business.repository.mongo.FriendshipRepository;
+import org.miles2run.business.repository.mongo.UserProfileRepository;
 import org.miles2run.business.services.jpa.ActivityJPAService;
 import org.miles2run.business.services.jpa.GoalJPAService;
 import org.miles2run.business.services.jpa.ProfileService;
 import org.miles2run.business.services.jpa.SocialConnectionService;
-import org.miles2run.business.services.mongo.ProfileMongoService;
 import org.miles2run.business.services.redis.CounterService;
 import org.miles2run.business.services.redis.GoalRedisService;
 import org.miles2run.business.services.social.GoogleService;
@@ -81,13 +82,15 @@ public class ProfileView {
     @Context
     private SecurityContext securityContext;
     @Inject
-    private ProfileMongoService profileMongoService;
+    private UserProfileRepository userProfileRepository;
     @Inject
     private GoogleService googleService;
     @Inject
     private GoalJPAService goalJPAService;
     @Inject
     private GoalRedisService goalRedisService;
+    @Inject
+    private FriendshipRepository friendshipRepository;
 
     @GET
     @Produces("text/html")
@@ -202,7 +205,7 @@ public class ProfileView {
             Profile profile = new Profile(profileForm);
             profileService.save(profile);
             socialConnectionService.update(profile, profileForm.getConnectionId());
-            profileMongoService.save(profile);
+            userProfileRepository.save(profile);
             counterService.updateRunnerCount();
             counterService.addCountry(profile.getCountry());
             counterService.addCity(profile.getCity());
@@ -245,7 +248,7 @@ public class ProfileView {
             List<String> errors = new ArrayList<>();
             try {
                 profileService.update(username, toProfile(profileForm));
-                profileMongoService.update(username, profileForm.getCity(), profileForm.getCountry());
+                userProfileRepository.update(username, profileForm.getCity(), profileForm.getCountry());
                 return View.of("/profiles/" + username, true);
             } catch (Exception e) {
                 logger.info(e.getClass().getCanonicalName());
@@ -320,7 +323,7 @@ public class ProfileView {
     }
 
     private boolean isFollowing(String currentLoggedInUser, String username) {
-        return profileMongoService.isUserFollowing(currentLoggedInUser, username);
+        return friendshipRepository.isUserFollowing(currentLoggedInUser, username);
     }
 
     @GET
@@ -337,7 +340,7 @@ public class ProfileView {
             Profile userProfile = new Profile(profile);
             Map<String, Object> model = new HashMap<>();
             model.put("userProfile", userProfile);
-            UserProfile userProfileMongo = profileMongoService.findProfile(username);
+            UserProfile userProfileMongo = userProfileRepository.findProfile(username);
             List<String> following = userProfileMongo.getFollowing();
             if (!following.isEmpty()) {
                 List<org.miles2run.business.vo.ProfileDetails> profiles = profileService.findAllProfiles(following);
@@ -371,7 +374,7 @@ public class ProfileView {
             Profile userProfile = new Profile(profile);
             Map<String, Object> model = new HashMap<>();
             model.put("userProfile", userProfile);
-            UserProfile userProfileMongo = profileMongoService.findProfile(username);
+            UserProfile userProfileMongo = userProfileRepository.findProfile(username);
             List<String> followers = userProfileMongo.getFollowers();
             if (!followers.isEmpty()) {
                 List<org.miles2run.business.vo.ProfileDetails> profiles = profileService.findAllProfiles(followers);

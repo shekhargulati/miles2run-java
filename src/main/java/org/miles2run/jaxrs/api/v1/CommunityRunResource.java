@@ -3,6 +3,7 @@ package org.miles2run.jaxrs.api.v1;
 import org.apache.commons.lang3.StringUtils;
 import org.jug.filters.InjectPrincipal;
 import org.jug.filters.LoggedIn;
+import org.miles2run.business.cache.CityCoordinatesCache;
 import org.miles2run.business.domain.jpa.CommunityRun;
 import org.miles2run.business.domain.jpa.Goal;
 import org.miles2run.business.domain.jpa.Profile;
@@ -10,7 +11,6 @@ import org.miles2run.business.domain.jpa.Role;
 import org.miles2run.business.services.jpa.CommunityRunJPAService;
 import org.miles2run.business.services.jpa.GoalJPAService;
 import org.miles2run.business.services.jpa.ProfileService;
-import org.miles2run.business.services.mongo.ProfileMongoService;
 import org.miles2run.business.services.redis.CommunityRunRedisService;
 import org.miles2run.business.utils.SlugUtils;
 import org.miles2run.business.vo.ProfileGroupDetails;
@@ -27,6 +27,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by shekhargulati on 10/07/14.
@@ -45,9 +46,9 @@ public class CommunityRunResource {
     @Inject
     private ProfileService profileService;
     @Inject
-    private ProfileMongoService profileMongoService;
-    @Inject
     private GoalJPAService goalJPAService;
+    @Inject
+    private CityCoordinatesCache cityCache;
 
     @POST
     @Consumes("application/json")
@@ -115,12 +116,9 @@ public class CommunityRunResource {
     @GET
     @Produces("application/json")
     public List<ProfileGroupDetails> groupAllUsersInACommunityRunByCity(@NotNull @PathParam("slug") String slug) {
-        List<ProfileGroupDetails> profileGroupDetailsList = communityRunJPAService.groupAllUserInACommunityRunByCity(slug);
-        List<ProfileGroupDetails> profileGroupDetailsListWithLatLng = new ArrayList<>();
-        for (ProfileGroupDetails profileGroupDetails : profileGroupDetailsList) {
-            profileGroupDetailsListWithLatLng.add(ProfileGroupDetails.newWitLatLng(profileGroupDetails, profileMongoService.findLatLngForACity(profileGroupDetails.getCity())));
-        }
-        return profileGroupDetailsListWithLatLng;
+        List<ProfileGroupDetails> groups = communityRunJPAService.groupAllUserInACommunityRunByCity(slug);
+        List<ProfileGroupDetails> groupsWithLngLat = groups.stream().map(group -> ProfileGroupDetails.withLatLng(group, cityCache.findLatLng(group.getCity(), group.getCountry()))).collect(Collectors.toList());
+        return groupsWithLngLat;
     }
 
     // TODO : CODE COPIED FROM CommunityRunView

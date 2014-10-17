@@ -2,8 +2,8 @@ package org.miles2run.jaxrs.api.v1;
 
 import org.jug.filters.LoggedIn;
 import org.miles2run.business.domain.mongo.UserProfile;
+import org.miles2run.business.repository.mongo.UserProfileRepository;
 import org.miles2run.business.services.jpa.ProfileService;
-import org.miles2run.business.services.mongo.ProfileMongoService;
 import org.miles2run.business.vo.ProfileDetails;
 import org.miles2run.business.vo.ProfileSocialConnectionDetails;
 
@@ -30,7 +30,7 @@ public class ProfileResource {
     @Context
     private SecurityContext securityContext;
     @Inject
-    private ProfileMongoService profileMongoService;
+    private UserProfileRepository userProfileRepository;
 
     @Path("/me")
     @GET
@@ -54,7 +54,7 @@ public class ProfileResource {
     @LoggedIn
     public List<ProfileDetails> followings() {
         String username = securityContext.getUserPrincipal().getName();
-        UserProfile userProfile = profileMongoService.findProfile(username);
+        UserProfile userProfile = userProfileRepository.findProfile(username);
         List<String> following = userProfile.getFollowing();
         logger.info(String.format("User %s is following %s", username, following));
         if (following.isEmpty()) {
@@ -67,7 +67,7 @@ public class ProfileResource {
     @GET
     @Produces("application/json")
     public List<ProfileDetails> followingForProfile(@PathParam("username") String username) {
-        UserProfile userProfile = profileMongoService.findProfile(username);
+        UserProfile userProfile = userProfileRepository.findProfile(username);
         List<String> following = userProfile.getFollowing();
         logger.info(String.format("User %s is following %s", username, following));
         if (following.isEmpty()) {
@@ -80,7 +80,7 @@ public class ProfileResource {
     @GET
     @Produces("application/json")
     public List<ProfileDetails> followersForProfile(@PathParam("username") String username) {
-        UserProfile userProfile = profileMongoService.findProfile(username);
+        UserProfile userProfile = userProfileRepository.findProfile(username);
         List<String> followers = userProfile.getFollowers();
         logger.info(String.format("User %s is followers %s", username, followers));
         if (followers.isEmpty()) {

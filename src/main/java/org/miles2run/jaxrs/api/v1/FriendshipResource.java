@@ -3,7 +3,7 @@ package org.miles2run.jaxrs.api.v1;
 import org.jug.filters.LoggedIn;
 import org.miles2run.business.domain.mongo.Action;
 import org.miles2run.business.domain.redis.Notification;
-import org.miles2run.business.services.mongo.ProfileMongoService;
+import org.miles2run.business.repository.mongo.FriendshipRepository;
 import org.miles2run.business.services.redis.NotificationService;
 import org.miles2run.business.services.redis.TimelineService;
 import org.miles2run.jaxrs.vo.FriendshipRequest;
@@ -26,7 +26,7 @@ import java.util.Map;
 public class FriendshipResource {
 
     @Inject
-    private ProfileMongoService profileMongoDao;
+    private FriendshipRepository friendshipRepository;
     @Inject
     private NotificationService notificationService;
     @Inject
@@ -37,7 +37,7 @@ public class FriendshipResource {
     @Consumes("application/json")
     @LoggedIn
     public Response create(@PathParam("username") String username, FriendshipRequest friendshipRequest) {
-        profileMongoDao.createFriendship(username, friendshipRequest.getUserToFollow());
+        friendshipRepository.createFriendship(username, friendshipRequest.getUserToFollow());
         timelineService.updateTimelineWithFollowingTimeline(username, friendshipRequest.getUserToFollow());
         notificationService.addNotification(new Notification(friendshipRequest.getUserToFollow(), username, Action.FOLLOW, new Date().getTime()));
         Map<String, String> jsonObj = new HashMap<>();
@@ -50,7 +50,7 @@ public class FriendshipResource {
     @Consumes("application/json")
     @LoggedIn
     public Response destroy(@PathParam("username") String username, UnfollowRequest unfollowRequest) {
-        profileMongoDao.destroyFriendship(username, unfollowRequest.getUserToUnfollow());
+        friendshipRepository.destroyFriendship(username, unfollowRequest.getUserToUnfollow());
         timelineService.removeFollowingTimeline(username, unfollowRequest.getUserToUnfollow());
         notificationService.addNotification(new Notification(unfollowRequest.getUserToUnfollow(), username, Action.UNFOLLOW, new Date().getTime()));
         Map<String, String> jsonObj = new HashMap<>();
