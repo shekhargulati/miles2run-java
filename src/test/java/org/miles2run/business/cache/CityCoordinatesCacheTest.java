@@ -50,6 +50,12 @@ public class CityCoordinatesCacheTest {
         double[] expected = {28.4594965, 77.0266383};
         Assert.assertArrayEquals(expected, latLng, 0.0001d);
         Assert.assertThat(cache.cities.count(), Is.is(IsEqual.equalTo(1L)));
+    }
+
+    @Test
+    public void findLatLng_InvalidCityCountryName_ReturnEmptyArray() throws Exception {
+        double[] latLng = cache.findLatLng("test_city", "test_country");
+        Assert.assertThat(latLng.length, IsEqual.equalTo(0));
 
     }
 }

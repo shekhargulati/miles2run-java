@@ -33,6 +33,9 @@ public class CityCoordinatesCache {
         DBObject cityDBObject = findCity(city, country);
         if (cityDBObject == null) {
             double[] lngLat = fetchLngLat(city, country);
+            if (lngLat.length == 0) {
+                return lngLat;
+            }
             cities.save(new BasicDBObject("city", city).append("country", country).append("lngLat", lngLat));
             return lngLat;
         }
@@ -44,7 +47,7 @@ public class CityCoordinatesCache {
         Object lngLatObj = cityDoc.get("lngLat");
         if (lngLatObj instanceof BasicDBList) {
             BasicDBList lngLat = (BasicDBList) lngLatObj;
-            return lngLat == null || lngLat.isEmpty() ? new double[0] : new double[]{(Double) lngLat.get(0), (Double) lngLat.get(1)};
+            return lngLat.isEmpty() ? new double[0] : new double[]{(Double) lngLat.get(0), (Double) lngLat.get(1)};
         } else {
             double[] lngLat = (double[]) lngLatObj;
             return lngLat.length == 0 ? new double[0] : lngLat;
