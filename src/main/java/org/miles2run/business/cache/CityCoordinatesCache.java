@@ -12,6 +12,7 @@ import javax.inject.Inject;
 @ApplicationScoped
 public class CityCoordinatesCache {
 
+    public static final String CITIES_COLLECTION = "cities";
     private final Logger logger = LoggerFactory.getLogger(CityCoordinatesCache.class);
 
     DBCollection cities;
@@ -21,7 +22,7 @@ public class CityCoordinatesCache {
 
     @PostConstruct
     public void postConstruct() {
-        cities = db.getCollection("cities");
+        cities = db.getCollection(CITIES_COLLECTION);
     }
 
     public double[] findLatLng(final String city, final String country) {

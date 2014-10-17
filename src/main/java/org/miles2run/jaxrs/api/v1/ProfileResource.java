@@ -54,7 +54,7 @@ public class ProfileResource {
     @LoggedIn
     public List<ProfileDetails> followings() {
         String username = securityContext.getUserPrincipal().getName();
-        UserProfile userProfile = userProfileRepository.findProfile(username);
+        UserProfile userProfile = userProfileRepository.find(username);
         List<String> following = userProfile.getFollowing();
         logger.info(String.format("User %s is following %s", username, following));
         if (following.isEmpty()) {
@@ -67,7 +67,7 @@ public class ProfileResource {
     @GET
     @Produces("application/json")
     public List<ProfileDetails> followingForProfile(@PathParam("username") String username) {
-        UserProfile userProfile = userProfileRepository.findProfile(username);
+        UserProfile userProfile = userProfileRepository.find(username);
         List<String> following = userProfile.getFollowing();
         logger.info(String.format("User %s is following %s", username, following));
         if (following.isEmpty()) {
@@ -80,7 +80,7 @@ public class ProfileResource {
     @GET
     @Produces("application/json")
     public List<ProfileDetails> followersForProfile(@PathParam("username") String username) {
-        UserProfile userProfile = userProfileRepository.findProfile(username);
+        UserProfile userProfile = userProfileRepository.find(username);
         List<String> followers = userProfile.getFollowers();
         logger.info(String.format("User %s is followers %s", username, followers));
         if (followers.isEmpty()) {

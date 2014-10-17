@@ -340,7 +340,7 @@ public class ProfileView {
             Profile userProfile = new Profile(profile);
             Map<String, Object> model = new HashMap<>();
             model.put("userProfile", userProfile);
-            UserProfile userProfileMongo = userProfileRepository.findProfile(username);
+            UserProfile userProfileMongo = userProfileRepository.find(username);
             List<String> following = userProfileMongo.getFollowing();
             if (!following.isEmpty()) {
                 List<org.miles2run.business.vo.ProfileDetails> profiles = profileService.findAllProfiles(following);
@@ -374,7 +374,7 @@ public class ProfileView {
             Profile userProfile = new Profile(profile);
             Map<String, Object> model = new HashMap<>();
             model.put("userProfile", userProfile);
-            UserProfile userProfileMongo = userProfileRepository.findProfile(username);
+            UserProfile userProfileMongo = userProfileRepository.find(username);
             List<String> followers = userProfileMongo.getFollowers();
             if (!followers.isEmpty()) {
                 List<org.miles2run.business.vo.ProfileDetails> profiles = profileService.findAllProfiles(followers);

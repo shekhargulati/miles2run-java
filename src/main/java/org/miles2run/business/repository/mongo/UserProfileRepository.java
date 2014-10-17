@@ -41,7 +41,7 @@ public class UserProfileRepository {
         profiles.save(new BasicDBObject().append("username", profile.getUsername()).append("lngLat", lngLat));
     }
 
-    public UserProfile findProfile(String username) {
+    public UserProfile find(String username) {
         BasicDBObject findQuery = new BasicDBObject("username", username);
         DBObject dbObject = profiles.findOne(findQuery);
         if (dbObject == null) {
