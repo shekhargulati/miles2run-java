@@ -16,6 +16,7 @@ import org.miles2run.business.domain.jpa.*;
 import org.miles2run.business.producers.EntityManagerProducer;
 import org.miles2run.business.vo.*;
 import org.miles2run.jaxrs.forms.ProfileForm;
+import org.miles2run.shared.exceptions.NoUserExistsException;
 import org.miles2run.shared.repositories.ProfileRepository;
 
 import javax.inject.Inject;
@@ -68,6 +69,7 @@ public class ActivityJPAServiceTest {
                 addClass(Progress.class).
                 addClass(CommunityRun.class).
                 addClass(Share.class).
+                addClass(NoUserExistsException.class).
                 addAsLibraries(Maven.resolver().loadPomFromFile("pom.xml").resolve("org.jadira.usertype:usertype.core").withTransitivity().asFile()).
                 addAsResource("META-INF/test_persistence.xml", "META-INF/persistence.xml").
                 addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");

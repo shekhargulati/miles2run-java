@@ -4,10 +4,14 @@ import org.miles2run.business.domain.jpa.Profile;
 import org.miles2run.business.domain.jpa.SocialProvider;
 import org.miles2run.business.vo.ProfileDetails;
 import org.miles2run.business.vo.ProfileSocialConnectionDetails;
+import org.miles2run.shared.exceptions.NoUserExistsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -15,13 +19,12 @@ import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import java.util.List;
 
-/**
- * Created by shekhargulati on 04/03/14.
- */
 @Stateless
+@LocalBean
+@TransactionAttribute(TransactionAttributeType.REQUIRED)
 public class ProfileRepository {
 
-    Logger logger = LoggerFactory.getLogger(ProfileRepository.class);
+    private final Logger logger = LoggerFactory.getLogger(ProfileRepository.class);
 
     @Inject
     EntityManager entityManager;
@@ -35,8 +38,8 @@ public class ProfileRepository {
         try {
             return entityManager.createQuery("select p from Profile p where p.username =:username", Profile.class).setParameter("username", username).getSingleResult();
         } catch (NoResultException e) {
-            logger.debug("No user found with username: {}", username);
-            return null;
+            logger.warn("No user found with username: {}", username);
+            throw new NoUserExistsException(username);
         }
     }
 
@@ -47,7 +50,7 @@ public class ProfileRepository {
             return query.getSingleResult();
         } catch (NoResultException e) {
             logger.debug("No user found with username: {}", username);
-            return null;
+            throw new NoUserExistsException(username);
         }
     }
 
@@ -58,7 +61,7 @@ public class ProfileRepository {
             return query.getSingleResult();
         } catch (NoResultException e) {
             logger.debug("No user found with email: {}", email);
-            return null;
+            throw new NoUserExistsException(email);
         }
     }
 
@@ -69,14 +72,12 @@ public class ProfileRepository {
             return null;
         }
         ProfileSocialConnectionDetails profileSocialConnectionDetails = new ProfileSocialConnectionDetails();
-        for (Object object : result) {
-            if (object instanceof Object[]) {
-                Object[] row = (Object[]) object;
-                profileSocialConnectionDetails.setId((Long) row[0]);
-                profileSocialConnectionDetails.setUsername((String) row[1]);
-                profileSocialConnectionDetails.getProviders().add(((SocialProvider) row[2]).getProvider());
-            }
-        }
+        result.stream().filter(object -> object instanceof Object[]).forEach(object -> {
+            Object[] row = (Object[]) object;
+            profileSocialConnectionDetails.setId((Long) row[0]);
+            profileSocialConnectionDetails.setUsername((String) row[1]);
+            profileSocialConnectionDetails.getProviders().add(((SocialProvider) row[2]).getProvider());
+        });
         return profileSocialConnectionDetails;
     }
 
