@@ -1,4 +1,4 @@
-package org.miles2run.business.services.jpa;
+package org.miles2run.shared.repositories;
 
 import org.miles2run.business.domain.jpa.Profile;
 import org.miles2run.business.domain.jpa.SocialProvider;
@@ -19,9 +19,9 @@ import java.util.List;
  * Created by shekhargulati on 04/03/14.
  */
 @Stateless
-public class ProfileService {
+public class ProfileRepository {
 
-    Logger logger = LoggerFactory.getLogger(ProfileService.class);
+    Logger logger = LoggerFactory.getLogger(ProfileRepository.class);
 
     @Inject
     EntityManager entityManager;
@@ -78,17 +78,6 @@ public class ProfileService {
             }
         }
         return profileSocialConnectionDetails;
-    }
-
-    public Profile findFullProfileByUsername(String username) {
-        TypedQuery<Profile> query = entityManager.createNamedQuery("Profile.findFullProfileByUsername", Profile.class);
-        query.setParameter("username", username);
-        try {
-            return query.getSingleResult();
-        } catch (NoResultException e) {
-            logger.debug("No user found with username: {}", username);
-            return null;
-        }
     }
 
     public List<ProfileDetails> findAllProfiles(List<String> usernames) {

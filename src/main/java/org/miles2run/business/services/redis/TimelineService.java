@@ -5,7 +5,7 @@ import org.miles2run.business.domain.jpa.CommunityRun;
 import org.miles2run.business.domain.jpa.Goal;
 import org.miles2run.business.domain.jpa.Profile;
 import org.miles2run.business.domain.mongo.UserProfile;
-import org.miles2run.business.repository.mongo.UserProfileRepository;
+import org.miles2run.shared.repositories.UserProfileRepository;
 import org.miles2run.business.vo.ActivityDetails;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Pipeline;

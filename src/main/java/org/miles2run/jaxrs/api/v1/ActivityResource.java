@@ -5,7 +5,7 @@ import org.jug.filters.LoggedIn;
 import org.miles2run.business.domain.jpa.*;
 import org.miles2run.business.services.jpa.ActivityJPAService;
 import org.miles2run.business.services.jpa.GoalJPAService;
-import org.miles2run.business.services.jpa.ProfileService;
+import org.miles2run.shared.repositories.ProfileRepository;
 import org.miles2run.business.services.redis.CommunityRunRedisService;
 import org.miles2run.business.services.redis.CounterService;
 import org.miles2run.business.services.redis.GoalRedisService;
@@ -40,7 +40,7 @@ public class ActivityResource {
     @Inject
     private ActivityJPAService activityJPAService;
     @Inject
-    private ProfileService profileService;
+    private ProfileRepository profileRepository;
     @Inject
     private TwitterService twitterService;
     @Inject
@@ -70,7 +70,7 @@ public class ActivityResource {
         logger.info("Posting Activity {}", activityRequest);
         Activity activity = activityRequest.toActivity();
         String loggedInUser = securityContext.getUserPrincipal().getName();
-        Profile profile = profileService.findProfile(loggedInUser);
+        Profile profile = profileRepository.findProfile(loggedInUser);
         Goal goal = goalJPAService.findGoal(profile, goalId);
         logger.debug("Found goal {}", goal);
         if (goal == null) {
@@ -104,7 +104,7 @@ public class ActivityResource {
     @LoggedIn
     public Response updateActivity(@PathParam("goalId") Long goalId, @PathParam("id") Long id, @Valid Activity activity) {
         String loggedInUser = securityContext.getUserPrincipal().getName();
-        Profile profile = profileService.findProfile(loggedInUser);
+        Profile profile = profileRepository.findProfile(loggedInUser);
         Goal goal = goalJPAService.findGoal(profile, goalId);
         if (goal == null) {
             return Response.status(Response.Status.NOT_FOUND).entity("No goal exists with id " + goalId).build();
@@ -144,7 +144,7 @@ public class ActivityResource {
     @LoggedIn
     public Response deleteActivity(@PathParam("goalId") Long goalId, @PathParam("activityId") Long activityId) {
         String loggedInUser = securityContext.getUserPrincipal().getName();
-        Profile profile = profileService.findProfile(loggedInUser);
+        Profile profile = profileRepository.findProfile(loggedInUser);
         Goal goal = goalJPAService.findGoal(profile, goalId);
         if (goal == null) {
             return Response.status(Response.Status.NOT_FOUND).entity("No goal exists with id " + goalId).build();
@@ -170,7 +170,7 @@ public class ActivityResource {
     @LoggedIn
     public Response shareActivity(@PathParam("id") Long id, Activity activity) {
         String loggedInUser = securityContext.getUserPrincipal().getName();
-        Profile profile = profileService.findProfile(loggedInUser);
+        Profile profile = profileRepository.findProfile(loggedInUser);
         Share share = activity.getShare();
         shareActivity(toActivityMessage(activity, profile), profile, share);
         return Response.ok().build();

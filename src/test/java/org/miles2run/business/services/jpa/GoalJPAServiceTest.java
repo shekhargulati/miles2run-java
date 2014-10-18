@@ -20,6 +20,7 @@ import org.miles2run.business.vo.ProfileDetails;
 import org.miles2run.business.vo.ProfileGroupDetails;
 import org.miles2run.business.vo.ProfileSocialConnectionDetails;
 import org.miles2run.jaxrs.forms.ProfileForm;
+import org.miles2run.shared.repositories.ProfileRepository;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -39,7 +40,7 @@ public class GoalJPAServiceTest {
     private GoalJPAService goalJPAService;
 
     @Inject
-    private ProfileService profileService;
+    private ProfileRepository profileRepository;
 
     @Inject
     private EntityManager entityManager;
@@ -52,7 +53,7 @@ public class GoalJPAServiceTest {
                 addClass(BaseEntity.class).
                 addClass(Profile.class).
                 addClass(SocialConnection.class).
-                addClass(ProfileService.class).
+                addClass(ProfileRepository.class).
                 addClass(ProfileDetails.class).
                 addClass(ProfileSocialConnectionDetails.class).
                 addClass(SocialProvider.class).
@@ -66,7 +67,7 @@ public class GoalJPAServiceTest {
                 addClass(Profile.class).
                 addClass(EntityManagerProducer.class).
                 addClass(GoalJPAService.class).
-                addClass(ProfileService.class).
+                addClass(ProfileRepository.class).
                 addClass(CommunityRun.class).
                 addClass(CommunityRunBuilder.class).
                 addClass(CommunityRunJPAService.class).
@@ -120,7 +121,7 @@ public class GoalJPAServiceTest {
 
     private Profile createProfile() {
         Profile profile = Profile.createProfile("test@test.com", "test_user", "Test User", "city", "country", Gender.MALE);
-        return profileService.save(profile);
+        return profileRepository.save(profile);
     }
 
     @Test
@@ -181,7 +182,7 @@ public class GoalJPAServiceTest {
 
     private Profile createProfile(String email, String username) {
         Profile profile = Profile.createProfile(email, username, "Test User", "city", "country", Gender.MALE);
-        return profileService.save(profile);
+        return profileRepository.save(profile);
     }
 
 }

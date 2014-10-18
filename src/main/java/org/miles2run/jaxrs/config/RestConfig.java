@@ -11,11 +11,15 @@ import org.jug.view.ViewWriter;
 import org.miles2run.jaxrs.api.v1.*;
 import org.miles2run.jaxrs.filters.InjectProfileFilter;
 import org.miles2run.jaxrs.views.*;
+import org.miles2run.users.suggestions.api.v1.UserSuggestionsResource;
 
 import javax.ws.rs.core.Application;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * TODO: Make it auto detect classes http://stackoverflow.com/a/21430849/247038
+ */
 public class RestConfig extends Application {
 
     @Override
@@ -45,7 +49,7 @@ public class RestConfig extends Application {
         classes.add(FriendshipResource.class);
         classes.add(InjectPrincipalFilter.class);
         classes.add(ProfileResource.class);
-        classes.add(FriendRecommendationResource.class);
+        classes.add(UserSuggestionsResource.class);
         classes.add(GoogleSigninView.class);
         classes.add(GoogleCallbackView.class);
         classes.add(ActivityView.class);

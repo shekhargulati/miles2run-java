@@ -1,7 +1,7 @@
 package org.miles2run.jaxrs.filters;
 
 import org.jug.view.View;
-import org.miles2run.business.services.jpa.ProfileService;
+import org.miles2run.shared.repositories.ProfileRepository;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -23,7 +23,7 @@ import java.util.logging.Logger;
 public class InjectProfileFilter implements ContainerResponseFilter {
 
     @Inject
-    private ProfileService profileService;
+    private ProfileRepository profileRepository;
     @Context
     private HttpServletRequest request;
     @Inject
@@ -38,7 +38,7 @@ public class InjectProfileFilter implements ContainerResponseFilter {
             Map<String, Object> model = view.getModel();
             Object principal = session.getAttribute("principal");
             logger.info("Setting profile for Principal " + principal);
-            model.put("profile", profileService.findProfileByUsername(principal.toString()));
+            model.put("profile", profileRepository.findProfileByUsername(principal.toString()));
         }
     }
 }

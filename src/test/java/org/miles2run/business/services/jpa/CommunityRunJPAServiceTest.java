@@ -16,6 +16,7 @@ import org.miles2run.business.vo.ProfileDetails;
 import org.miles2run.business.vo.ProfileGroupDetails;
 import org.miles2run.business.vo.ProfileSocialConnectionDetails;
 import org.miles2run.jaxrs.forms.ProfileForm;
+import org.miles2run.shared.repositories.ProfileRepository;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -36,7 +37,7 @@ public class CommunityRunJPAServiceTest {
     @Inject
     private UserTransaction userTransaction;
     @Inject
-    private ProfileService profileService;
+    private ProfileRepository profileRepository;
 
     @Deployment
     public static Archive<?> deployment() {
@@ -45,7 +46,7 @@ public class CommunityRunJPAServiceTest {
                 addClass(BaseEntity.class).
                 addClass(Profile.class).
                 addClass(SocialConnection.class).
-                addClass(ProfileService.class).
+                addClass(ProfileRepository.class).
                 addClass(ProfileDetails.class).
                 addClass(ProfileSocialConnectionDetails.class).
                 addClass(SocialProvider.class).

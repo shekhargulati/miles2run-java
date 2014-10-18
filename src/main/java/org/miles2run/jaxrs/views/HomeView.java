@@ -5,7 +5,7 @@ import org.jug.view.View;
 import org.miles2run.business.domain.jpa.Goal;
 import org.miles2run.business.domain.jpa.Profile;
 import org.miles2run.business.services.jpa.GoalJPAService;
-import org.miles2run.business.services.jpa.ProfileService;
+import org.miles2run.shared.repositories.ProfileRepository;
 import org.miles2run.jaxrs.filters.InjectProfile;
 import org.thymeleaf.TemplateEngine;
 
@@ -29,7 +29,7 @@ public class HomeView {
     @Context
     private SecurityContext securityContext;
     @Inject
-    private ProfileService profileService;
+    private ProfileRepository profileRepository;
     @Inject
     private TemplateEngine templateEngine;
     @Inject
@@ -41,7 +41,7 @@ public class HomeView {
     @InjectProfile
     public View showAllGoals() {
         String loggedInUser = securityContext.getUserPrincipal().getName();
-        Profile profile = profileService.findProfile(loggedInUser);
+        Profile profile = profileRepository.findProfile(loggedInUser);
         List<Goal> goals = goalJPAService.findAllGoals(profile, false);
         return View.of("/home", templateEngine).withModel("goals", goals);
     }

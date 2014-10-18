@@ -9,7 +9,7 @@ import org.miles2run.business.domain.jpa.Goal;
 import org.miles2run.business.domain.jpa.Profile;
 import org.miles2run.business.services.jpa.CommunityRunJPAService;
 import org.miles2run.business.services.jpa.GoalJPAService;
-import org.miles2run.business.services.jpa.ProfileService;
+import org.miles2run.shared.repositories.ProfileRepository;
 import org.miles2run.business.services.redis.CommunityRunRedisService;
 import org.miles2run.jaxrs.filters.InjectProfile;
 import org.miles2run.jaxrs.vo.CommunityRunDetails;
@@ -48,7 +48,7 @@ public class CommunityRunView {
     private GoalJPAService goalJPAService;
 
     @Inject
-    private ProfileService profileService;
+    private ProfileRepository profileRepository;
 
     @GET
     @Produces("text/html")
@@ -76,7 +76,7 @@ public class CommunityRunView {
         if (securityContext.getUserPrincipal() != null) {
             String principal = securityContext.getUserPrincipal().getName();
             if (communityRunRedisService.isUserAlreadyPartOfRun(slug, principal)) {
-                Long goalId = goalJPAService.findGoalIdWithCommunityRunAndProfile(communityRunJPAService.find(slug), profileService.findProfile(principal));
+                Long goalId = goalJPAService.findGoalIdWithCommunityRunAndProfile(communityRunJPAService.find(slug), profileRepository.findProfile(principal));
                 communityRunDetails.addParticipationDetails(true);
                 return View.of("/community_run", templateEngine).withModel("communityRun", communityRunDetails).withModel("goalId", goalId);
             }
@@ -97,7 +97,7 @@ public class CommunityRunView {
             return View.of("/community_runs/" + slug, true);
         }
 
-        Profile profile = profileService.findProfile(principal);
+        Profile profile = profileRepository.findProfile(principal);
         logger.info("Adding profile {} to community run ", principal, slug);
         CommunityRun communityRun = communityRunJPAService.addRunnerToCommunityRun(slug, profile);
 
@@ -123,7 +123,7 @@ public class CommunityRunView {
         if (!communityRunRedisService.isUserAlreadyPartOfRun(slug, principal)) {
             return View.of("/community_runs/" + slug, true);
         }
-        Profile profile = profileService.findProfile(principal);
+        Profile profile = profileRepository.findProfile(principal);
         logger.info("User {} leaving community run {}", principal, slug);
         communityRunJPAService.leaveCommunityRun(slug, profile);
         goalJPAService.archiveGoalWithCommunityRun(communityRunJPAService.find(slug), profile);

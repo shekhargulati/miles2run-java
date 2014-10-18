@@ -18,6 +18,7 @@ import org.miles2run.business.vo.ProfileDetails;
 import org.miles2run.business.vo.ProfileGroupDetails;
 import org.miles2run.business.vo.ProfileSocialConnectionDetails;
 import org.miles2run.jaxrs.forms.ProfileForm;
+import org.miles2run.shared.repositories.ProfileRepository;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -44,7 +45,7 @@ public class CommunityRunJoinTest {
     @Inject
     private UserTransaction userTransaction;
     @Inject
-    private ProfileService profileService;
+    private ProfileRepository profileRepository;
 
     @Deployment
     public static Archive<?> deployment() {
@@ -53,7 +54,7 @@ public class CommunityRunJoinTest {
                 addClass(BaseEntity.class).
                 addClass(Profile.class).
                 addClass(SocialConnection.class).
-                addClass(ProfileService.class).
+                addClass(ProfileRepository.class).
                 addClass(ProfileDetails.class).
                 addClass(ProfileSocialConnectionDetails.class).
                 addClass(SocialProvider.class).
@@ -105,7 +106,7 @@ public class CommunityRunJoinTest {
         for (int i = 0; i < n; i++) {
             int cityId = i % 4;
             Profile profile = Profile.createProfile("test@test.com" + i, "test_user" + i, "Test User", "city" + cityId, "country", Gender.MALE);
-            profileService.save(profile);
+            profileRepository.save(profile);
             profiles.add(profile);
         }
         return profiles;

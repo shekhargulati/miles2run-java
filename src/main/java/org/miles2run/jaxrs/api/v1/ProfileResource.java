@@ -2,8 +2,8 @@ package org.miles2run.jaxrs.api.v1;
 
 import org.jug.filters.LoggedIn;
 import org.miles2run.business.domain.mongo.UserProfile;
-import org.miles2run.business.repository.mongo.UserProfileRepository;
-import org.miles2run.business.services.jpa.ProfileService;
+import org.miles2run.shared.repositories.UserProfileRepository;
+import org.miles2run.shared.repositories.ProfileRepository;
 import org.miles2run.business.vo.ProfileDetails;
 import org.miles2run.business.vo.ProfileSocialConnectionDetails;
 
@@ -26,7 +26,7 @@ public class ProfileResource {
     private Logger logger;
 
     @Inject
-    private ProfileService profileService;
+    private ProfileRepository profileRepository;
     @Context
     private SecurityContext securityContext;
     @Inject
@@ -38,14 +38,14 @@ public class ProfileResource {
     @LoggedIn
     public Response currentLoggedInUser() {
         String username = securityContext.getUserPrincipal().getName();
-        ProfileSocialConnectionDetails profileWithSocialConnections = profileService.findProfileWithSocialConnections(username);
+        ProfileSocialConnectionDetails profileWithSocialConnections = profileRepository.findProfileWithSocialConnections(username);
         return Response.ok(profileWithSocialConnections).build();
     }
 
     @GET
     @Produces("application/json")
     public List<ProfileDetails> profiles(@QueryParam("name") String name) {
-        return profileService.findProfileWithFullnameLike(name);
+        return profileRepository.findProfileWithFullnameLike(name);
     }
 
     @Path("/me/following")
@@ -60,7 +60,7 @@ public class ProfileResource {
         if (following.isEmpty()) {
             return Collections.emptyList();
         }
-        return profileService.findAllProfiles(following);
+        return profileRepository.findAllProfiles(following);
     }
 
     @Path("/{username}/following")
@@ -73,7 +73,7 @@ public class ProfileResource {
         if (following.isEmpty()) {
             return Collections.emptyList();
         }
-        return profileService.findAllProfiles(following);
+        return profileRepository.findAllProfiles(following);
     }
 
     @Path("/{username}/followers")
@@ -86,7 +86,7 @@ public class ProfileResource {
         if (followers.isEmpty()) {
             return Collections.emptyList();
         }
-        return profileService.findAllProfiles(followers);
+        return profileRepository.findAllProfiles(followers);
     }
 
 }

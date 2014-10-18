@@ -18,10 +18,10 @@ import org.miles2run.business.domain.jpa.SocialConnection;
 import org.miles2run.business.domain.jpa.SocialProvider;
 import org.miles2run.business.domain.mongo.UserProfile;
 import org.miles2run.business.repository.mongo.FriendshipRepository;
-import org.miles2run.business.repository.mongo.UserProfileRepository;
+import org.miles2run.shared.repositories.UserProfileRepository;
 import org.miles2run.business.services.jpa.ActivityJPAService;
 import org.miles2run.business.services.jpa.GoalJPAService;
-import org.miles2run.business.services.jpa.ProfileService;
+import org.miles2run.shared.repositories.ProfileRepository;
 import org.miles2run.business.services.jpa.SocialConnectionService;
 import org.miles2run.business.services.redis.CounterService;
 import org.miles2run.business.services.redis.GoalRedisService;
@@ -70,7 +70,7 @@ public class ProfileView {
     @Inject
     private TemplateEngine templateEngine;
     @Inject
-    private ProfileService profileService;
+    private ProfileRepository profileRepository;
     @Inject
     private FacebookFactory facebookFactory;
     @Inject
@@ -193,17 +193,17 @@ public class ProfileView {
     public View createProfile(@Form ProfileForm profileForm) {
         List<String> errors = new ArrayList<>();
         try {
-            if (profileService.findProfileByEmail(profileForm.getEmail()) != null) {
+            if (profileRepository.findProfileByEmail(profileForm.getEmail()) != null) {
                 errors.add(String.format("User already exist with email %s", profileForm.getEmail()));
             }
-            if (profileService.findProfileByUsername(profileForm.getUsername()) != null) {
+            if (profileRepository.findProfileByUsername(profileForm.getUsername()) != null) {
                 errors.add(String.format("User already exist with username %s", profileForm.getUsername()));
             }
             if (!errors.isEmpty()) {
                 return View.of("/createProfile", templateEngine).withModel("profile", profileForm).withModel("errors", errors);
             }
             Profile profile = new Profile(profileForm);
-            profileService.save(profile);
+            profileRepository.save(profile);
             socialConnectionService.update(profile, profileForm.getConnectionId());
             userProfileRepository.save(profile);
             counterService.updateRunnerCount();
@@ -247,7 +247,7 @@ public class ProfileView {
             String username = securityContext.getUserPrincipal().getName();
             List<String> errors = new ArrayList<>();
             try {
-                profileService.update(username, toProfile(profileForm));
+                profileRepository.update(username, toProfile(profileForm));
                 userProfileRepository.update(username, profileForm.getCity(), profileForm.getCountry());
                 return View.of("/profiles/" + username, true);
             } catch (Exception e) {
@@ -285,7 +285,7 @@ public class ProfileView {
     @InjectPrincipal
     public View viewUserProfile(@PathParam("username") String username) {
         try {
-            Profile profile = profileService.findProfile(username);
+            Profile profile = profileRepository.findProfile(username);
             if (profile == null) {
                 throw new ViewResourceNotFoundException(String.format("No user exists with username %s", username), templateEngine);
             }
@@ -333,7 +333,7 @@ public class ProfileView {
     @InjectProfile
     public View following(@PathParam("username") String username) {
         try {
-            Profile profile = profileService.findProfile(username);
+            Profile profile = profileRepository.findProfile(username);
             if (profile == null) {
                 throw new ViewResourceNotFoundException(String.format("No user exists with username %s", username), templateEngine);
             }
@@ -343,7 +343,7 @@ public class ProfileView {
             UserProfile userProfileMongo = userProfileRepository.find(username);
             List<String> following = userProfileMongo.getFollowing();
             if (!following.isEmpty()) {
-                List<org.miles2run.business.vo.ProfileDetails> profiles = profileService.findAllProfiles(following);
+                List<org.miles2run.business.vo.ProfileDetails> profiles = profileRepository.findAllProfiles(following);
                 model.put("followingProfiles", profiles);
             }
             model.put("followers", userProfileMongo.getFollowers().size());
@@ -367,7 +367,7 @@ public class ProfileView {
     @InjectProfile
     public View followers(@PathParam("username") String username) {
         try {
-            Profile profile = profileService.findProfile(username);
+            Profile profile = profileRepository.findProfile(username);
             if (profile == null) {
                 throw new ViewResourceNotFoundException(String.format("No user exists with username %s", username), templateEngine);
             }
@@ -377,7 +377,7 @@ public class ProfileView {
             UserProfile userProfileMongo = userProfileRepository.find(username);
             List<String> followers = userProfileMongo.getFollowers();
             if (!followers.isEmpty()) {
-                List<org.miles2run.business.vo.ProfileDetails> profiles = profileService.findAllProfiles(followers);
+                List<org.miles2run.business.vo.ProfileDetails> profiles = profileRepository.findAllProfiles(followers);
                 model.put("followerProfiles", profiles);
             }
             model.put("followers", userProfileMongo.getFollowers().size());

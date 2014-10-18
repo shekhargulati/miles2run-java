@@ -8,7 +8,7 @@ import org.miles2run.business.domain.jpa.GoalType;
 import org.miles2run.business.domain.jpa.Profile;
 import org.miles2run.business.services.jpa.ActivityJPAService;
 import org.miles2run.business.services.jpa.GoalJPAService;
-import org.miles2run.business.services.jpa.ProfileService;
+import org.miles2run.shared.repositories.ProfileRepository;
 import org.miles2run.business.services.redis.GoalRedisService;
 import org.miles2run.business.vo.Progress;
 import org.miles2run.jaxrs.vo.GoalDetails;
@@ -35,7 +35,7 @@ public class GoalResource {
     @Context
     private SecurityContext securityContext;
     @Inject
-    private ProfileService profileService;
+    private ProfileRepository profileRepository;
     @Inject
     private GoalJPAService goalJPAService;
     @Inject
@@ -75,7 +75,7 @@ public class GoalResource {
 
     private Profile getProfile() {
         String loggedInUser = securityContext.getUserPrincipal().getName();
-        return profileService.findProfile(loggedInUser);
+        return profileRepository.findProfile(loggedInUser);
     }
 
     @Path("{goalId}")
@@ -143,7 +143,7 @@ public class GoalResource {
     @LoggedIn
     public Response progress(@PathParam("goalId") Long goalId, @CookieParam("timezoneoffset") int timezoneOffset) {
         String username = securityContext.getUserPrincipal().getName();
-        Profile loggedInUser = profileService.findProfile(username);
+        Profile loggedInUser = profileRepository.findProfile(username);
         Goal goal = goalJPAService.findGoal(loggedInUser, goalId);
         if (goal == null) {
             return Response.status(Response.Status.NOT_FOUND).entity("No goal exists with id " + goalId).build();

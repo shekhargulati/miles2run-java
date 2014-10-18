@@ -1,4 +1,4 @@
-package org.miles2run.business.cache;
+package org.miles2run.shared.cache;
 
 import com.mongodb.*;
 import org.miles2run.business.utils.GeocoderUtils;

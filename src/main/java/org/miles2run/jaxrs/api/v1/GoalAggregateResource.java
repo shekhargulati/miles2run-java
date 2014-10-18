@@ -4,7 +4,7 @@ import org.jug.filters.LoggedIn;
 import org.miles2run.business.domain.jpa.Goal;
 import org.miles2run.business.domain.jpa.Profile;
 import org.miles2run.business.services.jpa.GoalJPAService;
-import org.miles2run.business.services.jpa.ProfileService;
+import org.miles2run.shared.repositories.ProfileRepository;
 import org.miles2run.business.services.redis.GoalAggregationService;
 import org.miles2run.business.services.redis.TimelineService;
 
@@ -27,7 +27,7 @@ public class GoalAggregateResource {
     @Inject
     private TimelineService timelineService;
     @Inject
-    private ProfileService profileService;
+    private ProfileRepository profileRepository;
     @Inject
     private GoalJPAService goalJPAService;
     @Inject
@@ -39,7 +39,7 @@ public class GoalAggregateResource {
     @Path("/distance_and_pace")
     public List<Object[]> getDistanceAndPaceOverTime(@PathParam("goalId") Long goalId, @QueryParam("interval") String interval, @QueryParam("days") int days, @QueryParam("months") int months, @CookieParam("timezoneoffset") int timezoneOffset) {
         String loggedInUser = securityContext.getUserPrincipal().getName();
-        Profile profile = profileService.findProfile(loggedInUser);
+        Profile profile = profileRepository.findProfile(loggedInUser);
         Goal goal = goalJPAService.findGoal(profile, goalId);
         days = days == 0 || days > 60 ? 60 : days;
         months = months == 0 || months > 12 ? 6 : months;
@@ -60,7 +60,7 @@ public class GoalAggregateResource {
     @Path("/distance_and_activity")
     public List<Object[]> getDistanceAndActivityCountOverTime(@PathParam("goalId") Long goalId, @QueryParam("months") int months) {
         String loggedInUser = securityContext.getUserPrincipal().getName();
-        Profile profile = profileService.findProfile(loggedInUser);
+        Profile profile = profileRepository.findProfile(loggedInUser);
         Goal goal = goalJPAService.findGoal(profile, goalId);
         months = months == 0 || months > 12 ? 6 : months;
         return timelineService.distanceAndActivityCountOverNMonths(profile, goal, months);
@@ -72,7 +72,7 @@ public class GoalAggregateResource {
     @LoggedIn
     public Response activityCalendar(@PathParam("goalId") Long goalId, @QueryParam("months") int nMonths) {
         String loggedInUser = securityContext.getUserPrincipal().getName();
-        Profile profile = profileService.findProfile(loggedInUser);
+        Profile profile = profileRepository.findProfile(loggedInUser);
         Goal goal = goalJPAService.findGoal(profile, goalId);
         if (goal == null) {
             return Response.status(Response.Status.NOT_FOUND).entity("No goal exists with id " + goalId).build();

@@ -1,4 +1,4 @@
-package org.miles2run.business.recommender;
+package org.miles2run.users.suggestions.suggester;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCursor;
@@ -7,7 +7,7 @@ import org.hamcrest.core.IsEqual;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.miles2run.business.repository.mongo.UserProfileRepository;
+import org.miles2run.shared.repositories.UserProfileRepository;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -16,13 +16,13 @@ import org.mockito.runners.MockitoJUnitRunner;
 import java.util.List;
 
 @RunWith(MockitoJUnitRunner.class)
-public class LocationBasedFriendRecommenderTest {
+public class LocationBasedUserSuggesterTest {
 
     @Mock
     private UserProfileRepository userProfileRepository;
 
     @InjectMocks
-    private LocationBasedFriendRecommender recommender = new LocationBasedFriendRecommender();
+    private LocationBasedUserSuggester recommender = new LocationBasedUserSuggester();
 
     @Test
     public void recommend_NoUserInTheSystem_RecommendsNoFriends() throws Exception {
@@ -31,7 +31,7 @@ public class LocationBasedFriendRecommenderTest {
         DBCursor mockDBCursor = Mockito.mock(DBCursor.class);
         Mockito.when(mockDBCursor.hasNext()).thenReturn(false);
         Mockito.when(userProfileRepository.findUsersByProximity(Mockito.<DBObject>any(), Mockito.anyInt())).thenReturn(mockDBCursor);
-        List<String> recommendations = recommender.recommend(username);
+        List<String> recommendations = recommender.suggestions(username);
         Assert.assertThat(recommendations.size(), IsEqual.equalTo(0));
         Mockito.verify(userProfileRepository).getUserLngLat(username);
         Mockito.verify(userProfileRepository).findUsersByProximity(Mockito.<DBObject>any(), Mockito.anyInt());
@@ -47,7 +47,7 @@ public class LocationBasedFriendRecommenderTest {
         Mockito.when(mockDBCursor.next()).thenReturn(new BasicDBObject("username", "test_user_1"));
         Mockito.when(mockDBCursor.next()).thenReturn(new BasicDBObject("username", "test_user_2"));
         Mockito.when(userProfileRepository.findUsersByProximity(Mockito.<DBObject>any(), Mockito.anyInt())).thenReturn(mockDBCursor);
-        List<String> recommendations = recommender.recommend(username);
+        List<String> recommendations = recommender.suggestions(username);
         Assert.assertThat(recommendations.size(), IsEqual.equalTo(2));
         Mockito.verify(userProfileRepository).getUserLngLat(username);
         Mockito.verify(userProfileRepository).findUsersByProximity(Mockito.<DBObject>any(), Mockito.anyInt());

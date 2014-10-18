@@ -1,7 +1,7 @@
-package org.miles2run.business.repository.mongo;
+package org.miles2run.shared.repositories;
 
 import com.mongodb.*;
-import org.miles2run.business.cache.CityCoordinatesCache;
+import org.miles2run.shared.cache.CityCoordinatesCache;
 import org.miles2run.business.domain.jpa.Profile;
 import org.miles2run.business.domain.mongo.UserProfile;
 import org.miles2run.business.utils.GeocoderUtils;

@@ -5,7 +5,7 @@ import org.jug.view.View;
 import org.jug.view.ViewResourceNotFoundException;
 import org.miles2run.business.domain.jpa.Profile;
 import org.miles2run.business.services.jpa.ActivityJPAService;
-import org.miles2run.business.services.jpa.ProfileService;
+import org.miles2run.shared.repositories.ProfileRepository;
 import org.miles2run.business.vo.ActivityDetails;
 import org.miles2run.jaxrs.filters.InjectProfile;
 import org.slf4j.Logger;
@@ -31,7 +31,7 @@ public class ActivityView {
     @Inject
     private TemplateEngine templateEngine;
     @Inject
-    private ProfileService profileService;
+    private ProfileRepository profileRepository;
 
     @GET
     @Path("/{activityId}")
@@ -39,7 +39,7 @@ public class ActivityView {
     @InjectPrincipal
     @InjectProfile
     public View viewActivity(@PathParam("username") String username, @PathParam("activityId") Long activityId) {
-        Profile profile = profileService.findProfile(username);
+        Profile profile = profileRepository.findProfile(username);
         ActivityDetails activityDetails = activityJPAService.findByUsernameAndId(profile, activityId);
         if (activityDetails == null) {
             throw new ViewResourceNotFoundException(String.format("User %s has not posted any activity with id %d", username, activityId), templateEngine);

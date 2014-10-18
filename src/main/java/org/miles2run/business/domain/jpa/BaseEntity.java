@@ -3,13 +3,14 @@ package org.miles2run.business.domain.jpa;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * Created by shekhargulati on 07/07/14.
  */
 @MappedSuperclass
-public abstract class BaseEntity {
+public abstract class BaseEntity implements Serializable{
 
     @Id
     @TableGenerator(name = "id_generator", table = "id_gen", allocationSize = 100)

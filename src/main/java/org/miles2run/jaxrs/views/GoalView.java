@@ -9,7 +9,7 @@ import org.miles2run.business.domain.jpa.Goal;
 import org.miles2run.business.domain.jpa.GoalType;
 import org.miles2run.business.domain.jpa.Profile;
 import org.miles2run.business.services.jpa.GoalJPAService;
-import org.miles2run.business.services.jpa.ProfileService;
+import org.miles2run.shared.repositories.ProfileRepository;
 import org.miles2run.business.vo.ProfileSocialConnectionDetails;
 import org.miles2run.jaxrs.filters.InjectProfile;
 import org.slf4j.Logger;
@@ -37,7 +37,7 @@ public class GoalView {
     @Context
     private SecurityContext securityContext;
     @Inject
-    private ProfileService profileService;
+    private ProfileRepository profileRepository;
     @Inject
     private GoalJPAService goalJPAService;
     @Inject
@@ -52,7 +52,7 @@ public class GoalView {
         try {
             String username = securityContext.getUserPrincipal().getName();
             logger.info("Rendering Goal page for user {} ", username);
-            Profile profile = profileService.findProfile(username);
+            Profile profile = profileRepository.findProfile(username);
             Goal goal = goalJPAService.findGoal(profile, goalId);
             if (goal == null) {
                 logger.info("No Goal found for id {}", goalId);
@@ -63,7 +63,7 @@ public class GoalView {
                 CommunityRun communityRun = goal.getCommunityRun();
                 model.put("communityRun", communityRun);
             }
-            ProfileSocialConnectionDetails activeProfileWithSocialConnections = profileService.findProfileWithSocialConnections(username);
+            ProfileSocialConnectionDetails activeProfileWithSocialConnections = profileRepository.findProfileWithSocialConnections(username);
             model.put("activeProfile", activeProfileWithSocialConnections);
             model.put("goal", goal);
             return View.of("/goal", templateEngine).withModel(model);

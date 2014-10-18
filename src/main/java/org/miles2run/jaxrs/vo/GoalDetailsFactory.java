@@ -2,6 +2,9 @@ package org.miles2run.jaxrs.vo;
 
 import org.miles2run.business.domain.jpa.Goal;
 
+/**
+ * TODO: can we use CDI for factory pattern
+ */
 public abstract class GoalDetailsFactory {
 
     public static GoalDetails toGoalType(Goal goal, double totalDistanceCoveredForGoal) {

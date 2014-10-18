@@ -3,14 +3,14 @@ package org.miles2run.jaxrs.api.v1;
 import org.apache.commons.lang3.StringUtils;
 import org.jug.filters.InjectPrincipal;
 import org.jug.filters.LoggedIn;
-import org.miles2run.business.cache.CityCoordinatesCache;
+import org.miles2run.shared.cache.CityCoordinatesCache;
 import org.miles2run.business.domain.jpa.CommunityRun;
 import org.miles2run.business.domain.jpa.Goal;
 import org.miles2run.business.domain.jpa.Profile;
 import org.miles2run.business.domain.jpa.Role;
 import org.miles2run.business.services.jpa.CommunityRunJPAService;
 import org.miles2run.business.services.jpa.GoalJPAService;
-import org.miles2run.business.services.jpa.ProfileService;
+import org.miles2run.shared.repositories.ProfileRepository;
 import org.miles2run.business.services.redis.CommunityRunRedisService;
 import org.miles2run.business.utils.SlugUtils;
 import org.miles2run.business.vo.ProfileGroupDetails;
@@ -44,7 +44,7 @@ public class CommunityRunResource {
     @Context
     private SecurityContext securityContext;
     @Inject
-    private ProfileService profileService;
+    private ProfileRepository profileRepository;
     @Inject
     private GoalJPAService goalJPAService;
     @Inject
@@ -56,7 +56,7 @@ public class CommunityRunResource {
     @LoggedIn
     public Response createCommunityRun(@Valid CommunityRun communityRun) {
         String loggedInUser = securityContext.getUserPrincipal().getName();
-        Profile profile = profileService.findProfileByUsername(loggedInUser);
+        Profile profile = profileRepository.findProfileByUsername(loggedInUser);
         if (profile.getRole() == Role.ADMIN || profile.getRole() == Role.ORGANIZER) {
             communityRun.setSlug(SlugUtils.toSlug(communityRun.getName()));
             Long id = communityRunJPAService.save(communityRun);
@@ -134,7 +134,7 @@ public class CommunityRunResource {
         if (communityRunRedisService.isUserAlreadyPartOfRun(slug, principal)) {
             return Response.status(Response.Status.BAD_REQUEST).entity("You are already part of this community run").build();
         }
-        Profile profile = profileService.findProfile(principal);
+        Profile profile = profileRepository.findProfile(principal);
         logger.info("Adding profile {} to community run {}", principal, slug);
         CommunityRun communityRun = communityRunJPAService.addRunnerToCommunityRun(slug, profile);
 
@@ -160,7 +160,7 @@ public class CommunityRunResource {
         if (!communityRunRedisService.isUserAlreadyPartOfRun(slug, principal)) {
             return Response.status(Response.Status.BAD_REQUEST).entity("You are not part of this community run.").build();
         }
-        Profile profile = profileService.findProfile(principal);
+        Profile profile = profileRepository.findProfile(principal);
         logger.info("User {} leaving community run {}", principal, slug);
         communityRunJPAService.leaveCommunityRun(slug, profile);
         goalJPAService.archiveGoalWithCommunityRun(communityRunJPAService.find(slug), profile);

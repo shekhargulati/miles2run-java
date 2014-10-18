@@ -16,6 +16,7 @@ import org.miles2run.business.domain.jpa.*;
 import org.miles2run.business.producers.EntityManagerProducer;
 import org.miles2run.business.vo.*;
 import org.miles2run.jaxrs.forms.ProfileForm;
+import org.miles2run.shared.repositories.ProfileRepository;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -31,7 +32,7 @@ public class ActivityJPAServiceTest {
     @Inject
     private GoalJPAService goalJPAService;
     @Inject
-    private ProfileService profileService;
+    private ProfileRepository profileRepository;
     @Inject
     private EntityManager entityManager;
     @Inject
@@ -45,7 +46,7 @@ public class ActivityJPAServiceTest {
                 addClass(BaseEntity.class).
                 addClass(Profile.class).
                 addClass(SocialConnection.class).
-                addClass(ProfileService.class).
+                addClass(ProfileRepository.class).
                 addClass(ProfileDetails.class).
                 addClass(ProfileSocialConnectionDetails.class).
                 addClass(SocialProvider.class).
@@ -59,7 +60,7 @@ public class ActivityJPAServiceTest {
                 addClass(Profile.class).
                 addClass(EntityManagerProducer.class).
                 addClass(GoalJPAService.class).
-                addClass(ProfileService.class).
+                addClass(ProfileRepository.class).
                 addClass(Activity.class).
                 addClass(ActivityJPAService.class).
                 addClass(ActivityDetails.class).
@@ -109,7 +110,7 @@ public class ActivityJPAServiceTest {
 
     private Profile createProfile() {
         Profile profile = Profile.createProfile("test@test.com", "test_user", "Test User", "city", "country", Gender.MALE);
-        return profileService.save(profile);
+        return profileRepository.save(profile);
     }
 
     @Test

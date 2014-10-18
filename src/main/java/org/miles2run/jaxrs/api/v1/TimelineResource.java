@@ -4,7 +4,7 @@ import org.hibernate.validator.constraints.NotBlank;
 import org.jug.filters.LoggedIn;
 import org.miles2run.business.domain.jpa.Profile;
 import org.miles2run.business.services.jpa.ActivityJPAService;
-import org.miles2run.business.services.jpa.ProfileService;
+import org.miles2run.shared.repositories.ProfileRepository;
 import org.miles2run.business.services.redis.TimelineService;
 import org.miles2run.business.vo.ActivityDetails;
 import org.slf4j.Logger;
@@ -30,7 +30,7 @@ public class TimelineResource {
     @Inject
     private TimelineService timelineService;
     @Inject
-    private ProfileService profileService;
+    private ProfileRepository profileRepository;
     @Context
     private SecurityContext securityContext;
     @Inject
@@ -40,7 +40,7 @@ public class TimelineResource {
     @GET
     @Produces("application/json")
     public Map<String, Object> userTimeline(@NotBlank @QueryParam("username") String username, @QueryParam("page") int page, @QueryParam("count") int count) {
-        Profile profile = profileService.findProfile(username);
+        Profile profile = profileRepository.findProfile(username);
         if (profile == null) {
             return Collections.emptyMap();
         }
