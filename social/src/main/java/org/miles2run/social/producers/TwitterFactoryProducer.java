@@ -7,9 +7,6 @@ import twitter4j.conf.ConfigurationBuilder;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 
-/**
- * Created by shekhargulati on 04/03/14.
- */
 @ApplicationScoped
 public class TwitterFactoryProducer {
 

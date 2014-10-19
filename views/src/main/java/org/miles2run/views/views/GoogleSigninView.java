@@ -3,6 +3,8 @@ package org.miles2run.views.views;
 import org.jug.view.View;
 import org.miles2run.core.utils.UrlUtils;
 import org.miles2run.social.GoogleService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -11,13 +13,11 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
-import java.util.logging.Logger;
 
 @Path("/google/signin")
 public class GoogleSigninView {
 
-    @Inject
-    private Logger logger;
+    private final Logger logger = LoggerFactory.getLogger(GoogleSigninView.class);
 
     @Inject
     private GoogleService googleService;

@@ -6,6 +6,8 @@ import org.miles2run.core.repositories.mongo.UserProfileRepository;
 import org.miles2run.core.vo.ProfileDetails;
 import org.miles2run.core.vo.ProfileSocialConnectionDetails;
 import org.miles2run.domain.documents.UserProfile;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.ws.rs.*;
@@ -14,13 +16,11 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import java.util.Collections;
 import java.util.List;
-import java.util.logging.Logger;
 
 @Path("/users")
 public class UserResource {
 
-    @Inject
-    private Logger logger;
+    private final Logger logger = LoggerFactory.getLogger(UserResource.class);
 
     @Inject
     private ProfileRepository profileRepository;

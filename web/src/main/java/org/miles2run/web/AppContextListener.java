@@ -18,7 +18,7 @@ public class AppContextListener implements ServletContextListener {
         logger.info("inside contextInitialized()");
         ServletContext ctx = sce.getServletContext();
         FilterRegistration.Dynamic filter = ctx.addFilter("JUGFilter", JugFilterDispatcher.class);
-        filter.setInitParameter("javax.ws.rs.Application", RestConfig.class.getName());
+        filter.setInitParameter("javax.ws.rs.Application", ApplicationConfig.class.getName());
         filter.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, "/*");
         logger.info("Context Initialized....");
     }

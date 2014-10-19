@@ -16,13 +16,10 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.SecurityContext;
 import java.util.List;
-import java.util.logging.Logger;
 
 @Path("/home")
 public class HomeView {
 
-    @Inject
-    private Logger logger;
     @Context
     private SecurityContext securityContext;
     @Inject

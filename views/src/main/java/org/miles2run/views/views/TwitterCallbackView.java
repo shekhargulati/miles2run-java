@@ -21,7 +21,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 
-@Path("/twitter/callback")
+@Path("/")
 public class TwitterCallbackView {
 
     private Logger logger = LoggerFactory.getLogger(TwitterCallbackView.class);
@@ -33,6 +33,7 @@ public class TwitterCallbackView {
     @Context
     private HttpServletRequest request;
 
+    @Path("/twitter/callback")
     @GET
     @Produces("text/html")
     public View callback(@QueryParam("oauth_token") String oauthToken, @QueryParam("oauth_verifier") String oauthVerifier, @QueryParam("denied") String deniedCode) throws Exception {
@@ -59,7 +60,7 @@ public class TwitterCallbackView {
         SocialConnection socialConnection = new SocialConnection(oAuthAccessToken.getToken(), oAuthAccessToken.getTokenSecret(), SocialProvider.TWITTER, oAuthAccessToken.getScreenName(), connectionId);
         socialConnectionRepository.save(socialConnection);
         logger.info("Saved new SocialConnection with id {}", connectionId);
-        return View.of("/profiles/new?connectionId=" + connectionId, true);
+        return View.of("/users/new?connectionId=" + connectionId, true);
     }
 
     View getRedirectView(String connectionId, SocialConnection existingSocialConnection) {

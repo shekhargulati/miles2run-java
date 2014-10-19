@@ -60,7 +60,7 @@
                 </a>
                 <ul class="dropdown-menu dropdown-alerts">
                     <li ng-repeat="notification in notifications">
-                        <a ng-href="{{appContext()}}profiles/{{notification.userTookAction}}">
+                        <a ng-href="{{appContext()}}users/{{notification.userTookAction}}">
                             <div>
                                 <i class="fa fa-comment fa-fw"></i> {{notification.userTookAction}} {{notification.action|lowercase}}ed you
                                 <span class="pull-right text-muted small">{{notification.timestamp | date:'MMddyyyy HH mm ss'|moment}}</span>
@@ -84,7 +84,7 @@
                 </a>
                 <ul class="dropdown-menu dropdown-user">
                     <li>
-                        <a th:href="@{'/profiles/' + ${profile.username}} + '#/'" th:inline="text">
+                        <a th:href="@{'/users/' + ${profile.username}} + '#/'" th:inline="text">
                             <img width="25" height="25" th:src="${profile.profilePic}"/> [[${profile.fullname}]]
                         </a>
                     </li>

@@ -1,6 +1,5 @@
 package org.miles2run.core.repositories.jpa;
 
-import org.miles2run.core.exceptions.NoRecordExistsException;
 import org.miles2run.core.vo.ProfileDetails;
 import org.miles2run.core.vo.ProfileSocialConnectionDetails;
 import org.miles2run.domain.entities.Profile;
@@ -39,7 +38,7 @@ public class ProfileRepository {
             return entityManager.createQuery("select p from Profile p where p.username =:username", Profile.class).setParameter("username", username).getSingleResult();
         } catch (NoResultException e) {
             logger.warn("No user found with username: {}", username);
-            throw new NoRecordExistsException(username);
+            return null;
         }
     }
 
@@ -51,7 +50,7 @@ public class ProfileRepository {
             return query.getSingleResult();
         } catch (NoResultException e) {
             logger.warn("No user found with username: {}", username);
-            throw new NoRecordExistsException(String.format("No user exists with username %s", username));
+            return null;
         }
     }
 
@@ -63,7 +62,7 @@ public class ProfileRepository {
             return query.getSingleResult();
         } catch (NoResultException e) {
             logger.warn("No user found with email: {}", email);
-            throw new NoRecordExistsException(String.format("No user found with email: %s", email));
+            return null;
         }
     }
 

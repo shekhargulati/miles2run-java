@@ -4,6 +4,8 @@ import facebook4j.Facebook;
 import facebook4j.FacebookFactory;
 import org.jug.view.View;
 import org.jug.view.ViewException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.thymeleaf.TemplateEngine;
 
 import javax.inject.Inject;
@@ -13,18 +15,16 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
-import java.util.logging.Logger;
 
 import static org.miles2run.core.utils.UrlUtils.absoluteUrlForResourceMethod;
 
 @Path("/facebook/signin")
 public class FacebookSigninView {
 
-    @Inject
-    private FacebookFactory facebookFactory;
+    private final Logger logger = LoggerFactory.getLogger(FacebookSigninView.class);
 
     @Inject
-    private Logger logger;
+    private FacebookFactory facebookFactory;
     @Inject
     private TemplateEngine templateEngine;
 

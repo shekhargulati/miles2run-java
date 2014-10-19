@@ -5,11 +5,15 @@
 
     <persistence-unit name="milestogoPU" transaction-type="JTA">
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
-        <jta-data-source>java:jboss/datasources/MySQLDS</jta-data-source>
-        <exclude-unlisted-classes>false</exclude-unlisted-classes>
+        <jta-data-source>java:jboss/datasources/ExampleDS</jta-data-source>
+        <class>org.miles2run.domain.entities.Activity</class>
+        <class>org.miles2run.domain.entities.CommunityRun</class>
+        <class>org.miles2run.domain.entities.Goal</class>
+        <class>org.miles2run.domain.entities.Profile</class>
+        <class>org.miles2run.domain.entities.SocialConnection</class>
 
         <properties>
-            <property name="javax.persistence.schema-generation.database.action" value="none"/>
+            <property name="javax.persistence.schema-generation.database.action" value="drop-and-create"/>
             <!--<property name="javax.persistence.schema-generation.scripts.action" value="drop-and-create"/>-->
             <!--<property name="javax.persistence.schema-generation.scripts.create-target" value="file:/Users/shekhargulati/dev/sunday-apps/miles2run-workspace/miles2run-local/sql/create.sql"/>-->
             <!--<property name="javax.persistence.schema-generation.scripts.drop-target" value="file:/Users/shekhargulati/dev/sunday-apps/miles2run-workspace/miles2run-local/sql/drop.sql"/>-->

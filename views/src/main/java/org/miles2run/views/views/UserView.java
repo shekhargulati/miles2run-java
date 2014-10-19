@@ -35,6 +35,8 @@ import org.miles2run.social.GoogleService;
 import org.miles2run.views.filters.InjectProfile;
 import org.miles2run.views.forms.ProfileForm;
 import org.miles2run.views.forms.UpdateProfileForm;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.thymeleaf.TemplateEngine;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
@@ -54,15 +56,13 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-@Path("/profiles")
-public class ProfileView {
+@Path("/users")
+public class UserView {
 
-    @Inject
-    private Logger logger;
+    private final Logger logger = LoggerFactory.getLogger(UserView.class);
+
     @Inject
     private TwitterFactory twitterFactory;
     @Inject
@@ -108,7 +108,7 @@ public class ProfileView {
                 return googleProfile(connectionId, socialConnection);
             }
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "Unable to load profile form page.", e);
+            logger.warn("Unable to load profile form page.", e);
             throw new ViewException(e.getMessage(), e, templateEngine);
         }
         return View.of("/signin", true);
@@ -263,7 +263,7 @@ public class ProfileView {
                 return View.of("/editProfile", templateEngine).withModel("profile", profileForm).withModel("errors", errors);
             }
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "Unable to load create profile.", e);
+            logger.warn("Unable to load create profile.", e);
             throw new ViewException(e.getMessage(), e, templateEngine);
         }
     }
@@ -307,7 +307,7 @@ public class ProfileView {
             if (e instanceof ViewResourceNotFoundException) {
                 throw e;
             }
-            logger.log(Level.SEVERE, String.format("Unable to load %s page.", username), e);
+            logger.warn(String.format("Unable to load %s page.", username), e);
             throw new ViewException(e.getMessage(), e, templateEngine);
         }
     }
@@ -348,7 +348,7 @@ public class ProfileView {
             if (e instanceof ViewResourceNotFoundException) {
                 throw e;
             }
-            logger.log(Level.SEVERE, String.format("Unable to load %s page.", username), e);
+            logger.warn(String.format("Unable to load %s page.", username), e);
             throw new ViewException(e.getMessage(), e, templateEngine);
         }
 
@@ -382,7 +382,7 @@ public class ProfileView {
             if (e instanceof ViewResourceNotFoundException) {
                 throw e;
             }
-            logger.log(Level.SEVERE, String.format("Unable to load %s page.", username), e);
+            logger.warn(String.format("Unable to load %s page.", username), e);
             throw new ViewException(e.getMessage(), e, templateEngine);
         }
     }

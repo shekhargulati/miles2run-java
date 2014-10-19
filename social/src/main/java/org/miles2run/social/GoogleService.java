@@ -33,12 +33,21 @@ public class GoogleService {
     private GoogleAuthorizationCodeFlow flow;
 
     public GoogleService() {
-        flow = new GoogleAuthorizationCodeFlow.Builder(HTTP_TRANSPORT, JSON_FACTORY, CLIENT_ID, CLIENT_SECRET, SCOPE).build();
+        if (CLIENT_ID != null && CLIENT_SECRET != null) {
+            flow = new GoogleAuthorizationCodeFlow.Builder(HTTP_TRANSPORT, JSON_FACTORY, CLIENT_ID, CLIENT_SECRET, SCOPE).build();
+        }
     }
 
     public String buildLoginUrl(String baseUrl) {
+        checkFlowIsNotNull();
         final GoogleAuthorizationCodeRequestUrl url = flow.newAuthorizationUrl();
         return url.setRedirectUri(baseUrl + CALLBACK_URI).setState(generateStateToken()).build();
+    }
+
+    private void checkFlowIsNotNull() {
+        if (flow == null) {
+            throw new RuntimeException("Application is not configured to use Google services. Please set Google Client ID and Secret");
+        }
     }
 
     private String generateStateToken() {
@@ -47,11 +56,13 @@ public class GoogleService {
     }
 
     public GoogleTokenResponse getOauthToken(String baseUrl, final String authCode) throws IOException {
+        checkFlowIsNotNull();
         final GoogleTokenResponse response = flow.newTokenRequest(authCode).setRedirectUri(baseUrl + CALLBACK_URI).execute();
         return response;
     }
 
     public Google getUser(final GoogleTokenResponse token) throws IOException {
+        checkFlowIsNotNull();
         final Credential credential = flow.createAndStoreCredential(token, null);
         final HttpRequestFactory requestFactory = HTTP_TRANSPORT.createRequestFactory(credential);
         final GenericUrl url = new GenericUrl(USER_INFO_URL);

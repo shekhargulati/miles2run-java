@@ -1,5 +1,6 @@
 package org.miles2run.core.suggester;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -15,5 +16,5 @@ public interface UserSuggester {
      * @param username, user for which recommendations are to be computed.
      * @return {@link java.util.List} of suggested users(i.e. username) ordered from most strongly recommended to least.
      */
-    public List<String> suggestions(String username);
+    public List<String> suggestions(@NotNull String username);
 }

@@ -24,7 +24,7 @@ import javax.ws.rs.core.Context;
 public class GoogleCallbackView {
 
     private final Logger logger = LoggerFactory.getLogger(GoogleCallbackView.class);
-    
+
     @Context
     private HttpServletRequest request;
     @Inject
@@ -57,7 +57,7 @@ public class GoogleCallbackView {
         }
         SocialConnection socialConnection = new SocialConnection(oauthToken.getAccessToken(), null, SocialProvider.GOOGLE_PLUS, user.getName(), connectionId);
         socialConnectionRepository.save(socialConnection);
-        return View.of("/profiles/new?connectionId=" + connectionId, true);
+        return View.of("/users/new?connectionId=" + connectionId, true);
     }
 
 }

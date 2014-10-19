@@ -62,6 +62,6 @@ public class FacebookCallbackView {
         logger.info("User does not have social connection with us. So, creating a new SocialConnection and redirecting user to profile creation page.");
         SocialConnection socialConnection = new SocialConnection(oAuthAccessToken.getToken(), null, SocialProvider.FACEBOOK, facebook.users().getMe().getUsername(), connectionId);
         socialConnectionRepository.save(socialConnection);
-        return View.of("/profiles/new?connectionId=" + connectionId, true);
+        return View.of("/users/new?connectionId=" + connectionId, true);
     }
 }

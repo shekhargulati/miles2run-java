@@ -1,6 +1,5 @@
 package org.miles2run.core.repositories.jpa;
 
-import org.miles2run.core.exceptions.NoRecordExistsException;
 import org.miles2run.domain.entities.Profile;
 import org.miles2run.domain.entities.SocialConnection;
 
@@ -39,7 +38,7 @@ public class SocialConnectionRepository {
             SocialConnection socialConnection = query.getSingleResult();
             return socialConnection;
         } catch (NoResultException e) {
-            throw new NoRecordExistsException(String.format("No SocialConnection exists with id %s", connectionId));
+            return null;
         }
     }
 

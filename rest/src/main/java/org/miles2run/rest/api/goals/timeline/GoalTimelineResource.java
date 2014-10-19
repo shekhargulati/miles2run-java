@@ -14,13 +14,10 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.SecurityContext;
 import java.util.*;
-import java.util.logging.Logger;
 
 @Path("goals/{goalId}/activities")
 public class GoalTimelineResource {
 
-    @Inject
-    private Logger logger;
     @Inject
     private TimelineRepository timelineRepository;
     @Inject

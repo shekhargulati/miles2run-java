@@ -35,7 +35,7 @@
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" th:inline="text">
                         <img width="25" height="25" th:src="${profile.profilePic}"/> [[${profile.fullname}]] <b class="caret"></b></a>
                     <ul class="dropdown-menu">
-                        <li><a href="#" th:href="@{'/profiles/' + ${profile.username}}"
+                        <li><a href="#" th:href="@{'/users/' + ${profile.username}}"
                                th:text="${profile.fullname}"></a></li>
                         <li><a href="#" th:href="@{/logout}">Logout</a></li>
                     </ul>

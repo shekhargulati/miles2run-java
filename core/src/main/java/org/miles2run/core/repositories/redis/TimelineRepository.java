@@ -7,6 +7,8 @@ import org.miles2run.domain.documents.UserProfile;
 import org.miles2run.domain.entities.CommunityRun;
 import org.miles2run.domain.entities.Goal;
 import org.miles2run.domain.entities.Profile;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Pipeline;
 import redis.clients.jedis.Response;
@@ -17,17 +19,15 @@ import javax.inject.Inject;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.logging.Logger;
 
 @ApplicationScoped
 public class TimelineRepository {
 
     private static final long HOME_TIMELINE_SIZE = 1000;
-
+    private final Logger logger = LoggerFactory.getLogger(TimelineRepository.class);
+    
     @Inject
     private JedisExecution jedisExecution;
-    @Inject
-    private Logger logger;
     @Inject
     private UserProfileRepository userProfileRepository;
 
