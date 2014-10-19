@@ -1,0 +1,31 @@
+package org.miles2run.views.views;
+
+import org.jug.filters.EnableSession;
+import org.jug.view.View;
+import org.jug.view.ViewException;
+import org.thymeleaf.TemplateEngine;
+
+import javax.inject.Inject;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import java.util.logging.Logger;
+
+@Path("/signin")
+public class SigninView {
+
+    @Inject
+    private Logger logger;
+
+    @Inject
+    private TemplateEngine templateEngine;
+
+    @GET
+    @Produces("text/html")
+    @EnableSession
+    public View signin() throws ViewException {
+        logger.info("In signin().. ");
+        return View.of("/signin", templateEngine);
+    }
+
+}
