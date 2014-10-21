@@ -72,7 +72,7 @@ public class CommunityRunResource {
         max = max > 20 ? 20 : max;
         page = page == 0 ? 1 : page;
         if (StringUtils.isNotBlank(name)) {
-            return toCommunityRunDetailsList(communityRunRepository.findAllActiveCommunityRunsWithNameLike(name, max, page));
+            return toCommunityRunDetailsList(communityRunRepository.findAllActiveCommunityRunsWithNameLike(name, page, max));
         }
         List<CommunityRun> activeCommunityRuns = communityRunRepository.findAllActiveCommunityRuns(max, page);
         List<CommunityRunDetails> communityRunDetailsList = new ArrayList<>();
