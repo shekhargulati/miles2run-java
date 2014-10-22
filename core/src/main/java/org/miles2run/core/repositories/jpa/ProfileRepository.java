@@ -24,17 +24,18 @@ public class ProfileRepository {
     public static final String FIND_PROFILES_BY_USERNAMES = "SELECT p from Profile p WHERE p.username IN :usernames";
     public static final String FIND_BY_FULLNAME_LIKE = "SELECT p from Profile p WHERE lower(p.fullname) LIKE :name";
     private static final String FIND_BY_USERNAME_QUERY = "select p from Profile p where p.username =:username";
+
     private final Logger logger = LoggerFactory.getLogger(ProfileRepository.class);
+
     @Inject
     private EntityManager entityManager;
 
     public Profile save(final Profile profile) {
-//        Profile merge = entityManager.merge(profile);
         entityManager.persist(profile);
         return profile;
     }
 
-    public Profile get(final long id) {
+    public Profile get(final Long id) {
         return entityManager.find(Profile.class, id);
     }
 
@@ -89,5 +90,10 @@ public class ProfileRepository {
         } catch (NoResultException e) {
             return null;
         }
+    }
+
+    public void update(final Profile profile) {
+        Profile merge = entityManager.merge(profile);
+        entityManager.persist(merge);
     }
 }

@@ -17,7 +17,6 @@ public class Duration implements Serializable {
     @Type(type = "org.jadira.usertype.dateandtime.legacyjdk.PersistentDate")
     private Date startDate;
 
-    @NotNull
     @Type(type = "org.jadira.usertype.dateandtime.legacyjdk.PersistentDate")
     private Date endDate;
 

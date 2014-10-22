@@ -1,0 +1,27 @@
+{
+    "goal": [
+        {
+            "id": 100,
+            "version": 0,
+            "archived": false,
+            "purpose": "100 miles run",
+            "distance": 100,
+            "profile_id": 1000,
+            "goalUnit": "MI",
+            "goal_type": "DISTANCE_GOAL",
+            "startDate": "2014-10-22 00:00:00.0"
+        },
+        {
+            "id": 101,
+            "version": 0,
+            "archived": false,
+            "purpose": "200 miles run",
+            "distance": 100,
+            "profile_id": 1000,
+            "goalUnit": "MI",
+            "goal_type": "DISTANCE_GOAL",
+            "startDate": "2014-10-22 00:00:00.0"
+        }
+    ]
+
+}

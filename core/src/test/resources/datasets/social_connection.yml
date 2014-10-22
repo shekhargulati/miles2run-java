@@ -1,5 +1,6 @@
 social_connection:
   - id: 1000
+    version: 0
     connectionId: test_connection
     accessToken: access_token
     accessSecret: access_secret

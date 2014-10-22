@@ -1,0 +1,9 @@
+profile:
+  - id: 1000
+    version: 1
+    username: test_user
+    email: test_user@test.com
+    city: updated_test_city
+    country: updated_test_country
+    fullname: Updated Test User
+    role: USER

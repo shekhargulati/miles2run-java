@@ -34,6 +34,14 @@ public abstract class Goal extends BaseEntity {
     protected Goal() {
     }
 
+    protected Goal(String purpose, Duration duration, GoalUnit goalUnit, boolean archived, Profile profile) {
+        this.purpose = purpose;
+        this.duration = duration;
+        this.goalUnit = goalUnit;
+        this.archived = archived;
+        this.profile = profile;
+    }
+
     public String getPurpose() {
         return purpose;
     }

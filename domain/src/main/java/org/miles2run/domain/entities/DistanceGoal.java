@@ -15,6 +15,15 @@ public class DistanceGoal extends Goal {
     protected DistanceGoal() {
     }
 
+    private DistanceGoal(String purpose, Duration duration, GoalUnit goalUnit, boolean archived, Profile profile, long distance) {
+        super(purpose, duration, goalUnit, archived, profile);
+        this.distance = distance;
+    }
+
+    static DistanceGoal createDistanceGoal(String purpose, Duration duration, GoalUnit goalUnit, boolean archived, Profile profile, long distance) {
+        return new DistanceGoal(purpose, duration, goalUnit, archived, profile, distance);
+    }
+
     public long getDistance() {
         return distance;
     }

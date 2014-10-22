@@ -15,6 +15,15 @@ public class DurationGoal extends Goal {
     protected DurationGoal() {
     }
 
+    private DurationGoal(String purpose, Duration duration, GoalUnit goalUnit, boolean archived, Profile profile, int days) {
+        super(purpose, duration, goalUnit, archived, profile);
+        this.days = days;
+    }
+
+    static DurationGoal createDurationGoal(String purpose, Duration duration, GoalUnit goalUnit, boolean archived, Profile profile, int days) {
+        return new DurationGoal(purpose, duration, goalUnit, archived, profile, days);
+    }
+
     public int getDays() {
         return days;
     }

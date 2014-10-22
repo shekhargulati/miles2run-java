@@ -1,0 +1,15 @@
+{
+    "goal": [
+        {
+            "id": 1001,
+            "version": 0,
+            "archived": false,
+            "purpose": "Run 50 days",
+            "profile_id": 1000,
+            "goalUnit": "MI",
+            "days": 50,
+            "goal_type": "DURATION_GOAL"
+        }
+    ]
+
+}

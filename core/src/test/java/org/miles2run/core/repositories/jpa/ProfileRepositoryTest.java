@@ -226,4 +226,12 @@ public class ProfileRepositoryTest {
             Assert.assertEquals(SocialProvider.TWITTER, socialConnection.getProvider());
         }
     }
+
+    @Test
+    @UsingDataSet({"profile.yml"})
+    public void shouldUpdateAnExistingProfile() throws Exception {
+        Profile profile = entityManager.find(Profile.class, 1000L);
+        profile.setFullname("Updated User");
+        profileRepository.update(profile);
+    }
 }

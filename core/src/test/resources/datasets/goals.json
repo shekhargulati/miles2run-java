@@ -1,0 +1,51 @@
+{
+    "goal": [
+        {
+            "id": 100,
+            "version": 0,
+            "archived": false,
+            "purpose": "100 miles run",
+            "distance": 100,
+            "profile_id": 1000,
+            "goalUnit": "MI",
+            "goal_type": "DISTANCE_GOAL",
+            "startDate": "2014-10-22 00:00:00.0",
+            "createdAt": "2014-10-22 00:00:00.0"
+        },
+        {
+            "id": 101,
+            "version": 0,
+            "archived": false,
+            "purpose": "200 miles run",
+            "distance": 100,
+            "profile_id": 1000,
+            "goalUnit": "MI",
+            "goal_type": "DISTANCE_GOAL",
+            "startDate": "2014-10-22 00:00:00.0",
+            "createdAt": "2014-10-23 00:00:00.0"
+        },
+        {
+            "id": 1000,
+            "version": 0,
+            "archived": false,
+            "purpose": "Run 30 days",
+            "profile_id": 1000,
+            "goalUnit": "MI",
+            "days": 30,
+            "goal_type": "DURATION_GOAL",
+            "createdAt": "2014-10-24 00:00:00.0"
+        },
+        {
+            "id": 1001,
+            "version": 0,
+            "archived": false,
+            "purpose": "Run 50 days",
+            "profile_id": 1000,
+            "goalUnit": "MI",
+            "days": 50,
+            "goal_type": "DURATION_GOAL",
+            "createdAt": "2014-10-25 00:00:00.0"
+        }
+    ]
+
+}

@@ -83,7 +83,7 @@ public class SocialConnection extends BaseEntity {
     @Override
     public String toString() {
         return "SocialConnection{" +
-                "id='" + id + '\'' +
+                "id='" + this.getId() + '\'' +
                 "accessToken='" + accessToken + '\'' +
                 ", accessSecret='" + accessSecret + '\'' +
                 ", provider=" + provider +

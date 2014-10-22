@@ -1,5 +1,6 @@
 social_connection:
   - id: 1001
+    version: 0
     connectionId: test_connection_1
     accessToken: access_token
     accessSecret: access_secret
@@ -7,6 +8,7 @@ social_connection:
     provider: TWITTER
     profile_id: 1001
   - id: 1002
+    version: 0
     connectionId: test_connection_2
     accessToken: access_token
     accessSecret: access_secret
@@ -14,6 +16,7 @@ social_connection:
     provider: TWITTER
     profile_id: 1002
   - id: 1003
+    version: 0
     connectionId: test_connection_3
     accessToken: access_token
     accessSecret: access_secret

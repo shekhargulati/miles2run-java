@@ -21,12 +21,11 @@ public class Profile extends BaseEntity {
 
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "profile", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<SocialConnection> socialConnections = new ArrayList<>();
+    private List<SocialConnection> socialConnections;
 
     @NotBlank
     @Column(unique = true)
     @Email
-    @Basic(fetch = FetchType.LAZY)
     private String email;
 
     @NotBlank
@@ -85,20 +84,40 @@ public class Profile extends BaseEntity {
         return fullname;
     }
 
+    public void setFullname(String fullname) {
+        this.fullname = fullname;
+    }
+
     public String getBio() {
         return bio;
+    }
+
+    public void setBio(String bio) {
+        this.bio = bio;
     }
 
     public String getCity() {
         return city;
     }
 
+    public void setCity(String city) {
+        this.city = city;
+    }
+
     public String getCountry() {
         return country;
     }
 
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
     public Gender getGender() {
         return gender;
+    }
+
+    public void setGender(Gender gender) {
+        this.gender = gender;
     }
 
     public String getProfilePic() {
@@ -109,11 +128,21 @@ public class Profile extends BaseEntity {
         return role;
     }
 
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
     public List<SocialConnection> getSocialConnections() {
+        if (socialConnections == null) {
+            socialConnections = new ArrayList<>();
+        }
         return Collections.unmodifiableList(socialConnections);
     }
 
     public Profile addSocialConnection(SocialConnection socialConnection) {
+        if (socialConnections == null) {
+            socialConnections = new ArrayList<>();
+        }
         socialConnections.add(socialConnection);
         socialConnection.setProfile(this);
         return this;
@@ -149,7 +178,7 @@ public class Profile extends BaseEntity {
     @Override
     public String toString() {
         return "Profile{" +
-                "id='" + id + '\'' +
+                "id='" + this.getId() + '\'' +
                 "email='" + email + '\'' +
                 ", fullname='" + fullname + '\'' +
                 ", username='" + username + '\'' +

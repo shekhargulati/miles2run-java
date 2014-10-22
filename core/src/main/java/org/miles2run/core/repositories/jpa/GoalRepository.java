@@ -1,8 +1,6 @@
-/*
 package org.miles2run.core.repositories.jpa;
 
 import org.miles2run.domain.entities.CommunityRun;
-import org.miles2run.domain.entities.Duration;
 import org.miles2run.domain.entities.Goal;
 import org.miles2run.domain.entities.Profile;
 import org.slf4j.Logger;
@@ -14,6 +12,7 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 import javax.validation.constraints.NotNull;
 import java.util.List;
@@ -28,58 +27,40 @@ public class GoalRepository {
     @Inject
     private EntityManager entityManager;
 
-    public List<Goal> findAllGoals(final Profile profile, final boolean archived) {
-        final String allGoalsQuery = "SELECT new Goal(g) FROM Goal g where g.profile =:profile and g.archived =:archived";
-        TypedQuery<Goal> query = entityManager.createQuery(allGoalsQuery, Goal.class);
-        query.setParameter("profile", profile);
-        query.setParameter("archived", archived);
-        return query.getResultList();
-    }
-
-    public Goal save(Goal goal, Profile profile) {
-        goal.setProfile(profile);
+    public <T extends Goal> T save(final T goal) {
         entityManager.persist(goal);
-        return findGoal(profile, goal.getId());
+        return goal;
     }
 
-    public Goal findGoal(Profile profile, Long goalId) {
+    public List<Goal> findAll(final Profile profile, final boolean archived) {
+        final String findByProfileAndArchiveQuery = "SELECT g FROM Goal g where g.profile =:profile and g.archived =:archived";
+        return entityManager.createQuery(findByProfileAndArchiveQuery, Goal.class)
+                .setParameter("profile", profile)
+                .setParameter("archived", archived)
+                .getResultList();
+    }
+
+    public Goal find(final Profile profile, final Long goalId) {
         try {
-            final String goalByProfileAndGoalIdQuery = "SELECT new Goal(g) FROM Goal g where g.profile =:profile and g.id =:goalId";
-            TypedQuery<Goal> query = entityManager.createQuery(goalByProfileAndGoalIdQuery, Goal.class);
-            query.setParameter("profile", profile);
-            query.setParameter("goalId", goalId);
-            return query.getSingleResult();
-        } catch (Exception e) {
+            final String goalByProfileAndGoalIdQuery = "SELECT g FROM Goal g where g.profile =:profile and g.id =:goalId";
+            return entityManager.createQuery(goalByProfileAndGoalIdQuery, Goal.class).setParameter("profile", profile).setParameter("goalId", goalId).getSingleResult();
+        } catch (NoResultException e) {
+            logger.warn("No goal exists for profile {} and goalId {}", profile.getUsername(), goalId);
             return null;
         }
     }
 
-    public void update(Goal goal, Long goalId) {
-        Goal existingGoal = this.find(goalId);
-        existingGoal.setDistance(goal.getDistance());
-        existingGoal.setDuration(new Duration(goal.getDuration().getStartDate(), goal.getDuration().getEndDate()));
-        existingGoal.setArchived(goal.isArchived());
-        existingGoal.setGoalUnit(goal.getGoalUnit());
-        existingGoal.setPurpose(goal.getPurpose());
-        entityManager.persist(existingGoal);
+    public <T extends Goal> T find(Class<T> type, Long goalId) {
+        return entityManager.find(type, goalId);
     }
 
-    public Goal find(Long goalId) {
-        return entityManager.find(Goal.class, goalId);
-    }
-
-    public void delete(Long goalId) {
-        entityManager.remove(this.find(goalId));
-    }
-
-    public void updatedArchiveStatus(Long goalId, boolean archived) {
-        Goal goal = this.find(goalId);
-        goal.setArchived(archived);
-        entityManager.persist(goal);
+    public <T extends Goal> void update(T goal) {
+        T merged = entityManager.merge(goal);
+        entityManager.persist(merged);
     }
 
     public Goal findLatestCreatedGoal(Profile profile) {
-        final String lastCreatedGoalQuery = "SELECT new Goal(g) from Goal g where g.profile =:profile order by g.createdAt desc";
+        final String lastCreatedGoalQuery = "SELECT g from Goal g where g.profile =:profile order by g.createdAt desc";
         TypedQuery<Goal> query = entityManager.createQuery(lastCreatedGoalQuery, Goal.class);
         query.setParameter("profile", profile);
         query.setMaxResults(1);
@@ -106,4 +87,3 @@ public class GoalRepository {
         return entityManager.createQuery("SELECT count(g) FROM Goal g where g.profile =:profile and g.archived is FALSE", Long.class).setParameter("profile", profile).getSingleResult();
     }
 }
-*/

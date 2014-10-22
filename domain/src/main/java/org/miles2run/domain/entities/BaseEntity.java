@@ -14,18 +14,19 @@ public abstract class BaseEntity implements Serializable {
     @Id
     @TableGenerator(name = "id_generator", table = "id_gen", allocationSize = 100)
     @GeneratedValue(generator = "id_generator")
-    Long id;
+    private Long id;
 
     @Version
-    Long version;
-
-    @Column(updatable = false)
-    @Type(type = "org.jadira.usertype.dateandtime.legacyjdk.PersistentDate")
-    Date createdAt;
+    private int version;
 
     @Column
     @Type(type = "org.jadira.usertype.dateandtime.legacyjdk.PersistentDate")
-    Date updatedAt;
+    private Date updatedAt;
+
+    @Column(updatable = false)
+    @Type(type = "org.jadira.usertype.dateandtime.legacyjdk.PersistentDate")
+    private Date createdAt;
+
 
     protected BaseEntity() {
     }
@@ -34,7 +35,7 @@ public abstract class BaseEntity implements Serializable {
         return id;
     }
 
-    public Long getVersion() {
+    public int getVersion() {
         return version;
     }
 
@@ -42,12 +43,12 @@ public abstract class BaseEntity implements Serializable {
         return getLastUpdatedAt() == null ? getCreatedAt() : getLastUpdatedAt();
     }
 
-    public Date getCreatedAt() {
-        return (Date) createdAt.clone();
-    }
-
     public Date getLastUpdatedAt() {
         return updatedAt == null ? null : (Date) updatedAt.clone();
+    }
+
+    public Date getCreatedAt() {
+        return (Date) createdAt.clone();
     }
 
     @PrePersist
