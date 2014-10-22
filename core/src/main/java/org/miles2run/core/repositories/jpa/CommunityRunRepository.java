@@ -1,3 +1,4 @@
+/*
 package org.miles2run.core.repositories.jpa;
 
 import org.miles2run.core.exceptions.NoRecordExistsException;
@@ -21,6 +22,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 @Stateless
 @LocalBean
@@ -66,13 +68,13 @@ public class CommunityRunRepository {
         }
     }
 
-    public List<Profile> findAllRunners(@NotNull final String slug) {
+    public Set<Profile> findAllRunners(@NotNull final String slug) {
         final String communityRunBySlugQuery = "SELECT cr FROM CommunityRun cr WHERE cr.slug =:slug";
         TypedQuery<CommunityRun> query = entityManager.createQuery(communityRunBySlugQuery, CommunityRun.class)
                 .setParameter("slug", slug);
         try {
             CommunityRun communityRun = query.getSingleResult();
-            List<Profile> profiles = communityRun.getProfiles();
+            Set<Profile> profiles = communityRun.getRunners();
             profiles.size();
             return profiles;
         } catch (NoResultException e) {
@@ -101,7 +103,7 @@ public class CommunityRunRepository {
         if (communityRun == null) {
             return Collections.emptyList();
         }
-        List<Profile> runners = communityRun.getProfiles();
+        Set<Profile> runners = communityRun.getRunners();
         if (runners.isEmpty()) {
             return Collections.emptyList();
         }
@@ -124,7 +126,7 @@ public class CommunityRunRepository {
     // TODO: IS THIS THE RIGHT  WAY TO HANDLE CONCURRENCY?
     public CommunityRun addRunnerToCommunityRun(final String slug, final Profile profile) {
         CommunityRun communityRun = this.findBySlugWithPessimisticWriteLock(slug);
-        communityRun.getProfiles().add(profile);
+        communityRun.getRunners().add(profile);
         entityManager.merge(communityRun);
         entityManager.flush();
         return communityRun;
@@ -142,8 +144,9 @@ public class CommunityRunRepository {
 
     public void leaveCommunityRun(final String slug, final Profile profile) {
         CommunityRun communityRun = this.findBySlugWithPessimisticWriteLock(slug);
-        communityRun.getProfiles().remove(profile);
+        communityRun.getRunners().remove(profile);
         entityManager.merge(communityRun);
         entityManager.flush();
     }
 }
+*/

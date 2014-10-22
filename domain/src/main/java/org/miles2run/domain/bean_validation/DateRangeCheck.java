@@ -7,7 +7,7 @@ import java.lang.annotation.RetentionPolicy;
 
 @Constraint(validatedBy = {CommunityRunDateRangeValidator.class})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface CommunityRunDateRange {
+public @interface DateRangeCheck {
 
     String message() default "startDate should be before endDate";
 

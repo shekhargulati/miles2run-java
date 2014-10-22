@@ -1,0 +1,6 @@
+social_connection:
+  - connectionId: test_connection
+    accessToken: updated_access_token
+    accessSecret: updated_access_secret
+    handle: test_user
+    provider: TWITTER

@@ -1,89 +1,37 @@
 package org.miles2run.domain.entities;
 
-import org.hibernate.annotations.Type;
-
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.util.Date;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Access(AccessType.FIELD)
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "goal_type")
 @Table(name = "goal")
-public class Goal extends BaseEntity {
+public abstract class Goal extends BaseEntity {
+
+    @OneToMany(mappedBy = "goal", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private final Set<Activity> activities = new HashSet<>();
 
     @NotNull
     private String purpose;
 
-    @Type(type = "org.jadira.usertype.dateandtime.legacyjdk.PersistentDate")
-    private Date startDate;
-
-    @Type(type = "org.jadira.usertype.dateandtime.legacyjdk.PersistentDate")
-    private Date endDate;
-
-    @ManyToOne
-    private Profile profile;
-
-    @ManyToOne
-    @JoinColumn(name = "communityRun_Id")
-    private CommunityRun communityRun;
-
-    private long distance = 0;
+    @NotNull
+    @Embedded
+    private Duration duration;
 
     @Enumerated(EnumType.STRING)
     private GoalUnit goalUnit = GoalUnit.MI;
 
-    @Enumerated(EnumType.STRING)
-    @NotNull
-    private GoalType goalType;
-
     private boolean archived = false;
 
-    public Goal() {
-    }
+    @ManyToOne
+    private Profile profile;
 
-    public Goal(Goal goal) {
-        this.id = goal.id;
-        this.version = goal.version;
-        this.purpose = goal.purpose;
-        this.startDate = goal.startDate;
-        this.endDate = goal.endDate;
-        this.goalUnit = goal.goalUnit;
-        this.distance = goal.distance;
-        this.archived = goal.archived;
-        this.goalType = goal.goalType;
-        if (goal.communityRun != null) {
-            this.communityRun = new CommunityRun(goal.communityRun);
-        }
-    }
-
-    public Goal(Long id, Long version, String purpose, Date startDate, Date endDate, long distance, GoalUnit goalUnit, boolean archived, GoalType goalType) {
-        this.id = id;
-        this.version = version;
-        this.purpose = purpose;
-        this.startDate = startDate;
-        this.endDate = endDate;
-        this.goalUnit = goalUnit;
-        this.distance = distance;
-        this.archived = archived;
-        this.goalType = goalType;
-    }
-
-    public static Goal of(Long id, long distance, GoalUnit goalUnit) {
-        Goal goal = new Goal();
-        goal.id = id;
-        goal.distance = distance;
-        goal.goalUnit = goalUnit;
-        return goal;
-    }
-
-    public static Goal newCommunityRunGoal(CommunityRun communityRun) {
-        Goal goal = new Goal();
-        goal.purpose = communityRun.getName() + " Community Run";
-        goal.startDate = new Date();
-        goal.endDate = communityRun.getEndDate();
-        goal.goalType = GoalType.COMMUNITY_RUN_GOAL;
-        goal.communityRun = communityRun;
-        return goal;
+    protected Goal() {
     }
 
     public String getPurpose() {
@@ -94,28 +42,12 @@ public class Goal extends BaseEntity {
         this.purpose = purpose;
     }
 
-    public Date getEndDate() {
-        return endDate;
+    public Duration getDuration() {
+        return duration;
     }
 
-    public void setEndDate(Date targetDate) {
-        this.endDate = targetDate;
-    }
-
-    public Profile getProfile() {
-        return profile;
-    }
-
-    public void setProfile(Profile profile) {
-        this.profile = profile;
-    }
-
-    public long getDistance() {
-        return distance;
-    }
-
-    public void setDistance(long distance) {
-        this.distance = distance;
+    public void setDuration(Duration duration) {
+        this.duration = duration;
     }
 
     public GoalUnit getGoalUnit() {
@@ -134,40 +66,27 @@ public class Goal extends BaseEntity {
         this.archived = archived;
     }
 
-    public Date getStartDate() {
-        return startDate;
+    public Profile getProfile() {
+        return profile;
     }
 
-    public void setStartDate(Date startDate) {
-        this.startDate = startDate;
+    public void setProfile(Profile profile) {
+        this.profile = profile;
     }
 
-    public CommunityRun getCommunityRun() {
-        return communityRun;
+    public Set<Activity> getActivities() {
+        return Collections.unmodifiableSet(activities);
     }
 
-    public void setCommunityRun(CommunityRun communityRun) {
-        this.communityRun = communityRun;
+    public Goal addActivity(Activity activity) {
+        activities.add(activity);
+        return this;
     }
 
-    public GoalType getGoalType() {
-        return goalType;
-    }
-
-    public void setGoalType(GoalType goalType) {
-        this.goalType = goalType;
-    }
-
-    @Override
-    public String toString() {
-        return "Goal{" +
-                "id=" + id +
-                ", purpose='" + purpose + '\'' +
-                ", targetDate=" + endDate +
-                ", createdAt=" + createdAt +
-                ", distance=" + distance +
-                ", goalUnit=" + goalUnit +
-                ", archived=" + archived +
-                '}';
+    public Goal removeActivity(Activity activity) {
+        if (activities.remove(activity)) {
+            activity.setGoal(null);
+        }
+        return this;
     }
 }

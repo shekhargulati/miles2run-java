@@ -4,6 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.jug.view.View;
 import org.miles2run.core.repositories.jpa.SocialConnectionRepository;
 import org.miles2run.domain.entities.SocialConnection;
+import org.miles2run.domain.entities.SocialConnectionBuilder;
 import org.miles2run.domain.entities.SocialProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,7 +58,7 @@ public class TwitterCallbackView {
                 return getRedirectView(connectionId, socialConnectionRepository.findByConnectionId(connectionId));
             }
         }
-        SocialConnection socialConnection = new SocialConnection(oAuthAccessToken.getToken(), oAuthAccessToken.getTokenSecret(), SocialProvider.TWITTER, oAuthAccessToken.getScreenName(), connectionId);
+        SocialConnection socialConnection = new SocialConnectionBuilder().setAccessToken(oAuthAccessToken.getToken()).setAccessSecret(oAuthAccessToken.getTokenSecret()).setProvider(SocialProvider.TWITTER).setHandle(oAuthAccessToken.getScreenName()).setConnectionId(connectionId).createSocialConnection();
         socialConnectionRepository.save(socialConnection);
         logger.info("Saved new SocialConnection with id {}", connectionId);
         return View.of("/users/new?connectionId=" + connectionId, true);

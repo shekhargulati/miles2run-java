@@ -8,6 +8,7 @@ import org.jug.view.View;
 import org.miles2run.core.repositories.jpa.SocialConnectionRepository;
 import org.miles2run.core.utils.UrlUtils;
 import org.miles2run.domain.entities.SocialConnection;
+import org.miles2run.domain.entities.SocialConnectionBuilder;
 import org.miles2run.domain.entities.SocialProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,7 +61,7 @@ public class FacebookCallbackView {
             }
         }
         logger.info("User does not have social connection with us. So, creating a new SocialConnection and redirecting user to profile creation page.");
-        SocialConnection socialConnection = new SocialConnection(oAuthAccessToken.getToken(), null, SocialProvider.FACEBOOK, facebook.users().getMe().getUsername(), connectionId);
+        SocialConnection socialConnection = new SocialConnectionBuilder().setAccessToken(oAuthAccessToken.getToken()).setAccessSecret(null).setProvider(SocialProvider.FACEBOOK).setHandle(facebook.users().getMe().getUsername()).setConnectionId(connectionId).createSocialConnection();
         socialConnectionRepository.save(socialConnection);
         return View.of("/users/new?connectionId=" + connectionId, true);
     }

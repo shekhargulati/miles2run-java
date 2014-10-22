@@ -10,9 +10,6 @@ import javax.annotation.PreDestroy;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 
-/**
- * Created by shekhargulati on 17/03/14.
- */
 @ApplicationScoped
 public class JedisProducer {
 

@@ -46,7 +46,7 @@ public class GoalResource {
     @GET
     @Produces("application/json")
     @LoggedIn
-    public Response allGoal(@QueryParam("archived") boolean archived, @QueryParam("groupByType") Boolean groupByType) {
+    public Response allGoals(@QueryParam("archived") boolean archived, @QueryParam("groupByType") Boolean groupByType) {
         Profile profile = getProfile();
         List<Goal> goals = goalRepository.findAllGoals(profile, archived);
         if (groupByType != null && groupByType) {

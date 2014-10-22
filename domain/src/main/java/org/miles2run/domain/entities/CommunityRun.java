@@ -1,8 +1,7 @@
 package org.miles2run.domain.entities;
 
-import org.hibernate.annotations.Type;
 import org.hibernate.validator.constraints.URL;
-import org.miles2run.domain.bean_validation.CommunityRunDateRange;
+import org.miles2run.domain.bean_validation.DateRangeCheck;
 import org.miles2run.domain.bean_validation.ImageUrl;
 
 import javax.persistence.*;
@@ -16,16 +15,25 @@ import java.util.*;
         @Index(columnList = "name", unique = true),
         @Index(columnList = "slug", unique = true)
 })
-@CommunityRunDateRange
+@DateRangeCheck
 public class CommunityRun extends BaseEntity {
+
+    @NotNull
+    @Size(max = 10)
+    @ElementCollection(fetch = FetchType.EAGER)
+    @JoinTable(name = "hashtags", joinColumns = {@JoinColumn(name = "cr_id")})
+    private final Set<String> hashtags = new HashSet<>();
+
+    @OneToMany(orphanRemoval = true, mappedBy = "communityRun", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private final Set<CommunityRunGoal> goals = new HashSet<>();
+
+    @ManyToMany
+    private final Set<Profile> runners = new HashSet<>();
 
     @NotNull
     private String name;
 
     @NotNull
-    @ImageUrl
-    private String bannerImg;
-
     private String slug;
 
     @NotNull
@@ -33,12 +41,8 @@ public class CommunityRun extends BaseEntity {
     private String description;
 
     @NotNull
-    @Type(type = "org.jadira.usertype.dateandtime.legacyjdk.PersistentDate")
-    private Date startDate;
-
-    @NotNull
-    @Type(type = "org.jadira.usertype.dateandtime.legacyjdk.PersistentDate")
-    private Date endDate;
+    @Embedded
+    private Duration duration;
 
     @URL
     private String website;
@@ -47,42 +51,64 @@ public class CommunityRun extends BaseEntity {
     private String twitterHandle;
 
     @NotNull
-    @Size(max = 10)
-    @ElementCollection(fetch = FetchType.EAGER)
-    @JoinTable(name = "communityrun_hashtags", joinColumns = {
-            @JoinColumn(name = "communityRun_Id")
-    })
-    private Set<String> hashtags = new HashSet<>();
-
-    @ManyToMany
-    private List<Profile> profiles = new ArrayList<>();
+    @ImageUrl
+    private String bannerImg;
 
     private boolean active = true;
 
-    public CommunityRun() {
+
+    protected CommunityRun() {
     }
 
-    public CommunityRun(CommunityRun communityRun) {
-        this.name = communityRun.name;
-        this.bannerImg = communityRun.bannerImg;
-        this.slug = communityRun.slug;
-        this.description = communityRun.description;
-        this.startDate = communityRun.startDate;
-        this.endDate = communityRun.endDate;
-        this.website = communityRun.website;
-        this.twitterHandle = communityRun.twitterHandle;
-        this.hashtags = communityRun.hashtags;
-    }
-
-    public CommunityRun(String name, String bannerImg, String slug, String description, Date startDate, Date endDate, String website, String twitterHandle) {
+    private CommunityRun(String name, String slug, String description, Duration duration, String website, String twitterHandle, String bannerImg) {
         this.name = name;
-        this.bannerImg = bannerImg;
         this.slug = slug;
         this.description = description;
-        this.startDate = startDate;
-        this.endDate = endDate;
+        this.duration = duration;
         this.website = website;
         this.twitterHandle = twitterHandle;
+        this.bannerImg = bannerImg;
+    }
+
+    static CommunityRun createCommunityRun(String name, String slug, String description, Duration duration, String website, String twitterHandle, String bannerImg) {
+        return new CommunityRun(name, slug, description, duration, website, twitterHandle, bannerImg);
+    }
+
+    public Set<String> getHashtags() {
+        return Collections.unmodifiableSet(hashtags);
+    }
+
+    public CommunityRun addHashtag(String hashtag) {
+        hashtags.add(hashtag);
+        return this;
+    }
+
+    public CommunityRun addHashtags(Set<String> hashtags) {
+        hashtags.addAll(hashtags);
+        return this;
+    }
+
+    public CommunityRun removeHashtags(String... tags) {
+        hashtags.removeAll(Arrays.asList(tags));
+        return this;
+    }
+
+    public Set<Profile> getRunners() {
+        return Collections.unmodifiableSet(runners);
+    }
+
+    public CommunityRun addRunner(Profile runner) {
+        runners.add(runner);
+        return this;
+    }
+
+    public CommunityRun removeRunner(Profile runner) {
+        runners.remove(runner);
+        return this;
+    }
+
+    public Set<CommunityRunGoal> getGoals(){
+        return Collections.unmodifiableSet(goals);
     }
 
     public String getName() {
@@ -93,6 +119,14 @@ public class CommunityRun extends BaseEntity {
         this.name = name;
     }
 
+    public String getSlug() {
+        return slug;
+    }
+
+    public void setSlug(String slug) {
+        this.slug = slug;
+    }
+
     public String getDescription() {
         return description;
     }
@@ -101,20 +135,12 @@ public class CommunityRun extends BaseEntity {
         this.description = description;
     }
 
-    public Date getStartDate() {
-        return startDate;
+    public Duration getDuration() {
+        return duration;
     }
 
-    public void setStartDate(Date startDate) {
-        this.startDate = startDate;
-    }
-
-    public Date getEndDate() {
-        return endDate;
-    }
-
-    public void setEndDate(Date endDate) {
-        this.endDate = endDate;
+    public void setDuration(Duration duration) {
+        this.duration = duration;
     }
 
     public String getWebsite() {
@@ -125,24 +151,12 @@ public class CommunityRun extends BaseEntity {
         this.website = website;
     }
 
-    public Set<String> getHashtags() {
-        return hashtags;
-    }
-
     public String getTwitterHandle() {
         return twitterHandle;
     }
 
     public void setTwitterHandle(String twitterHandle) {
         this.twitterHandle = twitterHandle;
-    }
-
-    public boolean isActive() {
-        return active;
-    }
-
-    public void setActive(boolean active) {
-        this.active = active;
     }
 
     public String getBannerImg() {
@@ -153,15 +167,11 @@ public class CommunityRun extends BaseEntity {
         this.bannerImg = bannerImg;
     }
 
-    public String getSlug() {
-        return slug;
+    public boolean isActive() {
+        return active;
     }
 
-    public void setSlug(String slug) {
-        this.slug = slug;
-    }
-
-    public List<Profile> getProfiles() {
-        return profiles;
+    public void setActive(boolean active) {
+        this.active = active;
     }
 }

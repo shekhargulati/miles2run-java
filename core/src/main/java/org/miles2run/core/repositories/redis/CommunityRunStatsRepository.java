@@ -1,3 +1,4 @@
+/*
 package org.miles2run.core.repositories.redis;
 
 import org.miles2run.domain.entities.Activity;
@@ -141,3 +142,4 @@ public class CommunityRunStatsRepository {
         });
     }
 }
+*/

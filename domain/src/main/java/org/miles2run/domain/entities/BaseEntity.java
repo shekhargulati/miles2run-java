@@ -6,11 +6,10 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
 
-/**
- * Created by shekhargulati on 07/07/14.
- */
 @MappedSuperclass
 public abstract class BaseEntity implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     @Id
     @TableGenerator(name = "id_generator", table = "id_gen", allocationSize = 100)
@@ -22,7 +21,14 @@ public abstract class BaseEntity implements Serializable {
 
     @Column(updatable = false)
     @Type(type = "org.jadira.usertype.dateandtime.legacyjdk.PersistentDate")
-    Date createdAt = new Date();
+    Date createdAt;
+
+    @Column
+    @Type(type = "org.jadira.usertype.dateandtime.legacyjdk.PersistentDate")
+    Date updatedAt;
+
+    protected BaseEntity() {
+    }
 
     public Long getId() {
         return id;
@@ -32,7 +38,25 @@ public abstract class BaseEntity implements Serializable {
         return version;
     }
 
+    public Date getLastModified() {
+        return getLastUpdatedAt() == null ? getCreatedAt() : getLastUpdatedAt();
+    }
+
     public Date getCreatedAt() {
-        return createdAt;
+        return (Date) createdAt.clone();
+    }
+
+    public Date getLastUpdatedAt() {
+        return updatedAt == null ? null : (Date) updatedAt.clone();
+    }
+
+    @PrePersist
+    void prePersist() {
+        createdAt = new Date();
+    }
+
+    @PreUpdate
+    void preUpdate() {
+        updatedAt = new Date();
     }
 }

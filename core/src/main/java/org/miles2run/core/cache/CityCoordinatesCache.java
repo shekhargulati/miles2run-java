@@ -1,8 +1,6 @@
 package org.miles2run.core.cache;
 
 import com.mongodb.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
@@ -14,7 +12,6 @@ import static org.miles2run.core.utils.GeocoderUtils.lngLat;
 public class CityCoordinatesCache {
 
     public static final String CITIES_COLLECTION = "cities";
-    private final Logger logger = LoggerFactory.getLogger(CityCoordinatesCache.class);
 
     DBCollection cities;
 
@@ -45,6 +42,15 @@ public class CityCoordinatesCache {
         return getLngLatFromDoc(cityDoc);
     }
 
+    private DBObject findCity(String city, String country) {
+        BasicDBObject query = new BasicDBObject("city", city).append("country", country);
+        return cities.findOne(query);
+    }
+
+    private double[] fetchLngLat(final String city, final String country) {
+        return lngLat(city, country);
+    }
+
     private double[] getLngLatFromDoc(BasicDBObject cityDoc) {
         Object lngLatObj = cityDoc.get("lngLat");
         if (lngLatObj instanceof BasicDBList) {
@@ -54,14 +60,5 @@ public class CityCoordinatesCache {
             double[] lngLat = (double[]) lngLatObj;
             return lngLat.length == 0 ? new double[0] : lngLat;
         }
-    }
-
-    private DBObject findCity(String city, String country) {
-        BasicDBObject query = new BasicDBObject("city", city).append("country", country);
-        return cities.findOne(query);
-    }
-
-    private double[] fetchLngLat(final String city, final String country) {
-        return lngLat(city, country);
     }
 }

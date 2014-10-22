@@ -1,6 +1,8 @@
+/*
 package org.miles2run.core.repositories.jpa;
 
 import org.miles2run.domain.entities.CommunityRun;
+import org.miles2run.domain.entities.Duration;
 import org.miles2run.domain.entities.Goal;
 import org.miles2run.domain.entities.Profile;
 import org.slf4j.Logger;
@@ -55,8 +57,7 @@ public class GoalRepository {
     public void update(Goal goal, Long goalId) {
         Goal existingGoal = this.find(goalId);
         existingGoal.setDistance(goal.getDistance());
-        existingGoal.setStartDate(goal.getStartDate());
-        existingGoal.setEndDate(goal.getEndDate());
+        existingGoal.setDuration(new Duration(goal.getDuration().getStartDate(), goal.getDuration().getEndDate()));
         existingGoal.setArchived(goal.isArchived());
         existingGoal.setGoalUnit(goal.getGoalUnit());
         existingGoal.setPurpose(goal.getPurpose());
@@ -105,3 +106,4 @@ public class GoalRepository {
         return entityManager.createQuery("SELECT count(g) FROM Goal g where g.profile =:profile and g.archived is FALSE", Long.class).setParameter("profile", profile).getSingleResult();
     }
 }
+*/

@@ -19,7 +19,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
@@ -39,8 +38,6 @@ public class ActivityResource {
     private ProfileRepository profileRepository;
     @Inject
     private CounterStatsRepository counterStatsRepository;
-    @Context
-    private HttpServletRequest request;
     @Inject
     private TimelineRepository timelineRepository;
     @Context
@@ -153,14 +150,4 @@ public class ActivityResource {
         return Response.noContent().build();
     }
 
-    @PUT
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("/{id}/share")
-    @LoggedIn
-    public Response shareActivity(@PathParam("id") Long id, Activity activity) {
-        String loggedInUser = securityContext.getUserPrincipal().getName();
-        Profile profile = profileRepository.findProfile(loggedInUser);
-        return Response.ok().build();
-    }
 }

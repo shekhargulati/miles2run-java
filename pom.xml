@@ -9,11 +9,11 @@
     <modules>
         <module>domain</module>
         <module>core</module>
-        <module>representations</module>
-        <module>rest</module>
-        <module>social</module>
-        <module>views</module>
-        <module>web</module>
+        <!--<module>representations</module>-->
+        <!--<module>rest</module>-->
+        <!--<module>social</module>-->
+        <!--<module>views</module>-->
+        <!--<module>web</module>-->
     </modules>
     <packaging>pom</packaging>
 
@@ -24,7 +24,8 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <failOnMissingWebXml>false</failOnMissingWebXml>
-        <version.arquillian>1.1.5.Final</version.arquillian>
+        <version.arquillian>1.1.1.Final</version.arquillian>
+        <version.arquillian_persistence>1.0.0.Alpha6</version.arquillian_persistence>
         <version.shrinkwrap.resolvers>2.2.0-beta-1</version.shrinkwrap.resolvers>
         <version.wildfly>8.1.0.Final</version.wildfly>
     </properties>
@@ -148,6 +149,18 @@
                 <artifactId>usertype.core</artifactId>
                 <version>3.0.0.GA</version>
             </dependency>
+
+            <dependency>
+                <groupId>org.miles2run</groupId>
+                <artifactId>domain</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.miles2run</groupId>
+                <artifactId>core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
@@ -179,6 +192,19 @@
                 <version>1.5.6</version>
                 <scope>test</scope>
             </dependency>
+            <dependency>
+                <groupId>org.wildfly</groupId>
+                <artifactId>wildfly-arquillian-container-managed</artifactId>
+                <version>${version.wildfly}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.arquillian.extension</groupId>
+                <artifactId>arquillian-persistence-impl</artifactId>
+                <version>${version.arquillian_persistence}</version>
+                <scope>test</scope>
+            </dependency>
+
         </dependencies>
 
     </dependencyManagement>

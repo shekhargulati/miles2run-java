@@ -1,3 +1,4 @@
+/*
 package org.miles2run.core.repositories.jpa;
 
 import org.miles2run.core.exceptions.NoRecordExistsException;
@@ -139,4 +140,4 @@ public class ActivityRepository {
                 .getResultList();
         return Collections.unmodifiableList(activities);
     }
-}
+}*/

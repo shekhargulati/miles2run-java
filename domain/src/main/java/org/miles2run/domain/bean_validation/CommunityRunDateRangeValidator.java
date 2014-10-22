@@ -1,14 +1,15 @@
 package org.miles2run.domain.bean_validation;
 
 import org.miles2run.domain.entities.CommunityRun;
+import org.miles2run.domain.entities.Duration;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-public class CommunityRunDateRangeValidator implements ConstraintValidator<CommunityRunDateRange, CommunityRun> {
+public class CommunityRunDateRangeValidator implements ConstraintValidator<DateRangeCheck, CommunityRun> {
 
     @Override
-    public void initialize(CommunityRunDateRange constraintAnnotation) {
+    public void initialize(DateRangeCheck constraintAnnotation) {
 
     }
 
@@ -17,6 +18,7 @@ public class CommunityRunDateRangeValidator implements ConstraintValidator<Commu
         if (communityRun == null) {
             return true;
         }
-        return communityRun.getStartDate().before(communityRun.getEndDate());
+        Duration duration = communityRun.getDuration();
+        return duration.getStartDate().before(duration.getEndDate());
     }
 }

@@ -5,7 +5,10 @@ import javax.validation.constraints.NotNull;
 
 @Entity
 @Access(AccessType.FIELD)
-@Table(name = "social_connection")
+@Table(name = "social_connection", indexes = {
+        @Index(unique = true, columnList = "connectionId"),
+        @Index(unique = true, columnList = "handle")
+})
 public class SocialConnection extends BaseEntity {
 
     @NotNull
@@ -25,16 +28,20 @@ public class SocialConnection extends BaseEntity {
     @ManyToOne
     private Profile profile;
 
-    public SocialConnection() {
+    protected SocialConnection() {
 
     }
 
-    public SocialConnection(String accessToken, String accessSecret, SocialProvider provider, String handle, String connectionId) {
+    private SocialConnection(String accessToken, String accessSecret, SocialProvider provider, String handle, String connectionId) {
         this.accessToken = accessToken;
         this.accessSecret = accessSecret;
         this.provider = provider;
         this.handle = handle;
         this.connectionId = connectionId;
+    }
+
+    static SocialConnection createSocialConnection(String accessToken, String accessSecret, SocialProvider provider, String handle, String connectionId) {
+        return new SocialConnection(accessToken, accessSecret, provider, handle, connectionId);
     }
 
     public String getAccessToken() {
@@ -76,14 +83,12 @@ public class SocialConnection extends BaseEntity {
     @Override
     public String toString() {
         return "SocialConnection{" +
-                "id=" + id +
-                ", accessToken='" + accessToken + '\'' +
+                "id='" + id + '\'' +
+                "accessToken='" + accessToken + '\'' +
                 ", accessSecret='" + accessSecret + '\'' +
                 ", provider=" + provider +
                 ", handle='" + handle + '\'' +
                 ", connectionId='" + connectionId + '\'' +
-                ", createdAt=" + createdAt +
-                ", profile=" + profile +
                 '}';
     }
 }

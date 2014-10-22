@@ -5,6 +5,7 @@ import org.jug.view.View;
 import org.miles2run.core.repositories.jpa.SocialConnectionRepository;
 import org.miles2run.core.utils.UrlUtils;
 import org.miles2run.domain.entities.SocialConnection;
+import org.miles2run.domain.entities.SocialConnectionBuilder;
 import org.miles2run.domain.entities.SocialProvider;
 import org.miles2run.social.Google;
 import org.miles2run.social.GoogleService;
@@ -55,7 +56,7 @@ public class GoogleCallbackView {
                 return View.of("/", true);
             }
         }
-        SocialConnection socialConnection = new SocialConnection(oauthToken.getAccessToken(), null, SocialProvider.GOOGLE_PLUS, user.getName(), connectionId);
+        SocialConnection socialConnection = new SocialConnectionBuilder().setAccessToken(oauthToken.getAccessToken()).setAccessSecret(null).setProvider(SocialProvider.GOOGLE_PLUS).setHandle(user.getName()).setConnectionId(connectionId).createSocialConnection();
         socialConnectionRepository.save(socialConnection);
         return View.of("/users/new?connectionId=" + connectionId, true);
     }

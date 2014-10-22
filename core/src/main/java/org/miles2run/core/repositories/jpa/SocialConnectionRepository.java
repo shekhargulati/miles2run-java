@@ -1,6 +1,5 @@
 package org.miles2run.core.repositories.jpa;
 
-import org.miles2run.domain.entities.Profile;
 import org.miles2run.domain.entities.SocialConnection;
 
 import javax.ejb.LocalBean;
@@ -20,14 +19,10 @@ public class SocialConnectionRepository {
     @Inject
     private EntityManager entityManager;
 
-    public void save(SocialConnection socialConnection) {
-        entityManager.persist(socialConnection);
-    }
-
-    public void update(Profile profile, String connectionId) {
-        SocialConnection socialConnection = this.findByConnectionId(connectionId);
-        socialConnection.setProfile(profile);
-        entityManager.persist(socialConnection);
+    public SocialConnection save(SocialConnection socialConnection) {
+        SocialConnection merged = entityManager.merge(socialConnection);
+        entityManager.persist(merged);
+        return merged;
     }
 
     public SocialConnection findByConnectionId(String connectionId) {
@@ -42,9 +37,4 @@ public class SocialConnectionRepository {
         }
     }
 
-    public void update(Long id, String accessToken, String accessSecret) {
-        SocialConnection socialConnection = entityManager.find(SocialConnection.class, id);
-        socialConnection.setAccessToken(accessToken);
-        socialConnection.setAccessSecret(accessSecret);
-    }
 }

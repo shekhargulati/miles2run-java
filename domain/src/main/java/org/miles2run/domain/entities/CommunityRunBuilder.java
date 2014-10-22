@@ -1,26 +1,16 @@
-package org.miles2run.domain.builders;
-
-import org.miles2run.domain.entities.CommunityRun;
-
-import java.util.Date;
+package org.miles2run.domain.entities;
 
 public class CommunityRunBuilder {
     private String name;
-    private String bannerImg;
     private String slug;
     private String description;
-    private Date startDate;
-    private Date endDate;
+    private Duration duration;
     private String website;
     private String twitterHandle;
+    private String bannerImg;
 
     public CommunityRunBuilder setName(String name) {
         this.name = name;
-        return this;
-    }
-
-    public CommunityRunBuilder setBannerImg(String bannerImg) {
-        this.bannerImg = bannerImg;
         return this;
     }
 
@@ -34,13 +24,8 @@ public class CommunityRunBuilder {
         return this;
     }
 
-    public CommunityRunBuilder setStartDate(Date startDate) {
-        this.startDate = startDate;
-        return this;
-    }
-
-    public CommunityRunBuilder setEndDate(Date endDate) {
-        this.endDate = endDate;
+    public CommunityRunBuilder setDuration(Duration duration) {
+        this.duration = duration;
         return this;
     }
 
@@ -54,7 +39,12 @@ public class CommunityRunBuilder {
         return this;
     }
 
+    public CommunityRunBuilder setBannerImg(String bannerImg) {
+        this.bannerImg = bannerImg;
+        return this;
+    }
+
     public CommunityRun createCommunityRun() {
-        return new CommunityRun(name, bannerImg, slug, description, startDate, endDate, website, twitterHandle);
+        return CommunityRun.createCommunityRun(name, slug, description, duration, website, twitterHandle, bannerImg);
     }
 }

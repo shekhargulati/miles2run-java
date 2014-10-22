@@ -34,41 +34,7 @@ public class Activity extends BaseEntity {
     @ManyToOne
     private Goal goal;
 
-    public Activity() {
-    }
-
-    public Activity(String status, double distanceCovered, Profile postedBy) {
-        this.status = status;
-        this.distanceCovered = distanceCovered;
-        this.postedBy = postedBy;
-    }
-
-    public Activity(Long id, String status, double distanceCovered) {
-        this.id = id;
-        this.status = status;
-        this.distanceCovered = distanceCovered;
-    }
-
-    public Activity(Long id, String status, double distanceCovered, Date postedAt) {
-        this.id = id;
-        this.status = status;
-        this.distanceCovered = distanceCovered;
-        this.createdAt = postedAt;
-    }
-
-    public Activity(Date activityDate, double distanceCovered, GoalUnit goalUnit) {
-        this.activityDate = activityDate;
-        this.distanceCovered = distanceCovered;
-        this.goalUnit = goalUnit;
-    }
-
-    public Activity(String status, double distanceCovered, GoalUnit goalUnit, long duration, Date activityDate) {
-        this.status = status;
-        this.distanceCovered = distanceCovered;
-        this.goalUnit = goalUnit;
-        this.duration = duration;
-        this.activityDate = activityDate;
-
+    protected Activity() {
     }
 
     public String getStatus() {
@@ -129,11 +95,6 @@ public class Activity extends BaseEntity {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("Activity{");
-        sb.append("activityDate=").append(activityDate);
-        sb.append(", distanceCovered=").append(distanceCovered);
-        sb.append(", goalUnit=").append(goalUnit);
-        sb.append('}');
-        return sb.toString();
+        return "Activity{" + "activityDate=" + activityDate + ", distanceCovered=" + distanceCovered + ", goalUnit=" + goalUnit + '}';
     }
 }

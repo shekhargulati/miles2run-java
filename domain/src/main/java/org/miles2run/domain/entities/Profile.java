@@ -8,6 +8,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Entity
@@ -15,30 +16,55 @@ import java.util.List;
         @Index(unique = true, columnList = "username"),
         @Index(unique = true, columnList = "email")
 })
+@NamedEntityGraphs(value = {
+        @NamedEntityGraph(
+                name = "Profile.OnlyUsername",
+                attributeNodes = {
+                        @NamedAttributeNode("username")
+                }
+        ),
+        @NamedEntityGraph(
+                name = "Profile.WithConnections",
+                attributeNodes = {
+                        @NamedAttributeNode("username"),
+                        @NamedAttributeNode("socialConnections")
+                }
+        )
+})
 @Access(AccessType.FIELD)
 public class Profile extends BaseEntity {
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "profile")
-    private final List<SocialConnection> socialConnections = new ArrayList<>();
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "profile", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SocialConnection> socialConnections;
+
     @NotBlank
     @Column(unique = true)
     @Email
+    @Basic(fetch = FetchType.LAZY)
     private String email;
+
     @NotBlank
     @Column(unique = true, updatable = false)
     @Size(max = 20)
     private String username;
+
     @NotBlank
     @Size(max = 50)
     private String fullname;
+
     @Size(max = 500)
     private String bio;
+
     @NotBlank
     private String city;
+
     @NotBlank
     private String country;
+
     @Enumerated(EnumType.STRING)
     private Gender gender;
+
     @ImageUrl
     private String profilePic;
 
@@ -46,36 +72,7 @@ public class Profile extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private Role role = Role.USER;
 
-    @Transient
-    private String miniProfilePic;
-
-    @Transient
-    private String biggerProfilePic;
-
-    public Profile() {
-    }
-
-    public Profile(final String email, final String username, final String bio, final String city, final String country, final String fullname, final Gender gender, final String profilePic) {
-        this.email = email;
-        this.username = username.toLowerCase();
-        this.bio = bio;
-        this.city = city;
-        this.country = country;
-        this.fullname = fullname;
-        this.gender = gender;
-        this.profilePic = profilePic;
-    }
-
-    public Profile(Profile p) {
-        this.username = p.username;
-        this.bio = p.bio;
-        this.city = p.city;
-        this.country = p.country;
-        this.fullname = p.fullname;
-        this.profilePic = p.profilePic;
-        this.gender = p.gender;
-        this.createdAt = p.createdAt;
-        this.role = p.role;
+    protected Profile() {
     }
 
     private Profile(String email, String username, String fullname, String city, String country, Gender gender) {
@@ -87,20 +84,8 @@ public class Profile extends BaseEntity {
         this.gender = gender;
     }
 
-    private Profile(String fullname, String bio, String city, String country, Gender gender) {
-        this.fullname = fullname;
-        this.bio = bio;
-        this.city = city;
-        this.country = country;
-        this.gender = gender;
-    }
-
-    public static Profile createProfile(String email, String username, String fullname, String city, String country, Gender gender) {
+    static Profile createProfile(String email, String username, String fullname, String city, String country, Gender gender) {
         return new Profile(email, username, fullname, city, country, gender);
-    }
-
-    public static Profile createProfileForUpdate(String fullname, String bio, String city, String country, Gender gender) {
-        return new Profile(fullname, bio, city, country, gender);
     }
 
     public String getEmail() {
@@ -131,10 +116,6 @@ public class Profile extends BaseEntity {
         return gender;
     }
 
-    public List<SocialConnection> getSocialConnections() {
-        return socialConnections;
-    }
-
     public String getProfilePic() {
         return profilePic;
     }
@@ -143,37 +124,27 @@ public class Profile extends BaseEntity {
         return role;
     }
 
-    public String getMiniProfilePic() {
-        return getImageWithSize("mini");
-    }
-
-    private String getImageWithSize(String size) {
-        if (this.profilePic != null) {
-            int index = this.profilePic.lastIndexOf(".");
-            String imgPrefix = this.profilePic.substring(0, index);
-            String picExtension = this.profilePic.substring(index);
-            return new StringBuilder(imgPrefix).append("_").append(size).append(picExtension).toString();
+    public List<SocialConnection> getSocialConnections() {
+        if (socialConnections == null) {
+            socialConnections = new ArrayList<>();
         }
-        return this.profilePic;
+        return Collections.unmodifiableList(socialConnections);
     }
 
-    public String getBiggerProfilePic() {
-        return getImageWithSize("bigger");
+    public Profile addSocialConnection(SocialConnection socialConnection) {
+        if (socialConnections == null) {
+            socialConnections = new ArrayList<>();
+        }
+        socialConnections.add(socialConnection);
+        socialConnection.setProfile(this);
+        return this;
     }
 
-    @Override
-    public String toString() {
-        return "Profile{" +
-                "id=" + id +
-                ", email='" + email + '\'' +
-                ", username='" + username + '\'' +
-                ", fullName='" + fullname + '\'' +
-                ", bio='" + bio + '\'' +
-                ", city='" + city + '\'' +
-                ", country='" + country + '\'' +
-                ", profilePic='" + profilePic + '\'' +
-                ", createdAt=" + createdAt +
-                '}';
+    public Profile removeSocialConnection(SocialConnection socialConnection) {
+        if (socialConnections.remove(socialConnection)) {
+            socialConnection.setProfile(null);
+        }
+        return this;
     }
 
     @Override
@@ -194,5 +165,15 @@ public class Profile extends BaseEntity {
         int result = email.hashCode();
         result = 31 * result + username.hashCode();
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "Profile{" +
+                "id='" + id + '\'' +
+                "email='" + email + '\'' +
+                ", fullname='" + fullname + '\'' +
+                ", username='" + username + '\'' +
+                '}';
     }
 }

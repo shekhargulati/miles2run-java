@@ -1,3 +1,4 @@
+/*
 package org.miles2run.core.vo;
 
 import org.miles2run.domain.entities.Goal;
@@ -97,3 +98,4 @@ public class Progress {
 
 }
 
+*/
