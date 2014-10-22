@@ -1,8 +1,6 @@
-/*
 package org.miles2run.core.repositories.jpa;
 
 import org.miles2run.core.exceptions.NoRecordExistsException;
-import org.miles2run.core.vo.ProfileGroupDetails;
 import org.miles2run.domain.entities.CommunityRun;
 import org.miles2run.domain.entities.Profile;
 import org.slf4j.Logger;
@@ -48,7 +46,7 @@ public class CommunityRunRepository {
     }
 
     public List<CommunityRun> findAllActiveCommunityRuns(@Min(value = 1) final int page, @Max(value = 20) final int max) {
-        final String allActiveRunsQuery = "SELECT new CommunityRun(cr) FROM CommunityRun cr WHERE cr.active IS TRUE";
+        final String allActiveRunsQuery = "SELECT cr FROM CommunityRun cr WHERE cr.active IS TRUE";
         List<CommunityRun> runs = entityManager.
                 createQuery(allActiveRunsQuery, CommunityRun.class).
                 setMaxResults(max).
@@ -58,13 +56,13 @@ public class CommunityRunRepository {
     }
 
     public CommunityRun findBySlug(@NotNull final String slug) {
-        final String communityRunBySlugQuery = "SELECT new CommunityRun(cr) FROM CommunityRun cr WHERE cr.slug =:slug";
+        final String communityRunBySlugQuery = "SELECT cr FROM CommunityRun cr WHERE cr.slug =:slug";
         TypedQuery<CommunityRun> query = entityManager.createQuery(communityRunBySlugQuery, CommunityRun.class)
                 .setParameter("slug", slug);
         try {
             return query.getSingleResult();
         } catch (NoResultException e) {
-            throw new NoRecordExistsException(String.format("No community run exists for slug %s", slug));
+            return null;
         }
     }
 
@@ -88,7 +86,7 @@ public class CommunityRunRepository {
 
     public List<CommunityRun> findAllActiveCommunityRunsWithNameLike(@NotNull String name, @Min(value = 1) int page, @Max(value = 20) int max) {
         name = name.toLowerCase();
-        String runNameLikeQuery = "SELECT new CommunityRun(cr) from CommunityRun cr WHERE LOWER(cr.name) LIKE :name and cr.active IS TRUE";
+        String runNameLikeQuery = "SELECT cr from CommunityRun cr WHERE LOWER(cr.name) LIKE :name and cr.active IS TRUE";
         List<CommunityRun> runs = entityManager.createQuery(runNameLikeQuery, CommunityRun.class)
                 .setParameter("name", "%" + name + "%")
                 .setMaxResults(max)
@@ -97,6 +95,7 @@ public class CommunityRunRepository {
         return Collections.unmodifiableList(runs);
     }
 
+/*
     // TODO : Move Profile logic to ProfileRepository. Fix me!!!!
     public List<ProfileGroupDetails> groupAllUserInACommunityRunByCity(@NotNull final String slug) {
         CommunityRun communityRun = this.find(slug);
@@ -111,6 +110,7 @@ public class CommunityRunRepository {
         List<ProfileGroupDetails> profileGroups = entityManager.createQuery("SELECT new org.miles2run.core.vo.ProfileGroupDetails(COUNT(p),p.city,p.country) FROM Profile p where p in :profiles GROUP BY p.city", ProfileGroupDetails.class).setParameter("profiles", runners).getResultList();
         return Collections.unmodifiableList(profileGroups);
     }
+*/
 
     public CommunityRun find(@NotNull final String slug) {
         final String runBySlugQuery = "SELECT cr FROM CommunityRun cr WHERE cr.slug =:slug";
@@ -149,4 +149,3 @@ public class CommunityRunRepository {
         entityManager.flush();
     }
 }
-*/
