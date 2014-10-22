@@ -16,27 +16,12 @@ import java.util.List;
         @Index(unique = true, columnList = "username"),
         @Index(unique = true, columnList = "email")
 })
-@NamedEntityGraphs(value = {
-        @NamedEntityGraph(
-                name = "Profile.OnlyUsername",
-                attributeNodes = {
-                        @NamedAttributeNode("username")
-                }
-        ),
-        @NamedEntityGraph(
-                name = "Profile.WithConnections",
-                attributeNodes = {
-                        @NamedAttributeNode("username"),
-                        @NamedAttributeNode("socialConnections")
-                }
-        )
-})
 @Access(AccessType.FIELD)
 public class Profile extends BaseEntity {
 
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "profile", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<SocialConnection> socialConnections;
+    private List<SocialConnection> socialConnections = new ArrayList<>();
 
     @NotBlank
     @Column(unique = true)
@@ -125,16 +110,10 @@ public class Profile extends BaseEntity {
     }
 
     public List<SocialConnection> getSocialConnections() {
-        if (socialConnections == null) {
-            socialConnections = new ArrayList<>();
-        }
         return Collections.unmodifiableList(socialConnections);
     }
 
     public Profile addSocialConnection(SocialConnection socialConnection) {
-        if (socialConnections == null) {
-            socialConnections = new ArrayList<>();
-        }
         socialConnections.add(socialConnection);
         socialConnection.setProfile(this);
         return this;

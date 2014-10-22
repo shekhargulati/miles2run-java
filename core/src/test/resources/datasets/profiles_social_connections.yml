@@ -1,0 +1,22 @@
+social_connection:
+  - id: 1001
+    connectionId: test_connection_1
+    accessToken: access_token
+    accessSecret: access_secret
+    handle: test_user_1
+    provider: TWITTER
+    profile_id: 1001
+  - id: 1002
+    connectionId: test_connection_2
+    accessToken: access_token
+    accessSecret: access_secret
+    handle: test_user_2
+    provider: TWITTER
+    profile_id: 1002
+  - id: 1003
+    connectionId: test_connection_3
+    accessToken: access_token
+    accessSecret: access_secret
+    handle: test_user_3
+    provider: TWITTER
+    profile_id: 1003

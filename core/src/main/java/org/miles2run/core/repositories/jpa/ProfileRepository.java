@@ -12,6 +12,7 @@ import javax.inject.Inject;
 import javax.persistence.EntityGraph;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Stateless
@@ -19,8 +20,11 @@ import java.util.List;
 @TransactionAttribute(TransactionAttributeType.REQUIRED)
 public class ProfileRepository {
 
+    public static final String FIND_BY_EMAIL_QUERY = "select p from Profile p where p.email =:email";
+    public static final String FIND_PROFILES_BY_USERNAMES = "SELECT p from Profile p WHERE p.username IN :usernames";
+    public static final String FIND_BY_FULLNAME_LIKE = "SELECT p from Profile p WHERE lower(p.fullname) LIKE :name";
+    private static final String FIND_BY_USERNAME_QUERY = "select p from Profile p where p.username =:username";
     private final Logger logger = LoggerFactory.getLogger(ProfileRepository.class);
-
     @Inject
     private EntityManager entityManager;
 
@@ -31,20 +35,14 @@ public class ProfileRepository {
     }
 
     public Profile get(final long id) {
-//        EntityGraph<Profile> entityGraph = entityManager.createEntityGraph(Profile.class);
-//        entityGraph.addAttributeNodes("username");
-//        Map<String, Object> hints = new HashMap<>();
-//        hints.put("javax.persistence.fetchgraph", entityGraph);
         return entityManager.find(Profile.class, id);
     }
 
-    public Profile findByUsername(final String username) {
-        EntityGraph<Profile> profileEntityGraph = getProfileEntityGraph();
+    public Profile findByUsername(@NotNull final String username) {
         try {
-            final String findByUsernameQuery = "select p from Profile p where p.username =:username";
-            return entityManager.createQuery(findByUsernameQuery, Profile.class)
+            return entityManager.createQuery(FIND_BY_USERNAME_QUERY, Profile.class)
                     .setParameter("username", username)
-                    .setHint("javax.persistence.fetchgraph", profileEntityGraph)
+                    .setHint("javax.persistence.fetchgraph", getProfileEntityGraph())
                     .getSingleResult();
         } catch (NoResultException e) {
             logger.warn("No user found with username: {}", username);
@@ -54,14 +52,13 @@ public class ProfileRepository {
 
     private EntityGraph<Profile> getProfileEntityGraph() {
         EntityGraph<Profile> profileEntityGraph = entityManager.createEntityGraph(Profile.class);
-        profileEntityGraph.addAttributeNodes("username", "email", "city", "country", "gender", "bio");
+        profileEntityGraph.addAttributeNodes("username", "city", "country", "gender", "bio");
         return profileEntityGraph;
     }
 
-    public Profile findByEmail(final String email) {
+    public Profile findByEmail(@NotNull final String email) {
         try {
-            final String findByEmailQuery = "select p from Profile p where p.email =:email";
-            return entityManager.createQuery(findByEmailQuery, Profile.class)
+            return entityManager.createQuery(FIND_BY_EMAIL_QUERY, Profile.class)
                     .setParameter("email", email)
                     .setHint("javax.persistence.fetchgraph", getProfileEntityGraph())
                     .getSingleResult();
@@ -72,10 +69,25 @@ public class ProfileRepository {
     }
 
     public List<Profile> findProfiles(final List<String> usernames) {
-        return entityManager.createQuery("SELECT p from Profile p WHERE p.username IN :usernames", Profile.class).setParameter("usernames", usernames).getResultList();
+        return entityManager.createQuery(FIND_PROFILES_BY_USERNAMES, Profile.class).setParameter("usernames", usernames).getResultList();
     }
 
-    public List<Profile> findProfilesWithFullnameLike(final String name) {
-        return entityManager.createQuery("SELECT p from Profile p WHERE p.fullname LIKE :name", Profile.class).setParameter("name", "%" + name + "%").getResultList();
+    public List<Profile> findProfilesWithFullnameLike(@NotNull final String name) {
+        String nameInLowercase = name.toLowerCase();
+        return entityManager.createQuery(FIND_BY_FULLNAME_LIKE, Profile.class).setParameter("name", "%" + nameInLowercase + "%").getResultList();
+    }
+
+    public Profile findWithSocialConnections(@NotNull final String username) {
+        try {
+            EntityGraph<Profile> entityGraph = entityManager.createEntityGraph(Profile.class);
+            entityGraph.addAttributeNodes("username");
+            entityGraph.addSubgraph("socialConnections").addAttributeNodes("provider");
+            return entityManager.createQuery(FIND_BY_USERNAME_QUERY, Profile.class)
+                    .setParameter("username", username)
+                    .setHint("javax.persistence.fetchgraph", entityGraph)
+                    .getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
     }
 }
