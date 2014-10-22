@@ -20,15 +20,15 @@ public class MongoProducer {
     void constructMongoDBInstance() {
         try {
             logger.info("Creating MongoDB instance...");
-            String host = System.getenv("OPENSHIFT_MONGODB_DB_HOST");
+            String host = System.getenv("MONGODB_DB_HOST");
             if (host == null) {
                 this.db = new MongoClient("localhost", 27017).getDB("miles2run");
                 return;
             }
-            int port = Integer.parseInt(System.getenv("OPENSHIFT_MONGODB_DB_PORT"));
-            String dbname = System.getenv("OPENSHIFT_APP_NAME");
-            String username = System.getenv("OPENSHIFT_MONGODB_DB_USERNAME");
-            String password = System.getenv("OPENSHIFT_MONGODB_DB_PASSWORD");
+            int port = Integer.parseInt(System.getenv("MONGODB_DB_PORT"));
+            String dbname = System.getenv("MONGODB_DB_NAME");
+            String username = System.getenv("MONGODB_DB_USERNAME");
+            String password = System.getenv("MONGODB_DB_PASSWORD");
             MongoClientOptions mongoClientOptions = MongoClientOptions.builder().connectionsPerHost(20).build();
             MongoClient mongoClient = new MongoClient(new ServerAddress(host, port), mongoClientOptions);
             mongoClient.setWriteConcern(WriteConcern.SAFE);

@@ -1,0 +1,13 @@
+{
+    "activity": [
+        {
+            "id": 10000,
+            "version": 1,
+            "postedBy_id": 1000,
+            "goalUnit": "KM",
+            "distanceCovered": 4.5,
+            "goal_id": 100,
+            "status": "test status"
+        }
+    ]
+}

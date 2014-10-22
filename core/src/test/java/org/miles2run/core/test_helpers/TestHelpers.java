@@ -79,4 +79,14 @@ public abstract class TestHelpers {
                 .setDays(30)
                 .createDurationGoal();
     }
+
+    public static Activity createActivity(Profile profile, Goal goal) {
+        return new ActivityBuilder().setGoalUnit(GoalUnit.MI)
+                .setGoal(goal)
+                .setActivityDate(new Date())
+                .setDistanceCovered(3.5)
+                .setPostedBy(profile)
+                .setStatus("test status")
+                .createActivity();
+    }
 }

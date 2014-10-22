@@ -31,13 +31,13 @@ public class JedisProducer {
         poolConfig.setTestOnReturn(true);
         poolConfig.setMinIdle(10);
         poolConfig.setWhenExhaustedAction(GenericObjectPool.WHEN_EXHAUSTED_GROW);
-        String host = System.getenv("OPENSHIFT_REDIS_DB_HOST");
+        String host = System.getenv("REDIS_DB_HOST");
         if (host == null) {
             System.out.print("Localhost Redis Configuration");
             return new JedisPool(poolConfig, "localhost");
         }
-        int port = Integer.valueOf(System.getenv("OPENSHIFT_REDIS_DB_PORT"));
-        String password = System.getenv("OPENSHIFT_REDIS_DB_PASSWORD");
+        int port = Integer.valueOf(System.getenv("REDIS_DB_PORT"));
+        String password = System.getenv("REDIS_DB_PASSWORD");
         logger.info("Redis configuration : Host {} Port {} Password {}", host, port, password);
         JedisPool jedisPool = new JedisPool(poolConfig, host, port, 2000, password);
         return jedisPool;

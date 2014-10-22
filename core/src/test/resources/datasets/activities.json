@@ -1,0 +1,38 @@
+{
+    "activity": [
+        {
+            "id": 10000,
+            "version": 0,
+            "postedBy_id": 1000,
+            "goalUnit": "MI",
+            "distanceCovered": 3.5,
+            "goal_id": 100,
+            "status": "test status",
+            "activityDate": "2014-10-22 00:00:00.0",
+            "duration": 1800
+        },
+        {
+            "id": 10001,
+            "version": 0,
+            "postedBy_id": 1000,
+            "goalUnit": "MI",
+            "distanceCovered": 3.5,
+            "goal_id": 100,
+            "status": "test status",
+            "activityDate": "2014-10-21 00:00:00.0",
+            "duration": 1800
+        },
+        {
+            "id": 10002,
+            "version": 0,
+            "postedBy_id": 1000,
+            "goalUnit": "MI",
+            "distanceCovered": 3.5,
+            "goal_id": 100,
+            "status": "test status",
+            "activityDate": "2014-10-20 00:00:00.0",
+            "duration": 1800
+        }
+
+    ]
+}

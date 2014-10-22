@@ -37,6 +37,20 @@ public class Activity extends BaseEntity {
     protected Activity() {
     }
 
+    private Activity(String status, GoalUnit goalUnit, double distanceCovered, Date activityDate, Profile postedBy, long duration, Goal goal) {
+        this.status = status;
+        this.goalUnit = goalUnit;
+        this.distanceCovered = distanceCovered;
+        this.activityDate = activityDate;
+        this.postedBy = postedBy;
+        this.duration = duration;
+        this.goal = goal;
+    }
+
+    static Activity createActivity(String status, GoalUnit goalUnit, double distanceCovered, Date activityDate, Profile postedBy, long duration, Goal goal) {
+        return new Activity(status, goalUnit, distanceCovered, activityDate, postedBy, duration, goal);
+    }
+
     public String getStatus() {
         return status;
     }
