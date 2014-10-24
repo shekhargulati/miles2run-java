@@ -4,10 +4,8 @@ import org.jug.filters.LoggedIn;
 import org.miles2run.core.repositories.mongo.FriendshipRepository;
 import org.miles2run.core.repositories.redis.NotificationRepository;
 import org.miles2run.core.repositories.redis.TimelineRepository;
-import org.miles2run.core.vo.Action;
-import org.miles2run.core.vo.Notification;
-import org.miles2run.representations.FriendshipRequest;
-import org.miles2run.representations.UnfollowRequest;
+import org.miles2run.domain.kv_aggregates.Action;
+import org.miles2run.domain.kv_aggregates.Notification;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;

@@ -1,6 +1,6 @@
 package org.miles2run.domain.kv_aggregates;
 
-public class Counter {
+public class CounterAggregate {
 
     private final long runners;
     private final long countries;
@@ -8,7 +8,7 @@ public class Counter {
     private final long cities;
     private final long seconds;
 
-    public Counter(long runners, long countries, double distance, long cities, long seconds) {
+    public CounterAggregate(long runners, long countries, double distance, long cities, long seconds) {
         this.runners = runners;
         this.countries = countries;
         this.distance = distance;

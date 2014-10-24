@@ -22,6 +22,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import static java.util.Collections.emptySet;
+import static java.util.Collections.unmodifiableSet;
+
 @Stateless
 @LocalBean
 @TransactionAttribute(TransactionAttributeType.REQUIRED)
@@ -95,22 +98,17 @@ public class CommunityRunRepository {
         return Collections.unmodifiableList(runs);
     }
 
-/*
-    // TODO : Move Profile logic to ProfileRepository. Fix me!!!!
-    public List<ProfileGroupDetails> groupAllUserInACommunityRunByCity(@NotNull final String slug) {
+    public Set<Profile> allRunners(@NotNull final String slug) {
         CommunityRun communityRun = this.find(slug);
         if (communityRun == null) {
-            return Collections.emptyList();
+            return emptySet();
         }
         Set<Profile> runners = communityRun.getRunners();
         if (runners.isEmpty()) {
-            return Collections.emptyList();
+            return emptySet();
         }
-        // TODO: Possible Performance Bottleneck
-        List<ProfileGroupDetails> profileGroups = entityManager.createQuery("SELECT new org.miles2run.core.vo.ProfileGroupDetails(COUNT(p),p.city,p.country) FROM Profile p where p in :profiles GROUP BY p.city", ProfileGroupDetails.class).setParameter("profiles", runners).getResultList();
-        return Collections.unmodifiableList(profileGroups);
+        return unmodifiableSet(runners);
     }
-*/
 
     public CommunityRun find(@NotNull final String slug) {
         final String runBySlugQuery = "SELECT cr FROM CommunityRun cr WHERE cr.slug =:slug";

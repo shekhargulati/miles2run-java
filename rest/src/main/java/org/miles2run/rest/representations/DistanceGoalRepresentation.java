@@ -1,12 +1,12 @@
-package org.miles2run.representations;
+package org.miles2run.rest.representations;
 
-import org.miles2run.domain.entities.Goal;
+import org.miles2run.domain.entities.DistanceGoal;
 import org.miles2run.domain.entities.GoalType;
 import org.miles2run.domain.entities.GoalUnit;
 
 import java.util.Date;
 
-public class DistanceGoalDetails implements GoalDetails {
+public class DistanceGoalRepresentation implements GoalRepresentation {
 
     private final Long id;
     private final String purpose;
@@ -17,20 +17,19 @@ public class DistanceGoalDetails implements GoalDetails {
     private final Date endDate;
     private final GoalType goalType;
 
-    public DistanceGoalDetails(Goal goal, double distanceCovered) {
+    public DistanceGoalRepresentation(DistanceGoal goal, double distanceCovered) {
         this.id = goal.getId();
         this.purpose = goal.getPurpose();
         this.distance = goal.getDistance() / goal.getGoalUnit().getConversion();
         this.goalUnit = goal.getGoalUnit();
         this.archived = goal.isArchived();
-        this.endDate = goal.getEndDate();
+        this.endDate = goal.getDuration().getEndDate();
         this.percentageCompleted = percentageGoalCompleted(goal.getDistance(), distanceCovered);
-        this.goalType = goal.getGoalType();
-
+        this.goalType = GoalType.DISTANCE_GOAL;
     }
 
     private static double percentageGoalCompleted(long goal, double distanceCovered) {
-        double percentageCompleted = (Double.valueOf(distanceCovered) * 100 / goal);
+        double percentageCompleted = (distanceCovered * 100 / goal);
         return percentageCompleted > 100 ? 100 : percentageCompleted;
     }
 
@@ -66,5 +65,3 @@ public class DistanceGoalDetails implements GoalDetails {
         return goalType;
     }
 }
-
-

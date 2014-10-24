@@ -5,10 +5,9 @@ import org.jug.filters.LoggedIn;
 import org.miles2run.core.repositories.jpa.ActivityRepository;
 import org.miles2run.core.repositories.jpa.ProfileRepository;
 import org.miles2run.core.repositories.redis.TimelineRepository;
-import org.miles2run.core.vo.ActivityDetails;
+import org.miles2run.domain.entities.Activity;
 import org.miles2run.domain.entities.Profile;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.miles2run.rest.representations.TimelineRepresentation;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;
@@ -17,12 +16,12 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.SecurityContext;
-import java.util.*;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Path("/activities")
 public class TimelineResource {
-
-    private Logger logger = LoggerFactory.getLogger(TimelineResource.class);
 
     @Inject
     private TimelineRepository timelineRepository;
@@ -36,54 +35,40 @@ public class TimelineResource {
     @Path("/user_timeline")
     @GET
     @Produces("application/json")
-    public Map<String, Object> userTimeline(@NotBlank @QueryParam("username") String username, @QueryParam("page") int page, @QueryParam("count") int count) {
-        Profile profile = profileRepository.findProfile(username);
+    public TimelineRepresentation userTimeline(@NotBlank @QueryParam("username") String username, @QueryParam("page") int page, @QueryParam("count") int count) {
+        Profile profile = profileRepository.findByUsername(username);
         if (profile == null) {
-            return Collections.emptyMap();
+            return TimelineRepresentation.empty();
         }
         page = page == 0 ? 1 : page;
         count = (count == 0 || count > 10) ? 10 : count;
-        Set<String> timelineIds = timelineRepository.getProfileTimelineIds(username, page, count);
-        if (timelineIds == null || timelineIds.isEmpty()) {
-            return emptyResponse();
+        Set<String> timelineIds = timelineRepository.getUserTimeline(username, page, count);
+        if (timelineIds.isEmpty()) {
+            return TimelineRepresentation.empty();
         }
-        return toTimelineResponse(username, timelineIds);
+        return toTimelineRepresentation(username, timelineIds);
     }
 
-    private Map<String, Object> emptyResponse() {
-        Map<String, Object> response = new HashMap<>();
-        response.put("timeline", Collections.emptyList());
-        response.put("totalItems", 0L);
-        return response;
-
-    }
-
-    Map<String, Object> toTimelineResponse(String loggedInUser, Set<String> homeTimelineIds) {
-        List<Long> activityIds = new ArrayList<>();
-        for (String homeTimelineId : homeTimelineIds) {
-            activityIds.add(Long.valueOf(homeTimelineId));
-        }
-        List<ActivityDetails> homeTimeline = ActivityDetails.toListOfHumanReadable(activityRepository.findAllActivitiesWithIds(activityIds));
-        logger.info("Found {} activities : {}", homeTimeline.size(), homeTimeline);
-        Map<String, Object> response = new HashMap<>();
-        response.put("timeline", homeTimeline);
-        response.put("totalItems", timelineRepository.totalItems(loggedInUser));
-        return response;
+    private TimelineRepresentation toTimelineRepresentation(String loggedInUser, Set<String> homeTimelineIds) {
+        List<Long> activityIds = homeTimelineIds.stream().map(Long::valueOf).collect(Collectors.toList());
+        List<Activity> activities = activityRepository.findAllActivitiesWithIds(activityIds);
+        Long activityCount = timelineRepository.totalItems(loggedInUser);
+        return TimelineRepresentation.with(activityCount, activities);
     }
 
     @Path("/home_timeline")
     @GET
     @Produces("application/json")
     @LoggedIn
-    public Map<String, Object> homeTimeline(@QueryParam("page") int page, @QueryParam("count") int count) {
+    public TimelineRepresentation homeTimeline(@QueryParam("page") int page, @QueryParam("count") int count) {
         String loggedInUser = securityContext.getUserPrincipal().getName();
         page = page == 0 ? 1 : page;
         count = count == 0 || count > 10 ? 10 : count;
         Set<String> homeTimelineIds = timelineRepository.getHomeTimelineIds(loggedInUser, page, count);
-        if (homeTimelineIds == null || homeTimelineIds.isEmpty()) {
-            return emptyResponse();
+        if (homeTimelineIds.isEmpty()) {
+            return TimelineRepresentation.empty();
         }
-        return toTimelineResponse(loggedInUser, homeTimelineIds);
+        return toTimelineRepresentation(loggedInUser, homeTimelineIds);
     }
 
 }

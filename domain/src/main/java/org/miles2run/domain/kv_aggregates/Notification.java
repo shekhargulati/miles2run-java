@@ -1,6 +1,4 @@
-package org.miles2run.core.vo;
-
-import com.google.gson.Gson;
+package org.miles2run.domain.kv_aggregates;
 
 public class Notification {
 
@@ -16,10 +14,6 @@ public class Notification {
         this.timestamp = timestamp;
     }
 
-    public static Notification toNotification(String notification) {
-        Gson gson = new Gson();
-        return gson.fromJson(notification, Notification.class);
-    }
 
     public String getUserToNotify() {
         return userToNotify;
@@ -37,19 +31,5 @@ public class Notification {
         return action;
     }
 
-    public String toJSON() {
-        Gson gson = new Gson();
-        return gson.toJson(this);
-    }
-
-    @Override
-    public String toString() {
-        return "Notification{" +
-                "userToNotify='" + userToNotify + '\'' +
-                ", userTookAction='" + userTookAction + '\'' +
-                ", timestamp=" + timestamp +
-                ", action=" + action +
-                '}';
-    }
 }
 

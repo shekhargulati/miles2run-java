@@ -14,7 +14,7 @@ import javax.inject.Inject;
 @ApplicationScoped
 public class FriendshipRepository {
 
-    public static final String PROFILES_COLLECTION = "profiles";
+    private static final String PROFILES_COLLECTION = "profiles";
     private final Logger logger = LoggerFactory.getLogger(FriendshipRepository.class);
 
     @Inject
@@ -32,12 +32,12 @@ public class FriendshipRepository {
         updateFollowingFollowers(following, follower);
     }
 
-    private void updateFollowingFollowers(final String following, final String follower) {
-        profiles.update(new BasicDBObject("username", following), new BasicDBObject("$push", new BasicDBObject("followers", follower)));
-    }
-
     private void updateFollowerFollowing(final String follower, final String following) {
         profiles.update(new BasicDBObject("username", follower), new BasicDBObject("$push", new BasicDBObject("following", following)));
+    }
+
+    private void updateFollowingFollowers(final String following, final String follower) {
+        profiles.update(new BasicDBObject("username", following), new BasicDBObject("$push", new BasicDBObject("followers", follower)));
     }
 
     public boolean isUserFollowing(String currentLoggedInUser, String username) {

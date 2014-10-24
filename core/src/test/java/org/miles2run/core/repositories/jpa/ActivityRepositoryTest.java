@@ -12,7 +12,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.miles2run.core.producers.EntityManagerProducer;
 import org.miles2run.core.test_helpers.TestHelpers;
-import org.miles2run.core.vo.ActivityCountAndDistanceTuple;
+import org.miles2run.core.repositories.jpa.vo.ActivityCountAndDistanceTuple;
 import org.miles2run.domain.entities.Activity;
 import org.miles2run.domain.entities.Goal;
 import org.miles2run.domain.entities.GoalUnit;

@@ -7,7 +7,10 @@ import org.miles2run.domain.bean_validation.ImageUrl;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Access(AccessType.FIELD)
@@ -27,7 +30,7 @@ public class CommunityRun extends BaseEntity {
     @OneToMany(orphanRemoval = true, mappedBy = "communityRun", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private final Set<CommunityRunGoal> goals = new HashSet<>();
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     private final Set<Profile> runners = new HashSet<>();
 
     @NotNull

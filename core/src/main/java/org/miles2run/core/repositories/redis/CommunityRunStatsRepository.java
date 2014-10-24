@@ -1,11 +1,10 @@
-/*
 package org.miles2run.core.repositories.redis;
 
 import org.miles2run.domain.entities.Activity;
 import org.miles2run.domain.entities.CommunityRun;
-import org.miles2run.domain.entities.Goal;
+import org.miles2run.domain.entities.CommunityRunGoal;
 import org.miles2run.domain.entities.Profile;
-import org.miles2run.domain.kv_aggregates.CommunityRunStats;
+import org.miles2run.domain.kv_aggregates.CommunityRunAggregate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import redis.clients.jedis.Jedis;
@@ -61,7 +60,7 @@ public class CommunityRunStatsRepository {
         });
     }
 
-    public void updateCommunityRunStats(final String username, final Goal goal, final Activity activity) {
+    public void updateCommunityRunStats(final String username, final CommunityRunGoal goal, final Activity activity) {
         final CommunityRun communityRun = goal.getCommunityRun();
 
         jedisExecution.execute(new JedisOperation<Void>() {
@@ -91,10 +90,10 @@ public class CommunityRunStatsRepository {
         });
     }
 
-    public CommunityRunStats getCurrentStatsForCommunityRun(final String slug) {
-        return jedisExecution.execute(new JedisOperation<CommunityRunStats>() {
+    public CommunityRunAggregate getCurrentStatsForCommunityRun(final String slug) {
+        return jedisExecution.execute(new JedisOperation<CommunityRunAggregate>() {
             @Override
-            public CommunityRunStats perform(Jedis jedis) {
+            public CommunityRunAggregate perform(Jedis jedis) {
                 Pipeline pipeline = jedis.pipelined();
                 Response<String> totalDistanceCoveredResponse = pipeline.get(String.format("%s-total_distance_covered", slug));
                 Response<String> totalDurationResponse = pipeline.get(String.format("%s-total_duration", slug));
@@ -104,7 +103,7 @@ public class CommunityRunStatsRepository {
                 pipeline.sync();
                 Double totalDistance = totalDistanceCoveredResponse.get() == null ? Double.valueOf(0) : Double.valueOf(totalDistanceCoveredResponse.get());
                 Long totalDuration = totalDurationResponse.get() == null ? Long.valueOf(0L) : Long.valueOf(totalDurationResponse.get());
-                return new CommunityRunStats(runnersCountResponse.get(), countriesCountResponse.get(), citiesCountResponse.get(), totalDistance, totalDuration);
+                return new CommunityRunAggregate(runnersCountResponse.get(), countriesCountResponse.get(), citiesCountResponse.get(), totalDistance, totalDuration);
             }
         });
     }
@@ -142,4 +141,3 @@ public class CommunityRunStatsRepository {
         });
     }
 }
-*/

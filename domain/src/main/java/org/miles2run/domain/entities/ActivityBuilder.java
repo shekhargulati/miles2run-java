@@ -49,4 +49,5 @@ public class ActivityBuilder {
     public Activity createActivity() {
         return Activity.createActivity(status, goalUnit, distanceCovered, activityDate, postedBy, duration, goal);
     }
+
 }

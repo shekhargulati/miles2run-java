@@ -5,7 +5,7 @@ angular.module('milestogo')
         var baseUrl = ConfigService.getBaseUrl();
         return {
             me: function () {
-                return $http.get(baseUrl + "profiles/me");
+                return $http.get(baseUrl + "users/me");
             }
         };
     });

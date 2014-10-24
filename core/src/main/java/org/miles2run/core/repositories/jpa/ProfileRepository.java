@@ -24,6 +24,7 @@ public class ProfileRepository {
     public static final String FIND_PROFILES_BY_USERNAMES = "SELECT p from Profile p WHERE p.username IN :usernames";
     public static final String FIND_BY_FULLNAME_LIKE = "SELECT p from Profile p WHERE lower(p.fullname) LIKE :name";
     private static final String FIND_BY_USERNAME_QUERY = "select p from Profile p where p.username =:username";
+    public static final int MAX_RESULT = 5;
 
     private final Logger logger = LoggerFactory.getLogger(ProfileRepository.class);
 
@@ -75,7 +76,7 @@ public class ProfileRepository {
 
     public List<Profile> findProfilesWithFullnameLike(@NotNull final String name) {
         String nameInLowercase = name.toLowerCase();
-        return entityManager.createQuery(FIND_BY_FULLNAME_LIKE, Profile.class).setParameter("name", "%" + nameInLowercase + "%").getResultList();
+        return entityManager.createQuery(FIND_BY_FULLNAME_LIKE, Profile.class).setParameter("name", "%" + nameInLowercase + "%").setMaxResults(MAX_RESULT).getResultList();
     }
 
     public Profile findWithSocialConnections(@NotNull final String username) {

@@ -5,8 +5,6 @@ import org.miles2run.core.cache.CityCoordinatesCache;
 import org.miles2run.core.utils.GeocoderUtils;
 import org.miles2run.domain.documents.UserProfile;
 import org.miles2run.domain.entities.Profile;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
@@ -16,13 +14,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Provides an API to work with profiles and cities MongoDB collection.
+ * Provides an API to work with profiles MongoDB collection.
  */
 @ApplicationScoped
 public class UserProfileRepository {
 
-    public static final String PROFILES_COLLECTION = "profiles";
-    private final Logger logger = LoggerFactory.getLogger(UserProfileRepository.class);
+    private static final String PROFILES_COLLECTION = "profiles";
 
     @Inject
     private CityCoordinatesCache cityCache;

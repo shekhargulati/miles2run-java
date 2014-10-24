@@ -1,6 +1,7 @@
 package org.miles2run.core.repositories.redis;
 
-import org.miles2run.core.vo.Notification;
+import com.google.gson.Gson;
+import org.miles2run.domain.kv_aggregates.Notification;
 import redis.clients.jedis.Jedis;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -8,6 +9,7 @@ import javax.inject.Inject;
 import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class NotificationRepository {
@@ -19,7 +21,7 @@ public class NotificationRepository {
         return jedisExecution.execute(new JedisOperation<Long>() {
             @Override
             public Long perform(Jedis jedis) {
-                return jedis.zadd("notifications:" + notification.getUserToNotify(), notification.getTimestamp(), notification.toJSON());
+                return jedis.zadd("notifications:" + notification.getUserToNotify(), notification.getTimestamp(), toJSON());
             }
         });
     }
@@ -33,11 +35,17 @@ public class NotificationRepository {
             }
         });
 
-        Set<Notification> notifications = new LinkedHashSet<>();
-        for (String notification : notificationStrings) {
-            notifications.add(Notification.toNotification(notification));
-        }
-        return notifications;
+        return notificationStrings.stream().map(NotificationRepository::toNotification).collect(Collectors.toCollection(() -> new LinkedHashSet<>()));
+    }
+
+    private static Notification toNotification(String notification) {
+        Gson gson = new Gson();
+        return gson.fromJson(notification, Notification.class);
+    }
+
+    private String toJSON() {
+        Gson gson = new Gson();
+        return gson.toJson(this);
     }
 }
 

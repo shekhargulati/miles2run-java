@@ -50,6 +50,10 @@ public class GoalRepository {
         }
     }
 
+    public Goal find(Long goalId) {
+        return entityManager.find(Goal.class, goalId);
+    }
+
     public <T extends Goal> T find(Class<T> type, Long goalId) {
         return entityManager.find(type, goalId);
     }

@@ -1,6 +1,6 @@
 package org.miles2run.core.repositories.jpa;
 
-import org.miles2run.core.vo.ActivityCountAndDistanceTuple;
+import org.miles2run.core.repositories.jpa.vo.ActivityCountAndDistanceTuple;
 import org.miles2run.domain.entities.Activity;
 import org.miles2run.domain.entities.Profile;
 
@@ -41,9 +41,10 @@ public class ActivityRepository {
         return entityManager.createQuery(findAllActivitiesQuery, Activity.class).setParameter("postedBy", postedBy);
     }
 
-    public void update(final Activity activity) {
+    public Activity update(final Activity activity) {
         Activity merged = entityManager.merge(activity);
         entityManager.persist(merged);
+        return merged;
     }
 
     public List<Activity> findAll(@NotNull final Profile postedBy) {
@@ -108,7 +109,7 @@ public class ActivityRepository {
     }
 
     public ActivityCountAndDistanceTuple calculateTotalActivitiesAndDistanceCoveredByUser(@NotNull final Profile profile) {
-        final String totalActivitiesAndDistanceForUserQuery = "SELECT new org.miles2run.core.vo.ActivityCountAndDistanceTuple(COUNT(a),SUM(a.distanceCovered)) FROM Activity a where a.postedBy =:profile";
+        final String totalActivitiesAndDistanceForUserQuery = "SELECT new org.miles2run.core.repositories.jpa.vo.ActivityCountAndDistanceTuple(COUNT(a),SUM(a.distanceCovered)) FROM Activity a where a.postedBy =:profile";
         return entityManager
                 .createQuery(totalActivitiesAndDistanceForUserQuery, ActivityCountAndDistanceTuple.class)
                 .setParameter("profile", profile)

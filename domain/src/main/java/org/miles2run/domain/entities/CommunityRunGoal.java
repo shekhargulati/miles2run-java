@@ -14,6 +14,15 @@ public class CommunityRunGoal extends Goal {
     protected CommunityRunGoal() {
     }
 
+    private CommunityRunGoal(String purpose, Duration duration, GoalUnit goalUnit, boolean archived, Profile profile, CommunityRun communityRun) {
+        super(purpose, duration, goalUnit, archived, profile);
+        this.communityRun = communityRun;
+    }
+
+    static CommunityRunGoal createCommunityRunGoal(String purpose, Duration duration, GoalUnit goalUnit, boolean archived, Profile profile, CommunityRun communityRun) {
+        return new CommunityRunGoal(purpose, duration, goalUnit, archived, profile, communityRun);
+    }
+
     public CommunityRun getCommunityRun() {
         return communityRun;
     }

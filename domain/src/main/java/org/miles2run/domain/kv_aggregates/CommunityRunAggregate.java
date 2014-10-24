@@ -1,6 +1,6 @@
 package org.miles2run.domain.kv_aggregates;
 
-public class CommunityRunStats {
+public class CommunityRunAggregate {
 
     private final Long runners;
     private final Long countries;
@@ -8,7 +8,7 @@ public class CommunityRunStats {
     private final Double totalDistance;
     private final Long totalDuration;
 
-    public CommunityRunStats(Long runners, Long countries, Long cities, Double totalDistance, Long totalDuration) {
+    public CommunityRunAggregate(Long runners, Long countries, Long cities, Double totalDistance, Long totalDuration) {
         this.runners = runners;
         this.countries = countries;
         this.cities = cities;

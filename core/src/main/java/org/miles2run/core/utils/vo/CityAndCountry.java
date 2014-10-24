@@ -1,4 +1,4 @@
-package org.miles2run.core.vo;
+package org.miles2run.core.utils.vo;
 
 public class CityAndCountry {
     private String city;

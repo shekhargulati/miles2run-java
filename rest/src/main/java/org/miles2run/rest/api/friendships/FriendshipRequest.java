@@ -1,4 +1,4 @@
-package org.miles2run.representations;
+package org.miles2run.rest.api.friendships;
 
 public class FriendshipRequest {
 

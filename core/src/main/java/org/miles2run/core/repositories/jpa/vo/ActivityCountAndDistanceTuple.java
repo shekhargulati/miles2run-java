@@ -1,4 +1,4 @@
-package org.miles2run.core.vo;
+package org.miles2run.core.repositories.jpa.vo;
 
 public class ActivityCountAndDistanceTuple {
     private final Long activityCount;
@@ -19,10 +19,6 @@ public class ActivityCountAndDistanceTuple {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("ActivityCountAndDistanceTuple{");
-        sb.append("activityCount=").append(activityCount);
-        sb.append(", distanceCovered=").append(distanceCovered);
-        sb.append('}');
-        return sb.toString();
+        return "ActivityCountAndDistanceTuple{" + "activityCount=" + activityCount + ", distanceCovered=" + distanceCovered + '}';
     }
 }

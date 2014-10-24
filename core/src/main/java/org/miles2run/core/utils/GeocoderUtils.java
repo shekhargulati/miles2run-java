@@ -3,7 +3,7 @@ package org.miles2run.core.utils;
 import com.google.code.geocoder.Geocoder;
 import com.google.code.geocoder.GeocoderRequestBuilder;
 import com.google.code.geocoder.model.*;
-import org.miles2run.core.vo.CityAndCountry;
+import org.miles2run.core.utils.vo.CityAndCountry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,7 +46,7 @@ public abstract class GeocoderUtils {
 
     public static double[] lngLat(String city, String country) {
         String countryDisplayName = toDisplayName(country);
-        return findLngLat(new StringBuilder(city).append(" , ").append(countryDisplayName).toString());
+        return findLngLat(city + " , " + countryDisplayName);
     }
 
     private static String toDisplayName(String countryCode) {

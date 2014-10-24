@@ -36,8 +36,8 @@ public class GoalAggregateResource {
     @Path("/distance_and_pace")
     public List<Object[]> getDistanceAndPaceOverTime(@PathParam("goalId") Long goalId, @QueryParam("interval") String interval, @QueryParam("days") int days, @QueryParam("months") int months, @CookieParam("timezoneoffset") int timezoneOffset) {
         String loggedInUser = securityContext.getUserPrincipal().getName();
-        Profile profile = profileRepository.findProfile(loggedInUser);
-        Goal goal = goalRepository.findGoal(profile, goalId);
+        Profile profile = profileRepository.findByUsername(loggedInUser);
+        Goal goal = goalRepository.find(profile, goalId);
         days = days == 0 || days > 60 ? 60 : days;
         months = months == 0 || months > 12 ? 6 : months;
         interval = interval == null ? "day" : interval;
@@ -57,8 +57,8 @@ public class GoalAggregateResource {
     @Path("/distance_and_activity")
     public List<Object[]> getDistanceAndActivityCountOverTime(@PathParam("goalId") Long goalId, @QueryParam("months") int months) {
         String loggedInUser = securityContext.getUserPrincipal().getName();
-        Profile profile = profileRepository.findProfile(loggedInUser);
-        Goal goal = goalRepository.findGoal(profile, goalId);
+        Profile profile = profileRepository.findByUsername(loggedInUser);
+        Goal goal = goalRepository.find(profile, goalId);
         months = months == 0 || months > 12 ? 6 : months;
         return timelineRepository.distanceAndActivityCountOverNMonths(profile, goal, months);
     }
@@ -69,8 +69,8 @@ public class GoalAggregateResource {
     @LoggedIn
     public Response activityCalendar(@PathParam("goalId") Long goalId, @QueryParam("months") int nMonths) {
         String loggedInUser = securityContext.getUserPrincipal().getName();
-        Profile profile = profileRepository.findProfile(loggedInUser);
-        Goal goal = goalRepository.findGoal(profile, goalId);
+        Profile profile = profileRepository.findByUsername(loggedInUser);
+        Goal goal = goalRepository.find(profile, goalId);
         if (goal == null) {
             return Response.status(Response.Status.NOT_FOUND).entity("No goal exists with id " + goalId).build();
         }

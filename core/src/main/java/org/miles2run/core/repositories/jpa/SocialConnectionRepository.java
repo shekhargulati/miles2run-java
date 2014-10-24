@@ -30,8 +30,7 @@ public class SocialConnectionRepository {
         TypedQuery<SocialConnection> query = entityManager.createQuery(findQuery, SocialConnection.class);
         query.setParameter("connectionId", connectionId);
         try {
-            SocialConnection socialConnection = query.getSingleResult();
-            return socialConnection;
+            return query.getSingleResult();
         } catch (NoResultException e) {
             return null;
         }

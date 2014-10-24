@@ -9,14 +9,11 @@ import org.miles2run.core.repositories.redis.CommunityRunStatsRepository;
 import org.miles2run.core.repositories.redis.CounterStatsRepository;
 import org.miles2run.core.repositories.redis.GoalStatsRepository;
 import org.miles2run.core.repositories.redis.TimelineRepository;
-import org.miles2run.core.vo.ActivityDetails;
 import org.miles2run.domain.entities.Activity;
+import org.miles2run.domain.entities.CommunityRunGoal;
 import org.miles2run.domain.entities.Goal;
-import org.miles2run.domain.entities.GoalType;
 import org.miles2run.domain.entities.Profile;
-import org.miles2run.representations.ActivityRequest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.miles2run.rest.representations.ActivityRepresentation;
 
 import javax.inject.Inject;
 import javax.validation.Valid;
@@ -29,8 +26,6 @@ import javax.ws.rs.core.SecurityContext;
 
 @Path("goals/{goalId}/activities")
 public class ActivityResource {
-
-    private Logger logger = LoggerFactory.getLogger(ActivityResource.class);
 
     @Inject
     private ActivityRepository activityRepository;
@@ -54,34 +49,33 @@ public class ActivityResource {
     @Produces("application/json")
     @LoggedIn
     public Response postActivity(@PathParam("goalId") Long goalId, @Valid final ActivityRequest activityRequest) {
-        logger.info("Posting Activity {}", activityRequest);
-        Activity activity = activityRequest.toActivity();
         String loggedInUser = securityContext.getUserPrincipal().getName();
-        Profile profile = profileRepository.findProfile(loggedInUser);
-        Goal goal = goalRepository.findGoal(profile, goalId);
-        logger.debug("Found goal {}", goal);
+        Profile profile = profileRepository.findByUsername(loggedInUser);
+        Goal goal = goalRepository.find(profile, goalId);
         if (goal == null) {
             return Response.status(Response.Status.NOT_FOUND).entity("No goal exists with id " + goalId).build();
         }
-        activity.setPostedBy(profile);
-        activity.setGoal(goal);
-        Long persistedActivityId = activityRepository.save(activity);
-        ActivityDetails savedActivity = activityRepository.findById(persistedActivityId);
+        Activity activity = activityRequest.toActivity(profile, goal);
+        Activity savedActivity = activityRepository.save(activity);
+        updateStats(profile, goal, activity, savedActivity);
+        return Response.status(Response.Status.CREATED).entity(ActivityRepresentation.from(savedActivity)).build();
+    }
+
+    private void updateStats(Profile profile, Goal goal, Activity activity, Activity savedActivity) {
         counterStatsRepository.updateDistanceCount(activity.getDistanceCovered());
         counterStatsRepository.updateActivitySecondsCount(activity.getDuration());
         goalStatsRepository.updateTotalDistanceCoveredForAGoal(goal.getId(), savedActivity.getDistanceCovered());
         timelineRepository.postActivityToTimeline(savedActivity, profile, goal);
-        if (goal.getGoalType() == GoalType.COMMUNITY_RUN_GOAL) {
-            communityRunStatsRepository.updateCommunityRunStats(loggedInUser, goal, activity);
+        if (goal instanceof CommunityRunGoal) {
+            communityRunStatsRepository.updateCommunityRunStats(profile.getUsername(), (CommunityRunGoal) goal, activity);
         }
-        return Response.status(Response.Status.CREATED).entity(ActivityDetails.toHumanReadable(savedActivity)).build();
     }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/{id}")
-    public ActivityDetails get(@NotNull @PathParam("id") Long id) {
-        return ActivityDetails.toHumanReadable(activityRepository.findById(id));
+    public ActivityRepresentation get(@NotNull @PathParam("id") Long id) {
+        return ActivityRepresentation.from(activityRepository.get(id));
     }
 
     @PUT
@@ -89,29 +83,38 @@ public class ActivityResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/{id}")
     @LoggedIn
-    public Response updateActivity(@PathParam("goalId") Long goalId, @PathParam("id") Long id, @Valid Activity activity) {
+    public Response updateActivity(@PathParam("goalId") Long goalId, @PathParam("id") Long id, @Valid ActivityRequest activityRequest) {
         String loggedInUser = securityContext.getUserPrincipal().getName();
-        Profile profile = profileRepository.findProfile(loggedInUser);
-        Goal goal = goalRepository.findGoal(profile, goalId);
+        Profile profile = profileRepository.findByUsername(loggedInUser);
+        Goal goal = goalRepository.find(profile, goalId);
         if (goal == null) {
             return Response.status(Response.Status.NOT_FOUND).entity("No goal exists with id " + goalId).build();
         }
 
-        ActivityDetails existingActivity = activityRepository.findById(id);
+        Activity existingActivity = activityRepository.get(id);
         if (existingActivity == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
-        String activityBy = existingActivity.getUsername();
+        String activityBy = existingActivity.getPostedBy().getUsername();
         if (!StringUtils.equals(loggedInUser, activityBy)) {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }
-
-        double distanceCovered = activity.getDistanceCovered() * activity.getGoalUnit().getConversion();
-        activity.setDistanceCovered(distanceCovered);
-        ActivityDetails updatedActivity = activityRepository.update(existingActivity, activity);
+        double oldDistanceCovered = existingActivity.getDistanceCovered();
+        long oldDuration = existingActivity.getDuration();
+        updateExistingActivity(existingActivity, activityRequest);
+        Activity updatedActivity = activityRepository.update(existingActivity);
         timelineRepository.updateActivity(updatedActivity, profile, goal);
-        updateStats(goal, existingActivity.getDistanceCovered(), existingActivity.getDuration(), activity.getDistanceCovered(), activity.getDuration());
-        return Response.status(Response.Status.OK).entity(ActivityDetails.toHumanReadable(updatedActivity)).build();
+        updateStats(goal, updatedActivity.getDistanceCovered(), updatedActivity.getDuration(), oldDistanceCovered, oldDuration);
+        return Response.status(Response.Status.OK).entity(ActivityRepresentation.from(updatedActivity)).build();
+    }
+
+    private void updateExistingActivity(Activity existingActivity, ActivityRequest activityRequest) {
+        double distanceCovered = activityRequest.getDistanceCovered() * activityRequest.getGoalUnit().getConversion();
+        existingActivity.setGoalUnit(activityRequest.getGoalUnit());
+        existingActivity.setDistanceCovered(distanceCovered);
+        existingActivity.setActivityDate(activityRequest.getActivityDate());
+        existingActivity.setDuration(activityRequest.getDuration());
+        existingActivity.setStatus(activityRequest.getStatus());
     }
 
     void updateStats(Goal goal, double existingDistanceCovered, long existingDuration, double distanceCovered, long duration) {
@@ -121,8 +124,8 @@ public class ActivityResource {
         long updatedDuration = duration - existingDuration;
         counterStatsRepository.updateActivitySecondsCount(updatedDuration);
         goalStatsRepository.updateTotalDistanceCoveredForAGoal(goalId, updatedDistanceCovered);
-        if (goal.getGoalType() == GoalType.COMMUNITY_RUN_GOAL) {
-            communityRunStatsRepository.updateCommunityRunDistanceAndDurationStats(goal.getCommunityRun().getSlug(), updatedDistanceCovered, updatedDuration);
+        if (goal instanceof CommunityRunGoal) {
+            communityRunStatsRepository.updateCommunityRunDistanceAndDurationStats(((CommunityRunGoal) goal).getCommunityRun().getSlug(), updatedDistanceCovered, updatedDuration);
         }
     }
 
@@ -131,16 +134,16 @@ public class ActivityResource {
     @LoggedIn
     public Response deleteActivity(@PathParam("goalId") Long goalId, @PathParam("activityId") Long activityId) {
         String loggedInUser = securityContext.getUserPrincipal().getName();
-        Profile profile = profileRepository.findProfile(loggedInUser);
-        Goal goal = goalRepository.findGoal(profile, goalId);
+        Profile profile = profileRepository.findByUsername(loggedInUser);
+        Goal goal = goalRepository.find(profile, goalId);
         if (goal == null) {
             return Response.status(Response.Status.NOT_FOUND).entity("No goal exists with id " + goalId).build();
         }
-        ActivityDetails existingActivity = activityRepository.findById(activityId);
+        Activity existingActivity = activityRepository.get(activityId);
         if (existingActivity == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
-        String activityBy = existingActivity.getUsername();
+        String activityBy = existingActivity.getPostedBy().getUsername();
         if (!StringUtils.equals(loggedInUser, activityBy)) {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }

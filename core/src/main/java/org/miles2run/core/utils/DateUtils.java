@@ -2,7 +2,6 @@ package org.miles2run.core.utils;
 
 import org.joda.time.*;
 
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -63,17 +62,6 @@ public abstract class DateUtils {
         } catch (ParseException e) {
             return null;
 
-        }
-    }
-
-    public static Date toUTCDate(Date date) {
-        try {
-            DateFormat df = DateFormat.getInstance();
-            df.setTimeZone(TimeZone.getTimeZone("UTC"));
-            Date utcDate = df.parse(df.format(date));
-            return utcDate;
-        } catch (ParseException e) {
-            return date;
         }
     }
 

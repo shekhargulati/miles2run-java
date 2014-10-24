@@ -1,6 +1,6 @@
 package org.miles2run.core.repositories.redis;
 
-import org.miles2run.domain.kv_aggregates.Counter;
+import org.miles2run.domain.kv_aggregates.CounterAggregate;
 import redis.clients.jedis.Jedis;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -57,8 +57,8 @@ public class CounterStatsRepository {
         });
     }
 
-    public Counter currentCounter() {
-        return new Counter(getRunnerCount(), getCountryCount(), getDistanceCount(), getCityCount(), getActivitySecondCount());
+    public CounterAggregate currentCounter() {
+        return new CounterAggregate(getRunnerCount(), getCountryCount(), getDistanceCount(), getCityCount(), getActivitySecondCount());
     }
 
     public Long getCountryCount() {

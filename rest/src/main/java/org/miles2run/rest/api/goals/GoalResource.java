@@ -1,18 +1,13 @@
 package org.miles2run.rest.api.goals;
 
 import org.apache.commons.lang3.StringUtils;
-import org.joda.time.Interval;
 import org.jug.filters.LoggedIn;
-import org.miles2run.core.repositories.jpa.ActivityRepository;
 import org.miles2run.core.repositories.jpa.GoalRepository;
 import org.miles2run.core.repositories.jpa.ProfileRepository;
 import org.miles2run.core.repositories.redis.GoalStatsRepository;
-import org.miles2run.core.vo.Progress;
-import org.miles2run.domain.entities.Goal;
-import org.miles2run.domain.entities.GoalType;
-import org.miles2run.domain.entities.Profile;
-import org.miles2run.representations.GoalDetails;
-import org.miles2run.representations.GoalDetailsFactory;
+import org.miles2run.domain.entities.*;
+import org.miles2run.rest.representations.GoalRepresentation;
+import org.miles2run.rest.representations.GoalRepresentationFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,27 +35,30 @@ public class GoalResource {
     private GoalRepository goalRepository;
     @Inject
     private GoalStatsRepository goalStatsRepository;
-    @Inject
-    private ActivityRepository activityRepository;
 
     @GET
     @Produces("application/json")
     @LoggedIn
     public Response allGoals(@QueryParam("archived") boolean archived, @QueryParam("groupByType") Boolean groupByType) {
         Profile profile = getProfile();
-        List<Goal> goals = goalRepository.findAllGoals(profile, archived);
+        List<Goal> goals = goalRepository.findAll(profile, archived);
         if (groupByType != null && groupByType) {
             return groupGoalsByType(goals);
         }
         return Response.status(Response.Status.OK).entity(goals).build();
     }
 
+    private Profile getProfile() {
+        String loggedInUser = securityContext.getUserPrincipal().getName();
+        return profileRepository.findByUsername(loggedInUser);
+    }
+
     private Response groupGoalsByType(List<Goal> goals) {
         Map<GoalType, List<Object>> goalsByType = new HashMap<>();
         for (Goal goal : goals) {
-            GoalType goalType = goal.getGoalType();
+            GoalType goalType = toGoalType(goal);
             double totalDistanceCoveredForGoal = goalStatsRepository.distanceCovered(goal.getId());
-            GoalDetails specificGoal = GoalDetailsFactory.toGoalType(goal, totalDistanceCoveredForGoal);
+            GoalRepresentation specificGoal = GoalRepresentationFactory.toGoalType(goal, totalDistanceCoveredForGoal);
             if (goalsByType.containsKey(goalType)) {
                 List<Object> goalsForType = goalsByType.get(goalType);
                 goalsForType.add(specificGoal);
@@ -73,33 +71,36 @@ public class GoalResource {
         return Response.status(Response.Status.OK).entity(goalsByType).build();
     }
 
-    private Profile getProfile() {
-        String loggedInUser = securityContext.getUserPrincipal().getName();
-        return profileRepository.findProfile(loggedInUser);
+    private GoalType toGoalType(Goal goal) {
+        if (goal instanceof DistanceGoal) {
+            return GoalType.DISTANCE_GOAL;
+        } else if (goal instanceof DurationGoal) {
+            return GoalType.DURATION_GOAL;
+        }
+        return GoalType.COMMUNITY_RUN_GOAL;
     }
 
     @Path("{goalId}")
     @GET
     @Produces("application/json")
     @LoggedIn
-    public GoalDetails goal(@PathParam("goalId") Long goalId) {
+    public GoalRepresentation goal(@PathParam("goalId") Long goalId) {
         Profile profile = getProfile();
-        Goal goal = goalRepository.findGoal(profile, goalId);
+        Goal goal = goalRepository.find(profile, goalId);
         double distanceCovered = goalStatsRepository.distanceCovered(goal.getId());
-        return GoalDetailsFactory.toGoalType(goal, distanceCovered);
+        return GoalRepresentationFactory.toGoalType(goal, distanceCovered);
     }
 
     @POST
     @Consumes("application/json")
     @Produces("application/json")
     @LoggedIn
-    public Response createGoal(@Valid Goal goal) {
+    public Response createGoal(@Valid GoalRequest goalRequest) {
         try {
-            logger.info("Goal : " + goal);
-            Profile profile = getProfile();
-            goal.setDistance(goal.getDistance() * goal.getGoalUnit().getConversion());
-            Goal createdGoal = goalRepository.save(goal, profile);
-            return Response.status(Response.Status.CREATED).entity(createdGoal).build();
+            logger.info("Goal : " + goalRequest);
+            Goal goal = goalRequest.toGoal(getProfile());
+            Goal createdGoal = goalRepository.save(goal);
+            return Response.status(Response.Status.CREATED).entity(GoalRepresentationFactory.toGoalType(createdGoal, 0)).build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
@@ -109,7 +110,7 @@ public class GoalResource {
     @PUT
     @Produces("application/json")
     @LoggedIn
-    public Response updateGoal(@PathParam("goalId") Long goalId, @Valid Goal goal) {
+    public Response updateGoal(@PathParam("goalId") Long goalId, @Valid GoalRequest goalRequest) {
         String loggedInUser = securityContext.getUserPrincipal().getName();
         Goal existingGoal = goalRepository.find(goalId);
         if (existingGoal == null) {
@@ -118,10 +119,14 @@ public class GoalResource {
         if (!StringUtils.equals(loggedInUser, existingGoal.getProfile().getUsername())) {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }
-        goal.setDistance(goal.getDistance() * goal.getGoalUnit().getConversion());
-        goalRepository.update(goal, goalId);
+
+        // TODO: FIX ME
+//        updateExistingGoal(existingGoal, goalRequest);
+
+        goalRepository.update(existingGoal);
         return Response.status(Response.Status.OK).build();
     }
+
 
     @Path("/{goalId}/archive")
     @PUT
@@ -129,22 +134,23 @@ public class GoalResource {
     @LoggedIn
     public Response archiveGoal(@PathParam("goalId") Long goalId, @QueryParam("archived") boolean archived) {
         Profile profile = getProfile();
-        Goal existingGoal = goalRepository.findGoal(profile, goalId);
-        if (existingGoal == null) {
+        Goal goal = goalRepository.find(profile, goalId);
+        if (goal == null) {
             return Response.status(Response.Status.NOT_FOUND).entity("No goal exists with id " + goalId).build();
         }
-        goalRepository.updatedArchiveStatus(goalId, archived);
+        goal.setArchived(true);
+        goalRepository.update(goal);
         return Response.status(Response.Status.OK).build();
     }
 
-    @Path("/{goalId}/progress")
+/*    @Path("/{goalId}/progress")
     @GET
     @Produces("application/json")
     @LoggedIn
     public Response progress(@PathParam("goalId") Long goalId, @CookieParam("timezoneoffset") int timezoneOffset) {
         String username = securityContext.getUserPrincipal().getName();
-        Profile loggedInUser = profileRepository.findProfile(username);
-        Goal goal = goalRepository.findGoal(loggedInUser, goalId);
+        Profile loggedInUser = profileRepository.findByUsername(username);
+        Goal goal = goalRepository.find(loggedInUser, goalId);
         if (goal == null) {
             return Response.status(Response.Status.NOT_FOUND).entity("No goal exists with id " + goalId).build();
         }
@@ -157,6 +163,6 @@ public class GoalResource {
         goalProgress.put("totalDistanceCovered", progress.getTotalDistanceCovered());
         goalProgress.put("goalUnit", progress.getGoalUnit());
         return Response.status(Response.Status.OK).entity(goalProgress).build();
-    }
+    }*/
 
 }

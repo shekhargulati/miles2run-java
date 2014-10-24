@@ -1,7 +1,7 @@
 package org.miles2run.rest.api.counters;
 
 import org.miles2run.core.repositories.redis.CounterStatsRepository;
-import org.miles2run.domain.kv_aggregates.Counter;
+import org.miles2run.domain.kv_aggregates.CounterAggregate;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;
@@ -16,7 +16,7 @@ public class CounterResource {
 
     @GET
     @Produces("application/json")
-    public Counter appCounter() {
+    public CounterAggregate appCounter() {
         return counterStatsRepository.currentCounter();
     }
 }
