@@ -6,8 +6,8 @@ import org.miles2run.core.repositories.jpa.GoalRepository;
 import org.miles2run.core.repositories.jpa.ProfileRepository;
 import org.miles2run.core.repositories.redis.GoalStatsRepository;
 import org.miles2run.domain.entities.*;
-import org.miles2run.rest.representations.GoalRepresentation;
-import org.miles2run.rest.representations.GoalRepresentationFactory;
+import org.miles2run.representations.GoalRepresentation;
+import org.miles2run.representations.GoalRepresentationFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

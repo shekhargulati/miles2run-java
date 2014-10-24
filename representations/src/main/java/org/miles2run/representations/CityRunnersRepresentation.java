@@ -1,4 +1,4 @@
-package org.miles2run.rest.representations;
+package org.miles2run.representations;
 
 public class CityRunnersRepresentation {
 

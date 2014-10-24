@@ -8,10 +8,8 @@ import org.miles2run.core.repositories.jpa.CommunityRunRepository;
 import org.miles2run.core.repositories.jpa.GoalRepository;
 import org.miles2run.core.repositories.jpa.ProfileRepository;
 import org.miles2run.core.repositories.redis.CommunityRunStatsRepository;
-import org.miles2run.domain.entities.CommunityRun;
-import org.miles2run.domain.entities.Goal;
-import org.miles2run.domain.entities.Profile;
-import org.miles2run.representations.CommunityRunDetails;
+import org.miles2run.domain.entities.*;
+import org.miles2run.representations.CommunityRunRepresentation;
 import org.miles2run.views.filters.InjectProfile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +20,7 @@ import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.SecurityContext;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -52,7 +51,7 @@ public class CommunityRunView {
     @InjectProfile
     public View allCommunityRuns() {
         List<CommunityRun> communityRuns = communityRunRepository.findAllActiveCommunityRuns();
-        List<CommunityRunDetails> runs = communityRuns.stream().map(communityRun -> CommunityRunDetails.fromCommunityRun(communityRun).addStats(communityRunStatsRepository.getCurrentStatsForCommunityRun(communityRun.getSlug()))).collect(Collectors.toList());
+        List<CommunityRunRepresentation> runs = communityRuns.stream().map(communityRun -> CommunityRunRepresentation.from(communityRun).addStats(communityRunStatsRepository.getCurrentStatsForCommunityRun(communityRun.getSlug()))).collect(Collectors.toList());
         return View.of("/community_runs", templateEngine).withModel("communityRuns", runs);
     }
 
@@ -66,11 +65,11 @@ public class CommunityRunView {
         if (communityRun == null) {
             throw new ViewResourceNotFoundException(String.format("No community run exists with name %s", slug), templateEngine);
         }
-        CommunityRunDetails communityRunDetails = CommunityRunDetails.fromCommunityRun(communityRun).addStats(communityRunStatsRepository.getCurrentStatsForCommunityRun(communityRun.getSlug()));
+        CommunityRunRepresentation communityRunDetails = CommunityRunRepresentation.from(communityRun).addStats(communityRunStatsRepository.getCurrentStatsForCommunityRun(communityRun.getSlug()));
         if (securityContext.getUserPrincipal() != null) {
             String principal = securityContext.getUserPrincipal().getName();
             if (communityRunStatsRepository.isUserAlreadyPartOfRun(slug, principal)) {
-                Long goalId = goalRepository.findGoalIdWithCommunityRunAndProfile(communityRunRepository.find(slug), profileRepository.findProfile(principal));
+                Long goalId = goalRepository.findGoalIdWithCommunityRunAndProfile(communityRunRepository.find(slug), profileRepository.findByUsername(principal));
                 communityRunDetails.addParticipationDetails(true);
                 return View.of("/community_run", templateEngine).withModel("communityRun", communityRunDetails).withModel("goalId", goalId);
             }
@@ -84,20 +83,24 @@ public class CommunityRunView {
     @LoggedIn
     public View joinCommunityRun(@NotNull @PathParam("slug") final String slug) {
         if (!communityRunStatsRepository.communityRunExists(slug)) {
-            return View.of("/community_runs", true);
+            return View.of("/community_runs/", true);
         }
         String principal = securityContext.getUserPrincipal().getName();
         if (communityRunStatsRepository.isUserAlreadyPartOfRun(slug, principal)) {
             return View.of("/community_runs/" + slug, true);
         }
-
-        Profile profile = profileRepository.findProfile(principal);
-        logger.info("Adding profile {} to community run ", principal, slug);
+        Profile profile = profileRepository.findByUsername(principal);
+        logger.info("Adding profile {} to community run {}", principal, slug);
         CommunityRun communityRun = communityRunRepository.addRunnerToCommunityRun(slug, profile);
 
-        Goal goal = Goal.newCommunityRunGoal(communityRun);
+        CommunityRunGoal goal = new CommunityRunGoalBuilder()
+                .setCommunityRun(communityRun)
+                .setDuration(new Duration(new Date(), communityRun.getDuration().getEndDate()))
+                .setPurpose(communityRun.getName())
+                .setProfile(profile)
+                .createCommunityRunGoal();
         logger.info("Creating a CommunityRun goal for profile {}", principal);
-        Goal savedGoal = goalRepository.save(goal, profile);
+        CommunityRunGoal savedGoal = goalRepository.save(goal);
         logger.info("Created a new goal with id {}", savedGoal.getId());
 
         communityRunStatsRepository.addGoalToCommunityRun(slug, savedGoal.getId());
@@ -117,7 +120,7 @@ public class CommunityRunView {
         if (!communityRunStatsRepository.isUserAlreadyPartOfRun(slug, principal)) {
             return View.of("/community_runs/" + slug, true);
         }
-        Profile profile = profileRepository.findProfile(principal);
+        Profile profile = profileRepository.findByUsername(principal);
         logger.info("User {} leaving community run {}", principal, slug);
         communityRunRepository.leaveCommunityRun(slug, profile);
         goalRepository.archiveGoalWithCommunityRun(communityRunRepository.find(slug), profile);

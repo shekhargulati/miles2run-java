@@ -1,4 +1,4 @@
-package org.miles2run.rest.representations;
+package org.miles2run.representations;
 
 import org.miles2run.domain.entities.Activity;
 

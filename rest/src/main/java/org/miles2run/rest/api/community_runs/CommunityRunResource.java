@@ -10,8 +10,8 @@ import org.miles2run.core.repositories.jpa.ProfileRepository;
 import org.miles2run.core.repositories.redis.CommunityRunStatsRepository;
 import org.miles2run.core.utils.SlugUtils;
 import org.miles2run.domain.entities.*;
-import org.miles2run.rest.representations.CityRunnersRepresentation;
-import org.miles2run.rest.representations.CommunityRunRepresentation;
+import org.miles2run.representations.CityRunnersRepresentation;
+import org.miles2run.representations.CommunityRunRepresentation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

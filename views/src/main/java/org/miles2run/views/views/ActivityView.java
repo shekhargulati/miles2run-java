@@ -5,8 +5,9 @@ import org.jug.view.View;
 import org.jug.view.ViewResourceNotFoundException;
 import org.miles2run.core.repositories.jpa.ActivityRepository;
 import org.miles2run.core.repositories.jpa.ProfileRepository;
-import org.miles2run.core.vo.ActivityDetails;
+import org.miles2run.domain.entities.Activity;
 import org.miles2run.domain.entities.Profile;
+import org.miles2run.representations.ActivityRepresentation;
 import org.miles2run.views.filters.InjectProfile;
 import org.thymeleaf.TemplateEngine;
 
@@ -32,11 +33,11 @@ public class ActivityView {
     @InjectPrincipal
     @InjectProfile
     public View viewActivity(@PathParam("username") String username, @PathParam("activityId") Long activityId) {
-        Profile profile = profileRepository.findProfile(username);
-        ActivityDetails activityDetails = activityRepository.findByUsernameAndId(profile, activityId);
-        if (activityDetails == null) {
+        Profile profile = profileRepository.findByUsername(username);
+        Activity activity = activityRepository.findByProfileAndId(profile, activityId);
+        if (activity == null) {
             throw new ViewResourceNotFoundException(String.format("User %s has not posted any activity with id %d", username, activityId), templateEngine);
         }
-        return View.of("/activity", templateEngine).withModel("activity", ActivityDetails.toHumanReadable(activityDetails));
+        return View.of("/activity", templateEngine).withModel("activity", ActivityRepresentation.from(activity));
     }
 }

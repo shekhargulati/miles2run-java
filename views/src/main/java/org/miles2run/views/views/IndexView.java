@@ -5,7 +5,6 @@ import org.jug.view.View;
 import org.miles2run.core.repositories.jpa.GoalRepository;
 import org.miles2run.core.repositories.jpa.ProfileRepository;
 import org.miles2run.core.repositories.redis.CounterStatsRepository;
-import org.miles2run.domain.entities.Goal;
 import org.miles2run.domain.entities.Profile;
 import org.miles2run.views.filters.InjectProfile;
 import org.slf4j.Logger;
@@ -18,7 +17,6 @@ import javax.servlet.http.HttpSession;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
-import java.util.List;
 
 @Path("/")
 public class IndexView {
@@ -45,9 +43,9 @@ public class IndexView {
         HttpSession session = request.getSession(false);
         if (session != null && session.getAttribute("principal") != null) {
             String loggedInUser = (String) session.getAttribute("principal");
-            Profile profile = profileRepository.findProfile(loggedInUser);
-            List<Goal> goals = goalJPAService.findAllGoals(profile, false);
-            return View.of("/home", templateEngine).withModel("goals", goals);
+            Profile profile = profileRepository.findByUsername(loggedInUser);
+//            List<Goal> goals = goalJPAService.findAllGoals(profile, false);
+            return View.of("/home", templateEngine);
         } else {
             return View.of("/index", templateEngine).withModel("counter", counterService.currentCounter());
         }

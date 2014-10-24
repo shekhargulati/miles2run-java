@@ -8,7 +8,7 @@ import org.miles2run.core.repositories.redis.TimelineRepository;
 import org.miles2run.domain.entities.Activity;
 import org.miles2run.domain.entities.Goal;
 import org.miles2run.domain.entities.Profile;
-import org.miles2run.rest.representations.TimelineRepresentation;
+import org.miles2run.representations.TimelineRepresentation;
 
 import javax.inject.Inject;
 import javax.ws.rs.*;

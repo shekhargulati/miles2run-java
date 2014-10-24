@@ -59,7 +59,7 @@ public class Profile extends BaseEntity {
     protected Profile() {
     }
 
-    private Profile(String email, String username, String fullname, String city, String country, Gender gender) {
+    private Profile(String email, String username, String fullname, String bio, String city, String country, Gender gender) {
         this.email = email;
         this.username = username;
         this.fullname = fullname;
@@ -68,8 +68,8 @@ public class Profile extends BaseEntity {
         this.gender = gender;
     }
 
-    static Profile createProfile(String email, String username, String fullname, String city, String country, Gender gender) {
-        return new Profile(email, username, fullname, city, country, gender);
+    static Profile createProfile(String email, String username, String fullname, String bio, String city, String country, Gender gender) {
+        return new Profile(email, username, fullname, bio, city, country, gender);
     }
 
     public String getEmail() {

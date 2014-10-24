@@ -16,20 +16,17 @@ import org.miles2run.core.repositories.jpa.ActivityRepository;
 import org.miles2run.core.repositories.jpa.GoalRepository;
 import org.miles2run.core.repositories.jpa.ProfileRepository;
 import org.miles2run.core.repositories.jpa.SocialConnectionRepository;
+import org.miles2run.core.repositories.jpa.vo.ActivityCountAndDistanceTuple;
 import org.miles2run.core.repositories.mongo.FriendshipRepository;
 import org.miles2run.core.repositories.mongo.UserProfileRepository;
 import org.miles2run.core.repositories.redis.CounterStatsRepository;
 import org.miles2run.core.repositories.redis.GoalStatsRepository;
 import org.miles2run.core.utils.GeocoderUtils;
 import org.miles2run.core.utils.UrlUtils;
-import org.miles2run.core.vo.ActivityCountAndDistanceTuple;
-import org.miles2run.core.vo.CityAndCountry;
-import org.miles2run.core.vo.ProfileDetails;
+import org.miles2run.core.utils.vo.CityAndCountry;
 import org.miles2run.domain.documents.UserProfile;
-import org.miles2run.domain.entities.GoalUnit;
-import org.miles2run.domain.entities.Profile;
-import org.miles2run.domain.entities.SocialConnection;
-import org.miles2run.domain.entities.SocialProvider;
+import org.miles2run.domain.entities.*;
+import org.miles2run.representations.UserRepresentation;
 import org.miles2run.social.Google;
 import org.miles2run.social.GoogleService;
 import org.miles2run.views.filters.InjectProfile;
@@ -76,7 +73,7 @@ public class UserView {
     @Inject
     private CounterStatsRepository counterService;
     @Inject
-    private ActivityRepository activityJPAService;
+    private ActivityRepository activityRepository;
     @Context
     private SecurityContext securityContext;
     @Inject
@@ -84,7 +81,7 @@ public class UserView {
     @Inject
     private GoogleService googleService;
     @Inject
-    private GoalRepository goalJPAService;
+    private GoalRepository goalRepository;
     @Inject
     private GoalStatsRepository goalRedisService;
     @Inject
@@ -122,8 +119,8 @@ public class UserView {
             String twitterProfilePic = user.getOriginalProfileImageURL();
             twitterProfilePic = UrlUtils.removeProtocol(twitterProfilePic);
             CityAndCountry cityAndCountry = GeocoderUtils.parseLocation(user.getLocation());
-            org.miles2run.representations.ProfileDetails profile = new org.miles2run.representations.ProfileDetails(user.getScreenName(), user.getName(), user.getDescription(), connectionId, twitterProfilePic, cityAndCountry.getCity(), cityAndCountry.getCountry());
-            return View.of("/createProfile", templateEngine).withModel("profile", profile);
+            UserViewRepresentation userRepresentation = UserViewRepresentation.createUserRepresentation(user.getScreenName(), user.getName(), user.getDescription(), connectionId, twitterProfilePic, cityAndCountry.getCity(), cityAndCountry.getCountry());
+            return View.of("/createProfile", templateEngine).withModel("profile", userRepresentation);
         } catch (TwitterException e) {
             throw new RuntimeException(e);
         }
@@ -147,18 +144,13 @@ public class UserView {
                 }
 
             }
-
-            String email = user.getEmail();
-            String gender = user.getGender();
             IdNameEntity location = user.getLocation();
             CityAndCountry cityAndCountry = new CityAndCountry();
             if (location != null) {
                 cityAndCountry = GeocoderUtils.parseLocation(location.getName());
             }
 
-            org.miles2run.representations.ProfileDetails profile = new org.miles2run.representations.ProfileDetails(user.getUsername(), user.getName(), user.getBio(), connectionId, facebookProfilePic, cityAndCountry.getCity(), cityAndCountry.getCountry());
-            profile.setEmail(email);
-            profile.setGender(gender);
+            UserViewRepresentation profile = UserViewRepresentation.createUserRepresentation(user.getUsername(), user.getName(), user.getBio(), connectionId, facebookProfilePic, cityAndCountry.getCity(), cityAndCountry.getCountry()).addEmail(user.getEmail()).setGender(user.getGender());
             return View.of("/createProfile", templateEngine).withModel("profile", profile);
         } catch (FacebookException e) {
             throw new RuntimeException(e);
@@ -170,9 +162,8 @@ public class UserView {
         GoogleTokenResponse token = new GoogleTokenResponse().setAccessToken(accessToken);
         Google user = googleService.getUser(token);
         String username = getUsernameFromEmail(user.getEmail());
-        org.miles2run.representations.ProfileDetails profile = new org.miles2run.representations.ProfileDetails(username, user.getName(), null, connectionId, UrlUtils.removeProtocol(user.getPicture()), null, null);
-        profile.setEmail(user.getEmail());
-        profile.setGender(user.getGender());
+        UserViewRepresentation profile = UserViewRepresentation.createUserRepresentation(username, user.getName(), null, connectionId, UrlUtils.removeProtocol(user.getPicture()), null, null).addEmail(user.getEmail()).setGender(user.getGender());
+
         return View.of("/createProfile", templateEngine).withModel("profile", profile);
     }
 
@@ -191,18 +182,18 @@ public class UserView {
     public View createProfile(@Form ProfileForm profileForm) {
         List<String> errors = new ArrayList<>();
         try {
-            if (profileRepository.findProfileByEmail(profileForm.getEmail()) != null) {
+            if (profileRepository.findByEmail(profileForm.getEmail()) != null) {
                 errors.add(String.format("User already exist with email %s", profileForm.getEmail()));
             }
-            if (profileRepository.findProfileByUsername(profileForm.getUsername()) != null) {
+            if (profileRepository.findByUsername(profileForm.getUsername()) != null) {
                 errors.add(String.format("User already exist with username %s", profileForm.getUsername()));
             }
             if (!errors.isEmpty()) {
                 return View.of("/createProfile", templateEngine).withModel("profile", profileForm).withModel("errors", errors);
             }
-            Profile profile = new Profile(profileForm.getEmail(), profileForm.getUsername(), profileForm.getBio(), profileForm.getCity(), profileForm.getCountry(), profileForm.getFullname(), profileForm.getGender(), profileForm.getProfilePic());
+            Profile profile = new ProfileBuilder().setFullname(profileForm.getFullname()).setGender(profileForm.getGender()).setCountry(profileForm.getCountry()).setCity(profileForm.getCity()).setUsername(profileForm.getUsername()).setEmail(profileForm.getEmail()).setBio(profileForm.getBio()).createProfile();
+            profile.addSocialConnection(socialConnectionService.findByConnectionId(profileForm.getConnectionId()));
             profileRepository.save(profile);
-            socialConnectionService.update(profile, profileForm.getConnectionId());
             userProfileRepository.save(profile);
             counterService.updateRunnerCount();
             counterService.addCountry(profile.getCountry());
@@ -243,7 +234,9 @@ public class UserView {
             String username = securityContext.getUserPrincipal().getName();
             List<String> errors = new ArrayList<>();
             try {
-                profileRepository.update(username, toProfile(profileForm));
+                Profile profile = profileRepository.findByUsername(username);
+                setUpdatedProperties(profile, profileForm);
+                profileRepository.update(profile);
                 userProfileRepository.update(username, profileForm.getCity(), profileForm.getCountry());
                 return View.of("/profiles/" + username, true);
             } catch (Exception e) {
@@ -268,8 +261,8 @@ public class UserView {
         }
     }
 
-    private Profile toProfile(UpdateProfileForm profileForm) {
-        return Profile.createProfileForUpdate(profileForm.getFullname(), profileForm.getBio(), profileForm.getCity(), profileForm.getCountry(), profileForm.getGender());
+    private void setUpdatedProperties(Profile profile, UpdateProfileForm profileForm) {
+        throw new RuntimeException("Not Implemented");
     }
 
     @GET
@@ -279,11 +272,11 @@ public class UserView {
     @InjectPrincipal
     public View viewUserProfile(@PathParam("username") String username) {
         try {
-            Profile profile = profileRepository.findProfile(username);
+            Profile profile = profileRepository.findByUsername(username);
             if (profile == null) {
                 throw new ViewResourceNotFoundException(String.format("No user exists with username %s", username), templateEngine);
             }
-            Profile userProfile = new Profile(profile);
+            UserRepresentation userProfile = UserRepresentation.from(profile);
             Map<String, Object> model = new HashMap<>();
             model.put("userProfile", userProfile);
             String currentLoggedInUser = securityContext.getUserPrincipal() != null ? securityContext.getUserPrincipal().getName() : null;
@@ -297,8 +290,8 @@ public class UserView {
                 }
             }
 
-            long activeGoalCount = goalJPAService.countOfActiveGoalCreatedByUser(profile);
-            ActivityCountAndDistanceTuple tuple = activityJPAService.calculateTotalActivitiesAndDistanceCoveredByUser(profile);
+            long activeGoalCount = goalRepository.countOfActiveGoalCreatedByUser(profile);
+            ActivityCountAndDistanceTuple tuple = activityRepository.calculateTotalActivitiesAndDistanceCoveredByUser(profile);
             model.put("activeGoalCount", activeGoalCount);
             model.put("totalActivities", tuple.getActivityCount());
             model.put("totalDistance", toMiles(tuple));
@@ -312,12 +305,12 @@ public class UserView {
         }
     }
 
-    double toMiles(ActivityCountAndDistanceTuple tuple) {
-        return tuple.getDistanceCovered() / GoalUnit.MI.getConversion();
-    }
-
     private boolean isFollowing(String currentLoggedInUser, String username) {
         return friendshipRepository.isUserFollowing(currentLoggedInUser, username);
+    }
+
+    double toMiles(ActivityCountAndDistanceTuple tuple) {
+        return tuple.getDistanceCovered() / GoalUnit.MI.getConversion();
     }
 
     @GET
@@ -327,22 +320,22 @@ public class UserView {
     @InjectProfile
     public View following(@PathParam("username") String username) {
         try {
-            Profile profile = profileRepository.findProfile(username);
+            Profile profile = profileRepository.findByUsername(username);
             if (profile == null) {
                 throw new ViewResourceNotFoundException(String.format("No user exists with username %s", username), templateEngine);
             }
-            Profile userProfile = new Profile(profile);
+            UserRepresentation userProfile = UserRepresentation.from(profile);
             Map<String, Object> model = new HashMap<>();
             model.put("userProfile", userProfile);
             UserProfile userProfileMongo = userProfileRepository.find(username);
             List<String> following = userProfileMongo.getFollowing();
             if (!following.isEmpty()) {
-                List<ProfileDetails> profiles = profileRepository.findAllProfiles(following);
-                model.put("followingProfiles", profiles);
+                List<Profile> profiles = profileRepository.findProfiles(following);
+                model.put("followingProfiles", profiles.stream().map(UserRepresentation::from).collect(Collectors.toList()));
             }
             model.put("followers", userProfileMongo.getFollowers().size());
             model.put("following", userProfileMongo.getFollowing().size());
-            model.put("activities", activityJPAService.count(profile));
+            model.put("activities", activityRepository.count(profile));
             return View.of("/following", templateEngine).withModel(model);
         } catch (Exception e) {
             if (e instanceof ViewResourceNotFoundException) {
@@ -361,22 +354,22 @@ public class UserView {
     @InjectProfile
     public View followers(@PathParam("username") String username) {
         try {
-            Profile profile = profileRepository.findProfile(username);
+            Profile profile = profileRepository.findByUsername(username);
             if (profile == null) {
                 throw new ViewResourceNotFoundException(String.format("No user exists with username %s", username), templateEngine);
             }
-            Profile userProfile = new Profile(profile);
+            UserRepresentation userProfile = UserRepresentation.from(profile);
             Map<String, Object> model = new HashMap<>();
             model.put("userProfile", userProfile);
             UserProfile userProfileMongo = userProfileRepository.find(username);
             List<String> followers = userProfileMongo.getFollowers();
             if (!followers.isEmpty()) {
-                List<ProfileDetails> profiles = profileRepository.findAllProfiles(followers);
-                model.put("followerProfiles", profiles);
+                List<Profile> profiles = profileRepository.findProfiles(followers);
+                model.put("followerProfiles", profiles.stream().map(UserRepresentation::from).collect(Collectors.toList()));
             }
             model.put("followers", userProfileMongo.getFollowers().size());
             model.put("following", userProfileMongo.getFollowing().size());
-            model.put("activities", activityJPAService.count(profile));
+            model.put("activities", activityRepository.count(profile));
             return View.of("/followers", templateEngine).withModel(model);
         } catch (Exception e) {
             if (e instanceof ViewResourceNotFoundException) {

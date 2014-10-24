@@ -54,7 +54,9 @@ public class TwitterCallbackView {
                 return getRedirectView(connectionId, existingSocialConnection);
             } else {
                 logger.info("Request token and token stored in database are not equal. So updating database with new token.");
-                socialConnectionRepository.update(existingSocialConnection.getId(), oAuthAccessToken.getToken(), oAuthAccessToken.getTokenSecret());
+                existingSocialConnection.setAccessSecret(oAuthAccessToken.getToken());
+                existingSocialConnection.setAccessSecret(oAuthAccessToken.getTokenSecret());
+                socialConnectionRepository.save(existingSocialConnection);
                 return getRedirectView(connectionId, socialConnectionRepository.findByConnectionId(connectionId));
             }
         }
@@ -62,6 +64,10 @@ public class TwitterCallbackView {
         socialConnectionRepository.save(socialConnection);
         logger.info("Saved new SocialConnection with id {}", connectionId);
         return View.of("/users/new?connectionId=" + connectionId, true);
+    }
+
+    private boolean isTokenAndSecretEqual(AccessToken oAuthAccessToken, SocialConnection existingSocialConnection) {
+        return StringUtils.equals(oAuthAccessToken.getToken(), existingSocialConnection.getAccessToken()) && StringUtils.equals(oAuthAccessToken.getTokenSecret(), existingSocialConnection.getAccessSecret());
     }
 
     View getRedirectView(String connectionId, SocialConnection existingSocialConnection) {
@@ -76,9 +82,5 @@ public class TwitterCallbackView {
             session.setAttribute("principal", username);
             return View.of("/", true);
         }
-    }
-
-    private boolean isTokenAndSecretEqual(AccessToken oAuthAccessToken, SocialConnection existingSocialConnection) {
-        return StringUtils.equals(oAuthAccessToken.getToken(), existingSocialConnection.getAccessToken()) && StringUtils.equals(oAuthAccessToken.getTokenSecret(), existingSocialConnection.getAccessSecret());
     }
 }

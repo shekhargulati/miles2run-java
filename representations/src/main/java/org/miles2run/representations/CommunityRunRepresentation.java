@@ -1,4 +1,4 @@
-package org.miles2run.rest.representations;
+package org.miles2run.representations;
 
 import org.miles2run.domain.entities.CommunityRun;
 import org.miles2run.domain.kv_aggregates.CommunityRunAggregate;
@@ -43,8 +43,9 @@ public class CommunityRunRepresentation {
         return new CommunityRunRepresentation(communityRun.getName(), communityRun.getBannerImg(), communityRun.getSlug(), communityRun.getDescription(), communityRun.getDuration().getStartDate(), communityRun.getDuration().getEndDate(), communityRun.getWebsite(), communityRun.getTwitterHandle());
     }
 
-    public void addStats(CommunityRunAggregate currentStatsForCommunityRun) {
+    public CommunityRunRepresentation addStats(CommunityRunAggregate currentStatsForCommunityRun) {
         this.stats = currentStatsForCommunityRun;
+        return this;
     }
 
     public void addParticipationDetails(boolean participating) {

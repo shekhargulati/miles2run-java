@@ -15,9 +15,6 @@ import javax.ws.rs.core.Application;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * TODO: Make it auto detect classes http://stackoverflow.com/a/21430849/247038
- */
 public class ApplicationConfig extends Application {
 
     @Override

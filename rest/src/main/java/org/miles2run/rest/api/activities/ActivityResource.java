@@ -13,7 +13,7 @@ import org.miles2run.domain.entities.Activity;
 import org.miles2run.domain.entities.CommunityRunGoal;
 import org.miles2run.domain.entities.Goal;
 import org.miles2run.domain.entities.Profile;
-import org.miles2run.rest.representations.ActivityRepresentation;
+import org.miles2run.representations.ActivityRepresentation;
 
 import javax.inject.Inject;
 import javax.validation.Valid;

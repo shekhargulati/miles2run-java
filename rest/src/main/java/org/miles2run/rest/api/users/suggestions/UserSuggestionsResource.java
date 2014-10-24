@@ -4,7 +4,7 @@ import org.jug.filters.LoggedIn;
 import org.miles2run.core.repositories.jpa.ProfileRepository;
 import org.miles2run.core.suggester.UserSuggester;
 import org.miles2run.domain.entities.Profile;
-import org.miles2run.rest.representations.UserRepresentation;
+import org.miles2run.representations.UserRepresentation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -36,7 +36,7 @@ public class InjectProfileFilter implements ContainerResponseFilter {
             Map<String, Object> model = view.getModel();
             Object principal = session.getAttribute("principal");
             logger.info("Setting profile for Principal " + principal);
-            model.put("profile", profileRepository.findProfileByUsername(principal.toString()));
+            model.put("profile", profileRepository.findByUsername(principal.toString()));
         }
     }
 }
