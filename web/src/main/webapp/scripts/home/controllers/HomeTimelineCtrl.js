@@ -157,8 +157,8 @@ angular.module('miles2run-home')
             $scope.currentPage = 1;
         }
         $scope.homeTimelinePromise = $http.get(ConfigService.getBaseUrl() + 'activities/home_timeline').success(function (data, status, headers, config) {
-            $scope.activities = data.timeline;
-            $scope.totalItems = data.totalItems;
+            $scope.activities = data.activities;
+            $scope.totalItems = data.activityCount;
         }).error(function (data, status, headers, config) {
             toastr.error("Unable to fetch home timeline. Please try after sometime.");
         });
@@ -166,8 +166,8 @@ angular.module('miles2run-home')
         $scope.pageChanged = function () {
             console.log('Page changed to: ' + $scope.currentPage);
             $http.get(ConfigService.getBaseUrl() + 'activities/home_timeline', {params: {page: $scope.currentPage}}).success(function (data, status, headers, config) {
-                $scope.activities = data.timeline;
-                $scope.totalItems = data.totalItems;
+                $scope.activities = data.activities;
+                $scope.totalItems = data.activityCount;
             }).error(function (data, status, headers, config) {
                 toastr.error("Unable to fetch home timeline. Please try after sometime.");
             });

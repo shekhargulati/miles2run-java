@@ -11,7 +11,7 @@ public class UserRepresentation {
     private String bio;
     private String username;
     private String fullname;
-    private String pic;
+    private String profilePic;
     private String city;
     private String country;
     private Gender gender;
@@ -21,11 +21,11 @@ public class UserRepresentation {
     protected UserRepresentation() {
     }
 
-    private UserRepresentation(String bio, String username, String fullname, String pic, String city, String country, Gender gender, Date createdAt, Role role) {
+    private UserRepresentation(String bio, String username, String fullname, String profilePic, String city, String country, Gender gender, Date createdAt, Role role) {
         this.bio = bio;
         this.username = username;
         this.fullname = fullname;
-        this.pic = pic;
+        this.profilePic = profilePic;
         this.city = city;
         this.country = country;
         this.gender = gender;
@@ -50,8 +50,8 @@ public class UserRepresentation {
         return fullname;
     }
 
-    public String getPic() {
-        return pic;
+    public String getProfilePic() {
+        return profilePic;
     }
 
     public String getCity() {
@@ -72,5 +72,19 @@ public class UserRepresentation {
 
     public Role getRole() {
         return role;
+    }
+
+    public String getBiggerProfilePic() {
+        return getImageWithSize("bigger");
+    }
+
+    private String getImageWithSize(String size) {
+        if (this.profilePic != null) {
+            int index = this.profilePic.lastIndexOf(".");
+            String imgPrefix = this.profilePic.substring(0, index);
+            String picExtension = this.profilePic.substring(index);
+            return new StringBuilder(imgPrefix).append("_").append(size).append(picExtension).toString();
+        }
+        return this.profilePic;
     }
 }

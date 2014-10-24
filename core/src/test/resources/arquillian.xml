@@ -11,4 +11,11 @@
     <extension qualifier="persistence-dbunit">
         <property name="datatypeFactory">org.dbunit.ext.h2.H2DataTypeFactory</property>
     </extension>
+
+    <container qualifier="wildfly" default="true">
+        <configuration>
+            <property name="javaVmArguments">-Djboss.socket.binding.port-offset=10000 -Djboss.management.native.port=19990</property>
+            <property name="managementPort">19990</property>
+        </configuration>
+    </container>
 </arquillian>

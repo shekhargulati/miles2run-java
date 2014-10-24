@@ -10,6 +10,8 @@ import org.miles2run.domain.entities.CommunityRun;
 import org.miles2run.domain.entities.CommunityRunGoal;
 import org.miles2run.domain.entities.Goal;
 import org.miles2run.domain.entities.Profile;
+import org.miles2run.representations.CommunityRunRepresentation;
+import org.miles2run.representations.GoalRepresentationFactory;
 import org.miles2run.representations.UserRepresentation;
 import org.miles2run.views.filters.InjectProfile;
 import org.slf4j.Logger;
@@ -58,11 +60,11 @@ public class GoalView {
             Map<String, Object> model = new HashMap<>();
             if (goal instanceof CommunityRunGoal) {
                 CommunityRun communityRun = ((CommunityRunGoal) goal).getCommunityRun();
-                model.put("communityRun", communityRun);
+                model.put("communityRun", CommunityRunRepresentation.from(communityRun));
             }
             Profile profileWithSocialConnections = profileRepository.findWithSocialConnections(username);
             model.put("activeProfile", UserRepresentation.from(profileWithSocialConnections));
-            model.put("goal", goal);
+            model.put("goal", GoalRepresentationFactory.toGoalType(goal, 0));
             return View.of("/goal", templateEngine).withModel(model);
         } catch (Exception e) {
             if (e instanceof ViewResourceNotFoundException) {

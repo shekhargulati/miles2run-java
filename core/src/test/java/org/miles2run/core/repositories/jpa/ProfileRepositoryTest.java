@@ -40,11 +40,14 @@ public class ProfileRepositoryTest {
     @Inject
     private EntityManager entityManager;
 
+    @Inject
+    private SocialConnectionRepository socialConnectionRepository;
+
     @Deployment
     public static Archive<?> deployment() {
         WebArchive webArchive = ShrinkWrap.create(WebArchive.class)
                 .addAsLibraries(domainDeployment())
-                .addClasses(ProfileRepository.class, TestHelpers.class, EntityManagerProducer.class)
+                .addClasses(ProfileRepository.class, TestHelpers.class, EntityManagerProducer.class, SocialConnectionRepository.class)
                 .addAsResource("META-INF/test_persistence.xml", "META-INF/persistence.xml")
                 .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
         System.out.println(webArchive.toString(true));
@@ -233,5 +236,15 @@ public class ProfileRepositoryTest {
         Profile profile = entityManager.find(Profile.class, 1000L);
         profile.setFullname("Updated User");
         profileRepository.update(profile);
+    }
+
+    @Test
+    @UsingDataSet({"social_connection.yml"})
+    public void save_ExistingSocialConnection_ProfileSavedSocialConnectionUpdated() throws Exception {
+        Profile profile = createProfile();
+        SocialConnection connection = socialConnectionRepository.findByConnectionId("test_connection");
+        profile.addSocialConnection(connection);
+        Profile saved = profileRepository.save(profile);
+        Assert.assertNotNull(saved);
     }
 }

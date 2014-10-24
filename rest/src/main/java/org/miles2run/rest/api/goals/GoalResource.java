@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Path("goals")
 public class GoalResource {
@@ -45,7 +46,8 @@ public class GoalResource {
         if (groupByType != null && groupByType) {
             return groupGoalsByType(goals);
         }
-        return Response.status(Response.Status.OK).entity(goals).build();
+        List<GoalRepresentation> representations = goals.stream().map(goal -> GoalRepresentationFactory.toGoalType(goal, 0)).collect(Collectors.toList());
+        return Response.status(Response.Status.OK).entity(representations).build();
     }
 
     private Profile getProfile() {

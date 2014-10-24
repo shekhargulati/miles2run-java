@@ -53,7 +53,7 @@ angular.module('miles2run-home')
 
 
         $rootScope.$on('update.following', function (event, value) {
-            $http.get(ConfigService.appContext() + 'api/v1/profiles/me/following').then(function (response) {
+            $http.get(ConfigService.appContext() + 'api/v1/users/me/following').then(function (response) {
                 $scope.following = response.data;
             });
         });

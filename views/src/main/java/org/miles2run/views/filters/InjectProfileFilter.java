@@ -2,6 +2,7 @@ package org.miles2run.views.filters;
 
 import org.jug.view.View;
 import org.miles2run.core.repositories.jpa.ProfileRepository;
+import org.miles2run.representations.UserRepresentation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +37,7 @@ public class InjectProfileFilter implements ContainerResponseFilter {
             Map<String, Object> model = view.getModel();
             Object principal = session.getAttribute("principal");
             logger.info("Setting profile for Principal " + principal);
-            model.put("profile", profileRepository.findByUsername(principal.toString()));
+            model.put("profile", UserRepresentation.from(profileRepository.findByUsername(principal.toString())));
         }
     }
 }

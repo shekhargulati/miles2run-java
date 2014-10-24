@@ -8,6 +8,7 @@ public class ProfileBuilder {
     private String country;
     private Gender gender;
     private String bio;
+    private String profilePic;
 
     public ProfileBuilder setEmail(String email) {
         this.email = email;
@@ -44,7 +45,12 @@ public class ProfileBuilder {
         return this;
     }
 
+    public ProfileBuilder setProfilePic(String profilePic) {
+        this.profilePic = profilePic;
+        return this;
+    }
+
     public Profile createProfile() {
-        return Profile.createProfile(email, username, fullname, bio, city, country, gender);
+        return Profile.createProfile(email, username, fullname, bio, city, country, gender, profilePic);
     }
 }

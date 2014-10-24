@@ -2,6 +2,7 @@ package org.miles2run.representations;
 
 import org.miles2run.domain.entities.CommunityRunGoal;
 import org.miles2run.domain.entities.GoalType;
+import org.miles2run.domain.entities.GoalUnit;
 
 import java.util.Date;
 
@@ -15,6 +16,7 @@ public class CommunityRunGoalRepresentation implements GoalRepresentation {
     private final GoalType goalType;
     private final Date communityRunStartDate;
     private final Date communityRunEndDate;
+    private final GoalUnit goalUnit;
 
     public CommunityRunGoalRepresentation(CommunityRunGoal goal) {
         this.id = goal.getId();
@@ -25,6 +27,7 @@ public class CommunityRunGoalRepresentation implements GoalRepresentation {
         this.goalType = GoalType.COMMUNITY_RUN_GOAL;
         this.communityRunStartDate = goal.getCommunityRun().getDuration().getStartDate();
         this.communityRunEndDate = goal.getCommunityRun().getDuration().getEndDate();
+        this.goalUnit = goal.getGoalUnit();
     }
 
     public Long getId() {
@@ -57,5 +60,9 @@ public class CommunityRunGoalRepresentation implements GoalRepresentation {
 
     public Date getCommunityRunEndDate() {
         return communityRunEndDate;
+    }
+
+    public GoalUnit getGoalUnit() {
+        return goalUnit;
     }
 }

@@ -44,6 +44,7 @@ import twitter4j.auth.AccessToken;
 import javax.inject.Inject;
 import javax.persistence.PersistenceException;
 import javax.transaction.RollbackException;
+import javax.transaction.Transactional;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.ws.rs.*;
@@ -179,6 +180,7 @@ public class UserView {
     @Path("/new")
     @AfterLogin
     @Produces("text/html")
+    @Transactional(value = Transactional.TxType.REQUIRED)
     public View createProfile(@Form ProfileForm profileForm) {
         List<String> errors = new ArrayList<>();
         try {
@@ -191,7 +193,7 @@ public class UserView {
             if (!errors.isEmpty()) {
                 return View.of("/createProfile", templateEngine).withModel("profile", profileForm).withModel("errors", errors);
             }
-            Profile profile = new ProfileBuilder().setFullname(profileForm.getFullname()).setGender(profileForm.getGender()).setCountry(profileForm.getCountry()).setCity(profileForm.getCity()).setUsername(profileForm.getUsername()).setEmail(profileForm.getEmail()).setBio(profileForm.getBio()).createProfile();
+            Profile profile = new ProfileBuilder().setFullname(profileForm.getFullname()).setGender(profileForm.getGender()).setCountry(profileForm.getCountry()).setCity(profileForm.getCity()).setUsername(profileForm.getUsername()).setEmail(profileForm.getEmail()).setBio(profileForm.getBio()).setProfilePic(profileForm.getProfilePic()).createProfile();
             profile.addSocialConnection(socialConnectionService.findByConnectionId(profileForm.getConnectionId()));
             profileRepository.save(profile);
             userProfileRepository.save(profile);
@@ -238,21 +240,23 @@ public class UserView {
                 setUpdatedProperties(profile, profileForm);
                 profileRepository.update(profile);
                 userProfileRepository.update(username, profileForm.getCity(), profileForm.getCountry());
-                return View.of("/profiles/" + username, true);
+                return View.of("/users/" + username, true);
             } catch (Exception e) {
                 logger.info(e.getClass().getCanonicalName());
-                RollbackException rollbackException = (RollbackException) e;
-                Throwable rollbackCause = rollbackException.getCause();
-                if (rollbackCause instanceof PersistenceException) {
-                    PersistenceException persistenceException = (PersistenceException) rollbackCause;
-                    if (persistenceException.getCause() instanceof ConstraintViolationException) {
-                        ConstraintViolationException constraintViolationException = (ConstraintViolationException) persistenceException.getCause();
-                        Set<ConstraintViolation<?>> constraintViolations = constraintViolationException.getConstraintViolations();
-                        errors.addAll(constraintViolations.stream().map(constraintViolation -> String.format("Field '%s' with value '%s' is invalid. %s", constraintViolation.getPropertyPath(), constraintViolation.getInvalidValue(), constraintViolation.getMessage())).collect(Collectors.toList()));
-                        return View.of("/editProfile", templateEngine).withModel("profile", profileForm).withModel("errors", errors);
+                if (e instanceof RollbackException) {
+                    RollbackException rollbackException = (RollbackException) e;
+                    Throwable rollbackCause = rollbackException.getCause();
+                    if (rollbackCause instanceof PersistenceException) {
+                        PersistenceException persistenceException = (PersistenceException) rollbackCause;
+                        if (persistenceException.getCause() instanceof ConstraintViolationException) {
+                            ConstraintViolationException constraintViolationException = (ConstraintViolationException) persistenceException.getCause();
+                            Set<ConstraintViolation<?>> constraintViolations = constraintViolationException.getConstraintViolations();
+                            errors.addAll(constraintViolations.stream().map(constraintViolation -> String.format("Field '%s' with value '%s' is invalid. %s", constraintViolation.getPropertyPath(), constraintViolation.getInvalidValue(), constraintViolation.getMessage())).collect(Collectors.toList()));
+                            return View.of("/editProfile", templateEngine).withModel("profile", profileForm).withModel("errors", errors);
+                        }
                     }
+                    errors.add(e.getMessage());
                 }
-                errors.add(e.getMessage());
                 return View.of("/editProfile", templateEngine).withModel("profile", profileForm).withModel("errors", errors);
             }
         } catch (Exception e) {
@@ -261,8 +265,12 @@ public class UserView {
         }
     }
 
-    private void setUpdatedProperties(Profile profile, UpdateProfileForm profileForm) {
-        throw new RuntimeException("Not Implemented");
+    private void setUpdatedProperties(Profile profile, UpdateProfileForm updated) {
+        profile.setFullname(updated.getFullname());
+        profile.setCity(updated.getCity());
+        profile.setCountry(updated.getCountry());
+        profile.setGender(updated.getGender());
+        profile.setBio(updated.getBio());
     }
 
     @GET

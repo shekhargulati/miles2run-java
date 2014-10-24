@@ -28,7 +28,7 @@ angular.module('milestogo')
         };
 
         TimelineService.goalTimeline(activeGoal.id, 1).success(function (data, status, headers, config) {
-            $scope.activities = data.timeline;
+            $scope.activities = data.activities;
         }).error(function (data, status, headers, config) {
             toastr.error("Unable to fetch activities. Please try after sometime.");
         });

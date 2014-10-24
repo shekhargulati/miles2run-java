@@ -1,6 +1,7 @@
 package org.miles2run.representations;
 
 import org.miles2run.domain.entities.DistanceGoal;
+import org.miles2run.domain.entities.Duration;
 import org.miles2run.domain.entities.GoalType;
 import org.miles2run.domain.entities.GoalUnit;
 
@@ -14,8 +15,8 @@ public class DistanceGoalRepresentation implements GoalRepresentation {
     private final GoalUnit goalUnit;
     private final boolean archived;
     private final double percentageCompleted;
-    private final Date endDate;
     private final GoalType goalType;
+    private Date endDate;
 
     public DistanceGoalRepresentation(DistanceGoal goal, double distanceCovered) {
         this.id = goal.getId();
@@ -23,7 +24,10 @@ public class DistanceGoalRepresentation implements GoalRepresentation {
         this.distance = goal.getDistance() / goal.getGoalUnit().getConversion();
         this.goalUnit = goal.getGoalUnit();
         this.archived = goal.isArchived();
-        this.endDate = goal.getDuration().getEndDate();
+        Duration duration = goal.getDuration();
+        if (duration != null) {
+            this.endDate = duration.getEndDate();
+        }
         this.percentageCompleted = percentageGoalCompleted(goal.getDistance(), distanceCovered);
         this.goalType = GoalType.DISTANCE_GOAL;
     }

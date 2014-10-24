@@ -1,9 +1,6 @@
 package org.miles2run.rest.api.activities;
 
-import org.miles2run.domain.entities.Activity;
-import org.miles2run.domain.entities.Goal;
-import org.miles2run.domain.entities.GoalUnit;
-import org.miles2run.domain.entities.Profile;
+import org.miles2run.domain.entities.*;
 
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -57,7 +54,7 @@ public class ActivityRequest {
     }
 
     public Activity toActivity(Profile profile, Goal goal) {
-        return null;
+        return new ActivityBuilder().setPostedBy(profile).setStatus(status).setDistanceCovered(distanceCovered).setActivityDate(activityDate).setGoal(goal).setGoalUnit(goalUnit).setDuration(duration).createActivity();
     }
 }
 

@@ -63,7 +63,7 @@ function CounterCtrl($scope, $http, $timeout) {
 function NotificationCtrl($scope, $http, activeProfile, $location) {
 
     $scope.fetchNotifications = function () {
-        $http.get($scope.appContext() + 'api/v1/profiles/' + activeProfile.username + "/notifications").success(function (data, status, headers, config) {
+        $http.get($scope.appContext() + "api/v1/notifications").success(function (data, status, headers, config) {
             $scope.notifications = data;
         }).error(function (data, status, headers, config) {
             toastr.error("Unable to fetch notifications. Please try later");

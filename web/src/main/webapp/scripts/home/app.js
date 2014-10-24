@@ -185,7 +185,7 @@ function HeaderCtrl($scope, $location, ConfigService) {
 function NotificationCtrl($scope, $http, activeProfile, ConfigService) {
 
     $scope.fetchNotifications = function () {
-        $http.get(ConfigService.appContext() + 'api/v1/profiles/' + activeProfile.username + "/notifications").success(function (data, status, headers, config) {
+        $http.get(ConfigService.appContext() + "api/v1/notifications").success(function (data, status, headers, config) {
             $scope.notifications = data;
         }).error(function (data, status, headers, config) {
             toastr.error("Unable to fetch notifications. Please try later");
