@@ -10,7 +10,7 @@
         <module>domain</module>
         <module>core</module>
         <module>rest</module>
-        <!--<module>social</module>-->
+        <module>social</module>
         <!--<module>views</module>-->
         <!--<module>web</module>-->
     </modules>
