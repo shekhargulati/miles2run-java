@@ -58,11 +58,9 @@ angular.module('milestogo')
                 $scope.buttonText = "Updating..";
                 var duration = toAppSeconds($scope.duration);
                 var activity = {
-                    id: $scope.activity.id,
                     status: $scope.activity.status,
                     goalUnit: $scope.activity.goalUnit,
                     distanceCovered: $scope.activity.distanceCovered,
-                    share: $scope.activity.share,
                     activityDate: $scope.activity.activityDate,
                     duration: duration
                 };
