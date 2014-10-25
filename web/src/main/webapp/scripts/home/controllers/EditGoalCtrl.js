@@ -51,7 +51,6 @@ angular.module('miles2run-home')
             $scope.successfulSubmission = true;
             $scope.buttonText = "Updating Goal..";
             var goal = {
-                id: $scope.goal.id,
                 purpose: $scope.goal.purpose,
                 startDate: $scope.goal.startDate,
                 endDate: $scope.goal.endDate,

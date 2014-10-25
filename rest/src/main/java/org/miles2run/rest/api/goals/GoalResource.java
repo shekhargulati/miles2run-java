@@ -58,7 +58,7 @@ public class GoalResource {
     private Response groupGoalsByType(List<Goal> goals) {
         Map<GoalType, List<Object>> goalsByType = new HashMap<>();
         for (Goal goal : goals) {
-            GoalType goalType = toGoalType(goal);
+            GoalType goalType = goalType(goal);
             double totalDistanceCoveredForGoal = goalStatsRepository.distanceCovered(goal.getId());
             GoalRepresentation specificGoal = GoalRepresentationFactory.toGoalType(goal, totalDistanceCoveredForGoal);
             if (goalsByType.containsKey(goalType)) {
@@ -73,7 +73,7 @@ public class GoalResource {
         return Response.status(Response.Status.OK).entity(goalsByType).build();
     }
 
-    private GoalType toGoalType(Goal goal) {
+    private GoalType goalType(Goal goal) {
         if (goal instanceof DistanceGoal) {
             return GoalType.DISTANCE_GOAL;
         } else if (goal instanceof DurationGoal) {
@@ -121,12 +121,27 @@ public class GoalResource {
         if (!StringUtils.equals(loggedInUser, existingGoal.getProfile().getUsername())) {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }
-
-        // TODO: FIX ME
-//        updateExistingGoal(existingGoal, goalRequest);
-
-        goalRepository.update(existingGoal);
+        Goal goal = updateExistingGoal(existingGoal, goalRequest);
+        goalRepository.update(goal);
         return Response.status(Response.Status.OK).build();
+    }
+
+    private Goal updateExistingGoal(Goal goal, GoalRequest goalRequest) {
+        GoalType goalType = goalType(goal);
+        switch (goalType) {
+            case DISTANCE_GOAL:
+                DistanceGoal distanceGoal = (DistanceGoal) goal;
+                distanceGoal.setDistance(goalRequest.getDistance());
+                distanceGoal.setGoalUnit(goalRequest.getGoalUnit());
+                distanceGoal.setPurpose(goalRequest.getPurpose());
+                distanceGoal.setDuration(new Duration(distanceGoal.getDuration().getStartDate(), goalRequest.getEndDate()));
+                return distanceGoal;
+            case DURATION_GOAL:
+                DurationGoal durationGoal = (DurationGoal) goal;
+                durationGoal.setPurpose(goalRequest.getPurpose());
+                durationGoal.setDuration(new Duration(goalRequest.getStartDate(), goalRequest.getEndDate()));
+        }
+        return goal;
     }
 
 
