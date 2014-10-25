@@ -13,7 +13,6 @@ public class Progress {
 
     public Progress(Goal goal, double totalDistanceCovered, long activityCount, long totalDurationInSecs) {
         this.goalUnit = goal.getGoalUnit();
-
         this.totalDistanceCovered = totalDistanceCovered / this.goalUnit.getConversion();
         this.activityCount = activityCount;
         if (goalType(goal) == GoalType.DISTANCE_GOAL) {
@@ -38,6 +37,7 @@ public class Progress {
     }
 
     public Progress(Goal goal) {
+        this.goalUnit = goal.getGoalUnit();
         if (goalType(goal) == GoalType.DISTANCE_GOAL) {
             DistanceGoal distanceGoal = (DistanceGoal) goal;
             this.goal = distanceGoal.getDistance() / this.goalUnit.getConversion();
@@ -46,7 +46,6 @@ public class Progress {
         this.totalDistanceCovered = 0;
         this.averagePace = 0;
         this.activityCount = 0;
-        this.goalUnit = goal.getGoalUnit();
     }
 
     public long getGoal() {
