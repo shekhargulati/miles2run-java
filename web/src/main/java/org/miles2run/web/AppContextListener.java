@@ -15,7 +15,7 @@ public class AppContextListener implements ServletContextListener {
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
-        logger.info("inside contextInitialized()");
+        logger.info("Initializing application context....");
         ServletContext ctx = sce.getServletContext();
         FilterRegistration.Dynamic filter = ctx.addFilter("JUGFilter", JugFilterDispatcher.class);
         filter.setInitParameter("javax.ws.rs.Application", ApplicationConfig.class.getName());
