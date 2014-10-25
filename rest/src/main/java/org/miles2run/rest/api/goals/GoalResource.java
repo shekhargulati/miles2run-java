@@ -1,9 +1,12 @@
 package org.miles2run.rest.api.goals;
 
 import org.apache.commons.lang3.StringUtils;
+import org.joda.time.Interval;
 import org.jug.filters.LoggedIn;
+import org.miles2run.core.repositories.jpa.ActivityRepository;
 import org.miles2run.core.repositories.jpa.GoalRepository;
 import org.miles2run.core.repositories.jpa.ProfileRepository;
+import org.miles2run.core.repositories.jpa.vo.Progress;
 import org.miles2run.core.repositories.redis.GoalStatsRepository;
 import org.miles2run.domain.entities.*;
 import org.miles2run.representations.GoalRepresentation;
@@ -36,6 +39,8 @@ public class GoalResource {
     private GoalRepository goalRepository;
     @Inject
     private GoalStatsRepository goalStatsRepository;
+    @Inject
+    private ActivityRepository activityRepository;
 
     @GET
     @Produces("application/json")
@@ -163,7 +168,7 @@ public class GoalResource {
         return Response.status(Response.Status.OK).build();
     }
 
-/*    @Path("/{goalId}/progress")
+    @Path("/{goalId}/progress")
     @GET
     @Produces("application/json")
     @LoggedIn
@@ -175,14 +180,14 @@ public class GoalResource {
             return Response.status(Response.Status.NOT_FOUND).entity("No goal exists with id " + goalId).build();
         }
         Progress progress = activityRepository.calculateUserProgressForGoal(loggedInUser, goal);
-        if (goal.getGoalType() == GoalType.DISTANCE_GOAL) {
+        if (goalType(goal) == GoalType.DISTANCE_GOAL) {
             return Response.status(Response.Status.OK).entity(progress).build();
         }
-        Map<String, Object> goalProgress = goalStatsRepository.getDurationGoalProgress(username, goalId, new Interval(goal.getStartDate().getTime(), goal.getEndDate().getTime()), timezoneOffset);
+        Map<String, Object> goalProgress = goalStatsRepository.getDurationGoalProgress(username, goalId, new Interval(goal.getDuration().getStartDate().getTime(), goal.getDuration().getEndDate().getTime()), timezoneOffset);
         goalProgress.put("activityCount", progress.getActivityCount());
         goalProgress.put("totalDistanceCovered", progress.getTotalDistanceCovered());
         goalProgress.put("goalUnit", progress.getGoalUnit());
         return Response.status(Response.Status.OK).entity(goalProgress).build();
-    }*/
+    }
 
 }

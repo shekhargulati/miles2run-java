@@ -11,8 +11,9 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.miles2run.core.producers.EntityManagerProducer;
-import org.miles2run.core.test_helpers.TestHelpers;
 import org.miles2run.core.repositories.jpa.vo.ActivityCountAndDistanceTuple;
+import org.miles2run.core.repositories.jpa.vo.Progress;
+import org.miles2run.core.test_helpers.TestHelpers;
 import org.miles2run.domain.entities.Activity;
 import org.miles2run.domain.entities.Goal;
 import org.miles2run.domain.entities.GoalUnit;
@@ -42,7 +43,7 @@ public class ActivityRepositoryTest {
     @Deployment
     public static Archive<?> deployment() {
         WebArchive webArchive = ShrinkWrap.create(WebArchive.class).addAsLibraries(domainDeployment())
-                .addClasses(ActivityRepository.class, TestHelpers.class, EntityManagerProducer.class, ActivityCountAndDistanceTuple.class)
+                .addClasses(ActivityRepository.class, TestHelpers.class, EntityManagerProducer.class, ActivityCountAndDistanceTuple.class, Progress.class)
                 .addAsResource("META-INF/test_persistence.xml", "META-INF/persistence.xml")
                 .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
         System.out.println(webArchive.toString(true));
@@ -97,7 +98,7 @@ public class ActivityRepositoryTest {
     @ShouldMatchDataSet(value = {"activities.json"}, excludeColumns = {"id"})
     public void count_TotalActivitiesForAUser() throws Exception {
         Profile profile = entityManager.find(Profile.class, 1000L);
-        long count = activityRepository.count(profile);
+        long count = activityRepository.userActivityCount(profile);
         assertThat(count, is(equalTo(3L)));
     }
 
@@ -105,7 +106,7 @@ public class ActivityRepositoryTest {
     @UsingDataSet({"profiles.yml", "distance_goals_diff_users.json", "activities_diff_users.json"})
     public void count_ThreeActivitiesStoredInDatabase_2ActivitiesForUserFound() throws Exception {
         Profile profile = entityManager.find(Profile.class, 1001L);
-        long count = activityRepository.count(profile);
+        long count = activityRepository.userActivityCount(profile);
         assertThat(count, is(equalTo(2L)));
     }
 

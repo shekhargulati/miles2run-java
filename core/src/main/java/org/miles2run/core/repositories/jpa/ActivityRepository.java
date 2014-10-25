@@ -1,7 +1,9 @@
 package org.miles2run.core.repositories.jpa;
 
 import org.miles2run.core.repositories.jpa.vo.ActivityCountAndDistanceTuple;
+import org.miles2run.core.repositories.jpa.vo.Progress;
 import org.miles2run.domain.entities.Activity;
+import org.miles2run.domain.entities.Goal;
 import org.miles2run.domain.entities.Profile;
 
 import javax.ejb.LocalBean;
@@ -77,18 +79,22 @@ public class ActivityRepository {
         return entityManager.find(Activity.class, id);
     }
 
-/*    public Progress calculateUserProgressForGoal(@NotNull final Profile profile, @NotNull final Goal goal) {
-        String activityCountForUserGoalQuery = "SELECT COUNT(a) FROM Activity a WHERE a.postedBy =:profile and a.goal =:goal";
-        long count = entityManager.createQuery(activityCountForUserGoalQuery, Long.class).setParameter("profile", profile).setParameter("goal", goal).getSingleResult();
+    public Progress calculateUserProgressForGoal(@NotNull final Profile profile, @NotNull final Goal goal) {
+        long count = goalActivityCount(profile, goal);
         if (count == 0) {
             return new Progress(goal);
         }
-        String goalProgressQuery = "SELECT new org.miles2run.core.vo.Progress(a.goal.distance,a.goal.goalUnit,SUM(a.distanceCovered),COUNT(a), SUM(a.duration) ,a.goal.goalType) from Activity a WHERE a.postedBy =:postedBy and a.goal =:goal";
+        String goalProgressQuery = "SELECT new org.miles2run.core.repositories.jpa.vo.Progress(a.goal,SUM(a.distanceCovered),COUNT(a), SUM(a.duration)) from Activity a WHERE a.postedBy =:postedBy and a.goal =:goal";
         TypedQuery<Progress> query = entityManager.createQuery(goalProgressQuery, Progress.class).setParameter("postedBy", profile).setParameter("goal", goal);
         return query.getSingleResult();
-    }*/
+    }
 
-    public long count(@NotNull final Profile profile) {
+    public long goalActivityCount(@NotNull final Profile profile, @NotNull final Goal goal) {
+        String query = "SELECT COUNT(a) FROM Activity a WHERE a.postedBy =:profile and a.goal =:goal";
+        return entityManager.createQuery(query, Long.class).setParameter("profile", profile).setParameter("goal", goal).getSingleResult();
+    }
+
+    public long userActivityCount(@NotNull final Profile profile) {
         final String activityCountForUserQuery = "SELECT COUNT(a) FROM Activity a WHERE a.postedBy =:profile";
         return entityManager.createQuery(activityCountForUserQuery, Long.class)
                 .setParameter("profile", profile)

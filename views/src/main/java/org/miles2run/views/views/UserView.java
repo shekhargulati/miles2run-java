@@ -343,7 +343,7 @@ public class UserView {
             }
             model.put("followers", userProfileMongo.getFollowers().size());
             model.put("following", userProfileMongo.getFollowing().size());
-            model.put("activities", activityRepository.count(profile));
+            model.put("activities", activityRepository.userActivityCount(profile));
             return View.of("/following", templateEngine).withModel(model);
         } catch (Exception e) {
             if (e instanceof ViewResourceNotFoundException) {
@@ -377,7 +377,7 @@ public class UserView {
             }
             model.put("followers", userProfileMongo.getFollowers().size());
             model.put("following", userProfileMongo.getFollowing().size());
-            model.put("activities", activityRepository.count(profile));
+            model.put("activities", activityRepository.userActivityCount(profile));
             return View.of("/followers", templateEngine).withModel(model);
         } catch (Exception e) {
             if (e instanceof ViewResourceNotFoundException) {
