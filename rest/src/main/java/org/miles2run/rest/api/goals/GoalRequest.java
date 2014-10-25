@@ -34,7 +34,7 @@ public class GoalRequest {
             case DURATION_GOAL:
                 return new DurationGoalBuilder().setArchived(archived).setDays(days).setPurpose(purpose).setDuration(new Duration(startDate, endDate)).setGoalUnit(goalUnit).setProfile(profile).createDurationGoal();
             case DISTANCE_GOAL:
-                return new DistanceGoalBuilder().setArchived(archived).setProfile(profile).setDuration(new Duration(startDate, endDate)).setDistance(distance).setArchived(archived).setPurpose(purpose).setGoalUnit(goalUnit).createDistanceGoal();
+                return new DistanceGoalBuilder().setArchived(archived).setProfile(profile).setDuration(new Duration(new Date(), endDate)).setDistance(distance).setArchived(archived).setPurpose(purpose).setGoalUnit(goalUnit).createDistanceGoal();
         }
         return null;
     }

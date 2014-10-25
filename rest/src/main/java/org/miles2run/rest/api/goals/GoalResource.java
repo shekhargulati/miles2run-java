@@ -131,10 +131,13 @@ public class GoalResource {
         switch (goalType) {
             case DISTANCE_GOAL:
                 DistanceGoal distanceGoal = (DistanceGoal) goal;
-                distanceGoal.setDistance(goalRequest.getDistance());
+                distanceGoal.setDistance(goalRequest.getDistance() * goalRequest.getGoalUnit().getConversion());
                 distanceGoal.setGoalUnit(goalRequest.getGoalUnit());
                 distanceGoal.setPurpose(goalRequest.getPurpose());
-                distanceGoal.setDuration(new Duration(distanceGoal.getDuration().getStartDate(), goalRequest.getEndDate()));
+                Duration duration = distanceGoal.getDuration();
+                if (duration != null) {
+                    distanceGoal.setDuration(new Duration(duration.getStartDate(), goalRequest.getEndDate()));
+                }
                 return distanceGoal;
             case DURATION_GOAL:
                 DurationGoal durationGoal = (DurationGoal) goal;

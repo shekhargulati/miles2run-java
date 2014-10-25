@@ -17,7 +17,7 @@ public class DistanceGoal extends Goal {
 
     private DistanceGoal(String purpose, Duration duration, GoalUnit goalUnit, boolean archived, Profile profile, long distance) {
         super(purpose, duration, goalUnit, archived, profile);
-        this.distance = distance;
+        this.distance = distance * goalUnit.getConversion();
     }
 
     static DistanceGoal createDistanceGoal(String purpose, Duration duration, GoalUnit goalUnit, boolean archived, Profile profile, long distance) {
