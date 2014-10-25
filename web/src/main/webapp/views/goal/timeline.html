@@ -33,7 +33,7 @@
                 <ul class="timeline" ng-if="activities.length">
                     <li ng-repeat="activity in activities" ng-class-even="'timeline-inverted'">
                         <div class="timeline-badge">
-                            <span class="avatar"><a ng-href="{{appContext()}}profiles/{{activity.username}}"><img ng-src="{{activity.profilePic}}"></a></span>
+                            <span class="avatar"><a ng-href="{{appContext()}}users/{{activity.username}}"><img ng-src="{{activity.profilePic}}"></a></span>
                         </div>
                         <div class="timeline-panel">
                             <div class="timeline-heading clearfix ">

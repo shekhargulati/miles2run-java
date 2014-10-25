@@ -20,7 +20,7 @@
 
                 <table class="table table-striped table-bordered table-hover" ng-if="notifications.length">
                     <tr ng-repeat="notification in notifications">
-                        <td><a ng-href="{{appContext()}}profiles/{{notification.userTookAction}}">{{notification.userTookAction}}</a>
+                        <td><a ng-href="{{appContext()}}users/{{notification.userTookAction}}">{{notification.userTookAction}}</a>
                             {{notification.action|lowercase}}ed you
                         </td>
                         <td>{{notification.timestamp | date:'MMddyyyy HH mm ss'|moment}}</td>

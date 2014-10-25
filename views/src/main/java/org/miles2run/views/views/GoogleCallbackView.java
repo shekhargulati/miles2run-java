@@ -46,7 +46,7 @@ public class GoogleCallbackView {
         if (existingSocialConnection != null) {
             if (existingSocialConnection.getProfile() == null) {
                 logger.info("Profile was null. So redirecting to new profile creation.");
-                return View.of("/profiles/new?connectionId=" + connectionId, true);
+                return View.of("/users/new?connectionId=" + connectionId, true);
             } else {
                 String username = existingSocialConnection.getProfile().getUsername();
                 logger.info(String.format("User %s already had authenticated with Google+. So redirecting to home.", username));

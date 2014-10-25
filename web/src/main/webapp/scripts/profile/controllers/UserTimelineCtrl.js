@@ -8,9 +8,9 @@ angular.module('miles2run-profile')
         var currentPage = 1;
 
         TimelineService.userGoalTimeline(userProfile.username, currentPage).success(function (data, status, headers, config) {
-            $scope.activities = data.timeline;
+            $scope.activities = data.activities;
             $scope.currentPage = currentPage;
-            $scope.totalItems = data.totalItems;
+            $scope.totalItems = data.activityCount;
         }).error(function (data, status, headers, config) {
             toastr.error("Unable to fetch home timeline. Please try after sometime.");
         });
@@ -19,8 +19,8 @@ angular.module('miles2run-profile')
         $scope.pageChanged = function () {
             console.log('Page changed to: ' + $scope.currentPage);
             TimelineService.userGoalTimeline(userProfile.username, $scope.currentPage).success(function (data, status, headers, config) {
-                $scope.activities = data.timeline;
-                $scope.totalItems = data.totalItems;
+                $scope.activities = data.activities;
+                $scope.totalItems = data.activityCount;
             }).error(function (data, status, headers, config) {
                 toastr.error("Unable to fetch home timeline. Please try after sometime.");
             });
@@ -60,6 +60,6 @@ angular.module('miles2run-profile')
         }
 
         $scope.activityUrl = function (activity) {
-            return ConfigService.absUrl() + 'profiles/' + activity.username + '/activities/' + activity.id;
+            return ConfigService.absUrl() + 'users/' + activity.username + '/activities/' + activity.id;
         }
     });

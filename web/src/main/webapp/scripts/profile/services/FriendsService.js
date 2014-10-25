@@ -5,10 +5,10 @@ angular.module('miles2run-profile')
         var baseUrl = ConfigService.getBaseUrl();
         return {
             followers: function (username) {
-                return $http.get(baseUrl + 'profiles/' + username + '/followers');
+                return $http.get(baseUrl + 'users/' + username + '/followers');
             },
             following: function (username) {
-                return $http.get(baseUrl + 'profiles/' + username + '/following');
+                return $http.get(baseUrl + 'users/' + username + '/following');
             }
         };
     });

@@ -73,7 +73,7 @@ public class TwitterCallbackView {
     View getRedirectView(String connectionId, SocialConnection existingSocialConnection) {
         if (existingSocialConnection.getProfile() == null) {
             logger.info("Profile was null. So redirecting to new profile creation.");
-            return View.of("/profiles/new?connectionId=" + connectionId, true);
+            return View.of("/users/new?connectionId=" + connectionId, true);
         } else {
             String username = existingSocialConnection.getProfile().getUsername();
             logger.info("User {} already had authenticated with twitter. So redirecting to home.", username);

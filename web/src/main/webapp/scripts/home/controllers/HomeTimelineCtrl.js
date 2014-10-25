@@ -203,7 +203,7 @@ angular.module('miles2run-home')
         }
 
         $scope.activityUrl = function (activity) {
-            return ConfigService.absUrl() + 'profiles/' + activity.username + '/activities/' + activity.id;
+            return ConfigService.absUrl() + 'users/' + activity.username + '/activities/' + activity.id;
         }
 
         $scope.delete = function (idx) {

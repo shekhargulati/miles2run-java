@@ -20,11 +20,11 @@
                 <ul class="timeline" ng-if="activities.length">
                     <li ng-repeat="activity in activities" ng-class-even="'timeline-inverted'">
                         <div class="timeline-badge">
-                            <span class="avatar"><a ng-href="{{appContext()}}profiles/{{activity.username}}"><img ng-src="{{activity.profilePic}}"></a></span>
+                            <span class="avatar"><a ng-href="{{appContext()}}users/{{activity.username}}"><img ng-src="{{activity.profilePic}}"></a></span>
                         </div>
                         <div class="timeline-panel">
                             <div class="timeline-heading clearfix ">
-                                <h4 class="timeline-title"><a ng-href="{{appContext()}}profiles/{{activity.username}}/activities/{{activity.id}}">{{activity.username}} ran {{activity.distanceCovered |number:2}} {{activity.goalUnit | lowercase}}</a></h4>
+                                <h4 class="timeline-title"><a ng-href="{{appContext()}}users/{{activity.username}}/activities/{{activity.id}}">{{activity.username}} ran {{activity.distanceCovered |number:2}} {{activity.goalUnit | lowercase}}</a></h4>
                                 <span class="pull-right text-muted small"><i class="fa fa-calendar fa-fw"></i><em>{{activity.activityDate | date:'MMM dd, yyyy'}}</em></span>
                             </div>
                             <div class="timeline-body">
@@ -38,7 +38,7 @@
                                     </button>
                                     <ul class="dropdown-menu" role="menu">
                                         <li>
-                                            <a ng-href="{{appContext()}}profiles/{{activity.username}}/activities/{{activity.id}}" title="view activity">View</a>
+                                            <a ng-href="{{appContext()}}users/{{activity.username}}/activities/{{activity.id}}" title="view activity">View</a>
                                         </li>
                                     </ul>
                                 </div>

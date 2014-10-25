@@ -17,7 +17,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 
-@Path("/profiles/{username}/activities")
+@Path("/users/{username}/activities")
 public class ActivityView {
 
     @Inject

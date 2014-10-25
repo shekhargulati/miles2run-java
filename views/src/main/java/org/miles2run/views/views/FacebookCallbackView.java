@@ -51,7 +51,7 @@ public class FacebookCallbackView {
         if (existingSocialConnection != null) {
             if (existingSocialConnection.getProfile() == null) {
                 logger.info("User already has authenticated with Facebook but profile creation was not finished so redirecting user to new profile creation page.");
-                return View.of("/profiles/new?connectionId=" + connectionId, true);
+                return View.of("/users/new?connectionId=" + connectionId, true);
             } else {
                 String username = existingSocialConnection.getProfile().getUsername();
                 logger.info("User {} already had authenticated with facebook and has a valid profile so redirecting to home.", username);

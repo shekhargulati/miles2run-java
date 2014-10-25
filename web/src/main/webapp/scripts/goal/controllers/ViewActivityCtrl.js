@@ -65,7 +65,7 @@ angular.module('milestogo')
         }
 
         $scope.activityUrl = function (activity) {
-            return ConfigService.absUrl() + 'profiles/' + activity.username + '/activities/' + activity.id;
+            return ConfigService.absUrl() + 'users/' + activity.username + '/activities/' + activity.id;
         }
 
 

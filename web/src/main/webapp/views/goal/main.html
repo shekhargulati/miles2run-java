@@ -18,7 +18,7 @@
         </div>
         <div class="timeline-panel">
             <div class="timeline-heading">
-                <h4 class="timeline-title">@<a ng-href="{{appContext()}}profiles/{{activity.username}}">{{activity.username}}</a> ran {{activity.distanceCovered}} {{activity.goalUnit | lowercase}} <small class="text-muted pull-right"><i class="glyphicon glyphicon-calendar"></i> {{activity.activityDate | date:'MMM dd, yyyy'}}</small></h4>
+                <h4 class="timeline-title">@<a ng-href="{{appContext()}}users/{{activity.username}}">{{activity.username}}</a> ran {{activity.distanceCovered}} {{activity.goalUnit | lowercase}} <small class="text-muted pull-right"><i class="glyphicon glyphicon-calendar"></i> {{activity.activityDate | date:'MMM dd, yyyy'}}</small></h4>
             </div>
             <hr>
             <div class="timeline-footer" ng-if="activity.username == currentUser.username" ng-cloak>
