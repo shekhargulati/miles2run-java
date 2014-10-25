@@ -17,13 +17,23 @@ public class NotificationRepository {
     @Inject
     JedisExecution jedisExecution;
 
+    private static Notification toNotification(String notification) {
+        Gson gson = new Gson();
+        return gson.fromJson(notification, Notification.class);
+    }
+
     public Long addNotification(final Notification notification) {
         return jedisExecution.execute(new JedisOperation<Long>() {
             @Override
             public Long perform(Jedis jedis) {
-                return jedis.zadd("notifications:" + notification.getUserToNotify(), notification.getTimestamp(), toJSON());
+                return jedis.zadd("notifications:" + notification.getUserToNotify(), notification.getTimestamp(), toJSON(notification));
             }
         });
+    }
+
+    private String toJSON(Notification notification) {
+        Gson gson = new Gson();
+        return gson.toJson(notification);
     }
 
     public Set<Notification> notifications(final String username) {
@@ -36,16 +46,6 @@ public class NotificationRepository {
         });
 
         return notificationStrings.stream().map(NotificationRepository::toNotification).collect(Collectors.toCollection(() -> new LinkedHashSet<>()));
-    }
-
-    private static Notification toNotification(String notification) {
-        Gson gson = new Gson();
-        return gson.fromJson(notification, Notification.class);
-    }
-
-    private String toJSON() {
-        Gson gson = new Gson();
-        return gson.toJson(this);
     }
 }
 
