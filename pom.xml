@@ -30,6 +30,17 @@
         <version.wildfly>8.1.0.Final</version.wildfly>
     </properties>
 
+    <repositories>
+        <repository>
+            <id>jug-mvn-repo</id>
+            <url>https://raw.github.com/miles2run/jug/mvn-repo/</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
+        </repository>
+    </repositories>
+
     <dependencyManagement>
         <dependencies>
             <dependency>
