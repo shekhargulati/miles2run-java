@@ -1,6 +1,5 @@
 package org.miles2run.core.repositories.redis;
 
-import org.joda.time.DateTime;
 import org.miles2run.core.repositories.mongo.UserProfileRepository;
 import org.miles2run.domain.documents.UserProfile;
 import org.miles2run.domain.entities.*;
@@ -17,6 +16,9 @@ import javax.inject.Inject;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
 
 @ApplicationScoped
 public class TimelineRepository {
@@ -25,11 +27,12 @@ public class TimelineRepository {
     private final Logger logger = LoggerFactory.getLogger(TimelineRepository.class);
 
     @Inject
-    private JedisExecution jedisExecution;
+    JedisExecution jedisExecution;
     @Inject
     private UserProfileRepository userProfileRepository;
 
     public Set<String> getHomeTimelineIds(final String username, final long page, final long count) {
+
         return jedisExecution.execute(new JedisOperation<Set<String>>() {
             @Override
             public Set<String> perform(Jedis jedis) {
@@ -40,7 +43,7 @@ public class TimelineRepository {
         });
     }
 
-    public Set<String> getUserTimeline(final String username, final long page, final long count) {
+    public Set<String> getUserTimelineIds(final String username, final long page, final long count) {
         return jedisExecution.execute(new JedisOperation<Set<String>>() {
             @Override
             public Set<String> perform(Jedis jedis) {
@@ -55,21 +58,11 @@ public class TimelineRepository {
         return jedisExecution.execute(new JedisOperation<List<ActivityAggregate>>() {
             @Override
             public List<ActivityAggregate> perform(Jedis jedis) {
-                String key = String.format(RedisKeyNames.HOME_S_TIMELINE, username);
-                Set<String> activityIds = jedis.zrevrange(key, (page - 1) * count, page * (count - 1));
+                Set<String> activityIds = getHomeTimelineIds(username, page, count);
                 Pipeline pipeline = jedis.pipelined();
-                List<Response<Map<String, String>>> result = new ArrayList<>();
-                for (String activityId : activityIds) {
-                    Response<Map<String, String>> response = pipeline.hgetAll("activity:" + activityId);
-                    result.add(response);
-                }
+                List<Response<Map<String, String>>> result = activityIds.stream().map(activityId -> pipeline.hgetAll("activity:" + activityId)).collect(toList());
                 pipeline.sync();
-                List<ActivityAggregate> homeTimeline = new ArrayList<>();
-                for (Response<Map<String, String>> response : result) {
-                    Map<String, String> hash = response.get();
-                    homeTimeline.add(new ActivityAggregate(hash));
-                }
-                return homeTimeline;
+                return result.stream().map(response -> new ActivityAggregate(response.get())).collect(toList());
             }
         });
     }
@@ -83,7 +76,7 @@ public class TimelineRepository {
                 if (activitiesWithScore != null && !activitiesWithScore.isEmpty()) {
                     Pipeline pipeline = jedis.pipelined();
                     String key = String.format("home:%s:timeline", username);
-                    pipeline.zadd(key, toMap(activitiesWithScore));
+                    pipeline.zadd(key, tupleToMap(activitiesWithScore));
                     pipeline.zremrangeByRank(key, 0, -(HOME_TIMELINE_SIZE - 1));
                     pipeline.sync();
                 }
@@ -92,12 +85,8 @@ public class TimelineRepository {
         });
     }
 
-    private Map<Double, String> toMap(Set<Tuple> activitiesWithScore) {
-        Map<Double, String> map = new HashMap<>();
-        for (Tuple tuple : activitiesWithScore) {
-            map.put(tuple.getScore(), tuple.getElement());
-        }
-        return map;
+    private Map<Double, String> tupleToMap(Set<Tuple> activitiesWithScore) {
+        return activitiesWithScore.stream().collect(Collectors.toMap(Tuple::getScore, Tuple::getElement));
     }
 
     public void removeFollowingTimeline(final String username, final String userToUnfollow) {
@@ -245,116 +234,9 @@ public class TimelineRepository {
         });
     }
 
-    public List<ActivityAggregate> getProfileTimeline(final String username, final int page, final int count) {
-        return jedisExecution.execute(new JedisOperation<List<ActivityAggregate>>() {
-            @Override
-            public List<ActivityAggregate> perform(Jedis jedis) {
-                String profileTimelineKey = String.format(RedisKeyNames.PROFILE_S_TIMELINE, username);
-                Set<String> activityIds = jedis.zrevrange(profileTimelineKey, (page - 1) * count, page * (count - 1));
-                Pipeline pipeline = jedis.pipelined();
-                List<Response<Map<String, String>>> result = new ArrayList<>();
-                for (String activityId : activityIds) {
-                    Response<Map<String, String>> response = pipeline.hgetAll("activity:" + activityId);
-                    result.add(response);
-                }
-                pipeline.sync();
-                List<ActivityAggregate> profileTimeline = new ArrayList<>();
-                for (Response<Map<String, String>> response : result) {
-                    Map<String, String> hash = response.get();
-                    profileTimeline.add(new ActivityAggregate(hash));
-                }
-                return profileTimeline;
-            }
-        });
-    }
-
-    public List<Map<String, Object>> distanceAndPaceOverLastNMonths(final Profile profile, final Goal goal, final String interval, final int nMonths) {
-        return jedisExecution.execute(new JedisOperation<List<Map<String, Object>>>() {
-            @Override
-            public List<Map<String, Object>> perform(Jedis jedis) {
-                Date today = new Date();
-                Calendar calendar = Calendar.getInstance();
-                calendar.add(Calendar.MONTH, -nMonths);
-                Date nMonthsBack = calendar.getTime();
-                Set<Tuple> activityIdsInNDaysWithScores = jedis.zrangeByScoreWithScores(String.format(RedisKeyNames.PROFILE_S_GOAL_S_TIMELINE, profile.getUsername(), goal.getId()), nMonthsBack.getTime(), today.getTime());
-                Map<String, Long> monthDistanceHash = new HashMap<>();
-                Map<String, Double> monthPaceHash = new HashMap<>();
-                for (Tuple activityIdTuple : activityIdsInNDaysWithScores) {
-                    String activityId = activityIdTuple.getElement();
-                    double activityTimestamp = activityIdTuple.getScore();
-                    List<String> values = jedis.hmget(String.format("activity:%s", activityId), "distanceCovered", "duration");
-                    Date activityDate = new Date(Double.valueOf(activityTimestamp).longValue());
-                    logger.info(String.format("Activity Date : %s", activityDate));
-                    String key = formatDateToYearAndMonth(activityDate);
-                    logger.info(String.format("DateToYearAndMonth : %s", key));
-                    long distance = Long.valueOf(values.get(0)) / goal.getGoalUnit().getConversion();
-                    if (monthDistanceHash.containsKey(key)) {
-                        Long value = monthDistanceHash.get(key);
-                        monthDistanceHash.put(key, value + distance);
-                        Double durationInSeconds = Double.valueOf(Long.valueOf(values.get(1)));
-                        double durationInMinutes = durationInSeconds / 60;
-                        double pace = durationInMinutes / distance;
-                        monthPaceHash.put(key, (value + pace) / 2);
-                    } else {
-                        monthDistanceHash.put(key, distance);
-                        Double durationInSeconds = Double.valueOf(Long.valueOf(values.get(1)));
-                        double durationInMinutes = durationInSeconds / 60;
-                        double pace = durationInMinutes / distance;
-                        monthPaceHash.put(key, pace);
-                    }
-                }
-                List<Map<String, Object>> chartData = new ArrayList<>();
-                Set<Map.Entry<String, Long>> entries = monthDistanceHash.entrySet();
-                for (Map.Entry<String, Long> entry : entries) {
-                    Map<String, Object> data = new HashMap<>();
-                    data.put(interval, entry.getKey());
-                    data.put("distance", entry.getValue() / goal.getGoalUnit().getConversion());
-                    data.put("pace", monthPaceHash.get(entry.getKey()));
-                    chartData.add(data);
-                }
-                return chartData;
-            }
-        });
-    }
-
     private String formatDateToYearAndMonth(Date date) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MMMM");
         return dateFormat.format(date);
-    }
-
-    public List<Map<String, Object>> distanceAndPaceOverLastNDays(final Profile profile, final Goal goal, final String interval, final int n) {
-        return jedisExecution.execute(new JedisOperation<List<Map<String, Object>>>() {
-            @Override
-            public List<Map<String, Object>> perform(Jedis jedis) {
-                Date today = new Date();
-                DateTime dateTime = new DateTime(today);
-                dateTime = dateTime.minusDays(n);
-                Date nDaysBack = dateTime.toDate();
-                Set<Tuple> activityIdsInNDaysWithScores = jedis.zrangeByScoreWithScores(String.format(RedisKeyNames.PROFILE_S_GOAL_S_TIMELINE, profile.getUsername(), goal.getId()), nDaysBack.getTime(), today.getTime());
-                List<Response<Map<String, String>>> result = new ArrayList<>();
-                List<Map<String, Object>> chartData = new ArrayList<>();
-                for (Tuple activityIdTuple : activityIdsInNDaysWithScores) {
-                    String activityId = activityIdTuple.getElement();
-                    double activityDate = activityIdTuple.getScore();
-                    List<String> values = jedis.hmget(String.format("activity:%s", activityId), "distanceCovered", "duration");
-                    Map<String, Object> data = new HashMap<>();
-                    data.put(interval, activityDate);
-                    long distance = Long.valueOf(values.get(0)) / goal.getGoalUnit().getConversion();
-                    data.put("distance", distance);
-                    Double durationInSeconds = Double.valueOf(Long.valueOf(values.get(1)));
-                    double durationInMinutes = durationInSeconds / 60;
-                    double pace = durationInMinutes / distance;
-                    data.put("pace", pace);
-                    chartData.add(data);
-                }
-                return chartData;
-            }
-        });
-    }
-
-    private String formatDate(Date activityDate) {
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-        return df.format(activityDate);
     }
 
     public Long totalItems(final String loggedInUser) {
@@ -372,28 +254,6 @@ public class TimelineRepository {
             public Set<String> perform(Jedis jedis) {
                 Set<String> activityIds = jedis.zrevrange(String.format(RedisKeyNames.PROFILE_S_GOAL_S_TIMELINE, loggedInUser, goal.getId()), (page - 1) * count, page * (count - 1));
                 return activityIds == null ? Collections.emptySet() : activityIds;
-            }
-        });
-    }
-
-    public List<ActivityAggregate> getGoalTimeline(final String loggedInUser, final Goal goal, final int page, final int count) {
-        return jedisExecution.execute(new JedisOperation<List<ActivityAggregate>>() {
-            @Override
-            public List<ActivityAggregate> perform(Jedis jedis) {
-                Set<String> activityIds = jedis.zrevrange(String.format(RedisKeyNames.PROFILE_S_GOAL_S_TIMELINE, loggedInUser, goal.getId()), (page - 1) * count, page * (count - 1));
-                Pipeline pipeline = jedis.pipelined();
-                List<Response<Map<String, String>>> result = new ArrayList<>();
-                for (String activityId : activityIds) {
-                    Response<Map<String, String>> response = pipeline.hgetAll("activity:" + activityId);
-                    result.add(response);
-                }
-                pipeline.sync();
-                List<ActivityAggregate> profileTimeline = new ArrayList<>();
-                for (Response<Map<String, String>> response : result) {
-                    Map<String, String> hash = response.get();
-                    profileTimeline.add(new ActivityAggregate(hash));
-                }
-                return profileTimeline;
             }
         });
     }

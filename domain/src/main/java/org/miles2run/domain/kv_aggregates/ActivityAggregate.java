@@ -27,17 +27,17 @@ public class ActivityAggregate {
 
     private final long duration;
 
-    public ActivityAggregate(Map<String, String> hash) {
-        this.id = Long.valueOf(hash.get("id"));
-        this.username = hash.get("username");
-        this.activityDate = toDate(hash.get("activityDate"));
-        this.goalUnit = GoalUnit.fromStringToGoalUnit(hash.get("goalUnit"));
-        this.distanceCovered = Double.valueOf(hash.get("distanceCovered")) / this.goalUnit.getConversion();
-        this.fullname = hash.get("fullname");
-        this.profilePic = hash.get("profilePic");
-        this.status = hash.get("status");
-        this.goalId = Long.valueOf(hash.get("goalId"));
-        this.duration = Long.valueOf(hash.get("duration"));
+    public ActivityAggregate(Map<String, String> activity) {
+        this.id = Long.valueOf(activity.get("id"));
+        this.username = activity.get("username");
+        this.activityDate = toDate(activity.get("activityDate"));
+        this.goalUnit = GoalUnit.fromStringToGoalUnit(activity.get("goalUnit"));
+        this.distanceCovered = Double.valueOf(activity.get("distanceCovered")) / this.goalUnit.getConversion();
+        this.fullname = activity.get("fullname");
+        this.profilePic = activity.get("profilePic");
+        this.status = activity.get("status");
+        this.goalId = Long.valueOf(activity.get("goalId"));
+        this.duration = Long.valueOf(activity.get("duration"));
     }
 
     private static Date toDate(String text) {

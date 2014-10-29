@@ -42,18 +42,18 @@ public class TimelineResource {
         }
         page = page == 0 ? 1 : page;
         count = (count == 0 || count > 10) ? 10 : count;
-        Set<String> timelineIds = timelineRepository.getUserTimeline(username, page, count);
+        Set<String> timelineIds = timelineRepository.getUserTimelineIds(username, page, count);
         if (timelineIds.isEmpty()) {
             return TimelineRepresentation.empty();
         }
-        return toTimelineRepresentation(username, timelineIds);
+        List<Activity> activities = getActivities(timelineIds);
+        Long activityCount = timelineRepository.totalItems(username);
+        return TimelineRepresentation.with(activityCount, activities);
     }
 
-    private TimelineRepresentation toTimelineRepresentation(String loggedInUser, Set<String> homeTimelineIds) {
+    private List<Activity> getActivities(Set<String> homeTimelineIds) {
         List<Long> activityIds = homeTimelineIds.stream().map(Long::valueOf).collect(Collectors.toList());
-        List<Activity> activities = activityRepository.findAllActivitiesWithIds(activityIds);
-        Long activityCount = timelineRepository.totalItems(loggedInUser);
-        return TimelineRepresentation.with(activityCount, activities);
+        return activityRepository.findAllActivitiesWithIds(activityIds);
     }
 
     @Path("/home_timeline")
@@ -68,7 +68,9 @@ public class TimelineResource {
         if (homeTimelineIds.isEmpty()) {
             return TimelineRepresentation.empty();
         }
-        return toTimelineRepresentation(loggedInUser, homeTimelineIds);
+        List<Activity> activities = getActivities(homeTimelineIds);
+        Long activityCount = timelineRepository.totalItems(loggedInUser);
+        return TimelineRepresentation.with(activityCount, activities);
     }
 
 }

@@ -22,12 +22,11 @@ public class CommunityRunStatsRepository {
     @Inject
     JedisExecution jedisExecution;
 
-    public void addGoalToCommunityRun(final String slug, final Long goalId) {
-        jedisExecution.execute(new JedisOperation<Void>() {
+    public Long addGoalToCommunityRun(final String slug, final Long goalId) {
+        return jedisExecution.execute(new JedisOperation<Long>() {
             @Override
-            public Void perform(Jedis jedis) {
-                jedis.sadd(String.format(RedisKeyNames.CR_GOALS_SET, slug), String.valueOf(goalId));
-                return null;
+            public Long perform(Jedis jedis) {
+                return jedis.sadd(String.format(RedisKeyNames.CR_GOALS_SET, slug), String.valueOf(goalId));
             }
         });
     }
