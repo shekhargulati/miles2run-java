@@ -239,7 +239,16 @@ public class TimelineRepository {
         return dateFormat.format(date);
     }
 
-    public Long totalItems(final String loggedInUser) {
+    public Long userTimelineActivityCount(final String username) {
+        return jedisExecution.execute(new JedisOperation<Long>() {
+            @Override
+            public Long perform(Jedis jedis) {
+                return jedis.zcard(String.format(RedisKeyNames.PROFILE_S_TIMELINE, username));
+            }
+        });
+    }
+
+    public Long homeTimelineActivityCount(final String loggedInUser) {
         return jedisExecution.execute(new JedisOperation<Long>() {
             @Override
             public Long perform(Jedis jedis) {

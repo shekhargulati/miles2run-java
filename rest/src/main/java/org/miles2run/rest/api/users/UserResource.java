@@ -29,16 +29,6 @@ public class UserResource {
     @Inject
     private UserProfileRepository userProfileRepository;
 
-/*    @Path("/me")
-    @GET
-    @Produces("application/json")
-    @LoggedIn
-    public Response currentLoggedInUser() {
-        String username = securityContext.getUserPrincipal().getName();
-        Profile profile = profileRepository.findWithSocialConnections(username);
-        return Response.ok(UserRepresentation.from(profile)).build();
-    }*/
-
     @GET
     @Produces("application/json")
     public List<UserRepresentation> profiles(@QueryParam("name") String name) {

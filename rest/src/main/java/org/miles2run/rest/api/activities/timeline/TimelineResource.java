@@ -47,7 +47,7 @@ public class TimelineResource {
             return TimelineRepresentation.empty();
         }
         List<Activity> activities = getActivities(timelineIds);
-        Long activityCount = timelineRepository.totalItems(username);
+        Long activityCount = timelineRepository.userTimelineActivityCount(username);
         return TimelineRepresentation.with(activityCount, activities);
     }
 
@@ -69,7 +69,7 @@ public class TimelineResource {
             return TimelineRepresentation.empty();
         }
         List<Activity> activities = getActivities(homeTimelineIds);
-        Long activityCount = timelineRepository.totalItems(loggedInUser);
+        Long activityCount = timelineRepository.homeTimelineActivityCount(loggedInUser);
         return TimelineRepresentation.with(activityCount, activities);
     }
 
