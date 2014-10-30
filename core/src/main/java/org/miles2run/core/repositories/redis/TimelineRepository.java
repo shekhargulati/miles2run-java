@@ -3,27 +3,22 @@ package org.miles2run.core.repositories.redis;
 import org.miles2run.core.repositories.mongo.UserProfileRepository;
 import org.miles2run.domain.documents.UserProfile;
 import org.miles2run.domain.entities.*;
-import org.miles2run.domain.kv_aggregates.ActivityAggregate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Pipeline;
-import redis.clients.jedis.Response;
 import redis.clients.jedis.Tuple;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 @ApplicationScoped
 public class TimelineRepository {
 
-    private static final long HOME_TIMELINE_SIZE = 1000;
+    private static final long TIMELINE_SIZE = 1000;
     private final Logger logger = LoggerFactory.getLogger(TimelineRepository.class);
 
     @Inject
@@ -31,53 +26,60 @@ public class TimelineRepository {
     @Inject
     private UserProfileRepository userProfileRepository;
 
+    /**
+     * Get User's home timeline activity Ids.
+     *
+     * @param username user whose home timeline activity ids need to be retrieved.
+     * @param page
+     * @param count
+     * @return a set of activity ids or empty set if no activity exists.
+     */
     public Set<String> getHomeTimelineIds(final String username, final long page, final long count) {
 
         return jedisExecution.execute(new JedisOperation<Set<String>>() {
             @Override
             public Set<String> perform(Jedis jedis) {
-                String key = String.format(RedisKeyNames.HOME_S_TIMELINE, username);
-                Set<String> activityIds = jedis.zrevrange(key, (page - 1) * count, page * (count - 1));
-                return activityIds == null ? Collections.emptySet() : activityIds;
+                String homeTimelineKey = String.format(RedisKeyNames.HOME_S_TIMELINE, username);
+                return jedis.zrevrange(homeTimelineKey, (page - 1) * count, page * (count - 1));
             }
         });
     }
 
-    public Set<String> getUserTimelineIds(final String username, final long page, final long count) {
+    /**
+     * Get User's Profile timeline activity Ids.
+     *
+     * @param username user whose profile timeline activity ids need to be retrieved.
+     * @param page
+     * @param count
+     * @return a set of activity ids or empty set if no activity exists.
+     */
+    public Set<String> getUserProfileTimelineIds(final String username, final long page, final long count) {
         return jedisExecution.execute(new JedisOperation<Set<String>>() {
             @Override
             public Set<String> perform(Jedis jedis) {
                 String profileTimelineKey = String.format(RedisKeyNames.PROFILE_S_TIMELINE, username);
-                Set<String> activityIds = jedis.zrevrange(profileTimelineKey, (page - 1) * count, page * (count - 1));
-                return activityIds == null ? Collections.emptySet() : activityIds;
+                return jedis.zrevrange(profileTimelineKey, (page - 1) * count, page * (count - 1));
             }
         });
     }
 
-    public List<ActivityAggregate> getHomeTimeline(final String username, final long page, final long count) {
-        return jedisExecution.execute(new JedisOperation<List<ActivityAggregate>>() {
-            @Override
-            public List<ActivityAggregate> perform(Jedis jedis) {
-                Set<String> activityIds = getHomeTimelineIds(username, page, count);
-                Pipeline pipeline = jedis.pipelined();
-                List<Response<Map<String, String>>> result = activityIds.stream().map(activityId -> pipeline.hgetAll("activity:" + activityId)).collect(toList());
-                pipeline.sync();
-                return result.stream().map(response -> new ActivityAggregate(response.get())).collect(toList());
-            }
-        });
-    }
-
+    /**
+     * Update user home timeline with activities from the new follower.
+     *
+     * @param username     user whose home timeline needs to be updated.
+     * @param userToFollow a new follower whose activities need to be added
+     */
     public void updateTimelineWithFollowingTimeline(final String username, final String userToFollow) {
         jedisExecution.execute(new JedisOperation<Void>() {
             @Override
             public Void perform(Jedis jedis) {
-                String profileTimelineKey = String.format("profile:%s:timeline", userToFollow);
-                Set<Tuple> activitiesWithScore = jedis.zrevrangeWithScores(profileTimelineKey, 0, HOME_TIMELINE_SIZE - 1);
-                if (activitiesWithScore != null && !activitiesWithScore.isEmpty()) {
+                String followerTimelineKey = String.format(RedisKeyNames.PROFILE_S_TIMELINE, userToFollow);
+                Set<Tuple> followerActivitiesWithTimestamp = jedis.zrevrangeWithScores(followerTimelineKey, 0, TIMELINE_SIZE - 1);
+                if (!followerActivitiesWithTimestamp.isEmpty()) {
                     Pipeline pipeline = jedis.pipelined();
-                    String key = String.format("home:%s:timeline", username);
-                    pipeline.zadd(key, tupleToMap(activitiesWithScore));
-                    pipeline.zremrangeByRank(key, 0, -(HOME_TIMELINE_SIZE - 1));
+                    String userHomeTimeline = String.format(RedisKeyNames.HOME_S_TIMELINE, username);
+                    pipeline.zadd(userHomeTimeline, followerActivitiesWithTimestamp.stream().collect(toMap(Tuple::getScore, Tuple::getElement)));
+                    pipeline.zremrangeByRank(userHomeTimeline, 0, -(TIMELINE_SIZE - 1));
                     pipeline.sync();
                 }
                 return null;
@@ -85,22 +87,24 @@ public class TimelineRepository {
         });
     }
 
-    private Map<Double, String> tupleToMap(Set<Tuple> activitiesWithScore) {
-        return activitiesWithScore.stream().collect(Collectors.toMap(Tuple::getScore, Tuple::getElement));
-    }
-
-    public void removeFollowingTimeline(final String username, final String userToUnfollow) {
-        jedisExecution.execute(new JedisOperation<Void>() {
+    /**
+     * Remove unfollower activities from the user's home timeline.
+     *
+     * @param username       User who unfollowed a user
+     * @param userToUnfollow unfollowed user
+     * @return 1 if activities were removed from the user's home timeline else it returns 0.
+     */
+    public Long removeFollowingTimeline(final String username, final String userToUnfollow) {
+        return jedisExecution.execute(new JedisOperation<Long>() {
             @Override
-            public Void perform(Jedis jedis) {
-                String profileTimelineKey = String.format("profile:%s:timeline", userToUnfollow);
-                Set<String> activities = jedis.zrevrange(profileTimelineKey, 0, HOME_TIMELINE_SIZE - 1);
-                if (activities != null && !activities.isEmpty()) {
-                    String[] members = new ArrayList<>(activities).toArray(new String[0]);
-                    String key = String.format("home:%s:timeline", username);
-                    jedis.zrem(key, members);
+            public Long perform(Jedis jedis) {
+                String profileTimeline = String.format(RedisKeyNames.PROFILE_S_TIMELINE, userToUnfollow);
+                Set<String> unfollowerActivities = jedis.zrevrange(profileTimeline, 0, TIMELINE_SIZE - 1);
+                if (unfollowerActivities.isEmpty()) {
+                    return Long.valueOf(0);
                 }
-                return null;
+                String homeTimeline = String.format(RedisKeyNames.HOME_S_TIMELINE, username);
+                return jedis.zrem(homeTimeline, unfollowerActivities.stream().toArray(size -> new String[size]));
             }
         });
     }
@@ -129,11 +133,11 @@ public class TimelineRepository {
                 UserProfile userProfile = userProfileRepository.find(username);
                 logger.info("Deleting activity from all the followers timeline");
                 final List<String> followers = userProfile.getFollowers();
-                logger.info(String.format("Followers for %s are %s", username, followers));
-                for (String follower : followers) {
-                    String homeTimelineKeyForFollower = String.format("home:%s:timeline", follower);
+                logger.info("Followers for {} are {}", username, followers);
+                followers.forEach(follower -> {
+                    String homeTimelineKeyForFollower = String.format(RedisKeyNames.HOME_S_TIMELINE, follower);
                     pipeline.zrem(homeTimelineKeyForFollower, String.valueOf(activityId));
-                }
+                });
                 pipeline.sync();
                 return null;
             }
@@ -162,9 +166,9 @@ public class TimelineRepository {
             return;
         }
         logger.info(String.format("Updating %s timelines with new activity..", username));
-        jedisExecution.execute(new JedisOperation<Object>() {
+        jedisExecution.execute(new JedisOperation<Void>() {
             @Override
-            public <T> T perform(Jedis jedis) {
+            public Void perform(Jedis jedis) {
                 Pipeline pipeline = jedis.pipelined();
                 pipeline.zadd(String.format(RedisKeyNames.PROFILE_S_TIMELINE, username), posted, activityId);
                 pipeline.zadd(String.format(RedisKeyNames.HOME_S_TIMELINE, username), posted, activityId);
@@ -224,19 +228,14 @@ public class TimelineRepository {
             public <T> T perform(Jedis jedis) {
                 Pipeline pipeline = jedis.pipelined();
                 for (String follower : followers) {
-                    String key = String.format("home:%s:timeline", follower);
-                    pipeline.zadd(key, posted, activityId);
-                    pipeline.zremrangeByRank(key, 0, -(HOME_TIMELINE_SIZE - 1));
+                    String homeTimelineKey = String.format(RedisKeyNames.HOME_S_TIMELINE, follower);
+                    pipeline.zadd(homeTimelineKey, posted, activityId);
+                    pipeline.zremrangeByRank(homeTimelineKey, 0, -(TIMELINE_SIZE - 1));
                 }
                 pipeline.sync();
                 return null;
             }
         });
-    }
-
-    private String formatDateToYearAndMonth(Date date) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MMMM");
-        return dateFormat.format(date);
     }
 
     public Long userTimelineActivityCount(final String username) {
@@ -276,105 +275,5 @@ public class TimelineRepository {
         });
     }
 
-    public List<Object[]> distanceAndPaceOverNMonths(final Profile profile, final Goal goal, final String interval, final int nMonths) {
-        return jedisExecution.execute(new JedisOperation<List<Object[]>>() {
-            @Override
-            public List<Object[]> perform(Jedis jedis) {
-                Date today = new Date();
-                Calendar calendar = Calendar.getInstance();
-                calendar.add(Calendar.MONTH, -nMonths);
-                Date nMonthsBack = calendar.getTime();
-                Set<Tuple> activityIdsInNDaysWithScores = jedis.zrangeByScoreWithScores(String.format(RedisKeyNames.PROFILE_S_GOAL_S_TIMELINE, profile.getUsername(), goal.getId()), nMonthsBack.getTime(), today.getTime());
-                Map<String, Double> monthDistanceHash = new HashMap<>();
-                Map<String, Double> monthPaceHash = new HashMap<>();
-                for (Tuple activityIdTuple : activityIdsInNDaysWithScores) {
-                    String activityId = activityIdTuple.getElement();
-                    double activityTimestamp = activityIdTuple.getScore();
-                    List<String> values = jedis.hmget(String.format("activity:%s", activityId), "distanceCovered", "duration");
-                    Date activityDate = new Date(Double.valueOf(activityTimestamp).longValue());
-                    logger.info(String.format("Activity Date : %s", activityDate));
-                    String key = formatDateToYearAndMonth(activityDate);
-                    logger.info(String.format("DateToYearAndMonth : %s", key));
-                    double distance = Double.valueOf(values.get(0)) / goal.getGoalUnit().getConversion();
-                    if (monthDistanceHash.containsKey(key)) {
-                        Double value = monthDistanceHash.get(key);
-                        monthDistanceHash.put(key, value + distance);
-                        Double durationInSeconds = Double.valueOf(Long.valueOf(values.get(1)));
-                        double durationInMinutes = durationInSeconds / 60;
-                        double pace = durationInMinutes / distance;
-                        Double currentAvgPace = monthPaceHash.get(key);
-                        monthPaceHash.put(key, (currentAvgPace + pace) / 2);
-                    } else {
-                        monthDistanceHash.put(key, distance);
-                        Double durationInSeconds = Double.valueOf(Long.valueOf(values.get(1)));
-                        double durationInMinutes = durationInSeconds / 60;
-                        double pace = durationInMinutes / distance;
-                        monthPaceHash.put(key, pace);
-                    }
-                }
-                List<Object[]> chartData = new ArrayList<>();
-                Set<Map.Entry<String, Double>> entries = monthDistanceHash.entrySet();
-                for (Map.Entry<String, Double> entry : entries) {
-                    chartData.add(new Object[]{entry.getKey(), entry.getValue(), monthPaceHash.get(entry.getKey())});
-                }
-                Collections.reverse(chartData);
-                return chartData;
-            }
-        });
-    }
-
-    public List<Object[]> distanceAndActivityCountOverNMonths(final Profile profile, final Goal goal, final int months) {
-        return jedisExecution.execute(new JedisOperation<List<Object[]>>() {
-            @Override
-            public List<Object[]> perform(Jedis jedis) {
-                Date today = new Date();
-                Calendar calendar = Calendar.getInstance();
-                calendar.add(Calendar.MONTH, -months);
-                Date nMonthsBack = calendar.getTime();
-                Set<Tuple> activityIdsInNDaysWithScores = jedis.zrangeByScoreWithScores(String.format(RedisKeyNames.PROFILE_S_GOAL_S_TIMELINE, profile.getUsername(), goal.getId()), nMonthsBack.getTime(), today.getTime());
-                Map<String, Double> monthDistanceHash = new HashMap<>();
-                Map<String, Long> monthActivityCountHash = new HashMap<>();
-                for (Tuple activityIdTuple : activityIdsInNDaysWithScores) {
-                    String activityId = activityIdTuple.getElement();
-                    double activityTimestamp = activityIdTuple.getScore();
-                    List<String> values = jedis.hmget(String.format("activity:%s", activityId), "distanceCovered", "duration");
-                    Date activityDate = new Date(Double.valueOf(activityTimestamp).longValue());
-                    logger.info(String.format("Activity Date : %s", activityDate));
-                    String key = formatDateToYearAndMonth(activityDate);
-                    logger.info(String.format("DateToYearAndMonth : %s", key));
-                    double distance = Double.valueOf(values.get(0)) / goal.getGoalUnit().getConversion();
-                    if (monthDistanceHash.containsKey(key)) {
-                        Double distanceTillNow = monthDistanceHash.get(key);
-                        monthDistanceHash.put(key, distanceTillNow + distance);
-                        Long activityCountTillNow = monthActivityCountHash.get(key);
-                        monthActivityCountHash.put(key, activityCountTillNow + 1L);
-                    } else {
-                        monthDistanceHash.put(key, distance);
-                        monthActivityCountHash.put(key, 1L);
-                    }
-                }
-                List<Object[]> chartData = new ArrayList<>();
-                Set<Map.Entry<String, Double>> entries = monthDistanceHash.entrySet();
-                for (Map.Entry<String, Double> entry : entries) {
-                    chartData.add(new Object[]{entry.getKey(), entry.getValue(), monthActivityCountHash.get(entry.getKey())});
-                }
-                Collections.sort(chartData, (m1, m2) -> {
-                    String month1 = (String) m1[0];
-                    String month2 = (String) m2[0];
-                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MMMM");
-                    try {
-                        Date date1 = dateFormat.parse(month1);
-                        Date date2 = dateFormat.parse(month2);
-                        return date1.compareTo(date2);
-                    } catch (ParseException e) {
-                        return 0;
-                    }
-                });
-                return chartData;
-            }
-        });
-    }
 
 }
-
-

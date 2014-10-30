@@ -4,7 +4,6 @@ import org.jug.filters.LoggedIn;
 import org.miles2run.core.repositories.jpa.GoalRepository;
 import org.miles2run.core.repositories.jpa.ProfileRepository;
 import org.miles2run.core.repositories.redis.GoalAggregationRepository;
-import org.miles2run.core.repositories.redis.TimelineRepository;
 import org.miles2run.domain.entities.Goal;
 import org.miles2run.domain.entities.Profile;
 
@@ -21,8 +20,6 @@ public class GoalAggregateResource {
 
     @Context
     private SecurityContext securityContext;
-    @Inject
-    private TimelineRepository timelineRepository;
     @Inject
     private ProfileRepository profileRepository;
     @Inject
@@ -45,7 +42,7 @@ public class GoalAggregateResource {
             case "day":
                 return goalAggregationRepository.distanceAndPaceOverNDays(profile.getUsername(), goal, days, timezoneOffset);
             case "month":
-                return timelineRepository.distanceAndPaceOverNMonths(profile, goal, interval, months);
+                return goalAggregationRepository.distanceAndPaceOverNMonths(profile, goal, interval, months);
             default:
                 return goalAggregationRepository.distanceAndPaceOverNDays(profile.getUsername(), goal, days, timezoneOffset);
         }
@@ -60,7 +57,7 @@ public class GoalAggregateResource {
         Profile profile = profileRepository.findByUsername(loggedInUser);
         Goal goal = goalRepository.find(profile, goalId);
         months = months == 0 || months > 12 ? 6 : months;
-        return timelineRepository.distanceAndActivityCountOverNMonths(profile, goal, months);
+        return goalAggregationRepository.distanceAndActivityCountOverNMonths(profile, goal, months);
     }
 
     @Path("/activity_calendar")

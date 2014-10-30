@@ -42,7 +42,7 @@ public class TimelineResource {
         }
         page = page == 0 ? 1 : page;
         count = (count == 0 || count > 10) ? 10 : count;
-        Set<String> timelineIds = timelineRepository.getUserTimelineIds(username, page, count);
+        Set<String> timelineIds = timelineRepository.getUserProfileTimelineIds(username, page, count);
         if (timelineIds.isEmpty()) {
             return TimelineRepresentation.empty();
         }
