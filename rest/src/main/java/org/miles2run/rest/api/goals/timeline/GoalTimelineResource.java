@@ -45,7 +45,7 @@ public class GoalTimelineResource {
         }
         page = page == 0 ? 1 : page;
         count = count == 0 || count > 50 ? 10 : count;
-        Set<String> timelineIds = timelineRepository.getGoalTimelineIds(loggedInUser, goal, page, count);
+        Set<String> timelineIds = timelineRepository.getGoalTimelineIds(loggedInUser, goal.getId(), page, count);
         if (timelineIds.isEmpty()) {
             return TimelineRepresentation.empty();
         }
@@ -56,7 +56,7 @@ public class GoalTimelineResource {
     private TimelineRepresentation toTimelineRepresentation(String loggedInUser, Set<String> homeTimelineIds, Goal goal) {
         List<Long> activityIds = homeTimelineIds.stream().map(Long::valueOf).collect(Collectors.toList());
         List<Activity> activities = activityRepository.findAllActivitiesWithIds(activityIds);
-        Long activityCount = timelineRepository.totalActivitiesForGoal(loggedInUser, goal);
+        Long activityCount = timelineRepository.goalTimelineActivityCount(loggedInUser, goal.getId());
         return TimelineRepresentation.with(activityCount, activities);
     }
 
@@ -71,7 +71,7 @@ public class GoalTimelineResource {
         }
         page = page == 0 ? 1 : page;
         count = count == 0 || count > 50 ? 10 : count;
-        Set<String> timelineIds = timelineRepository.getGoalTimelineIds(username, goal, page, count);
+        Set<String> timelineIds = timelineRepository.getGoalTimelineIds(username, goal.getId(), page, count);
         if (timelineIds.isEmpty()) {
             return TimelineRepresentation.empty();
         }

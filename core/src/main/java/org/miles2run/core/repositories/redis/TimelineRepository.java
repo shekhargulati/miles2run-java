@@ -11,7 +11,10 @@ import redis.clients.jedis.Tuple;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import static java.util.stream.Collectors.toMap;
 
@@ -238,6 +241,12 @@ public class TimelineRepository {
         });
     }
 
+    /**
+     * Count of user timeline activities. If user has not posted any activity then 0 is returned.
+     *
+     * @param username
+     * @return user timeline activity count
+     */
     public Long userTimelineActivityCount(final String username) {
         return jedisExecution.execute(new JedisOperation<Long>() {
             @Override
@@ -247,30 +256,54 @@ public class TimelineRepository {
         });
     }
 
-    public Long homeTimelineActivityCount(final String loggedInUser) {
+    /**
+     * Count of home timeline activities. If user and the users user is following have not posted any activity then 0 is returned.
+     *
+     * @param username
+     * @return home timeline activity count
+     */
+    public Long homeTimelineActivityCount(final String username) {
         return jedisExecution.execute(new JedisOperation<Long>() {
             @Override
             public Long perform(Jedis jedis) {
-                return jedis.zcard(String.format(RedisKeyNames.HOME_S_TIMELINE, loggedInUser));
+                return jedis.zcard(String.format(RedisKeyNames.HOME_S_TIMELINE, username));
             }
         });
     }
 
-    public Set<String> getGoalTimelineIds(final String loggedInUser, final Goal goal, final int page, final int count) {
+    /**
+     * Returns a set of activity ids posted by user for a specific goal. The activity ids are sorted by activity date in descending order.
+     * If no activity posted for a goal, then an empty Set is returned.
+     *
+     * @param username
+     * @param goalId
+     * @param page
+     * @param count
+     * @return Set with activity ids
+     */
+    public Set<String> getGoalTimelineIds(final String username, final Long goalId, final int page, final int count) {
         return jedisExecution.execute(new JedisOperation<Set<String>>() {
             @Override
             public Set<String> perform(Jedis jedis) {
-                Set<String> activityIds = jedis.zrevrange(String.format(RedisKeyNames.PROFILE_S_GOAL_S_TIMELINE, loggedInUser, goal.getId()), (page - 1) * count, page * (count - 1));
-                return activityIds == null ? Collections.emptySet() : activityIds;
+                final String goalTimelineKey = String.format(RedisKeyNames.PROFILE_S_GOAL_S_TIMELINE, username, goalId);
+                return jedis.zrevrange(goalTimelineKey, (page - 1) * count, page * (count - 1));
             }
         });
     }
 
-    public Long totalActivitiesForGoal(final String loggedInUser, final Goal goal) {
+    /**
+     * Count of goal timeline activities. If no activity posted to a goal then 0 is returned.
+     *
+     * @param username
+     * @param goalId
+     * @return goal timeline activity count
+     */
+    public Long goalTimelineActivityCount(final String username, final Long goalId) {
         return jedisExecution.execute(new JedisOperation<Long>() {
             @Override
             public Long perform(Jedis jedis) {
-                return jedis.zcard(String.format(RedisKeyNames.PROFILE_S_GOAL_S_TIMELINE, loggedInUser, goal.getId()));
+                String goalTimelineKey = String.format(RedisKeyNames.PROFILE_S_GOAL_S_TIMELINE, username, goalId);
+                return jedis.zcard(goalTimelineKey);
             }
         });
     }
