@@ -4,7 +4,7 @@ A Java EE 7 Application that uses MySQL, MongoDB, and Redis. Also uses AngularJS
 
 You can learn more about miles2run architecture at http://blog.arungupta.me/2014/09/log-your-miles-and-community-runs-java-ee-7-real-world-experience/.
 
-This technical archtiectire of this aapplication was presented at JavaOne 2014 conference https://www.parleys.com/talk/lessons-learned-from-real-world-deployments-java-ee-7
+This technical architecture of this aapplication was presented at JavaOne 2014 conference https://www.parleys.com/talk/lessons-learned-from-real-world-deployments-java-ee-7
 
 ## Building miles2run application
 
